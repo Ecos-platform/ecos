@@ -1,15 +1,13 @@
 set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 
-# ==============================================================================
-# common headers
-# ==============================================================================
-
 set(publicHeaders
-        "vico/fmu.hpp"
-        "vico/slave.hpp"
-        "vico/scalar_variable.hpp"
+        "vico/algorithm.hpp"
+        "vico/model.hpp"
         "vico/model_description.hpp"
+        "vico/model_instance.hpp"
+        "vico/scalar_variable.hpp"
         "vico/simulation.hpp"
+        "vico/simulation_listener.hpp"
 
         "vico/util/temp_dir.hpp"
         "vico/util/fs_portability.hpp"
@@ -21,11 +19,7 @@ foreach (header IN LISTS commonPublicHeaders)
   list(APPEND commonPublicHeadersFull "${publicHeaderDir}/${header}")
 endforeach ()
 
-# ==============================================================================
-# fmilib wrapper
-# ==============================================================================
-
-set(fmilibwrapperPrivateHeaders
+set(privateHeaders
         "vico/fmi/fmicontext.hpp"
 
         "vico/fmi/fmi1/fmi1_fmu.hpp"
@@ -39,7 +33,9 @@ set(fmilibwrapperPrivateHeaders
         "vico/util/random.hpp"
         )
 
-set(fmilibwrapperSources
+set(sources
+        "vico/simulation.cpp"
+
         "vico/fmi/fmu.cpp"
 
         "vico/fmi/fmi1/fmi1_fmu.cpp"
@@ -51,20 +47,21 @@ set(fmilibwrapperSources
         "vico/fmi/fmi2/fmi2_model_description.cpp"
 
         "vico/util/temp_dir.cpp"
+        "vico/util/uuid.cpp"
         )
 
-add_library(fmilibwrapper ${publicHeadersFull} ${fmilibwrapperPublicHeadersFull} ${fmilibwrapperPrivateHeaders} ${fmilibwrapperSources})
-target_compile_features(fmilibwrapper PUBLIC "cxx_std_17")
+add_library(vico ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources})
+target_compile_features(vico PUBLIC "cxx_std_17")
 #set_target_properties(fmilibwrapper PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_include_directories(fmilibwrapper
+target_include_directories(vico
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
-target_link_libraries(fmilibwrapper PRIVATE FMILIB::FMILIB)
+target_link_libraries(vico PRIVATE FMILIB::FMILIB)
 if (UNIX)
-  target_link_libraries(fmilibwrapper INTERFACE stdc++fs PRIVATE dl)
+  target_link_libraries(vico INTERFACE stdc++fs PRIVATE dl)
 endif ()
 
 
@@ -73,12 +70,12 @@ endif ()
 # ==============================================================================
 
 install(
-        TARGETS fmilibwrapper
+        TARGETS vico
         EXPORT "${VICO_EXPORT_TARGET}"
         ${VICO_INSTALL_DESTINATIONS}
 )
 install(
-        DIRECTORY "${publicHeaderDir}/VICO"
+        DIRECTORY "${publicHeaderDir}/vico"
         DESTINATION "${VICO_HEADER_INSTALL_DIR}"
 )
 

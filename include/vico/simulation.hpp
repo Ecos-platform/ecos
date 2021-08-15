@@ -3,8 +3,10 @@
 #ifndef VICO_SIMULATION_HPP
 #define VICO_SIMULATION_HPP
 
+#include "vico/algorithm.hpp"
+
 #include <memory>
-#include <vetor>
+#include <vector>
 
 namespace vico
 {
@@ -16,6 +18,8 @@ class simulation
 
 public:
 
+    explicit simulation(std::unique_ptr<algorithm> algorithm);
+
     void init(double startTime = 0);
 
     void step(unsigned int numStep = 1);
@@ -23,10 +27,11 @@ public:
     void terminate();
 
     void add_listener(const std::shared_ptr<simulation_listener> &listener);
-    void remove_listener(const std::shared_ptr<simulation_listener> &listener);
 
 private:
-    std::vector<std::shared_ptr<simulation_listener>> listeners;
+    double currentTime = 0;
+    std::unique_ptr<algorithm> algorithm_;
+    std::vector<std::shared_ptr<simulation_listener>> listeners_;
 
 };
 

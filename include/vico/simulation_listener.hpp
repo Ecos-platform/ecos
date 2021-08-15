@@ -5,21 +5,19 @@
 #include "vico/simulation.hpp"
 #include "vico/util/uuid.hpp"
 
-#include <functional>
-
 namespace vico {
 
 struct simulation_listener {
 
     const std::string uuid = generate_uuid();
 
-    virtual void pre_init(const std::function<void()> &f) = {};
-    virtual void post_init(const std::function<void()> &f) = {};
+    virtual void pre_init() = 0;
+    virtual void post_init() = 0;
 
-    virtual void pre_step(const std::function<void()> &f) = {};
-    virtual void post_step(const std::function<void()> &f) = {};
+    virtual void pre_step() = 0;
+    virtual void post_step() = 0;
 
-    virtual void post_terminate(const std::function<void()> &f) = {};
+    virtual void post_terminate() = 0;
 
     virtual ~simulation_listener() = default;
 

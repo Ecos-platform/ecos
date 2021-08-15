@@ -2,22 +2,33 @@
 #ifndef VICO_ALGORITHM_HPP
 #define VICO_ALGORITHM_HPP
 
-namespace vico {
+namespace vico
+{
 
-struct algorithm {
+struct algorithm
+{
 
-    void step(double currentTime, double stepSize) = 0;
+    virtual void init() = 0;
+
+    virtual void step(double currentTime, double stepSize) = 0;
 
     virtual ~algorithm() = default;
-
 };
 
-struct fixed_step_algorithm: public algorithm {
+struct fixed_step_algorithm : public algorithm
+{
 
+    void init() override
+    {
+    }
 
+    void step(double currentTime, double stepSize) override
+    {
+    }
 
+    ~fixed_step_algorithm() override = default;
 };
 
-}
+} // namespace vico
 
 #endif // VICO_ALGORITHM_HPP

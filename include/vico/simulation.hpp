@@ -18,6 +18,7 @@ class simulation
 {
 
 public:
+    simulation(std::unique_ptr<simulation_structure> ss);
 
     void init(double startTime = 0);
 
@@ -33,6 +34,7 @@ private:
     double currentTime = 0;
     std::unique_ptr<algorithm> algorithm_;
     std::unique_ptr<simulation_structure> ss_;
+    std::vector<std::unique_ptr<model_instance>> instances_;
     std::vector<std::shared_ptr<simulation_listener>> listeners_;
 
 };

@@ -26,7 +26,17 @@ namespace vico {
     };
 
     using value_ref = unsigned int;
-    using type_attribute = std::variant<real, integer, string, boolean>;
+    using type_attribute = std::variant<integer, real, string, boolean>;
+
+    inline std::string type_name(const type_attribute &attribute) {
+        switch (attribute.index()) {
+            case 0: return "integer";
+            case 1: return "real";
+            case 2: return "string";
+            case 3: return "boolean";
+            default: throw std::runtime_error("Invalid variant");
+        }
+    }
 
     struct scalar_variable {
         value_ref valueRef;

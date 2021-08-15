@@ -9,8 +9,6 @@
 namespace vico
 {
 
-using value_ref = unsigned int;
-
 class model_instance
 {
 public:

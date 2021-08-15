@@ -1,5 +1,5 @@
 
-#include <vico/fmi/fmu.hpp>
+#include <vico/model.hpp>
 
 #include <exception>
 #include <iostream>

@@ -1,14 +1,13 @@
 
 #include "vico/fmi/fmi1/fmi1_fmu.hpp"
 #include "vico/fmi/fmi2/fmi2_fmu.hpp"
-#include "vico/util/temp_dir.hpp"
 
 #include <fmilib.h>
 
 namespace vico
 {
 
-std::unique_ptr<fmu> loadFmu(const filesystem::path& fmuPath)
+std::unique_ptr<model> loadFmu(const filesystem::path& fmuPath)
 {
     auto ctx = std::make_unique<fmicontext>();
 

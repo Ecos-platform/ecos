@@ -3,7 +3,7 @@
 #define VICO_FMI2_FMU_HPP
 
 #include "vico/fmi/fmicontext.hpp"
-#include "vico/fmi/fmu.hpp"
+#include "vico/model.hpp"
 #include "vico/util/temp_dir.hpp"
 
 #include <fmilib.h>
@@ -11,7 +11,7 @@
 namespace vico
 {
 
-class fmi2_fmu : public fmu
+class fmi2_fmu : public model
 {
 
 private:
@@ -26,7 +26,7 @@ public:
 
     [[nodiscard]] const model_description& get_model_description() const override;
 
-    std::unique_ptr<slave> new_instance(const std::string& instanceName) override;
+    std::unique_ptr<model_instance> new_instance(const std::string& instanceName) override;
 
     ~fmi2_fmu() override;
 };

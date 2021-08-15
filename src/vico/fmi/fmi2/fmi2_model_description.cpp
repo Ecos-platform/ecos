@@ -14,7 +14,7 @@ std::optional<vico::scalar_variable> to_scalar_variable(fmi2_import_variable_t* 
     }
 
     vico::scalar_variable var;
-    var.vr = fmi2_import_get_variable_vr(v);
+    var.valueRef = fmi2_import_get_variable_vr(v);
     var.name = fmi2_import_get_variable_name(v);
     //    var.description = fmi2_import_get_variable_description(v);
     var.causality = fmi2_causality_to_string(fmi2_import_get_causality(v));

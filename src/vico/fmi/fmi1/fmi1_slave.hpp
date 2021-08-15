@@ -5,7 +5,7 @@
 #include "fmi1_model_description.hpp"
 
 #include "vico/fmi/fmicontext.hpp"
-#include "vico/fmi/slave.hpp"
+#include "vico/model_instance.hpp"
 #include "vico/util/temp_dir.hpp"
 
 #include <fmilib.h>
@@ -14,7 +14,7 @@
 namespace vico
 {
 
-class fmi1_slave : public slave
+class fmi1_slave : public model_instance
 {
 private:
     fmi1_import_t* handle_;
@@ -24,8 +24,6 @@ private:
 
     double start_time_;
     double stop_time_;
-
-    bool freed = false;
 
 public:
     fmi1_slave(
@@ -40,7 +38,6 @@ public:
     bool exit_initialization_mode() override;
     bool step(double current_time, double step_size) override;
     bool terminate() override;
-    void freeInstance() override;
 
     bool get_integer(const std::vector<value_ref>& vr, std::vector<int>& values) override;
     bool get_real(const std::vector<value_ref>& vr, std::vector<double>& values) override;

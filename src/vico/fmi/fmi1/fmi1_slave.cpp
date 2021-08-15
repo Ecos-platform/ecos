@@ -153,18 +153,9 @@ bool fmi1_slave::set_boolean(const std::vector<value_ref>& vr, const std::vector
     return status == fmi1_status_ok;
 }
 
-void fmi1_slave::freeInstance()
-{
-    if (!freed) {
-        freed = true;
-        fmi1_import_free_slave_instance(handle_);
-        fmi1_import_destroy_dllfmu(handle_);
-        fmi1_import_free(handle_);
-    }
-}
-
-
 fmi1_slave::~fmi1_slave()
 {
-    fmi1_slave::freeInstance();
+    fmi1_import_free_slave_instance(handle_);
+    fmi1_import_destroy_dllfmu(handle_);
+    fmi1_import_free(handle_);
 }

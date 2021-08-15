@@ -14,7 +14,7 @@ std::optional<scalar_variable> to_scalar_variable(fmi1_import_variable_t* v)
     }
 
     scalar_variable var;
-    var.vr = fmi1_import_get_variable_vr(v);
+    var.valueRef = fmi1_import_get_variable_vr(v);
     var.name = fmi1_import_get_variable_name(v);
     //var.description = fmi1_import_get_variable_description(v);
     var.causality = fmi1_causality_to_string(fmi1_import_get_causality(v));

@@ -1,6 +1,6 @@
 
-#ifndef VICO_FIXED_RANGE_RANDOM_GENERATOR_HPP
-#define VICO_FIXED_RANGE_RANDOM_GENERATOR_HPP
+#ifndef VICO_RANDOM_HPP
+#define VICO_RANDOM_HPP
 
 #include <random>
 
@@ -29,4 +29,4 @@ public:
 
 } // namespace vico
 
-#endif // VICO_FIXED_RANGE_RANDOM_GENERATOR_HPP
+#endif // VICO_RANDOM_HPP

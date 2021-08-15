@@ -2,7 +2,7 @@
 #ifndef VICO_FMI1_MODEL_DESCRIPTION_HPP
 #define VICO_FMI1_MODEL_DESCRIPTION_HPP
 
-#include "vico/fmi/model_description.hpp"
+#include "vico/model_description.hpp"
 
 #include <fmilib.h>
 

@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE test_controlled_temp
 
-#include <vico/fmi/fmu.hpp>
+#include <vico/model.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -9,13 +9,12 @@ using namespace vico;
 namespace
 {
 
-void test(fmu& fmu)
+void test(model& fmu)
 {
     const auto d = fmu.get_model_description();
     BOOST_TEST(d.modelName == "ControlledTemperature");
     BOOST_TEST(d.modelIdentifier == "ControlledTemperature");
     BOOST_TEST(d.guid == "{06c2700b-b39c-4895-9151-304ddde28443}");
-//    BOOST_TEST(d.generationTool == "20-sim");
 
     auto slave = fmu.new_instance("instance");
     BOOST_REQUIRE(slave->setup_experiment());
@@ -34,7 +33,6 @@ void test(fmu& fmu)
     BOOST_TEST(realRef[0] < 298);
 
     BOOST_REQUIRE(slave->terminate());
-    slave->freeInstance();
 }
 
 } // namespace

@@ -1,7 +1,7 @@
 
 #include "vico/util/temp_dir.hpp"
 
-#include "fixed_range_random_generator.hpp"
+#include "random.hpp"
 
 #include <iostream>
 #include <memory>

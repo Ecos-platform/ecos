@@ -5,7 +5,7 @@
 #include "../fmicontext.hpp"
 
 #include "vico/fmi/fmi2/fmi2_model_description.hpp"
-#include "vico/fmi/slave.hpp"
+#include "vico/model_instance.hpp"
 #include "vico/util/temp_dir.hpp"
 
 #include <fmilib.h>
@@ -14,15 +14,13 @@
 namespace vico
 {
 
-class fmi2_slave : public slave
+class fmi2_slave : public model_instance
 {
 private:
     fmi2_import_t* handle_;
     const model_description md_;
     std::shared_ptr<fmicontext> ctx_;
     std::shared_ptr<temp_dir> tmpDir_;
-
-    bool freed = false;
 
 public:
     fmi2_slave(
@@ -39,7 +37,6 @@ public:
     bool step(double current_time, double step_size) override;
 
     bool terminate() override;
-    void freeInstance() override;
 
     bool get_integer(const std::vector<value_ref>& vr, std::vector<int>& values) override;
     bool get_real(const std::vector<value_ref>& vr, std::vector<double>& values) override;

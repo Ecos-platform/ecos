@@ -4,12 +4,19 @@ set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 # common headers
 # ==============================================================================
 
-set(commonPublicHeaders
+set(publicHeaders
+        "vico/fmu.hpp"
+        "vico/slave.hpp"
+        "vico/scalar_variable.hpp"
+        "vico/model_description.hpp"
+        "vico/simulation.hpp"
+
         "vico/util/temp_dir.hpp"
         "vico/util/fs_portability.hpp"
+        "vico/util/uuid.hpp"
         )
 
-set(commonPublicHeadersFull)
+set(publicHeadersFull)
 foreach (header IN LISTS commonPublicHeaders)
   list(APPEND commonPublicHeadersFull "${publicHeaderDir}/${header}")
 endforeach ()
@@ -17,13 +24,6 @@ endforeach ()
 # ==============================================================================
 # fmilib wrapper
 # ==============================================================================
-
-set(fmilibwrapperPublicHeaders
-        "vico/fmi/fmu.hpp"
-        "vico/fmi/slave.hpp"
-        "vico/fmi/scalar_variable.hpp"
-        "vico/fmi/model_description.hpp"
-        )
 
 set(fmilibwrapperPrivateHeaders
         "vico/fmi/fmicontext.hpp"
@@ -36,7 +36,7 @@ set(fmilibwrapperPrivateHeaders
         "vico/fmi/fmi2/fmi2_model_description.hpp"
         "vico/fmi/fmi2/fmi2_slave.hpp"
 
-        "vico/util/fixed_range_random_generator.hpp"
+        "vico/util/random.hpp"
         )
 
 set(fmilibwrapperSources
@@ -53,12 +53,7 @@ set(fmilibwrapperSources
         "vico/util/temp_dir.cpp"
         )
 
-set(fmilibwrapperPublicHeadersFull)
-foreach (header IN LISTS fmiPublicHeaders)
-  list(APPEND fmiPublicHeadersFull "${publicHeaderDir}/${header}")
-endforeach ()
-
-add_library(fmilibwrapper ${commonPublicHeadersFull} ${fmilibwrapperPublicHeadersFull} ${fmilibwrapperPrivateHeaders} ${fmilibwrapperSources})
+add_library(fmilibwrapper ${publicHeadersFull} ${fmilibwrapperPublicHeadersFull} ${fmilibwrapperPrivateHeaders} ${fmilibwrapperSources})
 target_compile_features(fmilibwrapper PUBLIC "cxx_std_17")
 #set_target_properties(fmilibwrapper PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(fmilibwrapper

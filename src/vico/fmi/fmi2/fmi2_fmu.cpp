@@ -27,7 +27,7 @@ const model_description& fmi2_fmu::get_model_description() const
     return md_;
 }
 
-std::unique_ptr<slave> fmi2_fmu::new_instance(const std::string& instanceName)
+std::unique_ptr<model_instance> fmi2_fmu::new_instance(const std::string& instanceName)
 {
     return std::make_unique<fmi2_slave>(ctx_, instanceName, md_, tmpDir_);
 }

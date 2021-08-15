@@ -2,7 +2,7 @@
 #ifndef VICO_MODEL_DESCRIPTION_HPP
 #define VICO_MODEL_DESCRIPTION_HPP
 
-#include "vico/fmi/scalar_variable.hpp"
+#include "vico/scalar_variable.hpp"
 
 namespace vico
 {

@@ -1,10 +1,9 @@
 
-#ifndef VICO_SLAVE_HPP
-#define VICO_SLAVE_HPP
+#ifndef VICO_MODEL_INSTANCE_HPP
+#define VICO_MODEL_INSTANCE_HPP
 
-#include "vico/fmi/model_description.hpp"
+#include "vico/model_description.hpp"
 
-#include <memory>
 #include <vector>
 
 namespace vico
@@ -12,7 +11,7 @@ namespace vico
 
 using value_ref = unsigned int;
 
-class slave
+class model_instance
 {
 public:
     virtual bool setup_experiment(
@@ -28,7 +27,6 @@ public:
     virtual bool step(double current_time, double step_size) = 0;
 
     virtual bool terminate() = 0;
-    virtual void freeInstance() = 0;
 
     virtual bool get_integer(const std::vector<value_ref>& vr, std::vector<int>& values) = 0;
     virtual bool get_real(const std::vector<value_ref>& vr, std::vector<double>& values) = 0;
@@ -40,9 +38,9 @@ public:
     virtual bool set_string(const std::vector<value_ref>& vr, const std::vector<std::string>& values) = 0;
     virtual bool set_boolean(const std::vector<value_ref>& vr, const std::vector<bool>& values) = 0;
 
-    virtual ~slave() = default;
+    virtual ~model_instance() = default;
 };
 
 } // namespace vico
 
-#endif // VICO_SLAVE_HPP
+#endif // VICO_MODEL_INSTANCE_HPP

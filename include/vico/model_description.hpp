@@ -4,15 +4,18 @@
 
 #include "vico/scalar_variable.hpp"
 
+#include <algorithm>
+#include <optional>
+
 namespace vico
 {
 
 struct default_experiment
 {
-    double startTime;
-    double stopTime;
-    double tolerance;
-    double stepSize;
+    std::optional<double> startTime;
+    std::optional<double> stopTime;
+    std::optional<double> tolerance;
+    std::optional<double> stepSize;
 };
 
 struct model_description
@@ -24,6 +27,32 @@ struct model_description
 
     model_variables modelVariables;
     default_experiment defaultExperiment;
+
+    [[nodiscard]] std::optional<scalar_variable> get_by_name(const std::string& name) const
+    {
+        auto result = std::find_if(modelVariables.begin(), modelVariables.end(), [&name](const scalar_variable &s) {
+            return s.name == name;
+        });
+
+        if (result != modelVariables.end()) {
+            return *result;
+        } else {
+            return std::nullopt;
+        }
+    }
+
+    [[nodiscard]] std::optional<scalar_variable> get_by_vr(const value_ref &vr) const
+    {
+        auto result = std::find_if(modelVariables.begin(), modelVariables.end(), [&vr](const scalar_variable &s) {
+            return s.valueRef == vr;
+        });
+
+        if (result != modelVariables.end()) {
+            return *result;
+        } else {
+            return std::nullopt;
+        }
+    }
 };
 
 } // namespace vico

@@ -6,12 +6,6 @@
 using namespace vico;
 
 
-simulation::simulation(std::unique_ptr<algorithm> algorithm)
-    : algorithm_(std::move(algorithm))
-{
-}
-
-
 void simulation::init(double startTime)
 {
 }
@@ -30,6 +24,10 @@ void simulation::step(unsigned int numStep)
 }
 
 void simulation::terminate()
+{
+}
+
+void simulation::reset()
 {
 }
 

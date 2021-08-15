@@ -21,7 +21,7 @@ void test(model& fmu)
     BOOST_REQUIRE(slave->enter_initialization_mode());
     BOOST_REQUIRE(slave->exit_initialization_mode());
 
-    std::vector<value_ref> vr{47};
+    std::vector<value_ref> vr{d.get_by_name("Temperature_Room")->valueRef};
     std::vector<double> realRef(1);
 
     slave->get_real(vr, realRef);

@@ -8,6 +8,7 @@ set(publicHeaders
         "vico/scalar_variable.hpp"
         "vico/simulation.hpp"
         "vico/simulation_listener.hpp"
+        "vico/simulation_structure.hpp"
 
         "vico/util/temp_dir.hpp"
         "vico/util/fs_portability.hpp"
@@ -35,6 +36,7 @@ set(privateHeaders
 
 set(sources
         "vico/simulation.cpp"
+        "vico/simulation_structure.cpp"
 
         "vico/fmi/fmu.cpp"
 

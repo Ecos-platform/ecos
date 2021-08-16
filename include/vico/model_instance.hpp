@@ -48,14 +48,17 @@ public:
         : instance_(std::move(instance))
     { }
 
-    bool setup_experiment(double start_time, double stop_time, double tolerance) override
+    bool setup_experiment(double start_time = 0, double stop_time = 0, double tolerance = 0) override
     {
         return instance_->setup_experiment(start_time, stop_time, tolerance);
     }
 
     [[nodiscard]] const model_description& get_model_description() const override
     {
-        return instance_->get_model_description();
+        if (!md_) {
+            md_ = instance_->get_model_description();
+        }
+        return *md_;
     }
 
     bool enter_initialization_mode() override
@@ -203,9 +206,42 @@ public:
 
     void retreiveCachedGets()
     {
+        if (!integersToFetch_.empty()) {
+            std::vector<int> values(integersToFetch_.size());
+            instance_->get_integer(integersToFetch_, values);
+            for (unsigned i = 0; i < integersToFetch_.size(); i++) {
+                integerGetCache_[integersToFetch_[i]] = values[i];
+            }
+        }
+
+        if (!realsToFetch_.empty()) {
+            std::vector<double> values(realsToFetch_.size());
+            instance_->get_real(realsToFetch_, values);
+            for (unsigned i = 0; i < realsToFetch_.size(); i++) {
+                realGetCache_[realsToFetch_[i]] = values[i];
+            }
+        }
+
+        if (!stringsToFetch_.empty()) {
+            std::vector<std::string> values(stringsToFetch_.size());
+            instance_->get_string(stringsToFetch_, values);
+            for (unsigned i = 0; i < stringsToFetch_.size(); i++) {
+                stringGetCache_[stringsToFetch_[i]] = values[i];
+            }
+        }
+
+        if (!boolsToFetch_.empty()) {
+            std::vector<bool> values(boolsToFetch_.size());
+            instance_->get_boolean(boolsToFetch_, values);
+            for (unsigned i = 0; i < boolsToFetch_.size(); i++) {
+                boolGetCache_[boolsToFetch_[i]] = values[i];
+            }
+        }
+
     }
 
 private:
+    mutable std::optional<model_description> md_;
     std::unique_ptr<model_instance> instance_;
 
     std::vector<value_ref> vrs_;

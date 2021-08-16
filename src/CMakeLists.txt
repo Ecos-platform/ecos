@@ -21,6 +21,8 @@ foreach (header IN LISTS commonPublicHeaders)
 endforeach ()
 
 set(privateHeaders
+        "vico/variable_identifier.hpp"
+
         "vico/fmi/fmicontext.hpp"
 
         "vico/fmi/fmi1/fmi1_fmu.hpp"

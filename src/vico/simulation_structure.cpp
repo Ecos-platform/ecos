@@ -1,6 +1,8 @@
 
 #include "vico/simulation_structure.hpp"
 
+#include "vico/variable_identifier.hpp"
+
 #include <algorithm>
 #include <utility>
 
@@ -8,25 +10,6 @@ using namespace vico;
 
 namespace
 {
-
-struct variable_identifier
-{
-
-    std::string instanceName;
-    std::string variableName;
-};
-
-variable_identifier parse(const std::string& str)
-{
-
-    auto result = str.find('.');
-    if (result == std::string::npos) {
-
-        throw std::runtime_error("Error parsing variable identifier. A '.' must be present!");
-    }
-
-    return {str.substr(0, result), str.substr(result)};
-}
 
 model_description get_model_description(const std::string& instanceName, const std::vector<model_instance_template>& models)
 {
@@ -49,15 +32,14 @@ void simulation_structure::add_model(const std::string& name, std::shared_ptr<mo
     models_.emplace_back(model_instance_template{name, std::move(model)});
 }
 
-
 void simulation_structure::make_connection(const std::string& source, const std::string& target)
 {
 
-    variable_identifier vi1 = parse(source);
-    variable_identifier vi2 = parse(target);
+    auto vi1 = variable_identifier::parse(source);
+    auto vi2 = variable_identifier::parse(target);
 
-    model_description md1 = get_model_description(vi1.instanceName, models_);
-    model_description md2 = get_model_description(vi2.instanceName, models_);
+    auto md1 = get_model_description(vi1.instanceName, models_);
+    auto md2 = get_model_description(vi2.instanceName, models_);
 
     auto s1 = md1.get_by_name(vi1.variableName);
     if (!s1) {

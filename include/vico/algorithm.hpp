@@ -13,18 +13,33 @@ namespace vico
 struct algorithm
 {
 
-    virtual void init() = 0;
+    virtual void instance_added(model_instance* instance) = 0;
+
+    virtual void instance_removed(model_instance *instance) = 0;
+
+    virtual void init(double startTime) = 0;
 
     virtual void step(double currentTime, double stepSize) = 0;
 
     virtual ~algorithm() = default;
+
+protected:
+    std::vector<model_instance*> instances_;
 };
 
 struct fixed_step_algorithm : public algorithm
 {
 
-    void init() override
+    void init(double startTime) override
     {
+        for (auto instance : instances_) {
+            instance->setup_experiment(startTime);
+            instance->enter_initialization_mode();
+        }
+
+        for (auto instance : instances_) {
+
+        }
     }
 
     void step(double currentTime, double stepSize) override

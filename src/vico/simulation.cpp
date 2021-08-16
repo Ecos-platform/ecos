@@ -9,7 +9,6 @@ simulation::simulation(std::unique_ptr<simulation_structure> ss)
 : ss_(std::move(ss))
 {
 
-    reset();
 }
 
 void simulation::init(double startTime)
@@ -44,14 +43,6 @@ void simulation::terminate()
 {
     for (auto& listener : listeners_) {
         listener->post_terminate();
-    }
-}
-
-void simulation::reset()
-{
-    instances_.clear();
-    for (auto &model : ss_->models_) {
-        instances_.emplace_back(model.instantiate());
     }
 }
 

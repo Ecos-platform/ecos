@@ -26,8 +26,6 @@ public:
 
     void terminate();
 
-    void reset();
-
     void add_listener(const std::shared_ptr<simulation_listener> &listener);
 
 private:

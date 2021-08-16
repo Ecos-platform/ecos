@@ -9,9 +9,7 @@ using namespace vico;
 BOOST_AUTO_TEST_CASE(test_variable_identifier)
 {
 
-    std::string str("instanceName.nested.variableName");
-
-    auto v = variable_identifier::parse(str);
+    variable_identifier v("instanceName.nested.variableName");
 
     BOOST_CHECK_EQUAL("instanceName", v.instanceName);
     BOOST_CHECK_EQUAL("nested.variableName", v.variableName);

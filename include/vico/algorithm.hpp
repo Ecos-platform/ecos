@@ -2,6 +2,11 @@
 #ifndef VICO_ALGORITHM_HPP
 #define VICO_ALGORITHM_HPP
 
+#include <vico/model_instance.hpp>
+
+#include <memory>
+#include <vector>
+
 namespace vico
 {
 

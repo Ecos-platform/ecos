@@ -35,8 +35,8 @@ void simulation_structure::add_model(const std::string& name, std::shared_ptr<mo
 void simulation_structure::make_connection(const std::string& source, const std::string& target)
 {
 
-    auto vi1 = variable_identifier::parse(source);
-    auto vi2 = variable_identifier::parse(target);
+    variable_identifier vi1(source);
+    variable_identifier vi2(target);
 
     auto md1 = get_model_description(vi1.instanceName, models_);
     auto md2 = get_model_description(vi2.instanceName, models_);

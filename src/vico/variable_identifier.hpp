@@ -2,6 +2,9 @@
 #ifndef VICO_VARIABLE_IDENTIFIER_HPP
 #define VICO_VARIABLE_IDENTIFIER_HPP
 
+#include <string>
+#include <utility>
+
 namespace vico
 {
 
@@ -11,17 +14,10 @@ struct variable_identifier
     const std::string instanceName;
     const std::string variableName;
 
-    static variable_identifier parse(const std::string& str)
-    {
+    explicit variable_identifier(const std::string &identifier);
 
-        auto result = str.find('.');
-        if (result == std::string::npos) {
-
-            throw std::runtime_error("Error parsing variable identifier. A '.' must be present!");
-        }
-
-        return {str.substr(0, result), str.substr(result+1)};
-    }
+private:
+    explicit variable_identifier(const std::pair<std::string, std::string> &identifier);
 };
 
 } // namespace vico

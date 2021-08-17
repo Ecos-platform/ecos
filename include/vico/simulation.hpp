@@ -4,7 +4,6 @@
 #define VICO_SIMULATION_HPP
 
 #include "vico/algorithm.hpp"
-#include "vico/simulation_structure.hpp"
 
 #include <memory>
 #include <vector>
@@ -18,7 +17,7 @@ class simulation
 {
 
 public:
-    simulation(std::unique_ptr<simulation_structure> ss);
+    simulation(double baseStepSize);
 
     void init(double startTime = 0);
 
@@ -29,9 +28,9 @@ public:
     void add_listener(const std::shared_ptr<simulation_listener> &listener);
 
 private:
+    double baseStepSize;
     double currentTime = 0;
     std::unique_ptr<algorithm> algorithm_;
-    std::unique_ptr<simulation_structure> ss_;
     std::vector<std::unique_ptr<model_instance>> instances_;
     std::vector<std::shared_ptr<simulation_listener>> listeners_;
 

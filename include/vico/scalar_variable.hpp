@@ -39,6 +39,7 @@ namespace vico {
     }
 
     struct scalar_variable {
+
         value_ref valueRef;
         std::string name;
         std::optional<std::string> causality;

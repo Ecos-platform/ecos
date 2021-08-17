@@ -5,10 +5,12 @@ set(publicHeaders
         "vico/model.hpp"
         "vico/model_description.hpp"
         "vico/model_instance.hpp"
+        "vico/property.hpp"
         "vico/scalar_variable.hpp"
         "vico/simulation.hpp"
         "vico/simulation_listener.hpp"
-        "vico/simulation_structure.hpp"
+
+        "vico/structure/simulation_structure.hpp"
 
         "vico/util/temp_dir.hpp"
         "vico/util/fs_portability.hpp"
@@ -21,7 +23,7 @@ foreach (header IN LISTS commonPublicHeaders)
 endforeach ()
 
 set(privateHeaders
-        "vico/variable_identifier.hpp"
+        "vico/structure/variable_identifier.hpp"
 
         "vico/fmi/fmicontext.hpp"
 
@@ -38,8 +40,8 @@ set(privateHeaders
 
 set(sources
         "vico/simulation.cpp"
-        "vico/simulation_structure.cpp"
-        "vico/variable_identifier.cpp"
+        "vico/structure/simulation_structure.cpp"
+        "vico/structure/variable_identifier.cpp"
 
         "vico/fmi/fmu.cpp"
 

@@ -27,6 +27,34 @@ public:
 
     virtual bool terminate() = 0;
 
+    int get_integer(value_ref vr)
+    {
+        std::vector<int> values(1);
+        get_integer({vr}, values);
+        return values.front();
+    }
+
+    double get_real(value_ref vr)
+    {
+        std::vector<double> values(1);
+        get_real({vr}, values);
+        return values.front();
+    }
+
+    std::string get_string(value_ref vr)
+    {
+        std::vector<std::string> values(1);
+        get_string({vr}, values);
+        return values.front();
+    }
+
+    bool get_boolean(value_ref vr)
+    {
+        std::vector<bool> values(1);
+        get_boolean({vr}, values);
+        return values.front();
+    }
+
     virtual bool get_integer(const std::vector<value_ref>& vr, std::vector<int>& values) = 0;
     virtual bool get_real(const std::vector<value_ref>& vr, std::vector<double>& values) = 0;
     virtual bool get_string(const std::vector<value_ref>& vr, std::vector<std::string>& values) = 0;
@@ -68,7 +96,9 @@ public:
 
     bool exit_initialization_mode() override
     {
-        return instance_->exit_initialization_mode();
+        instance_->exit_initialization_mode();
+        initialized = true;
+        return true;
     }
 
     bool step(double current_time, double step_size) override
@@ -137,14 +167,19 @@ public:
             throw std::runtime_error("No variable named " + variableName + " exists for model " + md.modelName);
         }
 
+        auto vr = v->valueRef;
         if (v->is_integer()) {
-            integersToFetch_.emplace_back(v->valueRef);
+            integersToFetch_.emplace_back(vr);
+            if (initialized) integerGetCache_[vr] = model_instance::get_integer(vr);
         } else if (v->is_real()) {
-            realsToFetch_.emplace_back(v->valueRef);
+            realsToFetch_.emplace_back(vr);
+            if (initialized) realGetCache_[vr] = model_instance::get_real(vr);
         } else if (v->is_string()) {
-            stringsToFetch_.emplace_back(v->valueRef);
+            stringsToFetch_.emplace_back(vr);
+            if (initialized) stringGetCache_[vr] = model_instance::get_string(vr);
         } else if (v->is_boolean()) {
-            boolsToFetch_.emplace_back(v->valueRef);
+            boolsToFetch_.emplace_back(vr);
+            if (initialized) boolGetCache_[vr] = model_instance::get_boolean(vr);
         } else {
             throw std::runtime_error("TODO");
         }
@@ -237,7 +272,6 @@ public:
                 boolGetCache_[boolsToFetch_[i]] = values[i];
             }
         }
-
     }
 
 private:
@@ -262,6 +296,8 @@ private:
     std::vector<value_ref> realsToFetch_;
     std::vector<value_ref> stringsToFetch_;
     std::vector<value_ref> boolsToFetch_;
+
+    bool initialized = false;
 };
 
 } // namespace vico

@@ -9,3 +9,6 @@ add_test(NAME test_controlled_temp COMMAND test_controlled_temp)
 
 add_executable(test_variable_identifier test_variable_identifier.cpp)
 add_test(NAME test_variable_identifier COMMAND test_variable_identifier)
+
+add_executable(test_property test_property.cpp)
+add_test(NAME test_property COMMAND test_property)

@@ -5,17 +5,17 @@
 
 using namespace vico;
 
-simulation::simulation(std::unique_ptr<simulation_structure> ss)
-: ss_(std::move(ss))
-{
-
-}
+simulation::simulation(double baseStepSize)
+: baseStepSize(baseStepSize)
+{ }
 
 void simulation::init(double startTime)
 {
     for (auto& listener : listeners_) {
         listener->pre_init();
     }
+
+    algorithm_->init(startTime);
 
     for (auto& listener : listeners_) {
         listener->post_init();
@@ -32,6 +32,8 @@ void simulation::step(unsigned int numStep)
         }
 
         //    algorithm_->step(currentTime);
+
+        currentTime += baseStepSize;
 
         for (auto& listener : listeners_) {
             listener->post_step();
@@ -50,3 +52,4 @@ void simulation::add_listener(const std::shared_ptr<simulation_listener>& listen
 {
     listeners_.emplace_back(listener);
 }
+

@@ -1,7 +1,7 @@
 
-#include "vico/simulation_structure.hpp"
+#include "vico/structure/simulation_structure.hpp"
 
-#include "vico/variable_identifier.hpp"
+#include "vico/structure/variable_identifier.hpp"
 
 #include <algorithm>
 #include <utility>

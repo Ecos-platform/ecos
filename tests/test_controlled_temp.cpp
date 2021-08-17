@@ -33,6 +33,10 @@ void test(model& fmu)
     BOOST_TEST(realRef[0] < 298);
 
     BOOST_REQUIRE(slave->terminate());
+
+    buffered_model_instance buffered(std::move(slave));
+    buffered.mark_for_reading("Temperature_Room");
+
 }
 
 } // namespace

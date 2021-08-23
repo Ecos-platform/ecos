@@ -2,7 +2,9 @@ set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 
 set(publicHeaders
         "vico/algorithm.hpp"
+        "vico/connection.hpp"
         "vico/model.hpp"
+        "vico/modifier.hpp"
         "vico/model_description.hpp"
         "vico/model_instance.hpp"
         "vico/property.hpp"

@@ -4,6 +4,8 @@
 #define VICO_SIMULATION_HPP
 
 #include "vico/algorithm.hpp"
+#include "vico/connection.hpp"
+#include "vico/structure/simulation_structure.hpp"
 
 #include <memory>
 #include <vector>
@@ -19,6 +21,8 @@ class simulation
 public:
     explicit simulation(double baseStepSize);
 
+    void apply(const simulation_structure &ss);
+
     void init(double startTime = 0);
 
     void step(unsigned int numStep = 1);
@@ -32,6 +36,7 @@ private:
     double currentTime = 0;
     std::unique_ptr<algorithm> algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;
+    std::vector<std::unique_ptr<connection>> connections_;
     std::vector<std::shared_ptr<simulation_listener>> listeners_;
 
 };

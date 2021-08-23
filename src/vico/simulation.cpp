@@ -6,7 +6,7 @@
 using namespace vico;
 
 simulation::simulation(double baseStepSize)
-: baseStepSize(baseStepSize)
+    : baseStepSize(baseStepSize)
 { }
 
 void simulation::init(double startTime)
@@ -53,3 +53,26 @@ void simulation::add_listener(const std::shared_ptr<simulation_listener>& listen
     listeners_.emplace_back(listener);
 }
 
+void simulation::apply(const simulation_structure& ss)
+{
+
+    for (auto& model : ss.models_) {
+        instances_.emplace_back(model.instantiate());
+    }
+
+    for (auto& c : ss.connections_) {
+
+        std::visit([](auto&& arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, int_connection>) {
+
+            } else if constexpr (std::is_same_v<T, real_connection>) {
+
+            } else if constexpr (std::is_same_v<T, string_connection>) {
+
+            } else if constexpr (std::is_same_v<T, bool_connection>) {
+            }
+        },
+            c);
+    }
+}

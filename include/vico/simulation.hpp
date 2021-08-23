@@ -17,7 +17,7 @@ class simulation
 {
 
 public:
-    simulation(double baseStepSize);
+    explicit simulation(double baseStepSize);
 
     void init(double startTime = 0);
 

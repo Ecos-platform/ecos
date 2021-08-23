@@ -4,7 +4,7 @@
 #include "random.hpp"
 
 #include <iostream>
-#include <memory>
+#include <string>
 
 using namespace vico;
 

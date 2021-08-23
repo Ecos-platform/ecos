@@ -1,6 +1,8 @@
 
 #include "variable_identifier.hpp"
 
+#include <stdexcept>
+
 using namespace vico;
 
 namespace

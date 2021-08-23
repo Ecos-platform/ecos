@@ -4,6 +4,8 @@
 
 #include "vico/model_description.hpp"
 
+#include <memory>
+#include <stdexcept>
 #include <unordered_map>
 #include <vector>
 

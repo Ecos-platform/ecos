@@ -19,10 +19,6 @@ class VicoConan(ConanFile):
         "fmilibrary/2.0.3"
     )
 
-    default_options = {
-        "boost:shared": False
-    }
-
     def set_version(self):
         self.version = tools.load(path.join(self.recipe_folder, "version.txt")).strip()
 

@@ -1,27 +1,27 @@
 #define BOOST_TEST_MODULE test_controlled_temp
 
-#include <vico/model.hpp>
-
 #include <boost/test/unit_test.hpp>
+#include <fmilibcpp/fmu.hpp>
 
-using namespace vico;
+using namespace fmilibcpp;
 
 namespace
 {
 
-void test(model& fmu)
+void test(fmu& fmu)
 {
     const auto d = fmu.get_model_description();
     BOOST_TEST(d.modelName == "ControlledTemperature");
     BOOST_TEST(d.modelIdentifier == "ControlledTemperature");
     BOOST_TEST(d.guid == "{06c2700b-b39c-4895-9151-304ddde28443}");
+    BOOST_TEST(d.generationTool == "20-sim");
 
     auto slave = fmu.new_instance("instance");
     BOOST_REQUIRE(slave->setup_experiment());
     BOOST_REQUIRE(slave->enter_initialization_mode());
     BOOST_REQUIRE(slave->exit_initialization_mode());
 
-    std::vector<value_ref> vr{d.get_by_name("Temperature_Room")->valueRef};
+    std::vector<value_ref> vr{47};
     std::vector<double> realRef(1);
 
     slave->get_real(vr, realRef);
@@ -33,10 +33,7 @@ void test(model& fmu)
     BOOST_TEST(realRef[0] < 298);
 
     BOOST_REQUIRE(slave->terminate());
-
-    buffered_model_instance buffered(std::move(slave));
-    buffered.mark_for_reading("Temperature_Room");
-
+    slave->freeInstance();
 }
 
 } // namespace

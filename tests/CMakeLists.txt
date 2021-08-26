@@ -1,5 +1,5 @@
-include_directories(${Boost_INCLUDE_DIRS} "${CMAKE_SOURCE_DIR}/src")
-link_libraries(vico ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+include_directories( "${CMAKE_SOURCE_DIR}/src")
+link_libraries(vico fmilibcpp CONAN_PKG::boost)
 
 add_executable(test_identity test_identity.cpp)
 add_test(NAME test_identity COMMAND test_identity)

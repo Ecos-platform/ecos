@@ -9,6 +9,17 @@ simulation::simulation(double baseStepSize)
     : baseStepSize(baseStepSize)
 { }
 
+void simulation::add_system(std::unique_ptr<system> system)
+{
+    systems_.emplace_back(std::move(system));
+}
+
+void simulation::add_connection(std::unique_ptr<connection> c)
+{
+    connections_.emplace_back(std::move(c));
+}
+
+
 void simulation::init(double startTime)
 {
     for (auto& listener : listeners_) {
@@ -61,7 +72,9 @@ void simulation::add_listener(const std::shared_ptr<simulation_listener>& listen
     listeners_.emplace_back(listener);
 }
 
-void simulation::add_system(std::unique_ptr<system> system)
+void simulation::updateConnections()
 {
-    systems_.emplace_back(std::move(system));
+    for (auto& c : connections_) {
+        c->transferData();
+    }
 }

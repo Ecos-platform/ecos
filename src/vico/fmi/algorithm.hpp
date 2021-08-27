@@ -8,24 +8,24 @@
 namespace vico
 {
 
-//struct algorithm
-//{
-//
+struct algorithm
+{
+
 //    virtual void instance_added(model_instance* instance) = 0;
 //
 //    virtual void instance_removed(model_instance* instance) = 0;
-//
-//    virtual void init(double startTime) = 0;
-//
-//    virtual void step(double currentTime, double stepSize) = 0;
-//
-//    virtual void terminate() = 0;
-//
-//    virtual ~algorithm() = default;
-//
-//protected:
+
+    virtual void init(double startTime) = 0;
+
+    virtual void step(double currentTime, double stepSize) = 0;
+
+    virtual void terminate() = 0;
+
+    virtual ~algorithm() = default;
+
+protected:
 //    std::vector<buffered_model_instance*> instances_;
-//};
+};
 //
 //struct fixed_step_algorithm : public algorithm
 //{

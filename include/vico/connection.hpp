@@ -13,7 +13,7 @@ template<class T>
 struct connector
 {
 
-    std::shared_ptr<property_t<T>> property_;
+    property_t<T> property_;
     std::optional<std::function<T(const T&)>> modifier_ = std::nullopt;
 };
 
@@ -30,8 +30,18 @@ template<class T>
 struct connection_t : connection
 {
 
-    const connector<T> source;
-    const std::vector<connector<T>> sinks;
+    connector<T> source;
+    std::vector<connector<T>> sinks;
+
+    connection_t(const connector<T>& source, const connector<T> &sink)
+        : source(source)
+        , sinks({sink})
+    { }
+
+    connection_t(const connector<T>& source, const std::vector<connector<T>>& sinks)
+        : source(source)
+        , sinks(sinks)
+    { }
 
     void transferData() override
     {

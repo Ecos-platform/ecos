@@ -32,6 +32,8 @@ set(privateHeaders
         )
 
 set(sources
+        "vico/fmi/fmi_system.cpp"
+
         "vico/simulation.cpp"
         "vico/structure/simulation_structure.cpp"
         "vico/structure/variable_identifier.cpp"

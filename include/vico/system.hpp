@@ -2,6 +2,8 @@
 #ifndef VICO_SYSTEM_HPP
 #define VICO_SYSTEM_HPP
 
+#include "property.hpp"
+
 #include <string>
 #include <unordered_map>
 
@@ -18,7 +20,21 @@ public:
 
     virtual void terminate() = 0;
 
+    template<class T>
+    std::optional<property_t<T>> get(const std::string& identifier)
+    {
+
+        if (properties_.count(identifier)) {
+            return std::get<T>(properties_[identifier]);
+        } else {
+            return std::nullopt;
+        }
+    }
+
     virtual ~system() = default;
+
+protected:
+    std::unordered_map<std::string, property> properties_;
 };
 
 

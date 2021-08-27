@@ -4,26 +4,26 @@
 
 #include "vico/system.hpp"
 
-namespace vico {
+#include <fmilibcpp/slave.hpp>
 
-class fmi_system: public system {
+namespace vico
+{
 
-    void init() override
-    {
-    }
+class fmi_system : public system
+{
 
-    void step(double currentTime, double stepSize) override
-    {
-    }
+    void add_slave(const std::string &instanceName, std::unique_ptr<fmilibcpp::slave> slave);
 
-    void terminate() override
-    {
-    }
+    void init() override;
+
+    void step(double currentTime, double stepSize) override;
+
+    void terminate() override;
 
 private:
-
+    std::vector<std::unique_ptr<fmilibcpp::slave>> slaves_;
 };
 
-}
+} // namespace vico
 
 #endif // VICO_FMI_SYSTEM_HPP

@@ -15,7 +15,9 @@ void simulation::init(double startTime)
         listener->pre_init();
     }
 
-    algorithm_->init(startTime);
+    for (auto& system : systems_) {
+        system->init();
+    }
 
     for (auto& listener : listeners_) {
         listener->post_init();
@@ -31,7 +33,9 @@ void simulation::step(unsigned int numStep)
             listener->pre_step();
         }
 
-        //    algorithm_->step(currentTime);
+        for (auto& system : systems_) {
+            system->step(currentTime, baseStepSize);
+        }
 
         currentTime += baseStepSize;
 
@@ -43,6 +47,10 @@ void simulation::step(unsigned int numStep)
 
 void simulation::terminate()
 {
+    for (auto& system : systems_) {
+        system->terminate();
+    }
+
     for (auto& listener : listeners_) {
         listener->post_terminate();
     }
@@ -53,26 +61,7 @@ void simulation::add_listener(const std::shared_ptr<simulation_listener>& listen
     listeners_.emplace_back(listener);
 }
 
-void simulation::apply(const simulation_structure& ss)
+void simulation::add_system(std::unique_ptr<system> system)
 {
-
-    for (auto& model : ss.models_) {
-        instances_.emplace_back(model.instantiate());
-    }
-
-    for (auto& c : ss.connections_) {
-
-        std::visit([](auto&& arg) {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, int_connection>) {
-
-            } else if constexpr (std::is_same_v<T, real_connection>) {
-
-            } else if constexpr (std::is_same_v<T, string_connection>) {
-
-            } else if constexpr (std::is_same_v<T, bool_connection>) {
-            }
-        },
-            c);
-    }
+    systems_.emplace_back(std::move(system));
 }

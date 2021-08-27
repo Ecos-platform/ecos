@@ -4,15 +4,13 @@ set(publicHeaders
         "vico/algorithm.hpp"
         "vico/connection.hpp"
         "vico/model.hpp"
-        "vico/modifier.hpp"
-        "vico/model_description.hpp"
-        "vico/model_instance.hpp"
         "vico/property.hpp"
-        "vico/scalar_variable.hpp"
         "vico/simulation.hpp"
         "vico/simulation_listener.hpp"
 
         "vico/structure/simulation_structure.hpp"
+
+        "vico/system.hpp"
 
         "vico/util/temp_dir.hpp"
         "vico/util/fs_portability.hpp"
@@ -25,6 +23,9 @@ foreach (header IN LISTS commonPublicHeaders)
 endforeach ()
 
 set(privateHeaders
+
+        "vico/fmi/fmi_system.hpp"
+
         "vico/structure/variable_identifier.hpp"
 
         "vico/util/random.hpp"

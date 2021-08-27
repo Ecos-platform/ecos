@@ -2,8 +2,9 @@
 #ifndef VICO_CONNECTION_HPP
 #define VICO_CONNECTION_HPP
 
-#include "modifier.hpp"
 #include "property.hpp"
+
+#include <optional>
 
 namespace vico
 {

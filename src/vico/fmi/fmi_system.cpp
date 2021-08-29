@@ -3,6 +3,10 @@
 
 using namespace vico;
 
+fmi_system::fmi_system(std::unique_ptr<algorithm> algorithm)
+    : algorithm_(std::move(algorithm))
+{ }
+
 void fmi_system::add_slave(const std::string& instanceName, std::unique_ptr<fmilibcpp::slave> slave)
 {
 
@@ -32,35 +36,29 @@ void fmi_system::add_slave(const std::string& instanceName, std::unique_ptr<fmil
     }
 
     slaves_.emplace_back(std::move(slave));
+    algorithm_->slave_added_internal(slaves_.back().get());
 }
 
 void fmi_system::init()
 {
 
-    for (auto& slave : slaves_) {
-        slave->setup_experiment();
-    }
-
-    for (auto& slave : slaves_) {
-        slave->enter_initialization_mode();
-    }
-
-    for (auto& slave : slaves_) {
-        slave->exit_initialization_mode();
-    }
+    algorithm_->init(0);
 }
 
 void fmi_system::step(double currentTime, double stepSize)
 {
 
-    for (auto& slave : slaves_) {
-        slave->step(currentTime, stepSize);
-    }
+    algorithm_->step(currentTime, stepSize);
 }
 
 void fmi_system::terminate()
 {
+    algorithm_->terminate();
+}
+
+fmi_system::~fmi_system()
+{
     for (auto& slave : slaves_) {
-        slave->terminate();
+        slave->freeInstance();
     }
 }

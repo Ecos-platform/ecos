@@ -2,9 +2,10 @@
 #ifndef VICO_SIMULATION_STRUCTURE_HPP
 #define VICO_SIMULATION_STRUCTURE_HPP
 
-#include "vico/model.hpp"
 #include "vico/property.hpp"
 
+#include <fmilibcpp/fmu.hpp>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <variant>
@@ -22,15 +23,10 @@ struct unbound_connector
     std::string propertyName;
     std::optional<std::function<T(const T&)>> modifier = std::nullopt;
 
-    unbound_connector(const std::string& instanceName, const std::string& propertyName)
-    : instanceName(instanceName)
-    , propertyName(propertyName)
-    { }
-
-    unbound_connector(const std::string& instanceName, const std::string& propertyName, const std::optional<std::function<T(const T&)>>& modifier)
-        : instanceName(instanceName)
-        , propertyName(propertyName)
-        , modifier(modifier)
+    unbound_connector(std::string instanceName, std::string propertyName, std::optional<std::function<T(const T&)>> modifier = std::nullopt)
+        : instanceName(std::move(instanceName))
+        , propertyName(std::move(propertyName))
+        , modifier(std::move(modifier))
     { }
 };
 
@@ -64,30 +60,30 @@ struct model_instance_template
 
     const std::string instanceName;
 
-    model_instance_template(std::string instanceName, std::shared_ptr<model> model)
+    model_instance_template(std::string instanceName, std::shared_ptr<fmilibcpp::fmu> model)
         : instanceName(std::move(instanceName))
         , model_(std::move(model))
     { }
 
-    [[nodiscard]] model_description get_model_description() const
+    [[nodiscard]] fmilibcpp::model_description get_model_description() const
     {
         return model_->get_model_description();
     }
 
-    [[nodiscard]] std::unique_ptr<model_instance> instantiate() const
+    [[nodiscard]] std::unique_ptr<fmilibcpp::slave> instantiate() const
     {
         return model_->new_instance(instanceName);
     }
 
 private:
-    const std::shared_ptr<model> model_;
+    const std::shared_ptr<fmilibcpp::fmu> model_;
 };
 
 class simulation_structure
 {
 
 public:
-    void add_model(const std::string& instanceName, std::shared_ptr<model> model);
+    void add_model(const std::string& instanceName, std::shared_ptr<fmilibcpp::fmu> model);
 
     void make_connection(const std::string& source, const std::string& target);
 

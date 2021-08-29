@@ -1,20 +1,21 @@
 #define BOOST_TEST_MODULE test_identity
 
-#include <vico/model.hpp>
+#include <fmilibcpp/fmu.hpp>
 
 #include <boost/test/unit_test.hpp>
 
-using namespace vico;
+using namespace fmilibcpp;
 
 namespace
 {
 
-void test(model& fmu)
+void test(fmu& fmu)
 {
     const auto d = fmu.get_model_description();
     BOOST_TEST(d.modelName == "no.viproma.demo.identity");
     BOOST_TEST(d.description ==
-               "Has one input and one output of each type, and outputs are always set equal to inputs");
+    "Has one input and one output of each type, and outputs are always set equal to inputs");
+    BOOST_TEST(d.author == "Lars Tandle Kyllingstad");
 
     auto slave = fmu.new_instance("instance");
     BOOST_REQUIRE(slave->setup_experiment());
@@ -65,6 +66,7 @@ void test(model& fmu)
     }
 
     BOOST_REQUIRE(slave->terminate());
+    slave->freeInstance();
 }
 
 } // namespace

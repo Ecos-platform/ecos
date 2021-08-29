@@ -4,15 +4,13 @@ set(publicHeaders
         "vico/algorithm.hpp"
         "vico/connection.hpp"
         "vico/model.hpp"
-        "vico/modifier.hpp"
-        "vico/model_description.hpp"
-        "vico/model_instance.hpp"
         "vico/property.hpp"
-        "vico/scalar_variable.hpp"
         "vico/simulation.hpp"
         "vico/simulation_listener.hpp"
 
         "vico/structure/simulation_structure.hpp"
+
+        "vico/system.hpp"
 
         "vico/util/temp_dir.hpp"
         "vico/util/fs_portability.hpp"
@@ -25,35 +23,20 @@ foreach (header IN LISTS commonPublicHeaders)
 endforeach ()
 
 set(privateHeaders
+
+        "vico/fmi/fmi_system.hpp"
+
         "vico/structure/variable_identifier.hpp"
-
-        "vico/fmi/fmicontext.hpp"
-
-        "vico/fmi/fmi1/fmi1_fmu.hpp"
-        "vico/fmi/fmi1/fmi1_model_description.hpp"
-        "vico/fmi/fmi1/fmi1_slave.hpp"
-
-        "vico/fmi/fmi2/fmi2_fmu.hpp"
-        "vico/fmi/fmi2/fmi2_model_description.hpp"
-        "vico/fmi/fmi2/fmi2_slave.hpp"
 
         "vico/util/random.hpp"
         )
 
 set(sources
+        "vico/fmi/fmi_system.cpp"
+
         "vico/simulation.cpp"
         "vico/structure/simulation_structure.cpp"
         "vico/structure/variable_identifier.cpp"
-
-        "vico/fmi/fmu.cpp"
-
-        "vico/fmi/fmi1/fmi1_fmu.cpp"
-        "vico/fmi/fmi1/fmi1_slave.cpp"
-        "vico/fmi/fmi1/fmi1_model_description.cpp"
-
-        "vico/fmi/fmi2/fmi2_fmu.cpp"
-        "vico/fmi/fmi2/fmi2_slave.cpp"
-        "vico/fmi/fmi2/fmi2_model_description.cpp"
 
         "vico/util/temp_dir.cpp"
         "vico/util/uuid.cpp"
@@ -68,9 +51,9 @@ target_include_directories(vico
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
-target_link_libraries(vico PRIVATE FMILIB::FMILIB)
+target_link_libraries(vico PRIVATE fmilibcpp)
 if (UNIX)
-  target_link_libraries(vico INTERFACE stdc++fs PRIVATE dl)
+  target_link_libraries(vico INTERFACE stdc++fs)
 endif ()
 
 

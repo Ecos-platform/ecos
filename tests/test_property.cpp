@@ -12,7 +12,6 @@ BOOST_AUTO_TEST_CASE(test_property)
     {
         int value = -100;
         property_t<int> p(
-            "p",
             [&] { return value; },
             [&](auto v) { value = v; });
 
@@ -25,7 +24,6 @@ BOOST_AUTO_TEST_CASE(test_property)
     {
         double value = -100;
         property_t<double> p1(
-            "p",
             [&] { return value; },
             [&](auto v) { value = v; });
 

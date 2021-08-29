@@ -28,7 +28,7 @@ IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:      '^[<"]vico[/.]'
     Priority:   20
-  - Regex:      '^[<"](boost|fmilib|proxyfmu|)[/.]'
+  - Regex:      '^[<"](boost|fmilibcpp|proxyfmu|)[/.]'
     Priority:   30
   - Regex:      '^"'
     Priority:   10

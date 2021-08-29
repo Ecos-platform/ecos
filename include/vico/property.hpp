@@ -3,6 +3,7 @@
 #define VICO_PROPERTY_HPP
 
 #include <functional>
+#include <optional>
 #include <utility>
 #include <variant>
 
@@ -13,14 +14,10 @@ template<class T>
 struct property_t
 {
 
-    property_t(std::string name, const std::function<T()>& getter)
-        : name(std::move(name))
-        , getter(getter)
-    { }
+    property_t() = default;
 
-    property_t(std::string name, const std::function<T()>& getter, const std::function<void(T&)>& setter)
-        : name(std::move(name))
-        , getter(getter)
+    property_t(const std::function<T()>& getter, const std::optional<std::function<void(const T&)>>& setter)
+        : getter(getter)
         , setter(setter)
     { }
 
@@ -29,18 +26,23 @@ struct property_t
         return getter();
     }
 
-    void set_value(T value)
+    void set_value(const T &value)
     {
-        setter(value);
+        if (setter) setter.value()(value);
     }
 
 private:
-    std::string name;
-    std::function<T()> getter;
-    std::function<void(T&)> setter = [](T& value) {};
+    std::function<T()> getter = [] { return T(); };
+    std::optional<std::function<void(const T&)>> setter = std::nullopt;
 };
 
-using property = std::variant<int, double, std::string, bool>;
+
+using int_property = property_t<int>;
+using real_property = property_t<double>;
+using string_property = property_t<std::string>;
+using bool_property = property_t<bool>;
+
+using property = std::variant<int_property, real_property, string_property, bool_property>;
 
 } // namespace vico
 

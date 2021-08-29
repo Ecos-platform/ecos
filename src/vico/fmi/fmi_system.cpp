@@ -11,26 +11,28 @@ void fmi_system::add_slave(const std::string& instanceName, std::unique_ptr<fmil
 {
 
     auto& md = slave->get_model_description();
+    fmilibcpp::slave* slave_pointer = slave.get();
     for (const auto& v : md.modelVariables) {
         std::string propertyName(instanceName + "." + v.name);
         if (v.is_integer()) {
             int_property p{
-                [&] { return slave->get_integer(v.vr); },
-                [&](auto value) { slave->set_integer({v.vr}, {value}); }};
+                [&v, slave_pointer] { return slave_pointer->get_integer(v.vr); },
+                [&v, slave_pointer](auto value) { slave_pointer->set_integer({v.vr}, {value}); }};
             properties_[propertyName] = p;
         } else if (v.is_real()) {
             real_property p{
-                [&] { return slave->get_real(v.vr); },
-                [&](auto value) { slave->set_real({v.vr}, {value}); }};
+                [&v, slave_pointer] { return slave_pointer->get_real({v.vr}); },
+                [&v, slave_pointer](auto value) { slave_pointer->set_real({v.vr}, {value}); }};
+            properties_[propertyName] = p;
         } else if (v.is_string()) {
             string_property p{
-                [&] { return slave->get_string(v.vr); },
-                [&](auto value) { slave->set_string({v.vr}, {value}); }};
+                [&v, slave_pointer] { return slave_pointer->get_string(v.vr); },
+                [&v, slave_pointer](auto value) { slave_pointer->set_string({v.vr}, {value}); }};
             properties_[propertyName] = p;
         } else if (v.is_boolean()) {
             bool_property p{
-                [&] { return slave->get_boolean(v.vr); },
-                [&](auto value) { slave->set_boolean({v.vr}, {value}); }};
+                [&v, slave_pointer] { return slave_pointer->get_boolean(v.vr); },
+                [&v, slave_pointer](auto value) { slave_pointer->set_boolean({v.vr}, {value}); }};
             properties_[propertyName] = p;
         }
     }
@@ -39,10 +41,9 @@ void fmi_system::add_slave(const std::string& instanceName, std::unique_ptr<fmil
     algorithm_->slave_added_internal(slaves_.back().get());
 }
 
-void fmi_system::init()
+void fmi_system::init(double startTime)
 {
-
-    algorithm_->init(0);
+    algorithm_->init(startTime);
 }
 
 void fmi_system::step(double currentTime, double stepSize)

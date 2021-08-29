@@ -52,9 +52,9 @@ void simulation_structure::make_connection(const std::string& source, const std:
         throw std::runtime_error("No variable named ...");
     }
 
-    if (s1->typeAttribute.index() != s2->typeAttribute.index()) {
+    if (s1->typeAttributes.index() != s2->typeAttributes.index()) {
 
-        throw std::runtime_error("Variable type mismatch! " + type_name(s1->typeAttribute) + " vs." + type_name(s2->typeAttribute));
+        throw std::runtime_error("Variable type mismatch! " + type_name(s1->typeAttributes) + " vs." + type_name(s2->typeAttributes));
     }
 
 //    std::visit([&](auto&& arg) {

@@ -19,24 +19,29 @@ void simulation::add_connection(std::unique_ptr<connection> c)
     connections_.emplace_back(std::move(c));
 }
 
-
 void simulation::init(double startTime)
 {
-    for (auto& listener : listeners_) {
-        listener->pre_init();
-    }
 
-    for (auto& system : systems_) {
-        system->init();
-    }
+    if (!initialized) {
+        initialized = true;
+        for (auto& listener : listeners_) {
+            listener->pre_init();
+        }
 
-    for (auto& listener : listeners_) {
-        listener->post_init();
+        for (auto& system : systems_) {
+            system->init(startTime);
+        }
+
+        for (auto& listener : listeners_) {
+            listener->post_init();
+        }
     }
 }
 
 void simulation::step(unsigned int numStep)
 {
+
+    if (!initialized) init();
 
     for (unsigned i = 0; i < numStep; i++) {
 

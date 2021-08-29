@@ -49,6 +49,8 @@ private:
     double baseStepSize;
     double currentTime = 0;
 
+    bool initialized{false};
+
     std::vector<std::unique_ptr<system>> systems_;
     std::vector<std::unique_ptr<connection>> connections_;
     std::vector<std::shared_ptr<simulation_listener>> listeners_;

@@ -61,7 +61,7 @@ include(FetchContent)
 FetchContent_Declare(
         fmilibcpp
         GIT_REPOSITORY https://github.com/Vico-platform/fmilib-cpp.git
-        GIT_TAG        1dc70c9c318a399622d26f2ba947193e1d8b6569 #
+        GIT_TAG        68b4067b1563d05685e6cc8bdb971aa2ca903dfa #
 )
 
 set(FMILIBCPP_CONAN_CONFIGURED_EXTERNALLY ON CACHE BOOL "")

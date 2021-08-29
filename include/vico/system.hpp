@@ -14,7 +14,7 @@ class system
 {
 
 public:
-    virtual void init() = 0;
+    virtual void init(double startTime) = 0;
 
     virtual void step(double currentTime, double stepSize) = 0;
 
@@ -25,7 +25,7 @@ public:
     {
 
         if (properties_.count(identifier)) {
-            return std::get<T>(properties_[identifier]);
+            return std::get<property_t<T>>(properties_[identifier]);
         } else {
             return std::nullopt;
         }

@@ -16,7 +16,7 @@ struct property_t
 
     property_t() = default;
 
-    property_t(const std::function<T()>& getter, const std::optional<std::function<void(T&)>>& setter)
+    property_t(const std::function<T()>& getter, const std::optional<std::function<void(const T&)>>& setter)
         : getter(getter)
         , setter(setter)
     { }
@@ -26,14 +26,14 @@ struct property_t
         return getter();
     }
 
-    void set_value(T value)
+    void set_value(const T &value)
     {
-        if (setter) setter.operator->()(value);
+        if (setter) setter.value()(value);
     }
 
 private:
     std::function<T()> getter = [] { return T(); };
-    std::optional<std::function<void(T&)>> setter = std::nullopt;
+    std::optional<std::function<void(const T&)>> setter = std::nullopt;
 };
 
 

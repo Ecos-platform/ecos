@@ -9,7 +9,7 @@ simulation::simulation(double baseStepSize)
     : baseStepSize(baseStepSize)
 { }
 
-void simulation::add_system(std::unique_ptr<system> system)
+void simulation::add_system(std::unique_ptr<vico::system> system)
 {
     systems_.emplace_back(std::move(system));
 }

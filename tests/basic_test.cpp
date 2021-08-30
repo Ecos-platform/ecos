@@ -23,9 +23,7 @@ BOOST_AUTO_TEST_CASE(basic_test)
 
     auto algorithm = std::make_unique<fixed_step_algorithm>();
     auto sys = std::make_unique<fmi_system>(std::move(algorithm));
-
-    sys->add_slave("slave", fmu->new_instance("slave"));
-
+    sys->add_slave(fmu->new_instance("slave"));
     sim.add_system(std::move(sys));
 
     auto p = sim.get<double>("slave.Temperature_Room");

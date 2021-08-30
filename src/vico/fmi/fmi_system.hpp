@@ -17,7 +17,7 @@ class fmi_system : public system
 public:
     explicit fmi_system(std::unique_ptr<algorithm> algorithm);
 
-    void add_slave(const std::string& instanceName, std::unique_ptr<fmilibcpp::slave> slave);
+    void add_slave(std::unique_ptr<fmilibcpp::slave> slave);
 
     void init(double startTime) override;
 

@@ -25,11 +25,10 @@ public:
 
     void terminate() override;
 
-    ~fmi_system() override;
-
 private:
-    std::unique_ptr<algorithm> algorithm_;
-    std::unordered_map<std::string, std::unique_ptr<fmilibcpp::slave>> slaves_;
+    struct Impl;
+    std::unique_ptr<Impl> pimpl_;
+
 };
 
 } // namespace vico

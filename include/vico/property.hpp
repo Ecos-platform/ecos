@@ -93,23 +93,6 @@ private:
     std::vector<std::function<T(const T&)>> modifiers_;
 };
 
-
-//using int_property = std::shared_ptr<property_t<int>>;
-//using real_property = std::shared_ptr<property_t<double>>;
-//using string_property = std::shared_ptr<property_t<std::string>>;
-//using bool_property = std::shared_ptr<property_t<bool>>;
-//
-//using property = std::variant<int_property, real_property, string_property, bool_property>;
-//
-//inline void updateConnections(property& p)
-//{
-//    std::visit(overloaded{
-//                   [](auto arg) {
-//                       arg->updateConnections();
-//                   }},
-//        p);
-//}
-
 } // namespace vico
 
 #endif // VICO_PROPERTY_HPP

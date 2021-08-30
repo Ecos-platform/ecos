@@ -16,7 +16,8 @@ class VicoConan(ConanFile):
     generators = "cmake"
     requires = (
         "boost/1.71.0",
-        "fmilibrary/2.0.3"
+        "fmilibrary/2.0.3",
+        "proxyfmu/0.2.2@osp/testing"
     )
 
     def set_version(self):

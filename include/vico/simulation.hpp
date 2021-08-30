@@ -33,14 +33,14 @@ public:
     void add_system(std::unique_ptr<system> system);
 
     template<class T>
-    void add_connection(const std::string& source, const std::string& sink, std::optional<std::function<T(const T&)>> modifier = std::nullopt)
+    connection_t<T> &add_connection(const std::string& source, const std::string& sink)
     {
         auto p1 = get_property<T>(source);
         if (!p1) throw std::runtime_error("No such property: " + source);
         auto p2 = get_property<T>(sink);
         if (!p2) throw std::runtime_error("No such property: " + sink);
 
-        p1->addSink(p2, modifier);
+        return p1->addSink(p2);
     }
 
     void init(double startTime = 0);

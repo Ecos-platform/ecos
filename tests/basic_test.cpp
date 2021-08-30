@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(basic_test)
     sim.add_system(std::move(sys));
 
     auto p = sim.get_property<double>("slave.Temperature_Room");
-    p->addModifier([](double value) {
+    p->add_modifier([](double value) {
         return value * 10;
     });
 

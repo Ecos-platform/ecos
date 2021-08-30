@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 #include <variant>
+#include <vector>
 
 namespace vico
 {
@@ -20,6 +21,28 @@ struct property
 
     virtual ~property() = default;
 };
+
+template<class T>
+struct property_t;
+
+template<class T>
+struct connection_t
+{
+    property_t<T>* source;
+    property_t<T>* sink;
+    std::optional<std::function<T(const T&)>> modifier = std::nullopt;
+
+    connection_t(property_t<T>* source, property_t<T>* sink)
+        : source(source)
+        , sink(sink)
+    { }
+
+    void set_modifier(const std::optional<std::function<T(const T&)>>& mod)
+    {
+        modifier = mod;
+    }
+};
+
 
 template<class T>
 struct property_t : property
@@ -60,17 +83,17 @@ struct property_t : property
         }
     }
 
-    void addModifier(std::function<T(const T&)> modifier)
+    void add_modifier(std::function<T(const T&)> modifier)
     {
         modifiers_.emplace_back(std::move(modifier));
     }
 
     void updateConnections() override
     {
-        for (auto& sink : sinks_) {
-            auto p = sink.first;
+        for (connection_t<T>& c : sinks_) {
+            auto p = c.sink;
             if (p) {
-                auto mod = sink.second;
+                auto& mod = c.modifier;
                 T originalValue = get_value();
                 if (mod) {
                     p->set_value(mod.value()(originalValue));
@@ -81,9 +104,10 @@ struct property_t : property
         }
     }
 
-    void addSink(property_t<T>* sink, std::optional<std::function<T(const T&)>> modifier)
+    connection_t<T>& addSink(property_t<T>* sink)
     {
-        sinks_.emplace_back(std::make_pair(sink, modifier));
+        sinks_.emplace_back(connection_t<T>(this, sink));
+        return sinks_.back();
     }
 
     static std::shared_ptr<property_t<T>> create(
@@ -94,11 +118,21 @@ struct property_t : property
         return std::make_shared<property_t<T>>(getter, setter);
     }
 
+    T operator()()
+    {
+        return get_value();
+    }
+
+    void operator()(const T& value)
+    {
+        set_value(value);
+    }
+
 private:
-    std::function<T()> getter = [] { return T(); };
+    std::function<T()> getter;
     std::optional<std::function<void(const T&)>> setter = std::nullopt;
 
-    std::vector<std::pair<property_t<T>*, std::optional<std::function<T(const T&)>>>> sinks_;
+    std::vector<connection_t<T>> sinks_;
     std::vector<std::function<T(const T&)>> modifiers_;
 };
 

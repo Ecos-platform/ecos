@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(test_property)
             [&](auto v) { value = v; });
 
         BOOST_CHECK_EQUAL(value, p.get_value());
-        p.set_value(value - 1);
+        p(value - 1);
         BOOST_CHECK_EQUAL(p.get_value(), -101);
         BOOST_CHECK_EQUAL(value, -101);
     }
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(test_property)
             [&](auto v) { value = v; });
 
         BOOST_CHECK_CLOSE(value, p1.get_value(), 0.0001);
-        p1.set_value(value - 1);
+        p1(value - 1);
         BOOST_CHECK_CLOSE(p1.get_value(), -101, 0.0001);
         BOOST_CHECK_CLOSE(value, -101, 0.0001);
     }

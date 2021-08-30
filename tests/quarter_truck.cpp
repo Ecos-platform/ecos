@@ -30,19 +30,20 @@ BOOST_AUTO_TEST_CASE(quarter_truck)
     sys->add_slave(fmilibcpp::loadFmu("../fmus/2.0/quarter-truck/wheel.fmu")->new_instance("wheel"));
 
     sim.add_system(std::move(sys));
-    sim.add_connection<double>("chassis.p.e", "wheel.p1.e");
+    auto& c = sim.add_connection<double>("chassis.p.e", "wheel.p1.e");
+//    c.modifier = &dummyModifier;
     sim.add_connection<double>("wheel.p1.f", "chassis.p.f");
     sim.add_connection<double>("wheel.p.e", "ground.p.e");
     sim.add_connection<double>("ground.p.f", "wheel.p.f");
 
     auto p = sim.get_property<double>("chassis.zChassis");
-    p->addModifier(&dummyModifier);
+//    p->add_modifier(&dummyModifier);
 
     sim.init();
 
     while (sim.time() < 10) {
         sim.step();
-        std::cout << p->get_value() << std::endl;
+        std::cout << p->operator()() << std::endl;
     }
 
     sim.terminate();

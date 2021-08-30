@@ -8,13 +8,22 @@
 
 using namespace vico;
 
+namespace
+{
+
+double dummyModifier(double value)
+{
+    return value * 2;
+}
+
+} // namespace
+
 BOOST_AUTO_TEST_CASE(quarter_truck)
 {
 
     simulation sim(1.0 / 100);
 
-    auto algorithm = std::make_unique<fixed_step_algorithm>();
-    auto sys = std::make_unique<fmi_system>(std::move(algorithm));
+    auto sys = std::make_unique<fmi_system>(std::make_unique<fixed_step_algorithm>());
 
     sys->add_slave(fmilibcpp::loadFmu("../fmus/2.0/quarter-truck/chassis.fmu")->new_instance("chassis"));
     sys->add_slave(fmilibcpp::loadFmu("../fmus/2.0/quarter-truck/ground.fmu")->new_instance("ground"));
@@ -27,7 +36,7 @@ BOOST_AUTO_TEST_CASE(quarter_truck)
     sim.add_connection<double>("ground.p.f", "wheel.p.f");
 
     auto p = sim.get_property<double>("chassis.zChassis");
-    p->addModifier([](double value){ return value * 10;});
+    p->addModifier(&dummyModifier);
 
     sim.init();
 

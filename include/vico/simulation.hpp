@@ -3,7 +3,6 @@
 #ifndef VICO_SIMULATION_HPP
 #define VICO_SIMULATION_HPP
 
-#include "vico/connection.hpp"
 #include "vico/fmi/algorithm.hpp"
 #include "vico/system.hpp"
 
@@ -21,42 +20,27 @@ class simulation
 public:
     explicit simulation(double baseStepSize);
 
-    [[nodiscard]] double time() const {
+    [[nodiscard]] double time() const
+    {
         return currentTime;
+    }
+
+    [[nodiscard]] unsigned long iterations() const
+    {
+        return num_iterations;
     }
 
     void add_system(std::unique_ptr<system> system);
 
-//    void add_connection(std::unique_ptr<connection> c);
-
     template<class T>
-    void add_connection(const std::string &source, const std::string &sink, std::optional<std::function<void(const T&)>> modifier = std::nullopt) {
+    void add_connection(const std::string& source, const std::string& sink, std::optional<std::function<T(const T&)>> modifier = std::nullopt)
+    {
         auto p1 = get_property<T>(source);
         if (!p1) throw std::runtime_error("No such property: " + source);
         auto p2 = get_property<T>(sink);
         if (!p2) throw std::runtime_error("No such property: " + sink);
 
-//        if (p1->index() != p2->index() ) throw std::runtime_error("Type mismatch!");
-
-//        if (std::holds_alternative<int_property>(*p1)) {
-//            auto ip1 = std::get<int_property>(*p1);
-//            auto ip2 =  std::get<int_property>(*p2);
-            p1->addSink(p2);
-//        } else if (std::holds_alternative<real_property>(*p1)) {
-//            auto ip1 = std::get<real_property>(*p1);
-//            auto ip2 =  std::get<real_property>(*p2);
-//            ip1->addSink(ip2);
-//        } else if (std::holds_alternative<string_property>(*p1)) {
-//            auto ip1 = std::get<string_property>(*p1);
-//            auto ip2 =  std::get<string_property>(*p2);
-//            ip1->addSink(ip2);
-//        } else if (std::holds_alternative<bool_property>(*p1)) {
-//            auto ip1 = std::get<bool_property>(*p1);
-//            auto ip2 =  std::get<bool_property>(*p2);
-//            ip1->addSink(ip2);
-//        } else {
-//            throw std::runtime_error("Assertion error!");
-//        }
+        p1->addSink(p2, modifier);
     }
 
     void init(double startTime = 0);
@@ -79,19 +63,10 @@ public:
     }
 
 
-    property *get_property(const std::string& identifier)
-    {
-
-        for (const auto& system : systems_) {
-            auto get = system->get_property(identifier);
-            if (get) return get;
-        }
-
-        return nullptr;
-    }
+    property* get_property(const std::string& identifier);
 
     template<class T>
-    property_t<T> *get_property(const std::string& identifier)
+    property_t<T>* get_property(const std::string& identifier)
     {
 
         for (const auto& system : systems_) {
@@ -102,17 +77,28 @@ public:
         return nullptr;
     }
 
+    std::vector<std::string> get_property_names()
+    {
+        std::vector<std::string> list;
+        for (const auto& system : systems_) {
+            system->get_property_names(list);
+        }
+
+        return list;
+    }
+
 private:
     double baseStepSize;
-    double currentTime = 0;
+    double currentTime{0};
+    unsigned long num_iterations{0};
 
     bool initialized{false};
 
     std::vector<std::unique_ptr<system>> systems_;
-//    std::vector<std::unique_ptr<connection>> connections_;
+    //    std::vector<std::unique_ptr<connection>> connections_;
     std::vector<std::shared_ptr<simulation_listener>> listeners_;
 
-//    void updateConnections();
+    //    void updateConnections();
 };
 
 } // namespace vico

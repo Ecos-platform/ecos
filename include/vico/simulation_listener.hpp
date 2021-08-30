@@ -5,9 +5,11 @@
 #include "vico/simulation.hpp"
 #include "vico/util/uuid.hpp"
 
-namespace vico {
+namespace vico
+{
 
-struct simulation_listener {
+struct simulation_listener
+{
 
     const std::string uuid = generate_uuid();
 
@@ -20,9 +22,8 @@ struct simulation_listener {
     virtual void post_terminate() = 0;
 
     virtual ~simulation_listener() = default;
-
 };
 
-}
+} // namespace vico
 
 #endif // VICO_SIMULATION_LISTENER_HPP

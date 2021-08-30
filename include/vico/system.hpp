@@ -20,6 +20,12 @@ public:
 
     virtual void terminate() = 0;
 
+    void get_property_names(std::vector<std::string> &list) const {
+        for (const auto& [name, _] : properties_) {
+            list.emplace_back(name);
+        }
+    }
+
     property *get_property(const std::string& identifier)
     {
 

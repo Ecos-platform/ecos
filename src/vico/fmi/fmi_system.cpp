@@ -3,21 +3,6 @@
 
 using namespace vico;
 
-namespace
-{
-
-//struct cache
-//{
-//
-//    std::unordered_map<fmilibcpp::value_ref, int> integerSetCache;
-//    std::unordered_map<fmilibcpp::value_ref, double> realSetCache;
-//    std::unordered_map<fmilibcpp::value_ref, std::string> stringSetCache;
-//    std::unordered_map<fmilibcpp::value_ref, bool> boolSetCache;
-//};
-
-
-} // namespace
-
 struct fmi_system::Impl
 {
 
@@ -52,7 +37,7 @@ struct fmi_system::Impl
                     [&v, slave_pointer](auto value) { slave_pointer->set_boolean({v.vr}, {value}); });
                 properties[propertyName] = p;
             } else {
-                throw std::runtime_error("");
+                throw std::runtime_error("Assertion error");
             }
         }
 
@@ -60,11 +45,13 @@ struct fmi_system::Impl
         slaves_[slave->instanceName] = std::move(slave);
     }
 
-    void init(double startTime) {
+    void init(double startTime)
+    {
         algorithm_->init(startTime);
     }
 
-    void step(double currentTime, double stepSize, std::unordered_map<std::string, std::shared_ptr<property>>& properties) {
+    void step(double currentTime, double stepSize, std::unordered_map<std::string, std::shared_ptr<property>>& properties)
+    {
         algorithm_->step(currentTime, stepSize, [&](fmilibcpp::slave* slave) {
             for (auto& [name, p] : properties) {
                 p->updateConnections();
@@ -72,11 +59,13 @@ struct fmi_system::Impl
         });
     }
 
-    void terminate() {
+    void terminate()
+    {
         algorithm_->terminate();
     }
 
-    ~Impl() {
+    ~Impl()
+    {
         for (auto& [_, slave] : slaves_) {
             slave->freeInstance();
         }
@@ -88,7 +77,7 @@ private:
 };
 
 fmi_system::fmi_system(std::unique_ptr<algorithm> algorithm)
-    : pimpl_(new Impl(std::move(algorithm)))
+    : pimpl_{std::make_unique<Impl>(std::move(algorithm))}
 { }
 
 void fmi_system::add_slave(std::unique_ptr<fmilibcpp::slave> slave)
@@ -111,3 +100,5 @@ void fmi_system::terminate()
 {
     pimpl_->terminate();
 }
+
+vico::fmi_system::~fmi_system() = default;

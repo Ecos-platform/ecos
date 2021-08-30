@@ -25,10 +25,11 @@ public:
 
     void terminate() override;
 
+    ~fmi_system() override;
+
 private:
     struct Impl;
     std::unique_ptr<Impl> pimpl_;
-
 };
 
 } // namespace vico

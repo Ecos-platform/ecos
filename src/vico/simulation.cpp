@@ -14,11 +14,6 @@ void simulation::add_system(std::unique_ptr<vico::system> system)
     systems_.emplace_back(std::move(system));
 }
 
-//void simulation::add_connection(std::unique_ptr<connection> c)
-//{
-//    connections_.emplace_back(std::move(c));
-//}
-
 void simulation::init(double startTime)
 {
 
@@ -58,6 +53,8 @@ void simulation::step(unsigned int numStep)
         for (auto& listener : listeners_) {
             listener->post_step();
         }
+
+        num_iterations++;
     }
 }
 
@@ -77,33 +74,13 @@ void simulation::add_listener(const std::shared_ptr<simulation_listener>& listen
     listeners_.emplace_back(listener);
 }
 
-//void simulation::add_connection(const std::string& source, const std::string& sink)
-//{
-//    auto p1 = get_property(source);
-//    if (!p1) throw std::runtime_error("No such property: " + source);
-//    auto p2 = get_property(sink);
-//    if (!p2) throw std::runtime_error("No such property: " + sink);
-//
-//    if (p1->index() != p2->index() ) throw std::runtime_error("Type mismatch!");
-//
-//    if (std::holds_alternative<int_property>(*p1)) {
-//        auto ip1 = std::get<int_property>(*p1);
-//        auto ip2 =  std::get<int_property>(*p2);
-//        ip1->addSink(ip2);
-//    } else if (std::holds_alternative<real_property>(*p1)) {
-//        auto ip1 = std::get<real_property>(*p1);
-//        auto ip2 =  std::get<real_property>(*p2);
-//        ip1->addSink(ip2);
-//    } else if (std::holds_alternative<string_property>(*p1)) {
-//        auto ip1 = std::get<string_property>(*p1);
-//        auto ip2 =  std::get<string_property>(*p2);
-//        ip1->addSink(ip2);
-//    } else if (std::holds_alternative<bool_property>(*p1)) {
-//        auto ip1 = std::get<bool_property>(*p1);
-//        auto ip2 =  std::get<bool_property>(*p2);
-//        ip1->addSink(ip2);
-//    } else {
-//        throw std::runtime_error("Assertion error!");
-//    }
-//
-//}
+property* simulation::get_property(const std::string& identifier)
+{
+
+    for (const auto& system : systems_) {
+        auto get = system->get_property(identifier);
+        if (get) return get;
+    }
+
+    return nullptr;
+}

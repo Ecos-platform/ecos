@@ -18,9 +18,9 @@ option(VICO_BUILD_EXAMPLES "Build examples" OFF)
 set(CMAKE_CXX_STANDARD 17)
 
 if (MSVC)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  add_definitions("-D_WIN32_WINNT=0x600" "-D_CRT_SECURE_NO_WARNINGS")
-  add_compile_options("/wd4996" "/wd4251" "/wd4244" "/wd4267")
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    add_definitions("-D_WIN32_WINNT=0x600" "-D_CRT_SECURE_NO_WARNINGS")
+    add_compile_options("/wd4996" "/wd4251" "/wd4244" "/wd4267")
 endif ()
 
 ## Prepare for export and installation.
@@ -44,11 +44,11 @@ endif ()
 # ==============================================================================
 
 # Download automatically, you can also just copy the conan.cmake file
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-  message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
-          "${CMAKE_BINARY_DIR}/conan.cmake")
-endif()
+if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+    message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
+            "${CMAKE_BINARY_DIR}/conan.cmake")
+endif ()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
@@ -61,7 +61,7 @@ include(FetchContent)
 FetchContent_Declare(
         fmilibcpp
         GIT_REPOSITORY https://github.com/Vico-platform/fmilib-cpp.git
-        GIT_TAG        f4170c08ed29f4ce9dd4719a54fef23444cd410b #
+        GIT_TAG f4170c08ed29f4ce9dd4719a54fef23444cd410b #
 )
 
 set(FMILIBCPP_CONAN_CONFIGURED_EXTERNALLY ON CACHE BOOL "")
@@ -75,23 +75,23 @@ FetchContent_MakeAvailable(fmilibcpp)
 add_subdirectory(src)
 
 if (VICO_BUILD_EXAMPLES OR VICO_BUILD_TESTS)
-  file(COPY data/fmus DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(COPY data/fmus DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-  if (VICO_BUILD_EXAMPLES)
-    add_subdirectory(examples)
-  endif ()
+    if (VICO_BUILD_EXAMPLES)
+        add_subdirectory(examples)
+    endif ()
 
-  if (VICO_BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
-  endif ()
+    if (VICO_BUILD_TESTS)
+        enable_testing()
+        add_subdirectory(tests)
+    endif ()
 
 endif ()
 
 
- # ==============================================================================
- # Exports and remaining installation
- # ==============================================================================
+# ==============================================================================
+# Exports and remaining installation
+# ==============================================================================
 #
 #install(
 #        EXPORT "${VICO_EXPORT_TARGET}"

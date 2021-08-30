@@ -2,8 +2,6 @@ set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 
 set(publicHeaders
         "vico/algorithm.hpp"
-        "vico/connection.hpp"
-        "vico/model.hpp"
         "vico/property.hpp"
         "vico/simulation.hpp"
         "vico/simulation_listener.hpp"
@@ -19,7 +17,7 @@ set(publicHeaders
 
 set(publicHeadersFull)
 foreach (header IN LISTS commonPublicHeaders)
-  list(APPEND commonPublicHeadersFull "${publicHeaderDir}/${header}")
+    list(APPEND commonPublicHeadersFull "${publicHeaderDir}/${header}")
 endforeach ()
 
 set(privateHeaders
@@ -53,7 +51,7 @@ target_include_directories(vico
         )
 target_link_libraries(vico PRIVATE fmilibcpp)
 if (UNIX)
-  target_link_libraries(vico INTERFACE stdc++fs)
+    target_link_libraries(vico INTERFACE stdc++fs)
 endif ()
 
 

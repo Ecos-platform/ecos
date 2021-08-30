@@ -13,16 +13,16 @@
 namespace vico
 {
 
-struct property  {
+struct property
+{
 
     virtual void updateConnections() = 0;
 
     virtual ~property() = default;
-
 };
 
 template<class T>
-struct property_t: property
+struct property_t : property
 {
 
     bool applyModifiers = true;
@@ -68,28 +68,37 @@ struct property_t: property
     void updateConnections() override
     {
         for (auto& sink : sinks_) {
-            if (sink) sink->set_value(get_value());
+            auto p = sink.first;
+            if (p) {
+                auto mod = sink.second;
+                T originalValue = get_value();
+                if (mod) {
+                    p->set_value(mod.value()(originalValue));
+                } else {
+                    p->set_value(originalValue);
+                }
+            }
         }
     }
 
-    void addSink(property_t<T>* sink)
+    void addSink(property_t<T>* sink, std::optional<std::function<T(const T&)>> modifier)
     {
-        sinks_.emplace_back(sink);
+        sinks_.emplace_back(std::make_pair(sink, modifier));
     }
 
     static std::shared_ptr<property_t<T>> create(
         const std::function<T()>& getter,
-        const std::optional<std::function<void(const T&)>>& setter = std::nullopt) {
+        const std::optional<std::function<void(const T&)>>& setter = std::nullopt)
+    {
 
         return std::make_shared<property_t<T>>(getter, setter);
     }
 
 private:
-
     std::function<T()> getter = [] { return T(); };
     std::optional<std::function<void(const T&)>> setter = std::nullopt;
 
-    std::vector<property_t<T>*> sinks_;
+    std::vector<std::pair<property_t<T>*, std::optional<std::function<T(const T&)>>>> sinks_;
     std::vector<std::function<T(const T&)>> modifiers_;
 };
 

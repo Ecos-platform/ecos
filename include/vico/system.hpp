@@ -20,21 +20,32 @@ public:
 
     virtual void terminate() = 0;
 
-    template<class T>
-    std::optional<property_t<T>> get(const std::string& identifier)
+    property *get_property(const std::string& identifier)
     {
 
         if (properties_.count(identifier)) {
-            return std::get<property_t<T>>(properties_[identifier]);
+            return properties_.at(identifier).get();
         } else {
-            return std::nullopt;
+            return nullptr;
         }
     }
+
+    template<class T>
+    property_t<T> *get_property(const std::string& identifier)
+    {
+
+        if (properties_.count(identifier)) {
+            return static_cast<property_t<T>*>(dynamic_cast<property*>(properties_.at(identifier).get()));
+        } else {
+            return nullptr;
+        }
+    }
+
 
     virtual ~system() = default;
 
 protected:
-    std::unordered_map<std::string, property> properties_;
+    std::unordered_map<std::string, std::shared_ptr<property>> properties_;
 };
 
 

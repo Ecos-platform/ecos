@@ -15,30 +15,30 @@ void fmi_system::add_slave(std::unique_ptr<fmilibcpp::slave> slave)
     for (const auto& v : md.modelVariables) {
         std::string propertyName(slave->instanceName + "." + v.name);
         if (v.is_integer()) {
-            int_property p{
+            auto p = property_t<int>::create(
                 [&v, slave_pointer] { return slave_pointer->get_integer(v.vr); },
-                [&v, slave_pointer](auto value) { slave_pointer->set_integer({v.vr}, {value}); }};
+                [&v, slave_pointer](auto value) { slave_pointer->set_integer({v.vr}, {value}); });
             properties_[propertyName] = p;
         } else if (v.is_real()) {
-            real_property p{
+           auto p = property_t<double>::create(
                 [&v, slave_pointer] { return slave_pointer->get_real(v.vr); },
-                [&v, slave_pointer](auto value) { slave_pointer->set_real({v.vr}, {value}); }};
+                [&v, slave_pointer](auto value) { slave_pointer->set_real({v.vr}, {value}); });
             properties_[propertyName] = p;
         } else if (v.is_string()) {
-            string_property p{
+           auto p = property_t<std::string>::create(
                 [&v, slave_pointer] { return slave_pointer->get_string(v.vr); },
-                [&v, slave_pointer](auto value) { slave_pointer->set_string({v.vr}, {value}); }};
+                [&v, slave_pointer](auto value) { slave_pointer->set_string({v.vr}, {value}); } );
             properties_[propertyName] = p;
         } else if (v.is_boolean()) {
-            bool_property p{
+            auto p = property_t<bool>::create(
                 [&v, slave_pointer] { return slave_pointer->get_boolean(v.vr); },
-                [&v, slave_pointer](auto value) { slave_pointer->set_boolean({v.vr}, {value}); }};
+                [&v, slave_pointer](auto value) { slave_pointer->set_boolean({v.vr}, {value}); });
             properties_[propertyName] = p;
         }
     }
 
-    slaves_.emplace_back(std::move(slave));
-    algorithm_->slave_added_internal(slaves_.back().get());
+    algorithm_->slave_added_internal(slave.get());
+    slaves_[slave->instanceName] = std::move(slave);
 }
 
 void fmi_system::init(double startTime)
@@ -49,7 +49,13 @@ void fmi_system::init(double startTime)
 void fmi_system::step(double currentTime, double stepSize)
 {
 
-    algorithm_->step(currentTime, stepSize);
+    algorithm_->step(currentTime, stepSize, [this](fmilibcpp::slave* slave){
+        for (auto &[name, p] : properties_) {
+//            if (name.find(slave->instanceName) != std::string::npos) {
+                p->updateConnections();
+//            }
+        }
+    });
 }
 
 void fmi_system::terminate()
@@ -59,7 +65,7 @@ void fmi_system::terminate()
 
 fmi_system::~fmi_system()
 {
-    for (auto& slave : slaves_) {
+    for (auto& [_, slave] : slaves_) {
         slave->freeInstance();
     }
 }

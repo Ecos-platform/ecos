@@ -15,3 +15,6 @@ add_test(NAME test_property COMMAND test_property)
 
 add_executable(basic_test basic_test.cpp)
 add_test(NAME basic_test COMMAND basic_test)
+
+add_executable(quarter_truck quarter_truck.cpp)
+add_test(NAME quarter_truck COMMAND quarter_truck)

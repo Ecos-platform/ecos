@@ -1,0 +1,40 @@
+#define BOOST_TEST_MODULE quarter_truck
+
+#include <vico/fmi/fmi_system.hpp>
+#include <vico/simulation.hpp>
+
+#include <boost/test/unit_test.hpp>
+#include <fmilibcpp/fmu.hpp>
+
+using namespace vico;
+
+BOOST_AUTO_TEST_CASE(quarter_truck)
+{
+
+    simulation sim(1.0 / 100);
+
+    auto algorithm = std::make_unique<fixed_step_algorithm>();
+    auto sys = std::make_unique<fmi_system>(std::move(algorithm));
+
+    sys->add_slave(fmilibcpp::loadFmu("../fmus/2.0/quarter-truck/chassis.fmu")->new_instance("chassis"));
+    sys->add_slave(fmilibcpp::loadFmu("../fmus/2.0/quarter-truck/ground.fmu")->new_instance("ground"));
+    sys->add_slave(fmilibcpp::loadFmu("../fmus/2.0/quarter-truck/wheel.fmu")->new_instance("wheel"));
+
+    sim.add_system(std::move(sys));
+    sim.add_connection<double>("chassis.p.e", "wheel.p1.e");
+    sim.add_connection<double>("wheel.p1.f", "chassis.p.f");
+    sim.add_connection<double>("wheel.p.e", "ground.p.e");
+    sim.add_connection<double>("ground.p.f", "wheel.p.f");
+
+    auto p = sim.get_property<double>("chassis.zChassis");
+    p->addModifier([](double value){ return value * 10;});
+
+    sim.init();
+
+    while (sim.time() < 10) {
+        sim.step();
+        std::cout << p->get_value() << std::endl;
+    }
+
+    sim.terminate();
+}

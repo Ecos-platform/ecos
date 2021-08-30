@@ -12,6 +12,13 @@ using namespace fmilibcpp;
 namespace
 {
 
+template<typename Base, typename T>
+inline bool instanceof (T * object)
+{
+
+    return dynamic_cast<Base*>(object) != nullptr;
+}
+
 } // namespace
 
 BOOST_AUTO_TEST_CASE(basic_test)
@@ -24,9 +31,13 @@ BOOST_AUTO_TEST_CASE(basic_test)
     auto algorithm = std::make_unique<fixed_step_algorithm>();
     auto sys = std::make_unique<fmi_system>(std::move(algorithm));
     sys->add_slave(fmu->new_instance("slave"));
+
     sim.add_system(std::move(sys));
 
-    auto p = sim.get<double>("slave.Temperature_Room");
+    auto p = sim.get_property<double>("slave.Temperature_Room");
+    p->addModifier([](double value) {
+        return value * 10;
+    });
 
     sim.init();
     std::cout << p->get_value() << std::endl;

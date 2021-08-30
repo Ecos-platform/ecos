@@ -5,6 +5,7 @@
 #include <fmilibcpp/slave.hpp>
 #include <memory>
 #include <vector>
+#include <functional>
 
 namespace vico
 {
@@ -14,7 +15,7 @@ struct algorithm
 
     virtual void init(double startTime) = 0;
 
-    virtual void step(double currentTime, double stepSize) = 0;
+    virtual void step(double currentTime, double stepSize, std::function<void(fmilibcpp::slave*)> stepCallback) = 0;
 
     virtual void terminate() = 0;
 
@@ -67,10 +68,11 @@ public:
         }
     }
 
-    void step(double currentTime, double stepSize) override
+    void step(double currentTime, double stepSize, std::function<void(fmilibcpp::slave*)> stepCallback) override
     {
         for (auto& slave : slaves_) {
             slave->step(currentTime, stepSize);
+            stepCallback(slave);
         }
     }
 

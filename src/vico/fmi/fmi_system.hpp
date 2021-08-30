@@ -29,7 +29,7 @@ public:
 
 private:
     std::unique_ptr<algorithm> algorithm_;
-    std::vector<std::unique_ptr<fmilibcpp::slave>> slaves_;
+    std::unordered_map<std::string, std::unique_ptr<fmilibcpp::slave>> slaves_;
 };
 
 } // namespace vico

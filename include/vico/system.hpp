@@ -52,6 +52,7 @@ public:
 
 protected:
     std::unordered_map<std::string, std::shared_ptr<property>> properties_;
+
 };
 
 

@@ -2,10 +2,10 @@
 #ifndef VICO_ALGORITHM_HPP
 #define VICO_ALGORITHM_HPP
 
-#include <fmilibcpp/slave.hpp>
+#include <fmilibcpp/buffered_slave.hpp>
+#include <functional>
 #include <memory>
 #include <vector>
-#include <functional>
 
 namespace vico
 {
@@ -15,27 +15,27 @@ struct algorithm
 
     virtual void init(double startTime) = 0;
 
-    virtual void step(double currentTime, double stepSize, std::function<void(fmilibcpp::slave*)> stepCallback) = 0;
+    virtual void step(double currentTime, double stepSize, std::function<void(fmilibcpp::buffered_slave*)> stepCallback) = 0;
 
     virtual void terminate() = 0;
 
     virtual ~algorithm() = default;
 
 protected:
-    std::vector<fmilibcpp::slave*> slaves_;
+    std::vector<fmilibcpp::buffered_slave*> slaves_;
 
-    virtual void slave_added(fmilibcpp::slave* slave) = 0;
+    virtual void slave_added(fmilibcpp::buffered_slave* slave) = 0;
 
-    virtual void slave_removed(fmilibcpp::slave* slave) = 0;
+    virtual void slave_removed(fmilibcpp::buffered_slave* slave) = 0;
 
 private:
-    void slave_added_internal(fmilibcpp::slave* instance)
+    void slave_added_internal(fmilibcpp::buffered_slave* instance)
     {
         slave_added(instance);
         slaves_.emplace_back(instance);
     }
 
-    void slave_removed_internal(fmilibcpp::slave* instance)
+    void slave_removed_internal(fmilibcpp::buffered_slave* instance)
     {
         slave_removed(instance);
         auto remove = std::remove(slaves_.begin(), slaves_.end(), instance);
@@ -57,21 +57,22 @@ public:
         }
 
         for (auto& slave : slaves_) {
-            //            instance->transferCachedSets();
-            //            instance->retreiveCachedGets();
+            slave->transferCachedSets();
+            slave->receiveCachedGets();
         }
 
         for (auto& slave : slaves_) {
             slave->exit_initialization_mode();
-
-            //            instance->retreiveCachedGets();
+            slave->receiveCachedGets();
         }
     }
 
-    void step(double currentTime, double stepSize, std::function<void(fmilibcpp::slave*)> stepCallback) override
+    void step(double currentTime, double stepSize, std::function<void(fmilibcpp::buffered_slave*)> stepCallback) override
     {
         for (auto& slave : slaves_) {
+            slave->transferCachedSets();
             slave->step(currentTime, stepSize);
+            slave->receiveCachedGets();
             stepCallback(slave);
         }
     }
@@ -87,10 +88,10 @@ public:
 
 
 protected:
-    void slave_added(fmilibcpp::slave* slave) override
+    void slave_added(fmilibcpp::buffered_slave* slave) override
     {
     }
-    void slave_removed(fmilibcpp::slave* slave) override
+    void slave_removed(fmilibcpp::buffered_slave* slave) override
     {
     }
 };

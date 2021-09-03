@@ -2,8 +2,7 @@
 #ifndef VICO_FMI_SYSTEM_HPP
 #define VICO_FMI_SYSTEM_HPP
 
-#include "algorithm.hpp"
-
+#include "vico/fmi/algorithm.hpp"
 #include "vico/system.hpp"
 
 #include <fmilibcpp/slave.hpp>

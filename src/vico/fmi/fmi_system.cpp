@@ -1,5 +1,7 @@
 
-#include "fmi_system.hpp"
+#include "vico/fmi/fmi_system.hpp"
+
+#include <fmilibcpp/buffered_slave.hpp>
 
 using namespace vico;
 
@@ -12,10 +14,12 @@ struct fmi_system::Impl
 
     void add_slave(std::unique_ptr<fmilibcpp::slave> slave, std::unordered_map<std::string, std::shared_ptr<property>>& properties)
     {
+        auto name = slave->instanceName;
         auto& md = slave->get_model_description();
-        fmilibcpp::slave* slave_pointer = slave.get();
+        auto buf = std::make_unique<fmilibcpp::buffered_slave>(std::move(slave));
+        fmilibcpp::slave* slave_pointer = buf.get();
         for (const auto& v : md.modelVariables) {
-            std::string propertyName(slave->instanceName + "." + v.name);
+            std::string propertyName(buf->instanceName + "." + v.name);
             if (v.is_integer()) {
                 auto p = property_t<int>::create(
                     [&v, slave_pointer] { return slave_pointer->get_integer(v.vr); },
@@ -23,7 +27,9 @@ struct fmi_system::Impl
                 properties[propertyName] = p;
             } else if (v.is_real()) {
                 auto p = property_t<double>::create(
-                    [&v, slave_pointer] { return slave_pointer->get_real(v.vr); },
+                    [&v, slave_pointer] {
+                        return slave_pointer->get_real(v.vr);
+                    },
                     [&v, slave_pointer](auto value) { slave_pointer->set_real({v.vr}, {value}); });
                 properties[propertyName] = p;
             } else if (v.is_string()) {
@@ -41,8 +47,8 @@ struct fmi_system::Impl
             }
         }
 
-        algorithm_->slave_added_internal(slave.get());
-        slaves_[slave->instanceName] = std::move(slave);
+        algorithm_->slave_added_internal(buf.get());
+        slaves_[name] = std::move(buf);
     }
 
     void init(double startTime)
@@ -53,10 +59,12 @@ struct fmi_system::Impl
     void step(double currentTime, double stepSize, std::unordered_map<std::string, std::shared_ptr<property>>& properties)
     {
         algorithm_->step(currentTime, stepSize, [&](fmilibcpp::slave* slave) {
-            for (auto& [name, p] : properties) {
-                p->updateConnections();
-            }
+
         });
+
+        for (auto& [name, p] : properties) {
+            p->updateConnections();
+        }
     }
 
     void terminate()
@@ -64,16 +72,11 @@ struct fmi_system::Impl
         algorithm_->terminate();
     }
 
-    ~Impl()
-    {
-        for (auto& [_, slave] : slaves_) {
-            slave->freeInstance();
-        }
-    }
+    ~Impl() = default;
 
 private:
     std::unique_ptr<algorithm> algorithm_;
-    std::unordered_map<std::string, std::unique_ptr<fmilibcpp::slave>> slaves_;
+    std::unordered_map<std::string, std::unique_ptr<fmilibcpp::buffered_slave>> slaves_;
 };
 
 fmi_system::fmi_system(std::unique_ptr<algorithm> algorithm)

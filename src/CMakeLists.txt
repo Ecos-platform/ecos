@@ -1,7 +1,10 @@
 set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 
 set(publicHeaders
-        "vico/algorithm.hpp"
+
+        "vico/fmi/algorithm.hpp"
+        "vico/fmi/fmi_system.hpp"
+
         "vico/property.hpp"
         "vico/simulation.hpp"
         "vico/simulation_listener.hpp"
@@ -22,7 +25,7 @@ endforeach ()
 
 set(privateHeaders
 
-        "vico/fmi/fmi_system.hpp"
+        "../include/vico/fmi/fmi_system.hpp"
 
         "vico/structure/variable_identifier.hpp"
 

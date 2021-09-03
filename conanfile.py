@@ -17,7 +17,7 @@ class VicoConan(ConanFile):
     requires = (
         "boost/1.71.0",
         "fmilibrary/2.0.3",
-        "proxyfmu/0.2.2@osp/testing"
+        "proxyfmu/0.2.2@osp/stable"
     )
 
     def set_version(self):

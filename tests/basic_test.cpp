@@ -9,18 +9,6 @@
 using namespace vico;
 using namespace fmilibcpp;
 
-namespace
-{
-
-template<typename Base, typename T>
-inline bool instanceof (T * object)
-{
-
-    return dynamic_cast<Base*>(object) != nullptr;
-}
-
-} // namespace
-
 BOOST_AUTO_TEST_CASE(basic_test)
 {
     std::string fmuPath("../fmus/2.0/20sim/ControlledTemperature.fmu");

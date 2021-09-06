@@ -57,17 +57,6 @@ conan_cmake_run(
         BUILD missing
         BASIC_SETUP CMAKE_TARGETS)
 
-include(FetchContent)
-FetchContent_Declare(
-        fmilibcpp
-        GIT_REPOSITORY https://github.com/Vico-platform/fmilib-cpp.git
-        GIT_TAG c750d2cd63195a830b49113d101f1907c9a33de5 #
-)
-
-set(FMILIBCPP_CONAN_CONFIGURED_EXTERNALLY ON CACHE BOOL "")
-set(FMILIBCPP_BUILD_TESTS OFF CACHE BOOL "")
-FetchContent_MakeAvailable(fmilibcpp)
-
 # ==============================================================================
 # Targets
 # ==============================================================================
@@ -87,43 +76,3 @@ if (VICO_BUILD_EXAMPLES OR VICO_BUILD_TESTS)
     endif ()
 
 endif ()
-
-
-# ==============================================================================
-# Exports and remaining installation
-# ==============================================================================
-#
-#install(
-#        EXPORT "${VICO_EXPORT_TARGET}"
-#        DESTINATION "${VICO_CMAKE_INSTALL_DIR}"
-#        NAMESPACE "${PROJECT_NAME}::"
-#)
-#
-#include(CMakePackageConfigHelpers)
-#
-## Generate and install package-config file.
-#set(configFile "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-config.cmake")
-#set(targetsFile "${VICO_CMAKE_INSTALL_DIR}/${VICO_EXPORT_TARGET}.cmake")
-#configure_package_config_file(
-#        "${CMAKE_SOURCE_DIR}/cmake/project-config.cmake.in"
-#        "${configFile}"
-#        INSTALL_DESTINATION "${VICO_CMAKE_INSTALL_DIR}"
-#        PATH_VARS targetsFile
-#)
-#install(FILES "${configFile}" DESTINATION "${VICO_CMAKE_INSTALL_DIR}")
-#
-## Generate and install package-version file
-#set(versionFile "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake")
-#write_basic_package_version_file(
-#        "${versionFile}"
-#        VERSION "${PROJECT_VERSION}"
-#        COMPATIBILITY "SameMajorVersion")
-#install(FILES "${versionFile}" DESTINATION "${VICO_CMAKE_INSTALL_DIR}")
-#
-## Install custom find modules
-#install(FILES
-#        "${CMAKE_SOURCE_DIR}/cmake/FindFMILIB.cmake"
-#        DESTINATION
-#        "${VICO_CMAKE_INSTALL_DIR}"
-#        )
-#

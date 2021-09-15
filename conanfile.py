@@ -17,11 +17,14 @@ class VicoConan(ConanFile):
     requires = (
         "boost/1.71.0",
         "fmilibcpp/0.1.0@ais/testing",
-        "proxyfmu/0.2.2@osp/stable"
+        "proxyfmu/0.2.3@osp/stable"
     )
 
     def set_version(self):
         self.version = tools.load(path.join(self.recipe_folder, "version.txt")).strip()
+
+    def imports(self):
+        self.copy("proxyfmu*", dst="bin", src="bin", keep_path=False)
 
     def configure_cmake(self):
         cmake = CMake(self)

@@ -33,7 +33,6 @@ void test(fmu& fmu)
     BOOST_TEST(realRef[0] < 298);
 
     BOOST_REQUIRE(slave->terminate());
-    slave->freeInstance();
 }
 
 } // namespace

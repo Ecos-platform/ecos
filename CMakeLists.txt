@@ -43,19 +43,21 @@ endif ()
 # Dependencies
 # ==============================================================================
 
-# Download automatically, you can also just copy the conan.cmake file
-if (NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-    message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.16.1/conan.cmake"
-            "${CMAKE_BINARY_DIR}/conan.cmake")
-endif ()
+if(CONAN_EXPORTED) # in conan local cache
+    # standard conan installation, deps will be defined in conanfile.py
+    # and not necessary to call conan again, conan is already running
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup(TARGETS)
+else()
 
-include(${CMAKE_BINARY_DIR}/conan.cmake)
+    include(cmake/conan.cmake)
 
-conan_cmake_run(
-        CONANFILE conanfile.py
-        BUILD missing
-        BASIC_SETUP CMAKE_TARGETS)
+    conan_cmake_run(
+            CONANFILE conanfile.py
+            BUILD missing
+            BASIC_SETUP CMAKE_TARGETS)
+
+endif()
 
 # ==============================================================================
 # Targets

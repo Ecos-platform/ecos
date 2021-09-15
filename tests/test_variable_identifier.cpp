@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE test_variable_identifier
 
-#include <vico/model.hpp>
 #include <vico/structure/variable_identifier.hpp>
 
 #include <boost/test/unit_test.hpp>

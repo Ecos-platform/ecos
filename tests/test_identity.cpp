@@ -66,7 +66,6 @@ void test(fmu& fmu)
     }
 
     BOOST_REQUIRE(slave->terminate());
-    slave->freeInstance();
 }
 
 } // namespace

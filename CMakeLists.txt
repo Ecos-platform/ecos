@@ -43,21 +43,25 @@ endif ()
 # Dependencies
 # ==============================================================================
 
-if(CONAN_EXPORTED) # in conan local cache
+if (CONAN_EXPORTED) # in conan local cache
     # standard conan installation, deps will be defined in conanfile.py
     # and not necessary to call conan again, conan is already running
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup(TARGETS)
-else()
+else ()
 
     include(cmake/conan.cmake)
+
+    # Force add remotes
+    conan_add_remote(NAME ais URL https://ais.jfrog.io/artifactory/api/conan/ais-conan-local)
+    conan_add_remote(NAME osp URL https://osp.jfrog.io/artifactory/api/conan/conan-local)
 
     conan_cmake_run(
             CONANFILE conanfile.py
             BUILD missing
             BASIC_SETUP CMAKE_TARGETS)
 
-endif()
+endif ()
 
 # ==============================================================================
 # Targets
@@ -73,6 +77,17 @@ if (VICO_BUILD_EXAMPLES OR VICO_BUILD_TESTS)
     endif ()
 
     if (VICO_BUILD_TESTS)
+
+        Include(FetchContent)
+
+        FetchContent_Declare(
+                Catch2
+                GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+                GIT_TAG v2.13.8
+        )
+
+        FetchContent_MakeAvailable(Catch2)
+
         enable_testing()
         add_subdirectory(tests)
     endif ()

@@ -1,12 +1,11 @@
-#define BOOST_TEST_MODULE test_property
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 
 #include <vico/property.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 using namespace vico;
 
-BOOST_AUTO_TEST_CASE(test_property)
+TEST_CASE("test_property")
 {
 
     {
@@ -15,10 +14,10 @@ BOOST_AUTO_TEST_CASE(test_property)
             [&] { return value; },
             [&](auto v) { value = v; });
 
-        BOOST_CHECK_EQUAL(value, p.get_value());
+        CHECK(value == p.get_value());
         p(value - 1);
-        BOOST_CHECK_EQUAL(p.get_value(), -101);
-        BOOST_CHECK_EQUAL(value, -101);
+        CHECK(p.get_value() == -101);
+        CHECK(value == -101);
     }
 
     {
@@ -27,9 +26,9 @@ BOOST_AUTO_TEST_CASE(test_property)
             [&] { return value; },
             [&](auto v) { value = v; });
 
-        BOOST_CHECK_CLOSE(value, p1.get_value(), 0.0001);
+        CHECK(value == Approx(p1.get_value()));
         p1(value - 1);
-        BOOST_CHECK_CLOSE(p1.get_value(), -101, 0.0001);
-        BOOST_CHECK_CLOSE(value, -101, 0.0001);
+        CHECK(p1.get_value() == Approx(-101));
+        CHECK(value == Approx(-101));
     }
 }

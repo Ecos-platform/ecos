@@ -1,15 +1,15 @@
-#define BOOST_TEST_MODULE basic_test
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 
 #include <vico/fmi/fmi_system.hpp>
 #include <vico/simulation.hpp>
 
-#include <boost/test/unit_test.hpp>
 #include <fmilibcpp/fmu.hpp>
 
 using namespace vico;
 using namespace fmilibcpp;
 
-BOOST_AUTO_TEST_CASE(basic_test)
+TEST_CASE("basic_test")
 {
     std::string fmuPath("../fmus/2.0/20sim/ControlledTemperature.fmu");
     auto fmu = loadFmu(fmuPath);

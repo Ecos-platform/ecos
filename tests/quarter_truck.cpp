@@ -1,9 +1,9 @@
-#define BOOST_TEST_MODULE quarter_truck
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 
 #include <vico/fmi/fmi_system.hpp>
 #include <vico/simulation.hpp>
 
-#include <boost/test/unit_test.hpp>
 #include <fmilibcpp/fmu.hpp>
 
 using namespace vico;
@@ -18,9 +18,8 @@ double dummyModifier(double value)
 
 } // namespace
 
-BOOST_AUTO_TEST_CASE(quarter_truck)
+TEST_CASE("quarter_truck")
 {
-
     simulation sim(1.0 / 100);
 
     auto sys = std::make_unique<fmi_system>(std::make_unique<fixed_step_algorithm>());

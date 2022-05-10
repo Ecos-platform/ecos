@@ -1,16 +1,14 @@
-#define BOOST_TEST_MODULE test_variable_identifier
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 
 #include <vico/structure/variable_identifier.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 using namespace vico;
 
-BOOST_AUTO_TEST_CASE(test_variable_identifier)
+TEST_CASE("test_variable_identifier")
 {
-
     variable_identifier v("instanceName.nested.variableName");
 
-    BOOST_CHECK_EQUAL("instanceName", v.instanceName);
-    BOOST_CHECK_EQUAL("nested.variableName", v.variableName);
+    CHECK("instanceName" == v.instanceName);
+    CHECK("nested.variableName" == v.variableName);
 }

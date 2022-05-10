@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
 
 #include <vico/fmi/fmi_system.hpp>
 #include <vico/simulation.hpp>
@@ -18,7 +16,7 @@ double dummyModifier(double value)
 
 } // namespace
 
-TEST_CASE("quarter_truck")
+int main()
 {
     simulation sim(1.0 / 100);
 
@@ -30,13 +28,12 @@ TEST_CASE("quarter_truck")
 
     sim.add_system(std::move(sys));
     auto& c = sim.add_connection<double>("chassis.p.e", "wheel.p1.e");
-//    c.modifier = &dummyModifier;
     sim.add_connection<double>("wheel.p1.f", "chassis.p.f");
     sim.add_connection<double>("wheel.p.e", "ground.p.e");
     sim.add_connection<double>("ground.p.f", "wheel.p.f");
 
     auto p = sim.get_property<double>("chassis.zChassis");
-//    p->add_modifier(&dummyModifier);
+    p->add_modifier(&dummyModifier);
 
     sim.init();
 

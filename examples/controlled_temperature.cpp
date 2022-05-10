@@ -1,18 +1,14 @@
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
-
 #include <vico/fmi/fmi_system.hpp>
 #include <vico/simulation.hpp>
 
 #include <fmilibcpp/fmu.hpp>
 
 using namespace vico;
-using namespace fmilibcpp;
 
-TEST_CASE("basic_test")
+int main()
 {
     std::string fmuPath("../fmus/2.0/20sim/ControlledTemperature.fmu");
-    auto fmu = loadFmu(fmuPath);
+    auto fmu = fmilibcpp::loadFmu(fmuPath);
 
     simulation sim(1.0 / 100);
 

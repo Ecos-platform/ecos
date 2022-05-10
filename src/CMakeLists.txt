@@ -50,7 +50,7 @@ target_include_directories(vico
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
-target_link_libraries(vico PRIVATE CONAN_PKG::fmilibcpp)
+target_link_libraries(vico PUBLIC CONAN_PKG::fmilibcpp)
 if (UNIX)
     target_link_libraries(vico INTERFACE stdc++fs)
 endif ()

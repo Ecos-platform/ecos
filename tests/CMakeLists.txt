@@ -12,9 +12,3 @@ add_test(NAME test_variable_identifier COMMAND test_variable_identifier)
 
 add_executable(test_property test_property.cpp)
 add_test(NAME test_property COMMAND test_property)
-
-add_executable(basic_test basic_test.cpp)
-add_test(NAME basic_test COMMAND basic_test)
-
-add_executable(quarter_truck quarter_truck.cpp)
-add_test(NAME quarter_truck COMMAND quarter_truck)

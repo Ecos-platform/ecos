@@ -1,5 +1,5 @@
+link_libraries(vico)
 
-include_directories(
-        "${CMAKE_SOURCE_DIR}/include"
-        "${CMAKE_SOURCE_DIR}/src")
+add_executable(quarter_truck quarter_truck.cpp)
+add_executable(controlled_temperature controlled_temperature.cpp)
 

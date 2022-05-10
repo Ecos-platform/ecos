@@ -2,8 +2,6 @@
 #ifndef VICO_PROPERTY_HPP
 #define VICO_PROPERTY_HPP
 
-#include "vico/util/visitor.hpp"
-
 #include <functional>
 #include <iostream>
 #include <optional>

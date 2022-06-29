@@ -12,7 +12,6 @@ std::pair<std::string, std::string> parse(const std::string& identifier)
 {
     auto result = identifier.find('.');
     if (result == std::string::npos) {
-
         throw std::runtime_error("Error parsing variable identifier. A '.' must be present!");
     }
 
@@ -22,7 +21,7 @@ std::pair<std::string, std::string> parse(const std::string& identifier)
 } // namespace
 
 variable_identifier::variable_identifier(const std::string& identifier)
-: variable_identifier(parse(identifier))
+    : variable_identifier(parse(identifier))
 { }
 
 variable_identifier::variable_identifier(const std::pair<std::string, std::string>& identifier)

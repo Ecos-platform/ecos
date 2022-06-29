@@ -5,7 +5,8 @@
 #include <random>
 #include <sstream>
 
-std::string vico::generate_uuid() {
+std::string vico::generate_uuid()
+{
 
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -34,6 +35,6 @@ std::string vico::generate_uuid() {
     ss << "-";
     for (i = 0; i < 12; i++) {
         ss << dis(gen);
-    };
+    }
     return ss.str();
 }

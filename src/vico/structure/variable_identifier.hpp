@@ -14,10 +14,10 @@ struct variable_identifier
     const std::string instanceName;
     const std::string variableName;
 
-    explicit variable_identifier(const std::string &identifier);
+    explicit variable_identifier(const std::string& identifier);
 
 private:
-    explicit variable_identifier(const std::pair<std::string, std::string> &identifier);
+    explicit variable_identifier(const std::pair<std::string, std::string>& identifier);
 };
 
 } // namespace vico

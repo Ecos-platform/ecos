@@ -26,4 +26,4 @@ public:
 } // namespace vico
 
 
-#endif //VICO_TEMP_DIR_HPP
+#endif // VICO_TEMP_DIR_HPP

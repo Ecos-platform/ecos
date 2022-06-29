@@ -26,9 +26,11 @@ BraceWrapping:
   AfterControlStatement: false
 IncludeBlocks: Regroup
 IncludeCategories:
+  - Regex: '^[<"]catch2[/.]'
+    Priority: 10
   - Regex:      '^[<"]vico[/.]'
     Priority:   20
-  - Regex:      '^[<"](boost|fmilibcpp|proxyfmu|)[/.]'
+  - Regex:      '^[<"](fmilibcpp|proxyfmu|)[/.]'
     Priority:   30
   - Regex:      '^"'
     Priority:   10

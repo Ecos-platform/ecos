@@ -4,7 +4,8 @@
 
 #include <string>
 
-namespace vico {
+namespace vico
+{
 
 std::string generate_uuid();
 

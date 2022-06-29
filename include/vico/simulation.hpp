@@ -33,7 +33,7 @@ public:
     void add_system(std::unique_ptr<system> system);
 
     template<class T>
-    connection_t<T> &add_connection(const std::string& source, const std::string& sink)
+    connection_t<T>& add_connection(const std::string& source, const std::string& sink)
     {
         auto p1 = get_property<T>(source);
         if (!p1) throw std::runtime_error("No such property: " + source);

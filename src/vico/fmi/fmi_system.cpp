@@ -85,7 +85,6 @@ fmi_system::fmi_system(std::unique_ptr<algorithm> algorithm)
 
 void fmi_system::add_slave(std::unique_ptr<fmilibcpp::slave> slave)
 {
-
     pimpl_->add_slave(std::move(slave), properties_);
 }
 

@@ -1,3 +1,4 @@
+#include <vico/fmi/fixed_step_algorithm.hpp>
 #include <vico/fmi/fmi_system.hpp>
 #include <vico/simulation.hpp>
 

@@ -7,7 +7,6 @@ using namespace vico;
 
 TEST_CASE("test_property")
 {
-
     {
         int value = -100;
         property_t<int> p(

@@ -3,6 +3,7 @@ set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 set(publicHeaders
 
         "vico/fmi/algorithm.hpp"
+        "vico/fmi/fixed_step_algorithm.hpp"
         "vico/fmi/fmi_system.hpp"
 
         "vico/property.hpp"

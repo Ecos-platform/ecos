@@ -20,15 +20,15 @@ public:
 
     virtual void terminate() = 0;
 
-    void get_property_names(std::vector<std::string> &list) const {
+    void get_property_names(std::vector<std::string>& list) const
+    {
         for (const auto& [name, _] : properties_) {
             list.emplace_back(name);
         }
     }
 
-    property *get_property(const std::string& identifier)
+    property* get_property(const std::string& identifier)
     {
-
         if (properties_.count(identifier)) {
             return properties_.at(identifier).get();
         } else {
@@ -37,9 +37,8 @@ public:
     }
 
     template<class T>
-    property_t<T> *get_property(const std::string& identifier)
+    property_t<T>* get_property(const std::string& identifier)
     {
-
         if (properties_.count(identifier)) {
             return static_cast<property_t<T>*>(dynamic_cast<property*>(properties_.at(identifier).get()));
         } else {
@@ -52,7 +51,6 @@ public:
 
 protected:
     std::unordered_map<std::string, std::shared_ptr<property>> properties_;
-
 };
 
 

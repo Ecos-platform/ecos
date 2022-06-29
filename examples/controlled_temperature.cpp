@@ -30,6 +30,5 @@ int main()
 
     std::cout << p->get_value() << std::endl;
 
-
     sim.terminate();
 }

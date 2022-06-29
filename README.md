@@ -1,13 +1,10 @@
 # Vico
 
-Vico is a co-simulation engine
+Vico is a co-simulation engine.
 
 
-### Conan
+### Requirements
 
-Vico uses conan for managing dependencies.
-
-Make sure to add osp as a remote prior to configuring the project:
-```
-conan remote add osp https://osp.jfrog.io/artifactory/api/conan/conan-local
-```
+Conan
+C++17 compiler
+CMake >= 3.15

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+                                xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription"
+                                xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+                                name="QuarterTruck"
+                                version="1.0">
+
+    <ssd:System name="QuarterTruckSystem" description="Quarter-truck co-simulation">
+
+        <ssd:Elements>
+            <ssd:Component name="chassis" source="resources/chassis.fmu">
+                <ssd:Connectors>
+                    <ssd:Connector name="p.e" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p.f" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="initialValues">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="C.mChassis">
+                                        <ssv:Real value="400"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="C.kChassis">
+                                        <ssv:Real value="15000"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="R.dChassis">
+                                        <ssv:Real value="1000"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>
+            <ssd:Component name="wheel" source="resources/wheel.fmu">
+                <ssd:Connectors>
+                    <ssd:Connector name="p.f" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p1.e" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p.e" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p1.f" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="initialValues">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="C.mWheel">
+                                        <ssv:Real value="40"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="C.kWheel">
+                                        <ssv:Real value="150000"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="R.dWheel">
+                                        <ssv:Real value="0"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>
+            <ssd:Component name="ground" source="resources/ground.fmu">
+                <ssd:Connectors>
+                    <ssd:Connector name="p.e" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p.f" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+            </ssd:Component>
+        </ssd:Elements>
+
+        <ssd:Connections>
+            <ssd:Connection startElement="chassis" startConnector="p.e" endElement="wheel" endConnector="p1.e"/>
+            <ssd:Connection startElement="wheel" startConnector="p1.f" endElement="chassis" endConnector="p.f"/>
+            <ssd:Connection startElement="wheel" startConnector="p.e" endElement="ground" endConnector="p.e"/>
+            <ssd:Connection startElement="ground" startConnector="p.f" endElement="wheel" endConnector="p.f"/>
+        </ssd:Connections>
+
+    </ssd:System>
+
+</ssd:SystemStructureDescription>

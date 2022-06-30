@@ -9,27 +9,41 @@
 #include <optional>
 #include <pugixml.hpp>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 using namespace vico;
 
 namespace
 {
 
- struct Type
+struct Type
 {
 
     std::string unit;
 
-     std::optional<double> real;
-     std::optional<int> integer;
-     std::optional<bool> boolean;
-     std::optional<std::string> string;
+    std::optional<double> real;
+    std::optional<int> integer;
+    std::optional<bool> boolean;
+    std::optional<std::string> string;
 
-     [[nodiscard]] bool isReal() const { return real.has_value(); }
-     [[nodiscard]] bool isInteger() const { return integer.has_value(); }
-     [[nodiscard]] bool isBool() const { return boolean.has_value(); }
-     [[nodiscard]] bool isString() const { return string.has_value(); }
- };
+    [[nodiscard]] bool isReal() const { return real.has_value(); }
+    [[nodiscard]] bool isInteger() const { return integer.has_value(); }
+    [[nodiscard]] bool isBool() const { return boolean.has_value(); }
+    [[nodiscard]] bool isString() const { return string.has_value(); }
+};
+
+struct Parameter
+{
+    std::string name;
+    Type type;
+};
+
+struct ParameterSet
+{
+    std::string name;
+};
+
 
 struct Connector
 {
@@ -43,21 +57,13 @@ struct Component
     std::string name;
     std::string source;
     std::vector<Connector> connectors;
+    std::unordered_map<std::string, ParameterSet> parameterSets;
 };
 
-struct Parameter
-{
-    std::string name;
-    Type type;
-};
-
-struct ParameterSet {
-    std::string name;
-};
 
 struct Elements
 {
-    std::vector<Component> components;
+    std::unordered_map<std::string, Component> components;
 };
 
 struct LinearTransformation
@@ -91,6 +97,12 @@ struct SystemStructureDescription
     std::string name;
     std::string version;
     System system;
+
+    SystemStructureDescription() = default;
+    explicit SystemStructureDescription(std::unique_ptr<temp_dir> tmp): tmp(std::move(tmp)) {}
+
+private:
+    std::unique_ptr<temp_dir> tmp = nullptr;
 };
 
 
@@ -147,6 +159,37 @@ std::vector<Connector> parse_connectors(const pugi::xml_node& node)
     return connectors;
 }
 
+Parameter parse_parameter(const pugi::xml_node& node)
+{
+    const auto name = node.attribute("name").as_string();
+    Parameter parameter{name};
+    pugi::xml_node typeNode;
+    if (node.child("ssv:Real")) {
+        typeNode = node.child("ssv:Real");
+        const auto value = typeNode.attribute("value").as_double();
+        parameter.type.real = value;
+    } else if (node.child("ssv:Integer")) {
+        typeNode = node.child("ssv:Integer");
+        const auto value = typeNode.child("ssv:Integer").attribute("value").as_int();
+        parameter.type.integer = value;
+    } else if (node.child("ssv:Boolean")) {
+        typeNode = node.child("ssv:Boolean");
+        const auto value = typeNode.child("ssv:Boolean").attribute("value").as_bool();
+        parameter.type.boolean = value;
+    } else if (node.child("ssv:String")) {
+        typeNode = node.child("ssv:ssv:String");
+        const auto value = typeNode.child("ssv:String").attribute("value").as_string();
+        parameter.type.string = value;
+    } else {
+        throw std::runtime_error("Unknown XML node in ssv:Parameter encountered!");
+    }
+    const auto unit = typeNode.attribute("unit");
+    if (!unit.empty()) {
+        parameter.type.unit = unit.as_string();
+    }
+    return parameter;
+}
+
 Component parse_component(const pugi::xml_node& node)
 {
     const auto componentName = node.attribute("name").as_string();
@@ -155,12 +198,13 @@ Component parse_component(const pugi::xml_node& node)
     return {componentName, componentSource, connectors};
 }
 
-std::vector<Component> parse_components(const pugi::xml_node& node)
+std::unordered_map<std::string, Component> parse_components(const pugi::xml_node& node)
 {
-    std::vector<Component> components;
+    std::unordered_map<std::string, Component> components;
     for (const auto child_node : node) {
         if (std::string(child_node.name()) == "ssd:Component") {
-            components.emplace_back(parse_component(child_node));
+            Component c = parse_component(child_node);
+            components[c.name] = c;
         }
     }
     return components;
@@ -195,18 +239,25 @@ SystemStructureDescription parse_ssp(const fs::path& path)
         throw std::runtime_error("No such file: " + absolute(path).string());
     }
 
-    temp_dir dir("ssp");
-    unzip(path, dir.path());
+    fs::path dir;
+    std::unique_ptr<temp_dir> tmp;
+    if (is_directory(path)) {
+        dir = path;
+    } else {
+        tmp = std::make_unique<temp_dir>("ssp");
+        dir = tmp->path();
+        unzip(path, dir);
+    }
 
     pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_file(fs::path(dir.path() / "SystemStructure.ssd").c_str());
+    pugi::xml_parse_result result = doc.load_file(fs::path(dir / "SystemStructure.ssd").c_str());
     if (!result) {
         throw std::runtime_error("Unable to parse SystemStructure.ssd");
     }
 
     const auto root = doc.child("ssd:SystemStructureDescription");
 
-    SystemStructureDescription desc;
+    SystemStructureDescription desc(std::move(tmp));
     desc.name = root.attribute("name").as_string();
     desc.version = root.attribute("version").as_string();
 

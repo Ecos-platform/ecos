@@ -8,7 +8,7 @@ using namespace vico;
 TEST_CASE("test_unzipper")
 {
 
-    const auto quarter_truck = "../data/ssp/quarter-truck.ssp";
+    const auto quarter_truck = "../data/ssp/quarter_truck/quarter-truck.ssp";
 
     auto folder = unzip(quarter_truck);
     REQUIRE(folder);

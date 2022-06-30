@@ -15,25 +15,21 @@ using namespace vico;
 namespace
 {
 
-// clang-format off
-struct Real{};
-struct Integer{};
-struct Boolean{};
-struct String{};
-// clang-format on
-
-struct Type
+ struct Type
 {
-    std::optional<Real> real;
-    std::optional<Integer> integer;
-    std::optional<Boolean> boolean;
-    std::optional<String> string;
 
-    bool isReal() { return real.has_value(); }
-    bool isInteger() { return integer.has_value(); }
-    bool isBool() { return boolean.has_value(); }
-    bool isString() { return string.has_value(); }
-};
+    std::string unit;
+
+     std::optional<double> real;
+     std::optional<int> integer;
+     std::optional<bool> boolean;
+     std::optional<std::string> string;
+
+     [[nodiscard]] bool isReal() const { return real.has_value(); }
+     [[nodiscard]] bool isInteger() const { return integer.has_value(); }
+     [[nodiscard]] bool isBool() const { return boolean.has_value(); }
+     [[nodiscard]] bool isString() const { return string.has_value(); }
+ };
 
 struct Connector
 {
@@ -47,6 +43,16 @@ struct Component
     std::string name;
     std::string source;
     std::vector<Connector> connectors;
+};
+
+struct Parameter
+{
+    std::string name;
+    Type type;
+};
+
+struct ParameterSet {
+    std::string name;
 };
 
 struct Elements
@@ -121,13 +127,13 @@ Connector parse_connector(const pugi::xml_node& node)
     const auto connectorKind = node.attribute("kind").as_string();
     Connector connector = {connectorName, connectorKind};
     if (node.child("ssc:Real")) {
-        connector.type.real = Real();
+        connector.type.real = {};
     } else if (node.child("ssc:Integer")) {
-        connector.type.integer = Integer();
+        connector.type.integer = {};
     } else if (node.child("ssc:Boolean")) {
-        connector.type.boolean = Boolean();
+        connector.type.boolean = {};
     } else if (node.child("ssc:String")) {
-        connector.type.string = String();
+        connector.type.string = {};
     }
     return connector;
 }

@@ -84,10 +84,15 @@ struct Connection
     std::optional<LinearTransformation> linearTransformation;
 };
 
+struct Annotation {
+    std::string type;
+};
+
 struct DefaultExperiment
 {
     std::optional<double> start;
     std::optional<double> stop;
+
 };
 
 struct System
@@ -97,13 +102,16 @@ struct System
 
     Elements elements;
     std::vector<Connection> connections;
+
 };
 
 struct SystemStructureDescription
 {
     std::string name;
     std::string version;
+
     System system;
+    std::optional<DefaultExperiment> defaultExperiment;
 
     explicit SystemStructureDescription(std::unique_ptr<temp_dir> tmp): tmp(std::move(tmp)) {}
 
@@ -264,6 +272,19 @@ Elements parse_elements(const fs::path& dir, const pugi::xml_node& node)
     return elements;
 }
 
+DefaultExperiment parse_default_experiment(const pugi::xml_node& node) {
+    const auto start = node.attribute("start");
+    const auto stop = node.attribute("stop");
+    DefaultExperiment ex;
+    if (start) {
+        ex.start = start.as_double();
+    }
+    if (stop) {
+        ex.stop = stop.as_double();
+    }
+    return ex;
+}
+
 System parse_system(const fs::path& dir, const pugi::xml_node& node)
 {
     System sys;
@@ -312,8 +333,13 @@ SystemStructureDescription parse_ssp(const fs::path& path)
         throw std::runtime_error("Unsupported SSP version: '" + desc.version + "'!");
     }
 
-    const auto system_node = root.child("ssd:System");
-    desc.system = parse_system(dir, system_node);
+    const auto systemNode = root.child("ssd:System");
+    desc.system = parse_system(dir, systemNode);
+
+    const auto defaultNode = root.child("ssd:DefaultExperiment");
+    if (defaultNode) {
+        desc.defaultExperiment = parse_default_experiment(defaultNode);
+    }
 
     return desc;
 }

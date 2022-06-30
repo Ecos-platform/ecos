@@ -79,4 +79,7 @@ TEST_CASE("test_ssp_parser_folder")
     const auto quarter_truck = "../data/ssp/quarter_truck";
     SystemStructureDescription desc = parse_ssp(quarter_truck);
     checkSystemStructure(desc);
+
+    REQUIRE(desc.defaultExperiment);
+    REQUIRE(desc.defaultExperiment->start == Approx(10));
 }

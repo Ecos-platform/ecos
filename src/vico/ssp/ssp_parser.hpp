@@ -45,13 +45,6 @@ struct ParameterSet
     std::vector<Parameter> parameters;
 };
 
-struct UnifiedParameterSets
-{
-    std::string name;
-    std::unordered_map<std::string, std::vector<Parameter>> parameters;
-};
-
-
 struct Connector
 {
     std::string name;
@@ -242,6 +235,7 @@ Elements parse_elements(const pugi::xml_node& node)
     Elements elements;
     elements.components = parse_components(node);
 
+    // collect parameterSets by name
     for (const auto& [componentName, component] : elements.components) {
         for (const auto& [parameterSetName, parameterSet] : component.parameterSets) {
             auto& list = elements.parameterSets[parameterSetName][componentName];

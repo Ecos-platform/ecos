@@ -25,6 +25,8 @@ endforeach ()
 
 set(privateHeaders
 
+        "vico/ssp/ssp_parser.hpp"
+
         "vico/structure/variable_identifier.hpp"
 
         "vico/util/random.hpp"
@@ -39,7 +41,7 @@ set(sources
         "vico/structure/simulation_structure.cpp"
         "vico/structure/variable_identifier.cpp"
 
-        "vico/ssp/ssp_parser.cpp"
+        "vico/ssp/ssp_loader.cpp"
 
         "vico/util/temp_dir.cpp"
         "vico/util/uuid.cpp"

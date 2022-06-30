@@ -15,4 +15,4 @@ add_test(NAME test_property COMMAND test_property)
 
 add_executable(test_unzipper test_unzipper.cpp)
 add_test(NAME test_unzipper COMMAND test_unzipper)
-target_link_libraries(test_unzipper PRIVATE libzip::libzip)
+target_link_libraries(test_unzipper PRIVATE CONAN_PKG::libzip)

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ssv:ParameterSet version="1.0" name="initialValues">
+    <ssv:Parameters>
+        <ssv:Parameter name="C.mWheel">
+            <ssv:Real value="40"/>
+        </ssv:Parameter>
+        <ssv:Parameter name="C.kWheel">
+            <ssv:Real value="150000"/>
+        </ssv:Parameter>
+        <ssv:Parameter name="R.dWheel">
+            <ssv:Real value="0"/>
+        </ssv:Parameter>
+    </ssv:Parameters>
+</ssv:ParameterSet>

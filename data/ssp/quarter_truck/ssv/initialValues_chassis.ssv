@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ssv:ParameterSet version="1.0" name="initialValues">
+    <ssv:Parameters>
+        <ssv:Parameter name="C.mChassis">
+            <ssv:Real value="400"/>
+        </ssv:Parameter>
+        <ssv:Parameter name="C.kChassis">
+            <ssv:Real value="15000"/>
+        </ssv:Parameter>
+        <ssv:Parameter name="R.dChassis">
+            <ssv:Real value="1000"/>
+        </ssv:Parameter>
+    </ssv:Parameters>
+</ssv:ParameterSet>

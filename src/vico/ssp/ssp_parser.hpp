@@ -84,6 +84,12 @@ struct Connection
     std::optional<LinearTransformation> linearTransformation;
 };
 
+struct DefaultExperiment
+{
+    std::optional<double> start;
+    std::optional<double> stop;
+};
+
 struct System
 {
     std::string name;
@@ -190,12 +196,24 @@ Parameter parse_parameter(const pugi::xml_node& node)
     return parameter;
 }
 
-std::unordered_map<std::string, ParameterSet> parse_parameter_bindings(const pugi::xml_node& node)
+std::unordered_map<std::string, ParameterSet> parse_parameter_bindings(const fs::path& dir, const pugi::xml_node& node)
 {
     std::unordered_map<std::string, ParameterSet> parameterSets;
     for (const auto parameterBindingNode : node) {
+        pugi::xml_node parameterSetNode;
+        std::unique_ptr<pugi::xml_document> doc;
         const auto parameterValues = parameterBindingNode.child("ssd:ParameterValues");
-        const auto parameterSetNode = parameterValues.child("ssv:ParameterSet");
+        if (parameterValues) {
+            parameterSetNode = parameterValues.child("ssv:ParameterSet");
+        } else {
+            auto source = parameterBindingNode.attribute("source").as_string();
+            doc = std::make_unique<pugi::xml_document>();
+            pugi::xml_parse_result result = doc->load_file(fs::path(dir / source).c_str());
+            if (!result) {
+                throw std::runtime_error("Unable to parse '" + absolute(fs::path(dir / source)).string() + "': " + result.description());
+            }
+            parameterSetNode = doc->child("ssv:ParameterSet");
+        }
         const auto name = parameterSetNode.attribute("name").as_string();
         ParameterSet set{name};
         const auto parametersNode = parameterSetNode.child("ssv:Parameters");
@@ -209,31 +227,31 @@ std::unordered_map<std::string, ParameterSet> parse_parameter_bindings(const pug
     return parameterSets;
 }
 
-Component parse_component(const pugi::xml_node& node)
+Component parse_component(const fs::path& dir, const pugi::xml_node& node)
 {
     const auto componentName = node.attribute("name").as_string();
     const auto componentSource = node.attribute("source").as_string();
     const auto connectors = parse_connectors(node.child("ssd:Connectors"));
-    const auto parameterSets = parse_parameter_bindings(node.child("ssd:ParameterBindings"));
+    const auto parameterSets = parse_parameter_bindings(dir, node.child("ssd:ParameterBindings"));
     return {componentName, componentSource, connectors, parameterSets};
 }
 
-std::unordered_map<std::string, Component> parse_components(const pugi::xml_node& node)
+std::unordered_map<std::string, Component> parse_components(const fs::path& dir, const pugi::xml_node& node)
 {
     std::unordered_map<std::string, Component> components;
     for (const auto childNode : node) {
         if (std::string(childNode.name()) == "ssd:Component") {
-            Component c = parse_component(childNode);
+            Component c = parse_component(dir, childNode);
             components[c.name] = c;
         }
     }
     return components;
 }
 
-Elements parse_elements(const pugi::xml_node& node)
+Elements parse_elements(const fs::path& dir, const pugi::xml_node& node)
 {
     Elements elements;
-    elements.components = parse_components(node);
+    elements.components = parse_components(dir, node);
 
     // collect parameterSets by name
     for (const auto& [componentName, component] : elements.components) {
@@ -246,14 +264,14 @@ Elements parse_elements(const pugi::xml_node& node)
     return elements;
 }
 
-System parse_system(const pugi::xml_node& node)
+System parse_system(const fs::path& dir, const pugi::xml_node& node)
 {
     System sys;
     sys.name = node.attribute("name").as_string();
     sys.description = node.attribute("description").as_string();
 
     const auto elementsNode = node.child("ssd:Elements");
-    sys.elements = parse_elements(elementsNode);
+    sys.elements = parse_elements(dir, elementsNode);
 
     const auto connectionsNode = node.child("ssd:Connections");
     sys.connections = parse_connections(connectionsNode);
@@ -281,7 +299,7 @@ SystemStructureDescription parse_ssp(const fs::path& path)
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(fs::path(dir / "SystemStructure.ssd").c_str());
     if (!result) {
-        throw std::runtime_error("Unable to parse SystemStructure.ssd");
+        throw std::runtime_error("Unable to parse '" + absolute(fs::path(dir / "SystemStructure.ssd")).string() + "': " + result.description());
     }
 
     const auto root = doc.child("ssd:SystemStructureDescription");
@@ -295,7 +313,7 @@ SystemStructureDescription parse_ssp(const fs::path& path)
     }
 
     const auto system_node = root.child("ssd:System");
-    desc.system = parse_system(system_node);
+    desc.system = parse_system(dir, system_node);
 
     return desc;
 }

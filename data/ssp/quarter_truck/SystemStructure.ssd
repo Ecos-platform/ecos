@@ -2,6 +2,7 @@
 <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
                                 xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription"
                                 xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+                                xmlns:osp="http://opensimulationplatform.com/SSP/OSPAnnotations"
                                 name="QuarterTruck"
                                 version="1.0">
 
@@ -18,23 +19,7 @@
                     </ssd:Connector>
                 </ssd:Connectors>
                 <ssd:ParameterBindings>
-                    <ssd:ParameterBinding>
-                        <ssd:ParameterValues>
-                            <ssv:ParameterSet version="1.0" name="initialValues">
-                                <ssv:Parameters>
-                                    <ssv:Parameter name="C.mChassis">
-                                        <ssv:Real value="400"/>
-                                    </ssv:Parameter>
-                                    <ssv:Parameter name="C.kChassis">
-                                        <ssv:Real value="15000"/>
-                                    </ssv:Parameter>
-                                    <ssv:Parameter name="R.dChassis">
-                                        <ssv:Real value="1000"/>
-                                    </ssv:Parameter>
-                                </ssv:Parameters>
-                            </ssv:ParameterSet>
-                        </ssd:ParameterValues>
-                    </ssd:ParameterBinding>
+                    <ssd:ParameterBinding source="ssv/initialValues_chassis.ssv"/>
                 </ssd:ParameterBindings>
             </ssd:Component>
             <ssd:Component name="wheel" source="resources/wheel.fmu">
@@ -53,23 +38,7 @@
                     </ssd:Connector>
                 </ssd:Connectors>
                 <ssd:ParameterBindings>
-                    <ssd:ParameterBinding>
-                        <ssd:ParameterValues>
-                            <ssv:ParameterSet version="1.0" name="initialValues">
-                                <ssv:Parameters>
-                                    <ssv:Parameter name="C.mWheel">
-                                        <ssv:Real value="40"/>
-                                    </ssv:Parameter>
-                                    <ssv:Parameter name="C.kWheel">
-                                        <ssv:Real value="150000"/>
-                                    </ssv:Parameter>
-                                    <ssv:Parameter name="R.dWheel">
-                                        <ssv:Real value="0"/>
-                                    </ssv:Parameter>
-                                </ssv:Parameters>
-                            </ssv:ParameterSet>
-                        </ssd:ParameterValues>
-                    </ssd:ParameterBinding>
+                    <ssd:ParameterBinding source="ssv/initialValues_wheel.ssv"/>
                 </ssd:ParameterBindings>
             </ssd:Component>
             <ssd:Component name="ground" source="resources/ground.fmu">
@@ -92,5 +61,15 @@
         </ssd:Connections>
 
     </ssd:System>
+
+    <ssd:DefaultExperiment start="10">
+        <ssd:Annotations>
+            <ssc:Annotation type="com.opensimulationplatform">
+                <osp:Algorithm>
+                    <osp:FixedStepAlgorithm baseStepSize="1e-4"/>
+                </osp:Algorithm>
+            </ssc:Annotation>
+        </ssd:Annotations>
+    </ssd:DefaultExperiment>
 
 </ssd:SystemStructureDescription>

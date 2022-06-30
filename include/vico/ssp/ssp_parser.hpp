@@ -8,7 +8,7 @@
 namespace vico
 {
 
-simulation_structure parse(const fs::path& path);
+simulation_structure parse_ssp(const fs::path& path);
 
 } // namespace vico
 

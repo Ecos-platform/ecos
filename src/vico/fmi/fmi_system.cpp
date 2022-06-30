@@ -14,12 +14,16 @@ struct fmi_system::Impl
 
     void add_slave(std::unique_ptr<fmilibcpp::slave> slave, std::unordered_map<std::string, std::shared_ptr<property>>& properties)
     {
-        auto name = slave->instanceName;
+        const auto name = slave->instanceName;
+        if (slaves_.count(name)) {
+            throw std::runtime_error("A slave named '" + name + "' has already been added!");
+        }
+
         auto& md = slave->get_model_description();
         auto buf = std::make_unique<fmilibcpp::buffered_slave>(std::move(slave));
         fmilibcpp::slave* slave_pointer = buf.get();
         for (const auto& v : md.modelVariables) {
-            std::string propertyName(buf->instanceName + "." + v.name);
+            std::string propertyName(name + "." + v.name);
             if (v.is_integer()) {
                 auto p = property_t<int>::create(
                     [&v, slave_pointer] { return slave_pointer->get_integer(v.vr); },

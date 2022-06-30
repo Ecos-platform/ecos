@@ -8,12 +8,14 @@ using namespace vico;
 namespace
 {
 
-void checkSystemStructure(const SystemStructureDescription& desc)
+void checkSystemStructure(const SystemStructureDescription& ssd)
 {
-    CHECK(desc.name == "QuarterTruck");
+    CHECK(ssd.name == "QuarterTruck");
 
-    const auto system = desc.system;
+    const auto system = ssd.system;
     CHECK(system.name == "QuarterTruckSystem");
+
+    CHECK(system.connections.size() == 4);
 
     const auto components = system.elements.components;
     CHECK(components.size() == 3);
@@ -23,12 +25,27 @@ void checkSystemStructure(const SystemStructureDescription& desc)
     REQUIRE(components.count("ground"));
 
     const Component& chassis = components.at("chassis");
+    CHECK(chassis.source == "resources/chassis.fmu");
     CHECK(chassis.connectors.size() == 2);
+    CHECK(chassis.connectors[0].name == "p.e");
+    CHECK(chassis.connectors[0].kind == "output");
+    CHECK(!chassis.connectors[0].type.unit.has_value());
+    CHECK(!chassis.connectors[0].type.isReal());
+    CHECK(chassis.connectors[1].name == "p.f");
+    CHECK(chassis.connectors[1].kind == "input");
+    CHECK(!chassis.connectors[1].type.unit.has_value());
+    CHECK(!chassis.connectors[1].type.isReal());
 
     const Component& wheel = components.at("wheel");
+    CHECK(wheel.source == "resources/wheel.fmu");
     CHECK(wheel.connectors.size() == 4);
+    CHECK(wheel.connectors[0].name == "p.f");
+    CHECK(wheel.connectors[1].name == "p1.e");
+    CHECK(wheel.connectors[2].name == "p.e");
+    CHECK(wheel.connectors[3].name == "p1.f");
 
     const Component& ground = components.at("ground");
+    CHECK(ground.source == "resources/ground.fmu");
     CHECK(ground.connectors.size() == 2);
 }
 

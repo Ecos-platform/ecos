@@ -20,7 +20,7 @@ namespace
 struct Type
 {
 
-    std::string unit;
+    std::optional<std::string> unit;
 
     std::optional<double> real;
     std::optional<int> integer;

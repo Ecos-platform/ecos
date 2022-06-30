@@ -42,6 +42,13 @@ struct Parameter
 struct ParameterSet
 {
     std::string name;
+    std::vector<Parameter> parameters;
+};
+
+struct UnifiedParameterSets
+{
+    std::string name;
+    std::unordered_map<std::string, std::vector<Parameter>> parameters;
 };
 
 
@@ -64,6 +71,7 @@ struct Component
 struct Elements
 {
     std::unordered_map<std::string, Component> components;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::vector<Parameter>>> parameterSets;
 };
 
 struct LinearTransformation
@@ -98,7 +106,6 @@ struct SystemStructureDescription
     std::string version;
     System system;
 
-    SystemStructureDescription() = default;
     explicit SystemStructureDescription(std::unique_ptr<temp_dir> tmp): tmp(std::move(tmp)) {}
 
 private:
@@ -190,20 +197,40 @@ Parameter parse_parameter(const pugi::xml_node& node)
     return parameter;
 }
 
+std::unordered_map<std::string, ParameterSet> parse_parameter_bindings(const pugi::xml_node& node)
+{
+    std::unordered_map<std::string, ParameterSet> parameterSets;
+    for (const auto parameterBindingNode : node) {
+        const auto parameterValues = parameterBindingNode.child("ssd:ParameterValues");
+        const auto parameterSetNode = parameterValues.child("ssv:ParameterSet");
+        const auto name = parameterSetNode.attribute("name").as_string();
+        ParameterSet set{name};
+        const auto parametersNode = parameterSetNode.child("ssv:Parameters");
+        for (const auto parameterNode : parametersNode) {
+            Parameter p = parse_parameter(parameterNode);
+            set.parameters.emplace_back(p);
+        }
+        parameterSets[name] = set;
+
+    }
+    return parameterSets;
+}
+
 Component parse_component(const pugi::xml_node& node)
 {
     const auto componentName = node.attribute("name").as_string();
     const auto componentSource = node.attribute("source").as_string();
     const auto connectors = parse_connectors(node.child("ssd:Connectors"));
-    return {componentName, componentSource, connectors};
+    const auto parameterSets = parse_parameter_bindings(node.child("ssd:ParameterBindings"));
+    return {componentName, componentSource, connectors, parameterSets};
 }
 
 std::unordered_map<std::string, Component> parse_components(const pugi::xml_node& node)
 {
     std::unordered_map<std::string, Component> components;
-    for (const auto child_node : node) {
-        if (std::string(child_node.name()) == "ssd:Component") {
-            Component c = parse_component(child_node);
+    for (const auto childNode : node) {
+        if (std::string(childNode.name()) == "ssd:Component") {
+            Component c = parse_component(childNode);
             components[c.name] = c;
         }
     }
@@ -214,6 +241,14 @@ Elements parse_elements(const pugi::xml_node& node)
 {
     Elements elements;
     elements.components = parse_components(node);
+
+    for (const auto& [componentName, component] : elements.components) {
+        for (const auto& [parameterSetName, parameterSet] : component.parameterSets) {
+            auto& list = elements.parameterSets[parameterSetName][componentName];
+            list.insert(list.end(), parameterSet.parameters.begin(), parameterSet.parameters.end());
+        }
+    }
+
     return elements;
 }
 
@@ -223,11 +258,11 @@ System parse_system(const pugi::xml_node& node)
     sys.name = node.attribute("name").as_string();
     sys.description = node.attribute("description").as_string();
 
-    const auto elements_node = node.child("ssd:Elements");
-    sys.elements = parse_elements(elements_node);
+    const auto elementsNode = node.child("ssd:Elements");
+    sys.elements = parse_elements(elementsNode);
 
-    const auto connections_node = node.child("ssd:Connections");
-    sys.connections = parse_connections(connections_node);
+    const auto connectionsNode = node.child("ssd:Connections");
+    sys.connections = parse_connections(connectionsNode);
 
     return sys;
 }

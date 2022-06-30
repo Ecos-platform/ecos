@@ -12,3 +12,7 @@ add_test(NAME test_variable_identifier COMMAND test_variable_identifier)
 
 add_executable(test_property test_property.cpp)
 add_test(NAME test_property COMMAND test_property)
+
+add_executable(test_unzipper test_unzipper.cpp)
+add_test(NAME test_unzipper COMMAND test_unzipper)
+target_link_libraries(test_unzipper PRIVATE libzip::libzip)

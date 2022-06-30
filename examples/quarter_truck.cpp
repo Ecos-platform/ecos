@@ -22,9 +22,9 @@ int main()
 
     auto sys = std::make_unique<fmi_system>(std::make_unique<fixed_step_algorithm>());
 
-    sys->add_slave(fmilibcpp::loadFmu("../fmus/2.0/quarter-truck/chassis.fmu")->new_instance("chassis"));
-    sys->add_slave(fmilibcpp::loadFmu("../fmus/2.0/quarter-truck/ground.fmu")->new_instance("ground"));
-    sys->add_slave(fmilibcpp::loadFmu("../fmus/2.0/quarter-truck/wheel.fmu")->new_instance("wheel"));
+    sys->add_slave(fmilibcpp::loadFmu("../data/fmus/2.0/quarter-truck/chassis.fmu")->new_instance("chassis"));
+    sys->add_slave(fmilibcpp::loadFmu("../data/fmus/2.0/quarter-truck/ground.fmu")->new_instance("ground"));
+    sys->add_slave(fmilibcpp::loadFmu("../data/fmus/2.0/quarter-truck/wheel.fmu")->new_instance("wheel"));
 
     sim.add_system(std::move(sys));
     auto& c = sim.add_connection<double>("chassis.p.e", "wheel.p1.e");

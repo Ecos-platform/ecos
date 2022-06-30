@@ -16,9 +16,10 @@ void simulation::add_system(std::unique_ptr<vico::system> system)
 
 void simulation::init(double startTime)
 {
-
     if (!initialized) {
+
         initialized = true;
+
         for (auto& listener : listeners_) {
             listener->pre_init();
         }
@@ -35,8 +36,7 @@ void simulation::init(double startTime)
 
 void simulation::step(unsigned int numStep)
 {
-
-    if (!initialized) init();
+    if (!initialized) { init(); }
 
     for (unsigned i = 0; i < numStep; i++) {
 
@@ -76,7 +76,6 @@ void simulation::add_listener(const std::shared_ptr<simulation_listener>& listen
 
 property* simulation::get_property(const std::string& identifier)
 {
-
     for (const auto& system : systems_) {
         auto get = system->get_property(identifier);
         if (get) return get;

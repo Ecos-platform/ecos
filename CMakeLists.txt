@@ -17,6 +17,7 @@ option(VICO_BUILD_EXAMPLES "Build examples" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Prepare for export and installation.
 set(VICO_HEADER_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
@@ -54,6 +55,8 @@ else ()
 
 endif ()
 
+find_package(LIBZIP REQUIRED)
+
 # ==============================================================================
 # Targets
 # ==============================================================================
@@ -61,7 +64,7 @@ endif ()
 add_subdirectory(src)
 
 if (VICO_BUILD_EXAMPLES OR VICO_BUILD_TESTS)
-    file(COPY data/fmus DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(COPY data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
     if (VICO_BUILD_EXAMPLES)
         add_subdirectory(examples)

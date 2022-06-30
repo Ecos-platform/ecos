@@ -17,7 +17,8 @@ class VicoConan(ConanFile):
     requires = (
         "fmilibcpp/0.1.1@ais/testing",
         "proxyfmu/0.2.7@osp/testing-subprocess",
-        "pugixml/1.12.1"
+        "pugixml/1.12.1",
+        "libzip/1.8.0"
     )
 
     def set_version(self):

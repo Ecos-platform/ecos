@@ -8,7 +8,7 @@ using namespace vico;
 
 int main()
 {
-    std::string fmuPath("../fmus/2.0/20sim/ControlledTemperature.fmu");
+    std::string fmuPath("../data/fmus/2.0/20sim/ControlledTemperature.fmu");
     auto fmu = fmilibcpp::loadFmu(fmuPath);
 
     simulation sim(1.0 / 100);

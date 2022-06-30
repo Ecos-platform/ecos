@@ -3,7 +3,6 @@ set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 set(publicHeaders
 
         "vico/fmi/algorithm.hpp"
-        "vico/fmi/fixed_step_algorithm.hpp"
         "vico/fmi/fmi_system.hpp"
 
         "vico/property.hpp"
@@ -29,6 +28,8 @@ set(privateHeaders
         "vico/structure/variable_identifier.hpp"
 
         "vico/util/random.hpp"
+        "vico/util/unzipper.hpp"
+
         )
 
 set(sources
@@ -38,20 +39,21 @@ set(sources
         "vico/structure/simulation_structure.cpp"
         "vico/structure/variable_identifier.cpp"
 
+        "vico/ssp/ssp_parser.cpp"
+
         "vico/util/temp_dir.cpp"
         "vico/util/uuid.cpp"
         )
 
 add_library(vico ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources})
 target_compile_features(vico PUBLIC "cxx_std_17")
-#set_target_properties(fmilibwrapper PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(vico
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
-target_link_libraries(vico PUBLIC CONAN_PKG::fmilibcpp)
+target_link_libraries(vico PUBLIC CONAN_PKG::fmilibcpp PRIVATE CONAN_PKG::pugixml libzip::libzip)
 if (UNIX)
     target_link_libraries(vico INTERFACE stdc++fs)
 endif ()

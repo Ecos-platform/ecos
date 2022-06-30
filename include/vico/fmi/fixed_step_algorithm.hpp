@@ -4,7 +4,8 @@
 
 #include "algorithm.hpp"
 
-namespace vico {
+namespace vico
+{
 
 struct fixed_step_algorithm : public algorithm
 {
@@ -57,6 +58,6 @@ protected:
     }
 };
 
-}
+} // namespace vico
 
 #endif // VICO_FIXED_STEP_ALGORITHM_HPP

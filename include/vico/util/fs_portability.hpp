@@ -6,13 +6,13 @@
 #    include <filesystem>
 namespace vico
 {
-namespace filesystem = std::filesystem;
+namespace fs = std::filesystem;
 }
 #else
 #    include <experimental/filesystem>
 namespace vico
 {
-namespace filesystem = std::experimental::filesystem;
+namespace fs = std::experimental::filesystem;
 }
 #endif
 

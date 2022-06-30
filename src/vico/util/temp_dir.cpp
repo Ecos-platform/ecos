@@ -26,15 +26,15 @@ std::string generate_simple_id()
 
 
 temp_dir::temp_dir(const std::string& name)
-    : path_(filesystem::temp_directory_path() /= "vico_" + name + "_" + generate_simple_id())
+    : path_(fs::temp_directory_path() /= "vico_" + name + "_" + generate_simple_id())
 {
-    filesystem::create_directories(path_);
+    fs::create_directories(path_);
 }
 
 temp_dir::~temp_dir()
 {
     std::error_code status;
-    filesystem::remove_all(path_, status);
+    fs::remove_all(path_, status);
     if (status) {
         std::cerr << "Failed to remove temp folder '" << path_.string() << "' " << status.message() << std::endl;
     }

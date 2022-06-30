@@ -71,7 +71,7 @@ void test(fmu& fmu)
 
 TEST_CASE("fmi_test_identity")
 {
-    std::string fmuPath("../fmus/1.0/identity.fmu");
+    std::string fmuPath("../data/fmus/1.0/identity.fmu");
     auto fmu = loadFmu(fmuPath);
     test(*fmu);
 }

@@ -15,13 +15,12 @@ namespace
 
 fmilibcpp::model_description get_model_description(const std::string& instanceName, const std::vector<model_instance_template>& models)
 {
-
     auto result = std::find_if(models.begin(), models.end(), [&instanceName](const model_instance_template& m) {
         return m.instanceName == instanceName;
     });
 
     if (result == models.end()) {
-        throw std::runtime_error("No component named " + instanceName + " found!");
+        throw std::runtime_error("No component named '" + instanceName + "' found!");
     }
 
     return result->get_model_description();
@@ -45,15 +44,14 @@ void simulation_structure::make_connection(const std::string& source, const std:
 
     auto s1 = md1.get_by_name(vi1.variableName);
     if (!s1) {
-        throw std::runtime_error("No variable named ...");
+        throw std::runtime_error("No variable named '" + vi1.variableName + "'");
     }
     auto s2 = md2.get_by_name(vi2.variableName);
     if (!s2) {
-        throw std::runtime_error("No variable named ...");
+        throw std::runtime_error("No variable named '" + vi2.variableName + "'");
     }
 
     if (s1->typeAttributes.index() != s2->typeAttributes.index()) {
-
         throw std::runtime_error("Variable type mismatch! " + type_name(s1->typeAttributes) + " vs." + type_name(s2->typeAttributes));
     }
 

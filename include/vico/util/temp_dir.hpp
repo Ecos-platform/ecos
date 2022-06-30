@@ -10,12 +10,12 @@ namespace vico
 class temp_dir
 {
 private:
-    const filesystem::path path_;
+    const fs::path path_;
 
 public:
     explicit temp_dir(const std::string& name);
 
-    [[nodiscard]] filesystem::path path()
+    [[nodiscard]] fs::path path()
     {
         return path_;
     }

@@ -18,7 +18,6 @@ namespace vico
 template<class T>
 struct unbound_connector
 {
-
     std::string instanceName;
     std::string propertyName;
     std::optional<std::function<T(const T&)>> modifier = std::nullopt;
@@ -33,7 +32,6 @@ struct unbound_connector
 template<class T>
 struct unbound_connection_t
 {
-
     const unbound_connector<T> source;
     const std::vector<unbound_connector<T>> sinks;
 
@@ -57,7 +55,6 @@ using unbound_connection = std::variant<int_connection, real_connection, string_
 
 struct model_instance_template
 {
-
     const std::string instanceName;
 
     model_instance_template(std::string instanceName, std::shared_ptr<fmilibcpp::fmu> model)

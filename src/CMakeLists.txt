@@ -25,8 +25,6 @@ endforeach ()
 
 set(privateHeaders
 
-        "vico/ssp/ssp_parser.hpp"
-
         "vico/structure/variable_identifier.hpp"
 
         "vico/util/random.hpp"
@@ -55,7 +53,7 @@ target_include_directories(vico
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
-target_link_libraries(vico PUBLIC CONAN_PKG::fmilibcpp PRIVATE CONAN_PKG::pugixml CONAN_PKG::libzip)
+target_link_libraries(vico PUBLIC CONAN_PKG::fmilibcpp CONAN_PKG::simple-ssp-parser PRIVATE CONAN_PKG::pugixml CONAN_PKG::libzip)
 if (UNIX)
     target_link_libraries(vico INTERFACE stdc++fs)
 endif ()

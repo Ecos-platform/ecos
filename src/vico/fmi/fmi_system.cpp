@@ -79,9 +79,9 @@ struct fmi_system::Impl
 
         });
 
-//        for (auto& [name, p] : properties) {
-//            p->updateConnections();
-//        }
+        for (auto& [name, p] : properties) {
+            p->updateConnections();
+        }
     }
 
     void terminate()

@@ -40,12 +40,11 @@ public:
     property_t<T>* get_property(const std::string& identifier)
     {
         if (properties_.count(identifier)) {
-            return static_cast<property_t<T>*>(dynamic_cast<property*>(properties_.at(identifier).get()));
+            return static_cast<property_t<T>*>(properties_.at(identifier).get());
         } else {
             return nullptr;
         }
     }
-
 
     virtual ~system() = default;
 

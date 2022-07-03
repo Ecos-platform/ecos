@@ -12,14 +12,17 @@ struct fixed_step_algorithm : public algorithm
 
 public:
 
-    void step(double currentTime, double stepSize, std::function<void(fmilibcpp::slave*)> stepCallback) override
+    explicit fixed_step_algorithm(double stepSize): stepSize_(stepSize){}
+
+    double step(double currentTime, std::function<void(fmilibcpp::slave*)> stepCallback) override
     {
         for (auto& slave : slaves_) {
             slave->transferCachedSets();
-            slave->step(currentTime, stepSize);
+            slave->step(currentTime, stepSize_);
             slave->receiveCachedGets();
             stepCallback(slave);
         }
+        return currentTime + stepSize_;
     }
 
     ~fixed_step_algorithm() override = default;
@@ -32,7 +35,11 @@ protected:
     void slave_removed(fmilibcpp::slave* slave) override
     {
     }
+
+private:
+    double stepSize_;
 };
+
 
 } // namespace vico
 

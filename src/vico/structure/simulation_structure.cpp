@@ -81,12 +81,12 @@ void simulation_structure::make_connection(const variable_identifier& vi1, const
 
 std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm> algorithm)
 {
-    auto sys = std::make_unique<fmi_system>(std::move(algorithm));
+    auto sim = std::make_unique<simulation>(std::move(algorithm));
     for (auto& model : models_) {
-        sys->add_slave(model.instantiate());
+        sim->add_slave(model.instantiate());
     }
     for (auto& connection : connections_) {
 
     }
-    return nullptr;
+    return sim;
 }

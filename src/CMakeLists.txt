@@ -12,8 +12,6 @@ set(publicHeaders
         "vico/structure/simulation_structure.hpp"
         "vico/structure/variable_identifier.hpp"
 
-        "vico/system.hpp"
-
         "vico/util/temp_dir.hpp"
         "vico/util/fs_portability.hpp"
         "vico/util/uuid.hpp"
@@ -34,7 +32,6 @@ set(privateHeaders
         )
 
 set(sources
-        "vico/fmi/fmi_system.cpp"
 
         "vico/simulation.cpp"
         "vico/structure/simulation_structure.cpp"

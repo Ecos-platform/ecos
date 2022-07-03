@@ -13,7 +13,7 @@ namespace vico
 struct algorithm
 {
 
-    virtual void step(double currentTime, double stepSize, std::function<void(fmilibcpp::slave*)> stepCallback) = 0;
+    virtual double step(double currentTime, std::function<void(fmilibcpp::slave*)> stepCallback) = 0;
 
     virtual ~algorithm() = default;
 
@@ -38,7 +38,7 @@ private:
         slaves_.erase(remove, slaves_.end());
     }
 
-    friend class fmi_system;
+    friend class simulation;
 };
 
 

@@ -1,5 +1,4 @@
 #include <vico/fmi/fixed_step_algorithm.hpp>
-#include <vico/fmi/fmi_system.hpp>
 #include <vico/simulation.hpp>
 
 #include <fmilibcpp/fmu.hpp>
@@ -18,15 +17,12 @@ double dummyModifier(double value)
 
 int main()
 {
-    simulation sim(1.0 / 100);
+    simulation sim(std::make_unique<fixed_step_algorithm>(1.0/100));
 
-    auto sys = std::make_unique<fmi_system>(std::make_unique<fixed_step_algorithm>());
+    sim.add_slave(fmilibcpp::loadFmu("../data/fmus/2.0/quarter-truck/chassis.fmu")->new_instance("chassis"));
+    sim.add_slave(fmilibcpp::loadFmu("../data/fmus/2.0/quarter-truck/ground.fmu")->new_instance("ground"));
+    sim.add_slave(fmilibcpp::loadFmu("../data/fmus/2.0/quarter-truck/wheel.fmu")->new_instance("wheel"));
 
-    sys->add_slave(fmilibcpp::loadFmu("../data/fmus/2.0/quarter-truck/chassis.fmu")->new_instance("chassis"));
-    sys->add_slave(fmilibcpp::loadFmu("../data/fmus/2.0/quarter-truck/ground.fmu")->new_instance("ground"));
-    sys->add_slave(fmilibcpp::loadFmu("../data/fmus/2.0/quarter-truck/wheel.fmu")->new_instance("wheel"));
-
-    sim.add_system(std::move(sys));
     auto& c = sim.add_connection<double>("chassis.p.e", "wheel.p1.e");
     sim.add_connection<double>("wheel.p1.f", "chassis.p.f");
     sim.add_connection<double>("wheel.p.e", "ground.p.e");

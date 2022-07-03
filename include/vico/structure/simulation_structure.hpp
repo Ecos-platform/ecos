@@ -4,7 +4,6 @@
 
 #include "variable_identifier.hpp"
 
-#include "vico/fmi/fmi_system.hpp"
 #include "vico/property.hpp"
 #include "vico/simulation.hpp"
 

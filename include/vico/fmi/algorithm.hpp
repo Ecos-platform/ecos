@@ -13,11 +13,7 @@ namespace vico
 struct algorithm
 {
 
-    virtual void init(double startTime) = 0;
-
     virtual void step(double currentTime, double stepSize, std::function<void(fmilibcpp::slave*)> stepCallback) = 0;
-
-    virtual void terminate() = 0;
 
     virtual ~algorithm() = default;
 

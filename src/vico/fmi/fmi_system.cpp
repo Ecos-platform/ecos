@@ -57,7 +57,20 @@ struct fmi_system::Impl
 
     void init(double startTime)
     {
-        algorithm_->init(startTime);
+        for (auto& [name, slave] : slaves_) {
+            slave->setup_experiment(startTime);
+            slave->enter_initialization_mode();
+        }
+
+        for (auto& [name, slave] : slaves_) {
+            slave->transferCachedSets();
+            slave->receiveCachedGets();
+        }
+
+        for (auto& [name, slave] : slaves_) {
+            slave->exit_initialization_mode();
+            slave->receiveCachedGets();
+        }
     }
 
     void step(double currentTime, double stepSize, std::unordered_map<std::string, std::shared_ptr<property>>& properties)
@@ -66,14 +79,16 @@ struct fmi_system::Impl
 
         });
 
-        for (auto& [name, p] : properties) {
-            p->updateConnections();
-        }
+//        for (auto& [name, p] : properties) {
+//            p->updateConnections();
+//        }
     }
 
     void terminate()
     {
-        algorithm_->terminate();
+        for (auto& [name, slave] : slaves_) {
+            slave->terminate();
+        }
     }
 
     ~Impl() = default;

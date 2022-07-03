@@ -52,31 +52,41 @@ void simulation_structure::make_connection(const variable_identifier& vi1, const
         throw std::runtime_error("Variable type mismatch! " + type_name(s1->typeAttributes) + " vs." + type_name(s2->typeAttributes));
     }
 
-    //    std::visit([&](auto&& arg) {
-    //        using T = std::decay_t<decltype(arg)>;
-    //        if constexpr (std::is_same_v<T, integer>) {
-    //            unbound_connector<int> source{vi1.instanceName, vi1.variableName};
-    //            unbound_connector<int> sink{vi2.instanceName, vi2.variableName};
-    //            unbound_connection_t<int> c(source, sink);
-    //            connections_.emplace_back(c);
-    //        } else if constexpr (std::is_same_v<T, real>) {
-    //            unbound_connector<double> source{vi1.instanceName, vi1.variableName};
-    //            unbound_connector<double> sink{vi2.instanceName, vi2.variableName};
-    //            unbound_connection_t<double> c(source, sink);
-    //            connections_.emplace_back(c);
-    //        } else if constexpr (std::is_same_v<T, string>) {
-    //            unbound_connector<std::string> source{vi1.instanceName, vi1.variableName};
-    //            unbound_connector<std::string> sink{vi2.instanceName, vi2.variableName};
-    //            unbound_connection_t<std::string> c(source, sink);
-    //            connections_.emplace_back(c);
-    //        } else if constexpr (std::is_same_v<T, boolean>) {
-    //            unbound_connector<bool> source{vi1.instanceName, vi1.variableName};
-    //            unbound_connector<bool> sink{vi2.instanceName, vi2.variableName};
-    //            unbound_connection_t<bool> c(source, sink);
-    //            connections_.emplace_back(c);
-    //        }
-    //    },
-    //        s1->typeAttribute);
+    std::visit([&](auto&& arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, fmilibcpp::integer_attributes>) {
+            unbound_connector<int> source{vi1};
+            unbound_connector<int> sink{vi2};
+            unbound_connection_t<int> c(source, sink);
+            connections_.emplace_back(c);
+        } else if constexpr (std::is_same_v<T, fmilibcpp::real_attributes>) {
+            unbound_connector<double> source{vi1};
+            unbound_connector<double> sink{vi2};
+            unbound_connection_t<double> c(source, sink);
+            connections_.emplace_back(c);
+        } else if constexpr (std::is_same_v<T, fmilibcpp::string_attributes>) {
+            unbound_connector<std::string> source{vi1};
+            unbound_connector<std::string> sink{vi2};
+            unbound_connection_t<std::string> c(source, sink);
+            connections_.emplace_back(c);
+        } else if constexpr (std::is_same_v<T, fmilibcpp::boolean_attributes>) {
+            unbound_connector<bool> source{vi1};
+            unbound_connector<bool> sink{vi2};
+            unbound_connection_t<bool> c(source, sink);
+            connections_.emplace_back(c);
+        }
+    },
+        s1->typeAttributes);
+}
 
-    // connections_.emplace_back({vi1.instanceName, vi1.variableName});
+std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm> algorithm)
+{
+    auto sys = std::make_unique<fmi_system>(std::move(algorithm));
+    for (auto& model : models_) {
+        sys->add_slave(model.instantiate());
+    }
+    for (auto& connection : connections_) {
+
+    }
+    return nullptr;
 }

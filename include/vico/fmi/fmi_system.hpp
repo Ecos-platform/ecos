@@ -16,6 +16,9 @@ class fmi_system : public system
 public:
     explicit fmi_system(std::unique_ptr<algorithm> algorithm);
 
+    fmi_system(const fmi_system&) = delete;
+    fmi_system(const fmi_system&&) = delete;
+
     void add_slave(std::unique_ptr<fmilibcpp::slave> slave);
 
     void init(double startTime) override;

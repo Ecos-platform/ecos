@@ -2,8 +2,11 @@
 #ifndef VICO_SIMULATION_STRUCTURE_HPP
 #define VICO_SIMULATION_STRUCTURE_HPP
 
-#include "vico/property.hpp"
 #include "variable_identifier.hpp"
+
+#include "vico/fmi/fmi_system.hpp"
+#include "vico/property.hpp"
+#include "vico/simulation.hpp"
 
 #include <fmilibcpp/fmu.hpp>
 #include <optional>
@@ -19,13 +22,11 @@ namespace vico
 template<class T>
 struct unbound_connector
 {
-    std::string instanceName;
-    std::string propertyName;
+    variable_identifier v;
     std::optional<std::function<T(const T&)>> modifier = std::nullopt;
 
-    unbound_connector(std::string instanceName, std::string propertyName, std::optional<std::function<T(const T&)>> modifier = std::nullopt)
-        : instanceName(std::move(instanceName))
-        , propertyName(std::move(propertyName))
+    unbound_connector(variable_identifier v, std::optional<std::function<T(const T&)>> modifier = std::nullopt)
+        : v(std::move(v))
         , modifier(std::move(modifier))
     { }
 };
@@ -84,6 +85,8 @@ public:
     void add_model(const std::string& instanceName, std::shared_ptr<fmilibcpp::fmu> model);
 
     void make_connection(const variable_identifier& source, const variable_identifier& target);
+
+    std::unique_ptr<simulation> load(std::unique_ptr<algorithm> algorithm = nullptr);
 
 private:
     std::vector<unbound_connection> connections_;

@@ -19,12 +19,18 @@ struct variable_identifier
         : variable_identifier(parse(identifier))
     { }
 
-    variable_identifier(const std::pair<std::string, std::string>& identifier)
+    variable_identifier(std::string instanceName, std::string variableName)
+        : instanceName(std::move(instanceName))
+        , variableName(std::move(variableName))
+    { }
+
+private:
+private:
+    explicit variable_identifier(const std::pair<std::string, std::string>& identifier)
         : instanceName(identifier.first)
         , variableName(identifier.second)
     { }
 
-private:
     static std::pair<std::string, std::string> parse(const std::string& identifier)
     {
         auto result = identifier.find('.');

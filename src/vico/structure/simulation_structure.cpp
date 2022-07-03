@@ -33,11 +33,8 @@ void simulation_structure::add_model(const std::string& instanceName, std::share
     models_.emplace_back(model_instance_template{instanceName, std::move(model)});
 }
 
-void simulation_structure::make_connection(const std::string& source, const std::string& target)
+void simulation_structure::make_connection(const variable_identifier& vi1, const variable_identifier& vi2)
 {
-
-    variable_identifier vi1(source);
-    variable_identifier vi2(target);
 
     auto md1 = get_model_description(vi1.instanceName, models_);
     auto md2 = get_model_description(vi2.instanceName, models_);

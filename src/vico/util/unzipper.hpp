@@ -68,13 +68,13 @@ bool unzip(const vico::fs::path& zip_file, const vico::fs::path& tmp_path)
     return true;
 }
 
-std::optional<vico::temp_dir> unzip(const vico::fs::path& zip_file)
+std::unique_ptr<vico::temp_dir> unzip(const vico::fs::path& zip_file)
 {
-    auto temp = vico::temp_dir("temp");
-    if (unzip(zip_file, temp.path())) {
-        return std::move(temp);
+    auto temp = std::make_unique<vico::temp_dir>("temp");
+    if (unzip(zip_file, temp->path())) {
+        return temp;
     } else {
-        return std::nullopt;
+        return nullptr;
     }
 }
 

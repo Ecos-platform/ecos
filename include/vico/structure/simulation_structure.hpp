@@ -3,6 +3,7 @@
 #define VICO_SIMULATION_STRUCTURE_HPP
 
 #include "vico/property.hpp"
+#include "variable_identifier.hpp"
 
 #include <fmilibcpp/fmu.hpp>
 #include <optional>
@@ -82,7 +83,7 @@ class simulation_structure
 public:
     void add_model(const std::string& instanceName, std::shared_ptr<fmilibcpp::fmu> model);
 
-    void make_connection(const std::string& source, const std::string& target);
+    void make_connection(const variable_identifier& source, const variable_identifier& target);
 
 private:
     std::vector<unbound_connection> connections_;

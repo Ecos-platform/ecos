@@ -15,6 +15,8 @@ private:
 public:
     explicit temp_dir(const std::string& name);
 
+    temp_dir(const temp_dir&) = delete;
+
     [[nodiscard]] fs::path path()
     {
         return path_;

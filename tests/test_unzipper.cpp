@@ -12,5 +12,9 @@ TEST_CASE("test_unzipper")
 
     auto folder = unzip(quarter_truck);
     REQUIRE(folder);
+    REQUIRE(fs::exists(folder->path() / "SystemStructure.ssd"));
+    REQUIRE(fs::exists(folder->path() / "resources/chassis.fmu"));
+    REQUIRE(fs::exists(folder->path() / "resources/ground.fmu"));
+    REQUIRE(fs::exists(folder->path() / "resources/wheel.fmu"));
 
 }

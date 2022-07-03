@@ -10,6 +10,7 @@ set(publicHeaders
         "vico/simulation_listener.hpp"
 
         "vico/structure/simulation_structure.hpp"
+        "vico/structure/variable_identifier.hpp"
 
         "vico/system.hpp"
 
@@ -25,7 +26,7 @@ endforeach ()
 
 set(privateHeaders
 
-        "vico/structure/variable_identifier.hpp"
+        "../include/vico/structure/variable_identifier.hpp"
 
         "vico/util/random.hpp"
         "vico/util/unzipper.hpp"
@@ -37,7 +38,6 @@ set(sources
 
         "vico/simulation.cpp"
         "vico/structure/simulation_structure.cpp"
-        "vico/structure/variable_identifier.cpp"
 
         "vico/ssp/ssp_loader.cpp"
 

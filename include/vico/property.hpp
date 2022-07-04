@@ -109,6 +109,10 @@ class properties {
 
 public:
 
+    properties() = default;
+    properties(const properties&) = delete;
+    properties(const properties&&) = delete;
+
     void applySets()
     {
         for (auto& [name, p] : realProperties_) {

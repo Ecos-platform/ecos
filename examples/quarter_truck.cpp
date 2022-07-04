@@ -6,16 +6,6 @@
 
 using namespace vico;
 
-namespace
-{
-
-double dummyModifier(double value)
-{
-    return value * 2;
-}
-
-} // namespace
-
 int main()
 {
 
@@ -35,9 +25,7 @@ int main()
     ss.add_parameter_set("initialValues", map);
 
     auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
-
     auto p = sim->get_property<double>("chassis.zChassis");
-    p->set_output_modifier(&dummyModifier);
 
     sim->init();
 

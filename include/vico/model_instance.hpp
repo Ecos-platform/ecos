@@ -19,6 +19,9 @@ public:
         : instanceName(std::move(instanceName))
     { }
 
+    model_instance(const model_instance&) = delete;
+    model_instance(const model_instance&&) = delete;
+
     virtual void setup_experiment(double start = 0) = 0;
 
     virtual void enter_initialization_mode() = 0;

@@ -1,7 +1,7 @@
 
 #include "vico/simulation.hpp"
 
-#include "vico/simulation_listener.hpp"
+#include "vico/listeners/simulation_listener.hpp"
 
 using namespace vico;
 
@@ -16,7 +16,7 @@ void simulation::init(double startTime)
         initialized = true;
 
         for (auto& listener : listeners_) {
-            listener->pre_init();
+            listener->pre_init(*this);
         }
 
         for (auto& instance : instances_) {
@@ -25,17 +25,17 @@ void simulation::init(double startTime)
         }
 
         for (auto& instance : instances_) {
-            instance->applySets();
-            instance->applyGets();
+            instance->get_properties().applySets();
+            instance->get_properties().applyGets();
         }
 
         for (auto& instance : instances_) {
             instance->exit_initialization_mode();
-            instance->applyGets();
+            instance->get_properties().applyGets();
         }
 
         for (auto& listener : listeners_) {
-            listener->post_init();
+            listener->post_init(*this);
         }
     }
 }
@@ -47,7 +47,7 @@ void simulation::step(unsigned int numStep)
     for (unsigned i = 0; i < numStep; i++) {
 
         for (auto& listener : listeners_) {
-            listener->pre_step();
+            listener->pre_step(*this);
         }
 
         double newT = algorithm_->step(currentTime, instances_);
@@ -59,7 +59,7 @@ void simulation::step(unsigned int numStep)
         currentTime = newT;
 
         for (auto& listener : listeners_) {
-            listener->post_step();
+            listener->post_step(*this);
         }
 
         num_iterations++;
@@ -73,13 +73,13 @@ void simulation::terminate()
     }
 
     for (auto& listener : listeners_) {
-        listener->post_terminate();
+        listener->post_terminate(*this);
     }
 }
 
-void simulation::add_listener(const std::shared_ptr<simulation_listener>& listener)
+void simulation::add_listener(std::unique_ptr<simulation_listener> listener)
 {
-    listeners_.emplace_back(listener);
+    listeners_.emplace_back(std::move(listener));
 }
 
 model_instance* simulation::get_instance(const std::string& name)

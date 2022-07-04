@@ -7,7 +7,6 @@ set(publicHeaders
         "vico/model_instance.hpp"
         "vico/property.hpp"
         "vico/simulation.hpp"
-        "vico/simulation_listener.hpp"
         "vico/variable_identifier.hpp"
 
         "vico/algorithm/algorithm.hpp"
@@ -15,6 +14,9 @@ set(publicHeaders
 
         "vico/fmi/fmi_model.hpp"
         "vico/fmi/fmi_model_instance.hpp"
+
+        "vico/listeners/simulation_listener.hpp"
+        "vico/listeners/csv_writer.hpp"
 
         "vico/structure/simulation_structure.hpp"
 
@@ -39,7 +41,7 @@ set(privateHeaders
 set(sources
 
         "vico/simulation.cpp"
-        "vico/simulation_listener.cpp"
+        "vico/listeners/simulation_listener.cpp"
         "vico/ssp/ssp_loader.cpp"
         "vico/structure/simulation_structure.cpp"
         "vico/util/temp_dir.cpp"

@@ -15,10 +15,10 @@ double dummyModifier(double value)
 
 int main()
 {
-    auto ss = load_ssp("../data/ssp/quarter_truck");
+    auto ss = load_ssp("../data/ssp/quarter_truck/quarter-truck.ssp");
     auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
 
-    auto p = sim->get_property<double>("chassis.zChassis");
+    auto p = sim->get_real_property("chassis.zChassis");
     p->set_output_modifier(&dummyModifier);
 
     sim->init();

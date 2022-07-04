@@ -105,6 +105,107 @@ private:
     std::optional<std::function<T(const T&)>> outputModifier_;
 };
 
+class properties {
+
+public:
+
+    void applySets()
+    {
+        for (auto& [name, p] : realProperties_) {
+            p->applySet();
+        }
+        for (auto& [name, p] : intProperties_) {
+            p->applySet();
+        }
+        for (auto& [name, p] : stringProperties_) {
+            p->applySet();
+        }
+        for (auto& [name, p] : boolProperties_) {
+            p->applySet();
+        }
+    }
+
+    void applyGets()
+    {
+        for (auto& [name, p] : realProperties_) {
+            p->applyGet();
+        }
+        for (auto& [name, p] : intProperties_) {
+            p->applyGet();
+        }
+        for (auto& [name, p] : stringProperties_) {
+            p->applyGet();
+        }
+        for (auto& [name, p] : boolProperties_) {
+            p->applyGet();
+        }
+    }
+
+
+    property_t<double>* get_real_property(const std::string& name)
+    {
+        if (realProperties_.count(name))
+        {
+            auto& property = realProperties_[name];
+            return property.get();
+        }
+        return nullptr;
+    }
+
+    property_t<int>* get_int_property(const std::string& name)
+    {
+        if (intProperties_.count(name))
+        {
+            auto& property = intProperties_[name];
+            return property.get();
+        }
+        return nullptr;
+    }
+
+    property_t<std::string>* get_string_property(const std::string& name)
+    {
+        if (stringProperties_.count(name))
+        {
+            auto& property = stringProperties_[name];
+            return property.get();
+        }
+        return nullptr;
+    }
+
+    property_t<bool>* get_bool_property(const std::string& name)
+    {
+        if (boolProperties_.count(name))
+        {
+            auto& property = boolProperties_[name];
+            return property.get();
+        }
+        return nullptr;
+    }
+
+    void add_real_property(const std::string& name, std::unique_ptr<property_t<double>> p) {
+        realProperties_[name] = std::move(p);
+    }
+
+    void add_int_property(const std::string& name, std::unique_ptr<property_t<int>> p) {
+        intProperties_[name] = std::move(p);
+    }
+
+    void add_string_property(const std::string& name, std::unique_ptr<property_t<std::string>> p) {
+        stringProperties_[name] = std::move(p);
+    }
+
+    void add_bool_property(const std::string& name, std::unique_ptr<property_t<bool>> p) {
+        boolProperties_[name] = std::move(p);
+    }
+
+private:
+    std::unordered_map<std::string, std::unique_ptr<property_t<int>>> intProperties_;
+    std::unordered_map<std::string, std::unique_ptr<property_t<bool>>> boolProperties_;
+    std::unordered_map<std::string, std::unique_ptr<property_t<double>>> realProperties_;
+    std::unordered_map<std::string, std::unique_ptr<property_t<std::string>>> stringProperties_;
+
+};
+
 } // namespace vico
 
 #endif // VICO_PROPERTY_HPP

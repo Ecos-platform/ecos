@@ -29,33 +29,15 @@ public:
 
     virtual void terminate() = 0;
 
-    void applySets() {
-        for(auto& [name, p] : properties_) {
-            p->applySet();
-        }
-    }
-
-    void applyGets() {
-        for(auto& [name, p] : properties_) {
-            p->applyGet();
-        }
-    }
-
-    template<class T>
-    property_t<T>* getProperty(const std::string& name)
+    properties& get_properties()
     {
-        if (properties_.count(name))
-        {
-            auto& property = properties_[name];
-            return static_cast<property_t<T>*>(property.get());
-        }
-        return nullptr;
+        return properties_;
     }
 
     virtual ~model_instance() = default;
 
 protected:
-    std::unordered_map<std::string, std::unique_ptr<property>> properties_;
+    properties properties_;
 };
 
 } // namespace vico

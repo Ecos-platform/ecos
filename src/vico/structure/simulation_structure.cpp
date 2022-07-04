@@ -37,29 +37,29 @@ std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm
         for (auto& [v, value] : set) {
             variable_identifier v1 = v;
             std::visit(overloaded{
-                           [&](double arg) { sim->get_property<double>(v1)->set_value(arg); },
-                           [&](int arg) { sim->get_property<int>(v1)->set_value(arg); },
-                           [&](bool arg) { sim->get_property<bool>(v1)->set_value(arg); },
-                           [&](const std::string& arg) { sim->get_property<std::string>(v1)->set_value(arg); }},
+                           [&](double arg) { sim->get_real_property(v1)->set_value(arg); },
+                           [&](int arg) { sim->get_int_property(v1)->set_value(arg); },
+                           [&](bool arg) { sim->get_bool_property(v1)->set_value(arg); },
+                           [&](const std::string& arg) { sim->get_string_property(v1)->set_value(arg); }},
                 value);
         }
     }
     for (auto& connection : connections_) {
         std::visit(overloaded{
-                       [&sim](int_connection& arg) {
-                           auto c = sim->add_connection<int>(arg.source, arg.sink);
-                           if (arg.modifier) c->modifier = [arg](int value) {
+                       [&sim](unbound_int_connection& arg) {
+                           sim->make_int_connection(arg.source, arg.sink);
+                       },
+                       [&sim](unbound_real_connection& arg) {
+                           auto c = sim->make_real_connection(arg.source, arg.sink);
+                           if (arg.modifier) c->modifier = [arg](double value) {
                                return (*arg.modifier)(value);
                            };
                        },
-                       [&sim](real_connection& arg) {
-                           sim->add_connection<double>(arg.source, arg.sink);
+                       [&sim](unbound_bool_connection& arg) {
+                           sim->make_bool_connection(arg.source, arg.sink);
                        },
-                       [&sim](string_connection& arg) {
-                           sim->add_connection<double>(arg.source, arg.sink);
-                       },
-                       [&sim](bool_connection& arg) {
-                           sim->add_connection<double>(arg.source, arg.sink);
+                       [&sim](unbound_string_connection& arg) {
+                           sim->make_string_connection(arg.source, arg.sink);
                        }},
             connection);
     }

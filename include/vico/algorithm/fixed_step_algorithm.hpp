@@ -23,9 +23,9 @@ public:
     {
 
         auto f = [currentTime, this](auto& instance) {
-            instance->applySets();
+            instance->get_properties().applySets();
             instance->step(currentTime, stepSize_);
-            instance->applyGets();
+            instance->get_properties().applyGets();
         };
 
         if (!parallel_) {

@@ -33,12 +33,12 @@ struct unbound_connection_t
     { }
 };
 
-using int_connection = unbound_connection_t<int>;
-using real_connection = unbound_connection_t<double>;
-using string_connection = unbound_connection_t<std::string>;
-using bool_connection = unbound_connection_t<bool>;
+using unbound_int_connection = unbound_connection_t<int>;
+using unbound_real_connection = unbound_connection_t<double>;
+using unbound_string_connection = unbound_connection_t<std::string>;
+using unbound_bool_connection = unbound_connection_t<bool>;
 
-using unbound_connection = std::variant<int_connection, real_connection, string_connection, bool_connection>;
+using unbound_connection = std::variant<unbound_int_connection, unbound_real_connection, unbound_string_connection, unbound_bool_connection>;
 
 class simulation_structure
 {

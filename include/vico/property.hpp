@@ -2,6 +2,7 @@
 #ifndef VICO_PROPERTY_HPP
 #define VICO_PROPERTY_HPP
 
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <optional>
@@ -105,10 +106,10 @@ private:
     std::optional<std::function<T(const T&)>> outputModifier_;
 };
 
-class properties {
+class properties
+{
 
 public:
-
     properties() = default;
     properties(const properties&) = delete;
     properties(const properties&&) = delete;
@@ -147,8 +148,7 @@ public:
 
     property_t<double>* get_real_property(const std::string& name)
     {
-        if (realProperties_.count(name))
-        {
+        if (realProperties_.count(name)) {
             auto& property = realProperties_[name];
             return property.get();
         }
@@ -157,8 +157,7 @@ public:
 
     property_t<int>* get_int_property(const std::string& name)
     {
-        if (intProperties_.count(name))
-        {
+        if (intProperties_.count(name)) {
             auto& property = intProperties_[name];
             return property.get();
         }
@@ -167,8 +166,7 @@ public:
 
     property_t<std::string>* get_string_property(const std::string& name)
     {
-        if (stringProperties_.count(name))
-        {
+        if (stringProperties_.count(name)) {
             auto& property = stringProperties_[name];
             return property.get();
         }
@@ -177,44 +175,69 @@ public:
 
     property_t<bool>* get_bool_property(const std::string& name)
     {
-        if (boolProperties_.count(name))
-        {
+        if (boolProperties_.count(name)) {
             auto& property = boolProperties_[name];
             return property.get();
         }
         return nullptr;
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<property_t<double>>>& get_reals() {
+    const std::unordered_map<std::string, std::unique_ptr<property_t<double>>>& get_reals()
+    {
         return realProperties_;
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<property_t<int>>>& get_integers() {
+    const std::unordered_map<std::string, std::unique_ptr<property_t<int>>>& get_integers()
+    {
         return intProperties_;
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<property_t<bool>>>& get_booleans() {
+    const std::unordered_map<std::string, std::unique_ptr<property_t<bool>>>& get_booleans()
+    {
         return boolProperties_;
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<property_t<std::string>>>& get_strings() {
+    const std::unordered_map<std::string, std::unique_ptr<property_t<std::string>>>& get_strings()
+    {
         return stringProperties_;
     }
 
-    void add_real_property(const std::string& name, std::unique_ptr<property_t<double>> p) {
+    void add_real_property(const std::string& name, std::unique_ptr<property_t<double>> p)
+    {
         realProperties_[name] = std::move(p);
     }
 
-    void add_int_property(const std::string& name, std::unique_ptr<property_t<int>> p) {
+    void add_int_property(const std::string& name, std::unique_ptr<property_t<int>> p)
+    {
         intProperties_[name] = std::move(p);
     }
 
-    void add_string_property(const std::string& name, std::unique_ptr<property_t<std::string>> p) {
+    void add_string_property(const std::string& name, std::unique_ptr<property_t<std::string>> p)
+    {
         stringProperties_[name] = std::move(p);
     }
 
-    void add_bool_property(const std::string& name, std::unique_ptr<property_t<bool>> p) {
+    void add_bool_property(const std::string& name, std::unique_ptr<property_t<bool>> p)
+    {
         boolProperties_[name] = std::move(p);
+    }
+
+    [[nodiscard]] std::vector<std::string> get_property_names() const
+    {
+        std::vector<std::string> names;
+        std::transform(intProperties_.begin(), intProperties_.end(), std::back_inserter(names), [](auto& pair) {
+            return pair.first;
+        });
+        std::transform(realProperties_.begin(), realProperties_.end(), std::back_inserter(names), [](auto& pair) {
+            return pair.first;
+        });
+        std::transform(boolProperties_.begin(), boolProperties_.end(), std::back_inserter(names), [](auto& pair) {
+            return pair.first;
+        });
+        std::transform(stringProperties_.begin(), stringProperties_.end(), std::back_inserter(names), [](auto& pair) {
+            return pair.first;
+        });
+        return names;
     }
 
 private:
@@ -222,7 +245,6 @@ private:
     std::unordered_map<std::string, std::unique_ptr<property_t<bool>>> boolProperties_;
     std::unordered_map<std::string, std::unique_ptr<property_t<double>>> realProperties_;
     std::unordered_map<std::string, std::unique_ptr<property_t<std::string>>> stringProperties_;
-
 };
 
 } // namespace vico

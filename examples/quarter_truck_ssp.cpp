@@ -22,7 +22,10 @@ int main()
     auto p = sim->get_real_property("chassis.zChassis");
     p->set_output_modifier(&dummyModifier);
 
-    sim->add_listener(std::make_unique<csv_writer>("sub/sub/data.csv"));
+    csv_config config;
+    config.log_variable("chassis.zChassis");
+
+    sim->add_listener(std::make_unique<csv_writer>("sub/sub/data.csv", config));
 
     sim->init();
 

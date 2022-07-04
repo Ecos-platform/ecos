@@ -3,30 +3,53 @@
 
 #include "vico/simulation.hpp"
 
-
 using namespace vico;
 
 namespace
 {
 
-void writeData(std::ofstream& out, simulation& sim)
+void writeData(std::ofstream& out, const simulation& sim, const std::optional<csv_config>& config)
 {
     out << sim.iterations() << ", " << sim.time();
 
     for (auto& instance : sim.get_instances()) {
-        auto& properties = instance->get_properties();
 
-        for (auto& [name, p] : properties.get_reals()) {
-            out << ", " << std::to_string(p->get_value());
+        bool logInstance = true;
+        if (config) {
+            logInstance = config->shouldLogInstance(instance->instanceName);
         }
-        for (auto& [name, p] : properties.get_integers()) {
-            out << ", " << std::to_string(p->get_value());
-        }
-        for (auto& [name, p] : properties.get_booleans()) {
-            out << ", " << std::noboolalpha << p->get_value();
-        }
-        for (auto& [name, p] : properties.get_strings()) {
-            out << ", " << p->get_value();
+
+        if (logInstance) {
+            auto& properties = instance->get_properties();
+
+            for (auto& [name, p] : properties.get_reals()) {
+                bool logVar = true;
+                if (config) {
+                    logVar = config->shouldLogVariable(name);
+                }
+                if (logVar) out << ", " << std::to_string(p->get_value());
+            }
+            for (auto& [name, p] : properties.get_integers()) {
+                bool logVar = true;
+                if (config) {
+                    logVar = config->shouldLogVariable(name);
+                }
+                if (logVar) out << ", " << std::to_string(p->get_value());
+            }
+            for (auto& [name, p] : properties.get_booleans()) {
+                bool logVar = true;
+                if (config) {
+                    logVar = config->shouldLogVariable(name);
+                }
+                if (logVar) out << ", " << std::noboolalpha << p->get_value();
+            }
+            for (auto& [name, p] : properties.get_strings()) {
+                bool logVar = true;
+                if (config) {
+                    logVar = config->shouldLogVariable(name);
+                }
+                if (logVar) out << ", " << p->get_value();
+            }
         }
     }
     out << "\n";
@@ -35,7 +58,8 @@ void writeData(std::ofstream& out, simulation& sim)
 
 } // namespace
 
-csv_writer::csv_writer(const fs::path& path)
+csv_writer::csv_writer(const fs::path& path, std::optional<csv_config> config)
+    : config_(std::move(config))
 {
     if (path.extension().string() != ".csv") {
         throw std::runtime_error("File extension must be .csv, was: " + path.extension().string());
@@ -56,19 +80,42 @@ void csv_writer::pre_init(simulation& sim)
     outFile_ << "iterations, time";
 
     for (auto& instance : sim.get_instances()) {
-        auto& properties = instance->get_properties();
 
-        for (auto& [name, p] : properties.get_reals()) {
-            outFile_ << ", " << name << "[REAL]";
+        bool logInstance = true;
+        if (config_) {
+            logInstance = config_->shouldLogInstance(instance->instanceName);
         }
-        for (auto& [name, p] : properties.get_integers()) {
-            outFile_ << ", " << name << "[INT]";
-        }
-        for (auto& [name, p] : properties.get_booleans()) {
-            outFile_ << ", " << name << "[BOOL]";
-        }
-        for (auto& [name, p] : properties.get_strings()) {
-            outFile_ << ", " << name << "[STR]";
+
+        if (logInstance) {
+            auto& properties = instance->get_properties();
+            for (auto& [name, p] : properties.get_reals()) {
+                bool logVar = true;
+                if (config_) {
+                    logVar = config_->shouldLogVariable(name);
+                }
+                if (logVar) outFile_ << ", " << name << "[REAL]";
+            }
+            for (auto& [name, p] : properties.get_integers()) {
+                bool logVar = true;
+                if (config_) {
+                    logVar = config_->shouldLogVariable(name);
+                }
+                if (logVar) outFile_ << ", " << name << "[INT]";
+            }
+            for (auto& [name, p] : properties.get_booleans()) {
+                bool logVar = true;
+                if (config_) {
+                    logVar = config_->shouldLogVariable(name);
+                }
+                if (logVar) outFile_ << ", " << name << "[BOOL]";
+            }
+            for (auto& [name, p] : properties.get_strings()) {
+                bool logVar = true;
+                if (config_) {
+                    logVar = config_->shouldLogVariable(name);
+                }
+                if (logVar) outFile_ << ", " << name << "[STR]";
+            }
         }
     }
 
@@ -78,12 +125,12 @@ void csv_writer::pre_init(simulation& sim)
 
 void csv_writer::post_init(simulation& sim)
 {
-    writeData(outFile_, sim);
+    writeData(outFile_, sim, config_);
 }
 
 void csv_writer::post_step(simulation& sim)
 {
-    writeData(outFile_, sim);
+    writeData(outFile_, sim, config_);
 }
 
 void csv_writer::post_terminate(simulation& sim)

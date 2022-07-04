@@ -3,11 +3,11 @@
 #ifndef VICO_SIMULATION_HPP
 #define VICO_SIMULATION_HPP
 
-#include "vico/algorithm.hpp"
+#include "vico/algorithm/algorithm.hpp"
 #include "vico/connection.hpp"
 #include "vico/model_instance.hpp"
 #include "vico/property.hpp"
-#include "vico/structure/variable_identifier.hpp"
+#include "vico/variable_identifier.hpp"
 
 #include <memory>
 #include <unordered_map>

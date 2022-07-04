@@ -3,9 +3,9 @@
 #ifndef VICO_SIMULATION_HPP
 #define VICO_SIMULATION_HPP
 
-#include "fmilibcpp/buffered_slave.hpp"
-
+#include "vico/connection.hpp"
 #include "vico/fmi/algorithm.hpp"
+#include "vico/model_instance.hpp"
 #include "vico/property.hpp"
 
 #include <memory>
@@ -50,35 +50,38 @@ public:
 
     void terminate();
 
-    void add_slave(std::unique_ptr<fmilibcpp::slave> slave);
+    void add_slave(std::unique_ptr<model_instance> slave);
 
     void add_listener(const std::shared_ptr<simulation_listener>& listener);
 
-    void get_property_names(std::vector<std::string>& list) const
-    {
-        for (const auto& [name, _] : properties_) {
-            list.emplace_back(name);
-        }
-    }
+    model_instance* get_instance(const std::string& name);
 
-    property* get_property(const std::string& identifier)
-    {
-        if (properties_.count(identifier)) {
-            return properties_.at(identifier).get();
-        } else {
-            return nullptr;
-        }
-    }
+    //    void get_property_names(std::vector<std::string>& list) const
+    //    {
+    //        for (const auto& [name, _] : properties_) {
+    //            list.emplace_back(name);
+    //        }
+    //    }
 
     template<class T>
     property_t<T>* get_property(const std::string& identifier)
     {
-        if (properties_.count(identifier)) {
-            return static_cast<property_t<T>*>(properties_.at(identifier).get());
-        } else {
-            return nullptr;
+        for (auto& instance : instances_) {
+            auto p = instance->getProperty<T>(identifier);
+            if (p) return p;
         }
+        return nullptr;
     }
+    //
+    //    template<class T>
+    //    property_t<T>* get_property(const std::string& identifier)
+    //    {
+    //        if (properties_.count(identifier)) {
+    //            return static_cast<property_t<T>*>(properties_.at(identifier).get());
+    //        } else {
+    //            return nullptr;
+    //        }
+    //    }
 
     //    template<class Base>
     //    vico::system* get_system()
@@ -124,8 +127,8 @@ private:
 
 
     std::unique_ptr<algorithm> algorithm_;
-    std::unordered_map<std::string, std::unique_ptr<fmilibcpp::buffered_slave>> slaves_;
-    std::unordered_map<std::string, std::shared_ptr<property>> properties_;
+    std::vector<std::unique_ptr<model_instance>> instances_;
+    //    std::unordered_map<std::string, std::shared_ptr<property>> properties_;
     //    std::vector<std::unique_ptr<connection>> connections_;
     std::vector<std::shared_ptr<simulation_listener>> listeners_;
 

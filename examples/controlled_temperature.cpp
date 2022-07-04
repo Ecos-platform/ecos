@@ -1,20 +1,20 @@
 #include <vico/fmi/fixed_step_algorithm.hpp>
+#include <vico/fmi/fmi_model.hpp>
+#include <vico/fmi/fmi_model_instance.hpp>
 #include <vico/simulation.hpp>
-
-#include <fmilibcpp/fmu.hpp>
 
 using namespace vico;
 
 int main()
 {
     std::string fmuPath("../data/fmus/2.0/20sim/ControlledTemperature.fmu");
-    auto fmu = fmilibcpp::loadFmu(fmuPath);
+    auto fmuModel = fmi_model(fmuPath);
 
-    simulation sim(std::make_unique<fixed_step_algorithm>(1.0/100));
-    sim.add_slave(fmu->new_instance("slave"));
+    simulation sim(std::make_unique<fixed_step_algorithm>(1.0 / 100));
+    sim.add_slave(fmuModel.instantiate("instance"));
 
     auto p = sim.get_property<double>("slave.Temperature_Room");
-    p->add_modifier([](double value) {
+    p->set_output_modifier([](double value) {
         return value * 10;
     });
 

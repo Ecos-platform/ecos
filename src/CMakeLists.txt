@@ -2,12 +2,18 @@ set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 
 set(publicHeaders
 
-        "vico/fmi/algorithm.hpp"
-        "vico/fmi/fmi_system.hpp"
-
+        "vico/connection.hpp"
+        "vico/model.hpp"
+        "vico/model_instance.hpp"
         "vico/property.hpp"
         "vico/simulation.hpp"
         "vico/simulation_listener.hpp"
+
+        "vico/fmi/algorithm.hpp"
+        "vico/fmi/fixed_step_algorithm.hpp"
+        "vico/fmi/fmi_model.hpp"
+        "vico/fmi/fmi_model_instance.hpp"
+
 
         "vico/structure/simulation_structure.hpp"
         "vico/structure/variable_identifier.hpp"
@@ -15,6 +21,7 @@ set(publicHeaders
         "vico/util/temp_dir.hpp"
         "vico/util/fs_portability.hpp"
         "vico/util/uuid.hpp"
+
         )
 
 set(publicHeadersFull)
@@ -23,8 +30,6 @@ foreach (header IN LISTS commonPublicHeaders)
 endforeach ()
 
 set(privateHeaders
-
-        "../include/vico/structure/variable_identifier.hpp"
 
         "vico/util/random.hpp"
         "vico/util/unzipper.hpp"
@@ -40,6 +45,7 @@ set(sources
 
         "vico/util/temp_dir.cpp"
         "vico/util/uuid.cpp"
+
         )
 
 add_library(vico ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources})

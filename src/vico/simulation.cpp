@@ -19,19 +19,19 @@ void simulation::init(double startTime)
             listener->pre_init();
         }
 
-        for (auto& [name, slave] : slaves_) {
-            slave->setup_experiment(startTime);
-            slave->enter_initialization_mode();
+        for (auto& instance : instances_) {
+            instance->setup_experiment(startTime);
+            instance->enter_initialization_mode();
         }
 
-        for (auto& [name, slave] : slaves_) {
-            slave->transferCachedSets();
-            slave->receiveCachedGets();
+        for (auto& instance : instances_) {
+            instance->applySets();
+            instance->applyGets();
         }
 
-        for (auto& [name, slave] : slaves_) {
-            slave->exit_initialization_mode();
-            slave->receiveCachedGets();
+        for (auto& instance : instances_) {
+            instance->exit_initialization_mode();
+            instance->applyGets();
         }
 
         for (auto& listener : listeners_) {
@@ -50,13 +50,11 @@ void simulation::step(unsigned int numStep)
             listener->pre_step();
         }
 
-        double newT = algorithm_->step(currentTime, [&](fmilibcpp::slave* slave) {
+        double newT = algorithm_->step(currentTime, instances_);
 
-        });
-
-        for (auto& [name, p] : properties_) {
-            p->updateConnections();
-        }
+        //        for (auto& [name, p] : properties_) {
+        //            p->updateConnections();
+        //        }
 
         currentTime = newT;
 
@@ -70,8 +68,8 @@ void simulation::step(unsigned int numStep)
 
 void simulation::terminate()
 {
-    for (auto& [name, slave] : slaves_) {
-        slave->terminate();
+    for (auto& instance : instances_) {
+        instance->terminate();
     }
 
     for (auto& listener : listeners_) {
@@ -84,47 +82,24 @@ void simulation::add_listener(const std::shared_ptr<simulation_listener>& listen
     listeners_.emplace_back(listener);
 }
 
-void simulation::add_slave(std::unique_ptr<fmilibcpp::slave> slave)
+model_instance* simulation::get_instance(const std::string& name)
 {
-    const auto name = slave->instanceName;
-    if (slaves_.count(name)) {
-        throw std::runtime_error("A slave named '" + name + "' has already been added!");
-    }
-
-    auto& md = slave->get_model_description();
-    auto buf = std::make_unique<fmilibcpp::buffered_slave>(std::move(slave));
-    fmilibcpp::slave* slave_pointer = buf.get();
-    for (const auto& v : md.modelVariables) {
-        std::string propertyName(name + "." + v.name);
-        if (v.is_integer()) {
-            auto p = property_t<int>::create(
-                [&v, slave_pointer] { return slave_pointer->get_integer(v.vr); },
-                [&v, slave_pointer](auto value) { slave_pointer->set_integer({v.vr}, {value}); });
-            properties_[propertyName] = p;
-        } else if (v.is_real()) {
-            auto p = property_t<double>::create(
-                [&v, slave_pointer] {
-                    return slave_pointer->get_real(v.vr);
-                },
-                [&v, slave_pointer](auto value) { slave_pointer->set_real({v.vr}, {value}); });
-            properties_[propertyName] = p;
-        } else if (v.is_string()) {
-            auto p = property_t<std::string>::create(
-                [&v, slave_pointer] { return slave_pointer->get_string(v.vr); },
-                [&v, slave_pointer](auto value) { slave_pointer->set_string({v.vr}, {value}); });
-            properties_[propertyName] = p;
-        } else if (v.is_boolean()) {
-            auto p = property_t<bool>::create(
-                [&v, slave_pointer] { return slave_pointer->get_boolean(v.vr); },
-                [&v, slave_pointer](auto value) { slave_pointer->set_boolean({v.vr}, {value}); });
-            properties_[propertyName] = p;
-        } else {
-            throw std::runtime_error("Assertion error");
+    for (auto& instance : instances_) {
+        if (instance->instanceName == name) {
+            return instance.get();
         }
     }
+    return nullptr;
+}
 
-    algorithm_->slave_added_internal(buf.get());
-    slaves_[name] = std::move(buf);
+void simulation::add_slave(std::unique_ptr<model_instance> instance)
+{
+    const auto name = instance->instanceName;
+    if (get_instance(name)) {
+        throw std::runtime_error("A model instance named '" + name + "' has already been added!");
+    }
+
+    instances_.emplace_back(std::move(instance));
 }
 
 //

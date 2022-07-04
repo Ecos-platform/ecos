@@ -4,7 +4,7 @@
 #define VICO_SIMULATION_HPP
 
 #include "vico/connection.hpp"
-#include "vico/fmi/algorithm.hpp"
+#include "vico/algorithm.hpp"
 #include "vico/model_instance.hpp"
 #include "vico/property.hpp"
 #include "vico/structure/variable_identifier.hpp"

@@ -2,19 +2,18 @@ set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 
 set(publicHeaders
 
+        "vico/algorithm.hpp"
         "vico/connection.hpp"
+        "vico/fixed_step_algorithm.hpp"
         "vico/model.hpp"
         "vico/model_instance.hpp"
         "vico/property.hpp"
         "vico/simulation.hpp"
         "vico/simulation_listener.hpp"
 
-        "vico/fmi/algorithm.hpp"
-        "vico/fmi/fixed_step_algorithm.hpp"
         "vico/fmi/fmi_model.hpp"
         "vico/fmi/fmi_model_instance.hpp"
-
-
+        
         "vico/structure/simulation_structure.hpp"
         "vico/structure/variable_identifier.hpp"
 

@@ -32,6 +32,10 @@ public:
 
     virtual void terminate() = 0;
 
+    virtual void reset() {
+        throw std::runtime_error("Reset not implemented!");
+    }
+
     properties& get_properties()
     {
         return properties_;

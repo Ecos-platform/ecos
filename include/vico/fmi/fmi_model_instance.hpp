@@ -76,6 +76,10 @@ public:
         slave_->terminate();
     }
 
+    void reset() override {
+        slave_->reset();
+    }
+
 private:
     std::unique_ptr<fmilibcpp::slave> slave_;
 };

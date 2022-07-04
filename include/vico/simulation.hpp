@@ -88,6 +88,8 @@ public:
 
     void terminate();
 
+    void reset();
+
     void add_slave(std::unique_ptr<model_instance> slave);
 
     void add_listener(std::unique_ptr<simulation_listener> listener);

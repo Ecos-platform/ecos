@@ -15,7 +15,7 @@ class VicoConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
     requires = (
-        "fmilibcpp/0.1.1@ais/testing",
+        "fmilibcpp/0.1.3@ais/testing",
         "simple-ssp-parser/0.2.0@ais/testing",
         "proxyfmu/0.2.7@osp/testing-subprocess",
         "libzip/1.8.0"

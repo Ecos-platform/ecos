@@ -77,6 +77,13 @@ void simulation::terminate()
     }
 }
 
+void simulation::reset()
+{
+    for (auto& instance : instances_) {
+        instance->reset();
+    }
+}
+
 void simulation::add_listener(std::unique_ptr<simulation_listener> listener)
 {
     listeners_.emplace_back(std::move(listener));
@@ -101,3 +108,4 @@ void simulation::add_slave(std::unique_ptr<model_instance> instance)
 
     instances_.emplace_back(std::move(instance));
 }
+

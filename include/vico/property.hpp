@@ -145,7 +145,6 @@ public:
         }
     }
 
-
     property_t<double>* get_real_property(const std::string& name)
     {
         if (realProperties_.count(name))
@@ -184,6 +183,22 @@ public:
             return property.get();
         }
         return nullptr;
+    }
+
+    const std::unordered_map<std::string, std::unique_ptr<property_t<double>>>& get_reals() {
+        return realProperties_;
+    }
+
+    const std::unordered_map<std::string, std::unique_ptr<property_t<int>>>& get_integers() {
+        return intProperties_;
+    }
+
+    const std::unordered_map<std::string, std::unique_ptr<property_t<bool>>>& get_booleans() {
+        return boolProperties_;
+    }
+
+    const std::unordered_map<std::string, std::unique_ptr<property_t<std::string>>>& get_strings() {
+        return stringProperties_;
     }
 
     void add_real_property(const std::string& name, std::unique_ptr<property_t<double>> p) {

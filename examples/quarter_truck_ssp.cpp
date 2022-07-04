@@ -1,5 +1,6 @@
 #include <vico/algorithm/fixed_step_algorithm.hpp>
 #include <vico/ssp/ssp_loader.hpp>
+#include "vico/listeners/csv_writer.hpp"
 
 using namespace vico;
 
@@ -20,6 +21,8 @@ int main()
 
     auto p = sim->get_real_property("chassis.zChassis");
     p->set_output_modifier(&dummyModifier);
+
+    sim->add_listener(std::make_unique<csv_writer>("sub/sub/data.csv"));
 
     sim->init();
 

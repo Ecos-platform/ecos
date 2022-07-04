@@ -15,12 +15,10 @@ set(publicHeaders
 
         "vico/fmi/fmi_model.hpp"
         "vico/fmi/fmi_model_instance.hpp"
-        
+
         "vico/structure/simulation_structure.hpp"
 
-        "vico/util/temp_dir.hpp"
         "vico/util/fs_portability.hpp"
-        "vico/util/uuid.hpp"
 
         )
 
@@ -31,20 +29,20 @@ endforeach ()
 
 set(privateHeaders
 
+        "vico/util/temp_dir.hpp"
         "vico/util/random.hpp"
         "vico/util/unzipper.hpp"
+        "vico/util/uuid.hpp"
 
         )
 
 set(sources
 
         "vico/simulation.cpp"
-        "vico/structure/simulation_structure.cpp"
-
+        "vico/simulation_listener.cpp"
         "vico/ssp/ssp_loader.cpp"
-
+        "vico/structure/simulation_structure.cpp"
         "vico/util/temp_dir.cpp"
-        "vico/util/uuid.cpp"
 
         )
 

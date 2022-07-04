@@ -1,13 +1,16 @@
 
-#include "vico/util/uuid.hpp"
+#ifndef VICO_UUID_HPP
+#define VICO_UUID_HPP
 
+#include <string>
 #include <ios>
 #include <random>
 #include <sstream>
 
-std::string vico::generate_uuid()
+namespace vico
 {
 
+std::string generate_uuid() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     static std::uniform_int_distribution<> dis(0, 15);
@@ -38,3 +41,7 @@ std::string vico::generate_uuid()
     }
     return ss.str();
 }
+
+}
+
+#endif // VICO_UUID_HPP

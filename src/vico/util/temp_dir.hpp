@@ -2,7 +2,7 @@
 #ifndef VICO_TEMP_DIR_HPP
 #define VICO_TEMP_DIR_HPP
 
-#include "fs_portability.hpp"
+#include "vico/util/fs_portability.hpp"
 
 namespace vico
 {

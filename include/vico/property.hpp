@@ -18,8 +18,6 @@ struct property
     virtual void applySet() = 0;
     virtual void applyGet() = 0;
 
-//    virtual void updateConnections() = 0;
-
     virtual ~property() = default;
 };
 
@@ -37,7 +35,10 @@ struct property_t : property
 
     T get_value()
     {
-        return cachedGet;
+        if (!cachedGet) {
+            applyGet();
+        }
+        return *cachedGet;
     }
 
     void set_value(const T& value)
@@ -76,28 +77,6 @@ struct property_t : property
         outputModifier_ = std::move(modifier);
     }
 
-    //    void updateConnections() override
-    //    {
-    //        for (connection_t<T>& c : sinks_) {
-    //            auto p = c.sink;
-    //            if (p) {
-    //                auto& mod = c.modifier;
-    //                T originalValue = get_value();
-    //                if (mod) {
-    //                    p->set_value(mod.value()(originalValue));
-    //                } else {
-    //                    p->set_value(originalValue);
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    connection_t<T>& addSink(property_t<T>* sink)
-    //    {
-    //        sinks_.emplace_back(connection_t<T>(this, sink));
-    //        return sinks_.back();
-    //    }
-
     T operator()()
     {
         return get_value();
@@ -116,13 +95,12 @@ struct property_t : property
     }
 
 private:
-    T cachedGet;
+    std::optional<T> cachedGet;
     std::optional<T> cachedSet;
 
     std::function<T()> getter;
     std::optional<std::function<void(const T&)>> setter = std::nullopt;
 
-    //    std::vector<connection_t<T>> sinks_;
     std::optional<std::function<T(const T&)>> inputModifier_;
     std::optional<std::function<T(const T&)>> outputModifier_;
 };

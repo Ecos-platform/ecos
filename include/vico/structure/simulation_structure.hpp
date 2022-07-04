@@ -19,18 +19,6 @@
 namespace vico
 {
 
-// template<class T>
-// struct unbound_connector
-//{
-//     variable_identifier v;
-//     std::optional<std::function<T(const T&)>> modifier = std::nullopt;
-//
-//     unbound_connector(variable_identifier v, std::optional<std::function<T(const T&)>> modifier = std::nullopt)
-//         : v(std::move(v))
-//         , modifier(std::move(modifier))
-//     { }
-// };
-
 template<class T>
 struct unbound_connection_t
 {
@@ -44,10 +32,6 @@ struct unbound_connection_t
         , modifier(std::move(modifier))
     { }
 
-    //    unbound_connection_t(const unbound_connector<T>& source, const std::vector<unbound_connector<T>>& sinks)
-    //        : source(source)
-    //        , sinks(sinks)
-    //    { }
 };
 
 using int_connection = unbound_connection_t<int>;
@@ -56,29 +40,6 @@ using string_connection = unbound_connection_t<std::string>;
 using bool_connection = unbound_connection_t<bool>;
 
 using unbound_connection = std::variant<int_connection, real_connection, string_connection, bool_connection>;
-
-// struct model_instance_template
-//{
-//     const std::string instanceName;
-//
-//     model_instance_template(std::string instanceName, std::shared_ptr<fmilibcpp::fmu> model)
-//         : instanceName(std::move(instanceName))
-//         , model_(std::move(model))
-//     { }
-//
-//     [[nodiscard]] fmilibcpp::model_description get_model_description() const
-//     {
-//         return model_->get_model_description();
-//     }
-//
-//     [[nodiscard]] std::unique_ptr<fmilibcpp::slave> instantiate() const
-//     {
-//         return model_->new_instance(instanceName);
-//     }
-//
-// private:
-//     const std::shared_ptr<fmilibcpp::fmu> model_;
-// };
 
 class simulation_structure
 {
@@ -98,7 +59,6 @@ private:
     std::vector<unbound_connection> connections_;
     std::vector<std::pair<std::string, std::shared_ptr<model>>> models_;
 
-//    friend class simulation;
 };
 
 } // namespace vico

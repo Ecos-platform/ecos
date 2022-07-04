@@ -3,8 +3,8 @@
 #ifndef VICO_SIMULATION_HPP
 #define VICO_SIMULATION_HPP
 
-#include "vico/connection.hpp"
 #include "vico/algorithm.hpp"
+#include "vico/connection.hpp"
 #include "vico/model_instance.hpp"
 #include "vico/property.hpp"
 #include "vico/structure/variable_identifier.hpp"
@@ -64,13 +64,6 @@ public:
 
     model_instance* get_instance(const std::string& name);
 
-    //    void get_property_names(std::vector<std::string>& list) const
-    //    {
-    //        for (const auto& [name, _] : properties_) {
-    //            list.emplace_back(name);
-    //        }
-    //    }
-
     template<class T>
     property_t<T>* get_property(const std::string& identifier)
     {
@@ -88,52 +81,6 @@ public:
         }
         return nullptr;
     }
-    //
-    //    template<class T>
-    //    property_t<T>* get_property(const std::string& identifier)
-    //    {
-    //        if (properties_.count(identifier)) {
-    //            return static_cast<property_t<T>*>(properties_.at(identifier).get());
-    //        } else {
-    //            return nullptr;
-    //        }
-    //    }
-
-    //    template<class Base>
-    //    vico::system* get_system()
-    //    {
-    //        for (auto& system : this->systems_) {
-    //            if (dynamic_cast<Base*>(system.get())) {
-    //                return system.get();
-    //            }
-    //        }
-    //        return nullptr;
-    //    }
-    //
-    //
-    //    property* get_property(const std::string& identifier);
-    //
-    //    template<class T>
-    //    property_t<T>* get_property(const std::string& identifier)
-    //    {
-    //
-    //        for (const auto& system : systems_) {
-    //            auto get = system->get_property<T>(identifier);
-    //            if (get) return get;
-    //        }
-    //
-    //        return nullptr;
-    //    }
-    //
-    //    std::vector<std::string> get_property_names()
-    //    {
-    //        std::vector<std::string> list;
-    //        for (const auto& system : systems_) {
-    //            system->get_property_names(list);
-    //        }
-    //
-    //        return list;
-    //    }
 
 private:
     double currentTime{0};
@@ -141,14 +88,10 @@ private:
 
     bool initialized{false};
 
-
     std::unique_ptr<algorithm> algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;
-    //    std::unordered_map<std::string, std::shared_ptr<property>> properties_;
-        std::vector<std::unique_ptr<connection>> connections_;
+    std::vector<std::unique_ptr<connection>> connections_;
     std::vector<std::shared_ptr<simulation_listener>> listeners_;
-
-    //    void updateConnections();
 };
 
 } // namespace vico

@@ -52,10 +52,6 @@ void simulation::step(unsigned int numStep)
 
         double newT = algorithm_->step(currentTime, instances_);
 
-        //        for (auto& [name, p] : properties_) {
-        //            p->updateConnections();
-        //        }
-
         for (auto& c : connections_) {
             c->transferData();
         }
@@ -105,14 +101,3 @@ void simulation::add_slave(std::unique_ptr<model_instance> instance)
 
     instances_.emplace_back(std::move(instance));
 }
-
-//
-// property* simulation::get_property(const std::string& identifier)
-//{
-//    for (const auto& system : systems_) {
-//        auto get = system->get_property(identifier);
-//        if (get) return get;
-//    }
-//
-//    return nullptr;
-//}

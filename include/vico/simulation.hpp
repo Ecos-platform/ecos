@@ -63,9 +63,9 @@ public:
     bool_connection* make_bool_connection(const variable_identifier& source, const variable_identifier& sink)
     {
         auto p1 = get_bool_property(source);
-        if (!p1) throw std::runtime_error("No such int property: " + source.str());
+        if (!p1) throw std::runtime_error("No such bool property: " + source.str());
         auto p2 = get_bool_property(sink);
-        if (!p2) throw std::runtime_error("No such int property: " + sink.str());
+        if (!p2) throw std::runtime_error("No such bool property: " + sink.str());
 
         connections_.emplace_back(std::make_unique<bool_connection>(p1, p2));
         return dynamic_cast<bool_connection*>(connections_.back().get());
@@ -74,9 +74,9 @@ public:
     string_connection* make_string_connection(const variable_identifier& source, const variable_identifier& sink)
     {
         auto p1 = get_string_property(source);
-        if (!p1) throw std::runtime_error("No such int property: " + source.str());
+        if (!p1) throw std::runtime_error("No such string property: " + source.str());
         auto p2 = get_string_property(sink);
-        if (!p2) throw std::runtime_error("No such int property: " + sink.str());
+        if (!p2) throw std::runtime_error("No such string property: " + sink.str());
 
         connections_.emplace_back(std::make_unique<string_connection>(p1, p2));
         return dynamic_cast<string_connection*>(connections_.back().get());

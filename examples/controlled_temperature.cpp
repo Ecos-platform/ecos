@@ -11,7 +11,7 @@ int main()
     auto fmuModel = fmi_model(fmuPath);
 
     simulation sim(std::make_unique<fixed_step_algorithm>(1.0 / 100));
-    sim.add_slave(fmuModel.instantiate("instance"));
+    sim.add_slave(fmuModel.instantiate("slave"));
 
     auto p = sim.get_property<double>("slave.Temperature_Room");
     p->set_output_modifier([](double value) {

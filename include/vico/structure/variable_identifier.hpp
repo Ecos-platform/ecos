@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <ostream>
 
 namespace vico
 {
@@ -24,7 +25,16 @@ struct variable_identifier
         , variableName(std::move(variableName))
     { }
 
-private:
+    [[nodiscard]] std::string str() const {
+        return instanceName + "::" + variableName;
+    }
+
+    std::ostream& operator<<(std::ostream& os) const
+    {
+        os << str();
+        return os;
+    }
+
 private:
     explicit variable_identifier(const std::pair<std::string, std::string>& identifier)
         : instanceName(identifier.first)

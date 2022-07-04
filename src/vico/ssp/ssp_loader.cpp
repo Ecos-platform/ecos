@@ -1,7 +1,7 @@
 
 #include "vico/ssp/ssp_loader.hpp"
 
-#include <fmilibcpp/fmu.hpp>
+#include <vico/fmi/fmi_model.hpp>
 #include <ssp/ssp.hpp>
 
 using namespace vico;
@@ -16,8 +16,18 @@ simulation_structure vico::load_ssp(const fs::path& path)
     const auto& components = system.elements.components;
     const auto& connections = system.connections;
 
+    std::unordered_map<std::string, std::shared_ptr<model>> modelCache;
+
     for (const auto& [name, component] : components) {
-        ss.add_model(name, fmilibcpp::loadFmu(desc.file(component.source)));
+        const auto fmuFile = desc.file(component.source);
+        std::shared_ptr<model> model;
+        if (modelCache.count(fmuFile.string())) {
+            model = modelCache[fmuFile.string()];
+        } else {
+            model = std::make_shared<fmi_model>(fmuFile);
+            modelCache[fmuFile.string()] = model;
+        }
+        ss.add_model(name, model);
     }
 
     for (const auto& connection : connections) {

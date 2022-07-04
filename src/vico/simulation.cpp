@@ -56,6 +56,10 @@ void simulation::step(unsigned int numStep)
         //            p->updateConnections();
         //        }
 
+        for (auto& c : connections_) {
+            c->transferData();
+        }
+
         currentTime = newT;
 
         for (auto& listener : listeners_) {

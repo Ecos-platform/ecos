@@ -22,7 +22,7 @@ public:
         const auto name = slave_->instanceName;
         const auto& md = slave_->get_model_description();
         for (const auto& v : md.modelVariables) {
-            std::string propertyName(name + "." + v.name);
+            std::string propertyName(v.name);
             if (v.is_integer()) {
                 auto p = property_t<int>::create(
                     [&v, this] { return slave_->get_integer(v.vr); },

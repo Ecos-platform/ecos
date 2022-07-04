@@ -37,7 +37,7 @@ public:
 
     void applyGets() {
         for(auto& [name, p] : properties_) {
-            p->applySet();
+            p->applyGet();
         }
     }
 

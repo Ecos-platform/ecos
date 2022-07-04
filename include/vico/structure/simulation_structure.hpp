@@ -6,6 +6,7 @@
 
 #include "vico/property.hpp"
 #include "vico/simulation.hpp"
+#include "vico/model.hpp"
 
 #include <fmilibcpp/fmu.hpp>
 #include <optional>
@@ -54,34 +55,34 @@ using bool_connection = unbound_connection_t<bool>;
 
 using unbound_connection = std::variant<int_connection, real_connection, string_connection, bool_connection>;
 
-struct model_instance_template
-{
-    const std::string instanceName;
-
-    model_instance_template(std::string instanceName, std::shared_ptr<fmilibcpp::fmu> model)
-        : instanceName(std::move(instanceName))
-        , model_(std::move(model))
-    { }
-
-    [[nodiscard]] fmilibcpp::model_description get_model_description() const
-    {
-        return model_->get_model_description();
-    }
-
-    [[nodiscard]] std::unique_ptr<fmilibcpp::slave> instantiate() const
-    {
-        return model_->new_instance(instanceName);
-    }
-
-private:
-    const std::shared_ptr<fmilibcpp::fmu> model_;
-};
+//struct model_instance_template
+//{
+//    const std::string instanceName;
+//
+//    model_instance_template(std::string instanceName, std::shared_ptr<fmilibcpp::fmu> model)
+//        : instanceName(std::move(instanceName))
+//        , model_(std::move(model))
+//    { }
+//
+//    [[nodiscard]] fmilibcpp::model_description get_model_description() const
+//    {
+//        return model_->get_model_description();
+//    }
+//
+//    [[nodiscard]] std::unique_ptr<fmilibcpp::slave> instantiate() const
+//    {
+//        return model_->new_instance(instanceName);
+//    }
+//
+//private:
+//    const std::shared_ptr<fmilibcpp::fmu> model_;
+//};
 
 class simulation_structure
 {
 
 public:
-    void add_model(const std::string& instanceName, std::shared_ptr<fmilibcpp::fmu> model);
+    void add_model(const std::string& instanceName, std::shared_ptr<model> model);
 
     void make_connection(const variable_identifier& source, const variable_identifier& target);
 
@@ -89,7 +90,7 @@ public:
 
 private:
     std::vector<unbound_connection> connections_;
-    std::vector<model_instance_template> models_;
+    std::vector<std::pair<std::string, std::shared_ptr<model>>> models_;
 
     friend class simulation;
 };

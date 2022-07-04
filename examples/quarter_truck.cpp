@@ -36,7 +36,7 @@ int main()
 
     sim.init();
 
-    while (sim.time() < 10) {
+    while (sim.time() < 1) {
         sim.step();
         std::cout << p->operator()() << std::endl;
     }

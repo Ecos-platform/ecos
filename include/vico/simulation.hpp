@@ -7,6 +7,7 @@
 #include "vico/fmi/algorithm.hpp"
 #include "vico/model_instance.hpp"
 #include "vico/property.hpp"
+#include "vico/structure/variable_identifier.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -34,14 +35,21 @@ public:
     }
 
     template<class T>
-    connection_t<T>& add_connection(const std::string& source, const std::string& sink)
+    connection_t<T>* add_connection(const std::string& source, const std::string& sink)
+    {
+        return add_connection<T>(variable_identifier(source), variable_identifier(sink));
+    }
+
+    template<class T>
+    connection_t<T>* add_connection(const variable_identifier& source, const variable_identifier& sink)
     {
         auto p1 = get_property<T>(source);
-        if (!p1) throw std::runtime_error("No such property: " + source);
+        if (!p1) throw std::runtime_error("No such property: " + source.str());
         auto p2 = get_property<T>(sink);
-        if (!p2) throw std::runtime_error("No such property: " + sink);
+        if (!p2) throw std::runtime_error("No such property: " + sink.str());
 
-        return p1->addSink(p2);
+        connections_.emplace_back(std::make_unique<connection_t<T>>(p1, p2));
+        return static_cast<connection_t<T>*>(connections_.back().get());
     }
 
     void init(double startTime = 0);
@@ -66,9 +74,17 @@ public:
     template<class T>
     property_t<T>* get_property(const std::string& identifier)
     {
+        return get_property<T>(variable_identifier(identifier));
+    }
+
+    template<class T>
+    property_t<T>* get_property(const variable_identifier& identifier)
+    {
         for (auto& instance : instances_) {
-            auto p = instance->getProperty<T>(identifier);
-            if (p) return p;
+            if (instance->instanceName == identifier.instanceName) {
+                auto p = instance->getProperty<T>(identifier.variableName);
+                if (p) return p;
+            }
         }
         return nullptr;
     }
@@ -129,7 +145,7 @@ private:
     std::unique_ptr<algorithm> algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;
     //    std::unordered_map<std::string, std::shared_ptr<property>> properties_;
-    //    std::vector<std::unique_ptr<connection>> connections_;
+        std::vector<std::unique_ptr<connection>> connections_;
     std::vector<std::shared_ptr<simulation_listener>> listeners_;
 
     //    void updateConnections();

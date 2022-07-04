@@ -48,11 +48,11 @@ struct property_t : property
     void applySet() override
     {
         if (setter && cachedSet) {
-            auto value = *cachedSet;
+            T value = cachedSet.value();
             if (inputModifier_) {
                 value = inputModifier_->operator()(value);
             }
-            *setter(value);
+            setter->operator()(value);
             cachedSet = std::nullopt;
         }
     }

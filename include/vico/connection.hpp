@@ -25,7 +25,7 @@ struct connection_t : public connection
         , sink(sink)
     { }
 
-    virtual void transferData() override
+    void transferData() override
     {
         T value = source->get_value();
     }

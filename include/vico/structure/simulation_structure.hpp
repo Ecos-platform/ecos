@@ -11,6 +11,7 @@
 #include <fmilibcpp/fmu.hpp>
 #include <optional>
 #include <unordered_map>
+#include <map>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -53,11 +54,17 @@ public:
         connections_.emplace_back(c);
     }
 
-    std::unique_ptr<simulation> load(std::unique_ptr<algorithm> algorithm = nullptr);
+    void add_parameter_set(const std::string& name, const std::map<variable_identifier, std::variant<double, int, bool, std::string>>& map) {
+        parameterSets[name] = map;
+    }
+
+    std::unique_ptr<simulation> load(std::unique_ptr<algorithm> algorithm, std::optional<std::string> parameterSet = std::nullopt);
 
 private:
+
     std::vector<unbound_connection> connections_;
     std::vector<std::pair<std::string, std::shared_ptr<model>>> models_;
+    std::unordered_map<std::string, std::map<variable_identifier, std::variant<double, int, bool, std::string>>> parameterSets;
 
 };
 

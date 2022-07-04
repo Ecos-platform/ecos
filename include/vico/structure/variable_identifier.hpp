@@ -29,6 +29,10 @@ struct variable_identifier
         return instanceName + "::" + variableName;
     }
 
+    bool operator<(const variable_identifier& other) const {
+        return instanceName < other.instanceName || (instanceName == other.instanceName && variableName < other.variableName);
+    }
+
     std::ostream& operator<<(std::ostream& os) const
     {
         os << str();

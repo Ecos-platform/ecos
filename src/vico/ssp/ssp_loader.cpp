@@ -19,6 +19,7 @@ simulation_structure vico::load_ssp(const fs::path& path)
     ssp::SystemStructureDescription desc(path);
 
     const auto& system = desc.system;
+    const auto& parameterSets = system.elements.parameterSets;
     const auto& components = system.elements.components;
     const auto& connections = system.connections;
 
@@ -64,6 +65,26 @@ simulation_structure vico::load_ssp(const fs::path& path)
         } else if (typeName == "String") {
             ss.make_connection<std::string>(source, sink);
         }
+    }
+
+    for (auto& [parameterSetName, sets] : parameterSets) {
+        std::map<variable_identifier, std::variant<double, int , bool, std::string>> map;
+        for (auto& [component, parameters] : sets) {
+            for (auto& p : parameters) {
+                variable_identifier v{component.name, p.name};
+                const auto& type = p.type;
+                if (type.isReal()) {
+                    map[v] = type.real.value();
+                } else if (type.isInteger()) {
+                    map[v] = type.integer.value();
+                }  else if (type.isString()) {
+                    map[v] = type.string.value();
+                }  else if (type.isBool()) {
+                    map[v] = type.boolean.value();
+                }
+            }
+        }
+        if (!map.empty()) ss.add_parameter_set(parameterSetName, map);
     }
 
     return ss;

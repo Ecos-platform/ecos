@@ -49,6 +49,11 @@ public:
     void add_model(const std::string& instanceName, std::shared_ptr<model> model);
 
     template<class T>
+    void make_connection(const std::string& source, const std::string& sink, const std::optional<std::function<T(const T&)>>& modifier = std::nullopt) {
+        make_connection(variable_identifier{source}, variable_identifier{sink}, modifier);
+    }
+
+    template<class T>
     void make_connection(const variable_identifier& source, const variable_identifier& sink, const std::optional<std::function<T(const T&)>>& modifier = std::nullopt) {
         unbound_connection_t<T> c(source, sink, modifier);
         connections_.emplace_back(c);

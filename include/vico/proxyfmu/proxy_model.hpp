@@ -1,10 +1,11 @@
 
-
 #ifndef VICO_PROXY_MODEL_HPP
 #define VICO_PROXY_MODEL_HPP
 
-#include "vico/model.hpp"
 #include "proxyfmu/client/proxy_fmu.hpp"
+
+#include "vico/fmi/fmi_model_instance.hpp"
+#include "vico/model.hpp"
 #include "vico/util/fs_portability.hpp"
 
 namespace vico
@@ -14,10 +15,17 @@ class proxy_model : public model
 {
 public:
     proxy_model(const fs::path& fmuPath)
+        : fmu_(fmuPath)
     {
-
     }
 
+    std::unique_ptr<model_instance> instantiate(std::string instanceName)
+    {
+        return std::make_unique<fmi_model_instance>(std::move(fmu_.new_instance(instanceName)));
+    }
+
+private:
+    proxyfmu::client::proxy_fmu fmu_;
 };
 
 } // namespace vico

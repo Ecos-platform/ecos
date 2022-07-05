@@ -15,6 +15,8 @@ set(publicHeaders
         "vico/fmi/fmi_model.hpp"
         "vico/fmi/fmi_model_instance.hpp"
 
+        "vico/proxyfmu/proxy_model.hpp"
+
         "vico/listeners/simulation_listener.hpp"
         "vico/listeners/csv_writer.hpp"
 

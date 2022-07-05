@@ -2,6 +2,8 @@
 #include <vico/proxyfmu/proxy_model.hpp>
 #include <vico/simulation.hpp>
 
+#include <iostream>
+
 using namespace vico;
 
 int main()

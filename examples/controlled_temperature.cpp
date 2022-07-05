@@ -2,6 +2,8 @@
 #include <vico/fmi/fmi_model.hpp>
 #include <vico/simulation.hpp>
 
+#include <iostream>
+
 using namespace vico;
 
 int main()

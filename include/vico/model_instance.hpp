@@ -5,6 +5,7 @@
 #include "property.hpp"
 
 #include <unordered_map>
+#include <stdexcept>
 
 namespace vico
 {

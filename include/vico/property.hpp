@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <functional>
-#include <iostream>
+#include <iterator>
 #include <optional>
 #include <utility>
 #include <variant>

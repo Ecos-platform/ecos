@@ -2,6 +2,8 @@
 #include <vico/ssp/ssp_loader.hpp>
 #include "vico/listeners/csv_writer.hpp"
 
+#include <iostream>
+
 using namespace vico;
 
 namespace

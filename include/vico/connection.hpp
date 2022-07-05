@@ -5,6 +5,8 @@
 #include "property.hpp"
 
 #include <utility>
+#include <stdexcept>
+#include <functional>
 
 namespace vico
 {
@@ -32,8 +34,12 @@ struct connection_te : public connection
     void transferData() override
     {
         T value = source->get_value();
-        E mod = modifier.value()(value);
-        sink->set_value(mod);
+       if (modifier) {
+           E mod = modifier.value()(value);
+           sink->set_value(mod);
+       } else {
+           throw std::runtime_error("Modifier required!");
+       }
     }
 
 protected:

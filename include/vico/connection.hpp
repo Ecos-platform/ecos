@@ -28,6 +28,7 @@ struct connection_t : public connection
     void transferData() override
     {
         T value = source->get_value();
+        sink->set_value(value);
     }
 
 };

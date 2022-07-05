@@ -27,21 +27,11 @@ struct csv_config
         variablesToLog_.emplace_back(std::move(v));
     }
 
-    [[nodiscard]] bool shouldLogInstance(const std::string& instanceName) const
-    {
-        bool log = std::find_if(variablesToLog_.begin(), variablesToLog_.end(), [instanceName](const variable_identifier& v) {
-            return v.instanceName == instanceName;
-        }) != std::end(variablesToLog_);
-        return log;
-    }
+    [[nodiscard]] bool shouldLogInstance(const std::string& instanceName) const;
 
-    [[nodiscard]] bool shouldLogVariable(const std::string& variableName) const
-    {
-        bool log = std::find_if(variablesToLog_.begin(), variablesToLog_.end(), [variableName](const variable_identifier& v) {
-            return v.variableName == variableName;
-        }) != std::end(variablesToLog_);
-        return log;
-    }
+    [[nodiscard]] bool shouldLogVariable(const std::string& variableName) const;
+
+    void verify(const std::vector<variable_identifier>& ids);
 
 private:
     std::vector<variable_identifier> variablesToLog_;

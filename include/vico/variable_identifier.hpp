@@ -29,6 +29,14 @@ struct variable_identifier
         return instanceName + "::" + variableName;
     }
 
+    bool operator==(const variable_identifier& other) const {
+        return instanceName == other.instanceName && variableName == other.variableName;
+    }
+
+    bool operator!=(const variable_identifier& other) const {
+        return !(*this == other);
+    }
+
     bool operator<(const variable_identifier& other) const {
         return instanceName < other.instanceName || (instanceName == other.instanceName && variableName < other.variableName);
     }

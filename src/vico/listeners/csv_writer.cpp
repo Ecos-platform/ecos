@@ -3,6 +3,9 @@
 
 #include "vico/simulation.hpp"
 
+#include <iostream>
+#include <sstream>
+
 using namespace vico;
 
 namespace
@@ -79,6 +82,10 @@ void csv_writer::pre_init(simulation& sim)
 {
     outFile_ << "iterations, time";
 
+    if (config_) {
+        config_->verify(sim.identifiers());
+    }
+
     for (auto& instance : sim.get_instances()) {
 
         bool logInstance = true;
@@ -136,4 +143,49 @@ void csv_writer::post_step(simulation& sim)
 void csv_writer::post_terminate(simulation& sim)
 {
     outFile_.close();
+}
+
+void csv_config::verify(const std::vector<variable_identifier>& ids)
+{
+    int foundCount = 0;
+    int missingCount = 0;
+    std::stringstream missing;
+    std::stringstream found;
+    for (auto& v : variablesToLog_) {
+        if (std::find(ids.begin(), ids.end(), v) == std::end(ids)) {
+            if (missingCount > 0) {
+                missing << ", ";
+            }
+            missing << v.str();
+            ++missingCount;
+        } else {
+            if (foundCount > 0) {
+                found << ", ";
+            }
+            found << v.str();
+            ++foundCount;
+        }
+    }
+    if (missingCount > 0) {
+        std::cerr << "[warning] Missing " << missingCount << " variables declared for logging: "
+                  << missing.str() << std::endl;
+    }
+    std::cout << "[info] Logging " << foundCount << " variables: "
+              << found.str() << std::endl;
+}
+
+bool csv_config::shouldLogVariable(const std::string& variableName) const
+{
+    bool log = std::find_if(variablesToLog_.begin(), variablesToLog_.end(), [variableName](const variable_identifier& v) {
+        return v.variableName == variableName;
+    }) != std::end(variablesToLog_);
+    return log;
+}
+
+bool csv_config::shouldLogInstance(const std::string& instanceName) const
+{
+    bool log = std::find_if(variablesToLog_.begin(), variablesToLog_.end(), [instanceName](const variable_identifier& v) {
+        return v.instanceName == instanceName;
+    }) != std::end(variablesToLog_);
+    return log;
 }

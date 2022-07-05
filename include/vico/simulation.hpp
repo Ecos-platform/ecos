@@ -5,10 +5,10 @@
 
 #include "vico/algorithm/algorithm.hpp"
 #include "vico/connection.hpp"
+#include "vico/listeners/simulation_listener.hpp"
 #include "vico/model_instance.hpp"
 #include "vico/property.hpp"
 #include "vico/variable_identifier.hpp"
-#include "vico/listeners/simulation_listener.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -16,8 +16,6 @@
 
 namespace vico
 {
-
-//struct simulation_listener;
 
 class simulation
 {
@@ -166,11 +164,21 @@ public:
         return instances_;
     }
 
+    [[nodiscard]] std::vector<variable_identifier> identifiers() const
+    {
+        std::vector<variable_identifier> ids;
+        for (auto& instance : instances_) {
+            for (auto& p : instance->get_properties().get_property_names()) {
+                ids.emplace_back(variable_identifier{instance->instanceName, p});
+            }
+        }
+        return ids;
+    }
+
 private:
     double currentTime{0};
-    unsigned long num_iterations{0};
-
     bool initialized{false};
+    unsigned long num_iterations{0};
 
     std::unique_ptr<algorithm> algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;

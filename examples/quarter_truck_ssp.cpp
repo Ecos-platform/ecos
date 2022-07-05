@@ -24,11 +24,12 @@ int main()
 
     csv_config config;
     config.log_variable("chassis.zChassis");
+    config.log_variable("wheel.zWheel");
+    config.log_variable("ground.zGround");
 
-    sim->add_listener(std::make_unique<csv_writer>("sub/sub/data.csv", config));
+    sim->add_listener(std::make_unique<csv_writer>("results/quarter_truck.csv", config));
 
     sim->init();
-
     while (sim->time() < 1) {
         sim->step();
         std::cout << p->operator()() << std::endl;

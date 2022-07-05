@@ -4,6 +4,8 @@
 
 #include "property.hpp"
 
+#include <utility>
+
 namespace vico
 {
 
@@ -14,15 +16,39 @@ struct connection
     virtual ~connection() = default;
 };
 
-template<class T>
-struct connection_t : public connection
+template<class T, class E>
+struct connection_te : public connection
 {
     property_t<T>* source;
-    property_t<T>* sink;
+    property_t<E>* sink;
+    std::optional<std::function<E(const T&)>> modifier;
 
-    connection_t(property_t<T>* source, property_t<T>* sink)
+    connection_te(property_t<T>* source, property_t<E>* sink, std::function<E(const T&)> mod)
         : source(source)
         , sink(sink)
+        , modifier(std::move(mod))
+    { }
+
+    void transferData() override
+    {
+        T value = source->get_value();
+        E mod = modifier.value()(value);
+        sink->set_value(mod);
+    }
+
+protected:
+    connection_te(property_t<T>* source, property_t<T>* sink)
+        : source(source)
+        , sink(sink)
+    { }
+};
+
+template<class T>
+struct connection_t : public connection_te<T, T>
+{
+
+    connection_t(property_t<T>* source, property_t<T>* sink)
+        : connection_te<T, T>(source, sink)
     { }
 
     void transferData() override
@@ -30,12 +56,11 @@ struct connection_t : public connection
         T value = source->get_value();
         sink->set_value(value);
     }
-
 };
 
-class real_connection : public connection_t<double> {
+class real_connection : public connection_t<double>
+{
 public:
-
     std::optional<std::function<double(double)>> modifier = std::nullopt;
 
     real_connection(property_t<double>* source, property_t<double>* sink)
@@ -55,7 +80,6 @@ public:
     {
         modifier = std::move(mod);
     }
-
 };
 using int_connection = connection_t<int>;
 using bool_connection = connection_t<bool>;

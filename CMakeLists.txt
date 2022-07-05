@@ -10,6 +10,7 @@ message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 option(BUILD_SHARED_LIBS OFF)
 option(VICO_BUILD_TESTS "Build tests" ON)
 option(VICO_BUILD_EXAMPLES "Build examples" OFF)
+option(VICO_BUILD_CLI "Build CLI" ON)
 
 # ==============================================================================
 # Global internal configuration
@@ -59,6 +60,10 @@ endif ()
 # ==============================================================================
 
 add_subdirectory(src)
+
+if (VICO_BUILD_CLI)
+    add_subdirectory(cli)
+endif()
 
 if (VICO_BUILD_EXAMPLES OR VICO_BUILD_TESTS)
     file(COPY data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

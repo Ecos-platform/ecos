@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:vico="http://github.com/Vico-platform/libvico/resources/schema/ChartConfig"
+           elementFormDefault="qualified"
+           targetNamespace="http://github.com/Vico-platform/libvico/resources/schema/ChartConfig">
+
+    <xs:element name="ChartConfig" type="vico:TChartConfig"/>
+
+    <xs:complexType name="TChartConfig">
+        <xs:sequence>
+            <xs:element name="chart" type="vico:TChart" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TChart">
+        <xs:choice>
+            <xs:element name="xyseries" type="vico:TXYSeriesChart"/>
+            <xs:element name="timeseries" type="vico:TTimeSeriesChart"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="TXYSeriesChart">
+        <xs:sequence>
+            <xs:element name="series" type="vico:TXYSeries" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="title" type="xs:string" use="required"/>
+        <xs:attribute name="xLabel" type="xs:string" use="required"/>
+        <xs:attribute name="yLabel" type="xs:string" use="required"/>
+        <xs:attribute name="width" type="xs:int" default="800"/>
+        <xs:attribute name="height" type="xs:int" default="640"/>
+        <xs:attribute name="decimationFactor" type="xs:int" default="1"/>
+    </xs:complexType>
+
+    <xs:complexType name="TXYSeries">
+        <xs:sequence>
+            <xs:element name="x" type="vico:TVariableIdentifier"/>
+            <xs:element name="y" type="vico:TVariableIdentifier"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="TTimeSeriesChart">
+        <xs:sequence>
+            <xs:element name="series" type="vico:TTimeSeries"/>
+        </xs:sequence>
+        <xs:attribute name="title" type="xs:string" use="required"/>
+        <xs:attribute name="label" type="xs:string" use="required"/>
+        <xs:attribute name="width" type="xs:int" default="800"/>
+        <xs:attribute name="height" type="xs:int" default="640"/>
+        <xs:attribute name="decimationFactor" type="xs:int" default="1"/>
+    </xs:complexType>
+
+    <xs:complexType name="TTimeSeries">
+        <xs:sequence>
+            <xs:element name="component" type="vico:TComponent" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TVariableIdentifier">
+        <xs:attribute name="component" type="xs:string" use="required"/>
+        <xs:attribute name="variable" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="TComponent">
+        <xs:sequence>
+            <xs:element name="variable" type="vico:TVariable" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="TVariable">
+        <xs:sequence>
+            <xs:element name="linearTransformation" type="vico:TLinearTransformation" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="TLinearTransformation">
+        <xs:attribute name="offset" type="xs:double" default="0"/>
+        <xs:attribute name="factor" type="xs:double" default="1"/>
+    </xs:complexType>
+
+</xs:schema>

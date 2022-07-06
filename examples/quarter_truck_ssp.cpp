@@ -21,10 +21,10 @@ int main()
     sim->add_listener(std::make_unique<csv_writer>("results/quarter_truck.csv", config));
 
     sim->init("initialValues");
-    while (sim->time() < 1) {
+    while (sim->time() < 10) {
         sim->step();
-        std::cout << p->operator()() << std::endl;
     }
+    std::cout << p->operator()() << std::endl;
 
     sim->terminate();
 }

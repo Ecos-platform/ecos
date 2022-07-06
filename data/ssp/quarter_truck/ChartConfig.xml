@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vico:ChartConfig xmlns:vico="http://github.com/Vico-platform/libvico/resources/schema/ChartConfig">
+
+    <vico:chart>
+        <vico:timeseries title="Quarter-truck" label="Height[m]">
+            <vico:series>
+                <vico:component name="chassis">
+                    <vico:variable name="zChassis"/>
+                </vico:component>
+                <vico:component name="wheel">
+                    <vico:variable name="zWheel"/>
+                </vico:component>
+                <vico:component name="ground">
+                    <vico:variable name="zGround"/>
+                </vico:component>
+            </vico:series>
+        </vico:timeseries>
+    </vico:chart>
+
+</vico:ChartConfig>

@@ -90,19 +90,21 @@ void csv_writer::pre_init(simulation& sim)
 
     for (auto& instance : sim.get_instances()) {
 
+
         bool logInstance = true;
+        const auto instanceName = instance->instanceName;
         if (config_) {
-            logInstance = config_->shouldLogInstance(instance->instanceName);
+            logInstance = config_->shouldLogInstance(instanceName);
         }
 
         if (logInstance) {
             auto& properties = instance->get_properties();
-            for (auto& [name, p] : properties.get_reals()) {
+            for (auto& [variableName, p] : properties.get_reals()) {
                 bool logVar = true;
                 if (config_) {
-                    logVar = config_->shouldLogVariable(name);
+                    logVar = config_->shouldLogVariable(variableName);
                 }
-                if (logVar) outFile_ << ", " << name << "[REAL]";
+                if (logVar) outFile_ << ", " << instanceName << "." << variableName << "[REAL]";
             }
             for (auto& [name, p] : properties.get_integers()) {
                 bool logVar = true;

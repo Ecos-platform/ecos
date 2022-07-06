@@ -28,14 +28,14 @@ int main()
     auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     auto p = sim->get_real_property("chassis.zChassis");
 
-    const auto& config = csv_config::parse("../data/fmus/2.0/quarter-truck/LogConfig.xml");
+    const auto& config = csv_config::parse("../data/ssp/quarter_truck/LogConfig.xml");
     sim->add_listener(std::make_unique<csv_writer>("results/quarter_truck_with_config.csv", config));
 
     sim->init("initialValues");
-    while (sim->time() < 1) {
+    while (sim->time() < 10) {
         sim->step();
-        std::cout << p->operator()() << std::endl;
     }
+    std::cout << p->operator()() << std::endl;
 
     sim->terminate();
 }

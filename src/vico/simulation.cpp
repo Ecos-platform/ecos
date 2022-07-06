@@ -3,6 +3,8 @@
 
 #include "vico/listeners/simulation_listener.hpp"
 
+#include <iostream>
+
 using namespace vico;
 
 simulation::simulation(std::unique_ptr<algorithm> algorithm)
@@ -19,14 +21,22 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
             listener->pre_init(*this);
         }
 
+        int parametersetAppliedCount = 0;
         for (auto& instance : instances_) {
             double start = startTime.value_or(0);
             if (start < 0) throw std::runtime_error("Explicitly defined startTime must be greater than 0!");
             instance->setup_experiment(start);
             instance->enter_initialization_mode();
             if (parameterSet) {
-                instance->applyParameterSet(*parameterSet);
+                if (instance->apply_parameter_set(*parameterSet)) {
+                    ++parametersetAppliedCount;
+                }
             }
+        }
+        if (parameterSet) {
+            std::cout << "[info] Parameterset '" << *parameterSet
+                      << "' applied to " << parametersetAppliedCount
+                      << " instances" << std::endl;
         }
 
         for (auto& instance : instances_) {
@@ -116,4 +126,3 @@ void simulation::add_slave(std::unique_ptr<model_instance> instance)
 
     instances_.emplace_back(std::move(instance));
 }
-

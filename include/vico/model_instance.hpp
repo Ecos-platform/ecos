@@ -38,7 +38,7 @@ public:
         throw std::runtime_error("Reset not implemented!");
     }
 
-    void applyParameterSet(const std::string& name)
+    bool apply_parameter_set(const std::string& name)
     {
         if (parameterSets_.count(name)) {
 
@@ -48,29 +48,58 @@ public:
                 switch (value.index()) {
                     case 0: {
                         auto p = properties_.get_real_property(variableName);
+                        if (!p) {
+                            throw std::runtime_error("No variable named '" + variableName +
+                                "' of type real registered for instance '" + instanceName + "'");
+                        }
                         p->set_value(std::get<double>(value));
-                        break ;
+                        break;
                     }
                     case 1: {
                         auto p = properties_.get_int_property(variableName);
+                        if (!p) {
+                            throw std::runtime_error("No variable named '" + variableName +
+                                "' of type int registered for instance '" + instanceName + "'");
+                        }
                         p->set_value(std::get<int>(value));
-                        break ;
+                        break;
                     }
                     case 2: {
                         auto p = properties_.get_bool_property(variableName);
+                        if (!p) {
+                            throw std::runtime_error("No variable named '" + variableName +
+                                "' of type bool registered for instance '" + instanceName + "'");
+                        }
                         p->set_value(std::get<bool>(value));
-                        break ;
+                        break;
                     }
                     case 3: {
                         auto p = properties_.get_string_property(variableName);
+                        if (!p) {
+                            throw std::runtime_error("No variable named '" + variableName +
+                                "' of type string registered for instance '" + instanceName + "'");
+                        }
                         p->set_value(std::get<std::string>(value));
-                        break ;
+                        break;
                     }
                 }
-
             }
-
+            return true;
         }
+        return false;
+    }
+
+    void add_parameter_set(const std::string& name, const std::unordered_map<std::string, std::variant<double, int, bool, std::string>>& parameterSet)
+    {
+        parameterSets_.emplace(name, parameterSet);
+    }
+
+    void add_parameterset_entry(
+        const std::string& parameterSetName,
+        const std::string& variableName,
+        const std::variant<double, int, bool, std::string>& value)
+    {
+        parameterSets_[parameterSetName][variableName] = value;
     }
 
     properties& get_properties()

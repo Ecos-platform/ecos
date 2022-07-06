@@ -36,25 +36,7 @@ std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm
 
     for (auto& [parameterSetName, map] : parameterSets) {
         for (auto& [v, value] : map) {
-            auto& props = instances[v.instanceName]->get_properties();
-            switch (value.index()) {
-                case 0: {
-                    props.get_real_property(v.variableName)->set_value(std::get<double>(value));
-                    break;
-                }
-                case 1: {
-                    props.get_int_property(v.variableName)->set_value(std::get<int>(value));
-                    break;
-                }
-                case 2: {
-                    props.get_bool_property(v.variableName)->set_value(std::get<bool>(value));
-                    break;
-                }
-                case 3: {
-                    props.get_string_property(v.variableName)->set_value(std::get<std::string>(value));
-                    break;
-                }
-            }
+            instances[v.instanceName]->add_parameterset_entry(parameterSetName, v.variableName, value);
         }
     }
 

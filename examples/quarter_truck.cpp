@@ -28,7 +28,6 @@ int main()
     auto p = sim->get_real_property("chassis.zChassis");
 
     sim->init("initialValues");
-
     while (sim->time() < 1) {
         sim->step();
         std::cout << p->operator()() << std::endl;

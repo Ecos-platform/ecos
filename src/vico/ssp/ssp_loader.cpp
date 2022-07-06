@@ -72,16 +72,7 @@ simulation_structure vico::load_ssp(const std::filesystem::path& path)
         for (const auto& [component, parameters] : sets) {
             for (const auto& p : parameters) {
                 variable_identifier v{component.name, p.name};
-                const auto& type = p.type;
-                if (type.isReal()) {
-                    map[v] = type.real.value();
-                } else if (type.isInteger()) {
-                    map[v] = type.integer.value();
-                }  else if (type.isString()) {
-                    map[v] = type.string.value();
-                }  else if (type.isBool()) {
-                    map[v] = type.boolean.value();
-                }
+                map[v] = p.type.value;
             }
         }
         if (!map.empty())

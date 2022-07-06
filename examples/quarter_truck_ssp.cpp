@@ -6,23 +6,12 @@
 
 using namespace vico;
 
-namespace
-{
-
-double dummyModifier(double value)
-{
-    return value * 2;
-}
-
-} // namespace
-
 int main()
 {
-    auto ss = load_ssp("../data/ssp/quarter_truck/quarter-truck.ssp");
-    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
+    auto ss = load_ssp("../data/ssp/quarter_truck");
+    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
 
     auto p = sim->get_real_property("chassis.zChassis");
-    p->set_output_modifier(&dummyModifier);
 
     csv_config config;
     config.log_variable("chassis.zChassis");
@@ -31,7 +20,7 @@ int main()
 
     sim->add_listener(std::make_unique<csv_writer>("results/quarter_truck.csv", config));
 
-    sim->init();
+    sim->init("initialValues");
     while (sim->time() < 1) {
         sim->step();
         std::cout << p->operator()() << std::endl;

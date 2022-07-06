@@ -64,7 +64,7 @@ public:
         parameterSets[name] = map;
     }
 
-    std::unique_ptr<simulation> load(std::unique_ptr<algorithm> algorithm, std::optional<std::string> parameterSet = std::nullopt);
+    std::unique_ptr<simulation> load(std::unique_ptr<algorithm> algorithm);
 
 private:
     std::vector<unbound_connection> connections_;

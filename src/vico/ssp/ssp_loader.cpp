@@ -38,10 +38,10 @@ simulation_structure vico::load_ssp(const fs::path& path)
     }
 
     for (const auto& connection : connections) {
-        const auto startComponent = components.at(connection.startElement);
-        const auto startConnector = startComponent.connectors.at(connection.startConnector);
-        const auto endComponent = components.at(connection.endElement);
-        const auto endConnector = endComponent.connectors.at(connection.endConnector);
+        const auto& startComponent = components.at(connection.startElement);
+        const auto& startConnector = startComponent.connectors.at(connection.startConnector);
+        const auto& endComponent = components.at(connection.endElement);
+        const auto& endConnector = endComponent.connectors.at(connection.endConnector);
         const variable_identifier source(connection.startElement, connection.startConnector);
         const variable_identifier sink(connection.endElement, connection.endConnector);
 
@@ -67,10 +67,10 @@ simulation_structure vico::load_ssp(const fs::path& path)
         }
     }
 
-    for (auto& [parameterSetName, sets] : parameterSets) {
+    for (const auto& [parameterSetName, sets] : parameterSets) {
         std::map<variable_identifier, std::variant<double, int , bool, std::string>> map;
-        for (auto& [component, parameters] : sets) {
-            for (auto& p : parameters) {
+        for (const auto& [component, parameters] : sets) {
+            for (const auto& p : parameters) {
                 variable_identifier v{component.name, p.name};
                 const auto& type = p.type;
                 if (type.isReal()) {
@@ -84,7 +84,10 @@ simulation_structure vico::load_ssp(const fs::path& path)
                 }
             }
         }
-        if (!map.empty()) ss.add_parameter_set(parameterSetName, map);
+        if (!map.empty())
+        {
+            ss.add_parameter_set(parameterSetName, map);
+        }
     }
 
     return ss;

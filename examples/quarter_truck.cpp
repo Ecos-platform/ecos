@@ -24,10 +24,10 @@ int main()
     map[variable_identifier{"chassis.C.mChassis"}] = 4000.0;
     ss.add_parameter_set("initialValues", map);
 
-    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
+    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     auto p = sim->get_real_property("chassis.zChassis");
 
-    sim->init();
+    sim->init("initialValues");
 
     while (sim->time() < 1) {
         sim->step();

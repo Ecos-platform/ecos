@@ -80,7 +80,12 @@ public:
         return dynamic_cast<string_connection*>(connections_.back().get());
     }
 
-    void init(double startTime = 0);
+    void init(std::string parameterSet)
+    {
+        init(std::nullopt, parameterSet);
+    }
+
+    void init(std::optional<double> startTime = std::nullopt, std::optional<std::string> parameterSet = std::nullopt);
 
     void step(unsigned int numStep = 1);
 

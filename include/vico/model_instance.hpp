@@ -4,8 +4,8 @@
 
 #include "property.hpp"
 
-#include <unordered_map>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace vico
 {
@@ -33,8 +33,44 @@ public:
 
     virtual void terminate() = 0;
 
-    virtual void reset() {
+    virtual void reset()
+    {
         throw std::runtime_error("Reset not implemented!");
+    }
+
+    void applyParameterSet(const std::string& name)
+    {
+        if (parameterSets_.count(name)) {
+
+            auto& parameters = parameterSets_.at(name);
+            for (const auto& [variableName, value] : parameters) {
+
+                switch (value.index()) {
+                    case 0: {
+                        auto p = properties_.get_real_property(variableName);
+                        p->set_value(std::get<double>(value));
+                        break ;
+                    }
+                    case 1: {
+                        auto p = properties_.get_int_property(variableName);
+                        p->set_value(std::get<int>(value));
+                        break ;
+                    }
+                    case 2: {
+                        auto p = properties_.get_bool_property(variableName);
+                        p->set_value(std::get<bool>(value));
+                        break ;
+                    }
+                    case 3: {
+                        auto p = properties_.get_string_property(variableName);
+                        p->set_value(std::get<std::string>(value));
+                        break ;
+                    }
+                }
+
+            }
+
+        }
     }
 
     properties& get_properties()
@@ -46,6 +82,7 @@ public:
 
 protected:
     properties properties_;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::variant<double, int, bool, std::string>>> parameterSets_;
 };
 
 } // namespace vico

@@ -9,7 +9,7 @@ simulation::simulation(std::unique_ptr<algorithm> algorithm)
     : algorithm_(std::move(algorithm))
 { }
 
-void simulation::init(double startTime)
+void simulation::init(std::optional<double> startTime, std::optional<std::string> parameterSet)
 {
     if (!initialized) {
 
@@ -20,8 +20,13 @@ void simulation::init(double startTime)
         }
 
         for (auto& instance : instances_) {
-            instance->setup_experiment(startTime);
+            double start = startTime.value_or(0);
+            if (start < 0) throw std::runtime_error("Explicitly defined startTime must be greater than 0!");
+            instance->setup_experiment(start);
             instance->enter_initialization_mode();
+            if (parameterSet) {
+                instance->applyParameterSet(*parameterSet);
+            }
         }
 
         for (auto& instance : instances_) {
@@ -42,7 +47,9 @@ void simulation::init(double startTime)
 
 void simulation::step(unsigned int numStep)
 {
-    if (!initialized) { init(); }
+    if (!initialized) {
+        throw std::runtime_error("init() has not been invoked!");
+    }
 
     for (unsigned i = 0; i < numStep; i++) {
 
@@ -82,6 +89,7 @@ void simulation::reset()
     for (auto& instance : instances_) {
         instance->reset();
     }
+    initialized = false;
 }
 
 void simulation::add_listener(std::unique_ptr<simulation_listener> listener)

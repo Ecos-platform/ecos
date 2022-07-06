@@ -2,7 +2,7 @@
 #ifndef VICO_TEMP_DIR_HPP
 #define VICO_TEMP_DIR_HPP
 
-#include "vico/util/fs_portability.hpp"
+#include <filesystem>
 
 namespace vico
 {
@@ -10,14 +10,14 @@ namespace vico
 class temp_dir
 {
 private:
-    const fs::path path_;
+    const std::filesystem::path path_;
 
 public:
     explicit temp_dir(const std::string& name);
 
     temp_dir(const temp_dir&) = delete;
 
-    [[nodiscard]] fs::path path()
+    [[nodiscard]] std::filesystem::path path()
     {
         return path_;
     }

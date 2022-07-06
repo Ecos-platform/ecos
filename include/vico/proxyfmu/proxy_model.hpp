@@ -6,7 +6,8 @@
 
 #include "vico/fmi/fmi_model_instance.hpp"
 #include "vico/model.hpp"
-#include "vico/util/fs_portability.hpp"
+
+#include <filesystem>
 
 namespace vico
 {
@@ -14,7 +15,7 @@ namespace vico
 class proxy_model : public model
 {
 public:
-    proxy_model(const fs::path& fmuPath)
+    proxy_model(const std::filesystem::path& fmuPath)
         : fmu_(fmuPath)
     {
     }

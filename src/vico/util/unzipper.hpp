@@ -2,9 +2,9 @@
 #ifndef FMI4CPP_UNZIPPER_HPP
 #define FMI4CPP_UNZIPPER_HPP
 
-#include <vico/util/fs_portability.hpp>
 #include <vico/util/temp_dir.hpp>
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <optional>
@@ -15,7 +15,7 @@
 namespace
 {
 
-bool unzip(const vico::fs::path& zip_file, const vico::fs::path& tmp_path)
+bool unzip(const std::filesystem::path& zip_file, const std::filesystem::path& tmp_path)
 {
     int* err = nullptr;
     zip* za = zip_open(absolute(zip_file).string().c_str(), 0, err);
@@ -29,19 +29,19 @@ bool unzip(const vico::fs::path& zip_file, const vico::fs::path& tmp_path)
     // clang-format on
 
     const int bufferSize = 1000;
-    std::vector<char> contents(sizeof(char) * bufferSize);
+    std::vector<char> contents(bufferSize);
     zip_int64_t sum;
     zip_int64_t len;
     for (int i = 0; i < zip_get_num_entries(za, 0); i++) {
         if (zip_stat_index(za, i, 0, &sb) == 0) {
 
-            const vico::fs::path newFile = tmp_path / sb.name;
+            const std::filesystem::path newFile = tmp_path / sb.name;
 
             if (sb.size == 0) {
-                vico::fs::create_directories(newFile);
+                std::filesystem::create_directories(newFile);
             } else {
                 const auto containingDirectory = newFile.parent_path();
-                if (!vico::fs::exists(containingDirectory) && !vico::fs::create_directories(containingDirectory)) {
+                if (!std::filesystem::exists(containingDirectory) && !std::filesystem::create_directories(containingDirectory)) {
                     return false;
                 }
                 zf = zip_fopen_index(za, i, 0);

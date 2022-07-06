@@ -14,9 +14,9 @@ TEST_CASE("test_unzipper")
     temp_dir tmp("ssp");
     auto folder = unzip(quarter_truck, tmp.path());
     REQUIRE(folder);
-    REQUIRE(fs::exists(tmp.path() / "SystemStructure.ssd"));
-    REQUIRE(fs::exists(tmp.path() / "resources/chassis.fmu"));
-    REQUIRE(fs::exists(tmp.path() / "resources/ground.fmu"));
-    REQUIRE(fs::exists(tmp.path() / "resources/wheel.fmu"));
+    REQUIRE(std::filesystem::exists(tmp.path() / "SystemStructure.ssd"));
+    REQUIRE(std::filesystem::exists(tmp.path() / "resources/chassis.fmu"));
+    REQUIRE(std::filesystem::exists(tmp.path() / "resources/ground.fmu"));
+    REQUIRE(std::filesystem::exists(tmp.path() / "resources/wheel.fmu"));
 
 }

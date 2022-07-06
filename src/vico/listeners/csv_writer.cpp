@@ -61,17 +61,17 @@ void writeData(std::ofstream& out, const simulation& sim, const std::optional<cs
 
 } // namespace
 
-csv_writer::csv_writer(const fs::path& path, std::optional<csv_config> config)
+csv_writer::csv_writer(const std::filesystem::path& path, std::optional<csv_config> config)
     : config_(std::move(config))
 {
     if (path.extension().string() != ".csv") {
         throw std::runtime_error("File extension must be .csv, was: " + path.extension().string());
     }
 
-    const auto parentPath = fs::absolute(path).parent_path();
-    if (!fs::exists(parentPath)) {
-        if (!fs::create_directories(parentPath)) {
-            throw std::runtime_error("Unable to create missing directories for path: " + fs::absolute(path).string());
+    const auto parentPath = std::filesystem::absolute(path).parent_path();
+    if (!std::filesystem::exists(parentPath)) {
+        if (!std::filesystem::create_directories(parentPath)) {
+            throw std::runtime_error("Unable to create missing directories for path: " + std::filesystem::absolute(path).string());
         }
     }
 

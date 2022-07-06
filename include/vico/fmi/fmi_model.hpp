@@ -6,7 +6,8 @@
 
 #include "vico/fmi/fmi_model_instance.hpp"
 #include "vico/model.hpp"
-#include "vico/util/fs_portability.hpp"
+
+#include <filesystem>
 
 namespace vico
 {
@@ -15,7 +16,7 @@ class fmi_model : public model
 {
 
 public:
-    explicit fmi_model(const fs::path& fmuPath)
+    explicit fmi_model(const std::filesystem::path& fmuPath)
         : fmu_(fmilibcpp::loadFmu(fmuPath))
     { }
 

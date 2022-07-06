@@ -8,11 +8,11 @@
 using namespace vico;
 
 
-simulation_structure vico::load_ssp(const fs::path& path)
+simulation_structure vico::load_ssp(const std::filesystem::path& path)
 {
 
-    if (!fs::exists(path)) {
-        throw std::runtime_error("No such file: '" + fs::absolute(path).string() + "'");
+    if (!std::filesystem::exists(path)) {
+        throw std::runtime_error("No such file: '" + std::filesystem::absolute(path).string() + "'");
     }
 
     simulation_structure ss;

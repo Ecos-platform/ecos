@@ -5,9 +5,9 @@
 
 #include "simulation_listener.hpp"
 
-#include "vico/util/fs_portability.hpp"
 #include "vico/variable_identifier.hpp"
 
+#include <filesystem>
 #include <fstream>
 #include <optional>
 
@@ -41,7 +41,7 @@ class csv_writer : public simulation_listener
 {
 
 public:
-    explicit csv_writer(const fs::path& path, std::optional<csv_config> config = std::nullopt);
+    explicit csv_writer(const std::filesystem::path& path, std::optional<csv_config> config = std::nullopt);
 
     void pre_init(simulation& sim) override;
 

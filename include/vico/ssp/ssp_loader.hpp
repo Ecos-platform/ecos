@@ -3,12 +3,13 @@
 #define VICO_SSP_LOADER_HPP
 
 #include "vico/structure/simulation_structure.hpp"
-#include "vico/util/fs_portability.hpp"
+
+#include <filesystem>
 
 namespace vico
 {
 
-simulation_structure load_ssp(const fs::path& path);
+simulation_structure load_ssp(const std::filesystem::path& path);
 
 } // namespace vico
 

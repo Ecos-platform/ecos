@@ -22,8 +22,6 @@ set(publicHeaders
 
         "vico/structure/simulation_structure.hpp"
 
-        "vico/util/fs_portability.hpp"
-
         )
 
 set(publicHeadersFull)

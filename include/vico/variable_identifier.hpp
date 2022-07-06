@@ -48,12 +48,8 @@ struct variable_identifier
     }
 
 private:
-    explicit variable_identifier(const std::pair<std::string, std::string>& identifier)
-        : instanceName(identifier.first)
-        , variableName(identifier.second)
-    { }
 
-    static std::pair<std::string, std::string> parse(const std::string& identifier)
+    static variable_identifier parse(const std::string& identifier)
     {
         auto result = identifier.find('.');
         if (result == std::string::npos) {

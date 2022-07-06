@@ -21,7 +21,7 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
             listener->pre_init(*this);
         }
 
-        int parametersetAppliedCount = 0;
+        int parameterSetAppliedCount = 0;
         for (auto& instance : instances_) {
             double start = startTime.value_or(0);
             if (start < 0) throw std::runtime_error("Explicitly defined startTime must be greater than 0!");
@@ -29,13 +29,13 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
             instance->enter_initialization_mode();
             if (parameterSet) {
                 if (instance->apply_parameter_set(*parameterSet)) {
-                    ++parametersetAppliedCount;
+                    ++parameterSetAppliedCount;
                 }
             }
         }
         if (parameterSet) {
             std::cout << "[info] Parameterset '" << *parameterSet
-                      << "' applied to " << parametersetAppliedCount
+                      << "' applied to " << parameterSetAppliedCount
                       << " instances" << std::endl;
         }
 

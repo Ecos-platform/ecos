@@ -159,7 +159,12 @@ void csv_writer::post_terminate(simulation& sim)
 
 void csv_writer::enable_plotting(const std::filesystem::path& plotConfig)
 {
-    plotConfig_ = std::filesystem::absolute(plotConfig);
+    std::filesystem::path plotter("vico_plotter.py");
+    if (std::filesystem::exists(plotter)) {
+        plotConfig_ = std::filesystem::absolute(plotConfig);
+    } else {
+        std::cerr << "[warning] Plotting disabled as " << std::filesystem::absolute(plotter).string() << " is not present." << std::endl;
+    }
 }
 
 

@@ -41,6 +41,7 @@ set(privateHeaders
 set(sources
 
         "vico/simulation.cpp"
+        "vico/algorithm/fixed_step_algorithm.cpp"
         "vico/listeners/csv_writer.cpp"
         "vico/listeners/simulation_listener.cpp"
         "vico/ssp/ssp_loader.cpp"

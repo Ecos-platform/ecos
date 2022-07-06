@@ -13,6 +13,7 @@ def make_vico_tag(tag: str) -> str:
 
 
 def make_time_series(csv, timeseries):
+
     t = csv['time']
     plt.title(timeseries.attrib["title"])
     plt.xlabel("time[s]")
@@ -22,9 +23,29 @@ def make_time_series(csv, timeseries):
             comp_name = comp.attrib["name"]
             for variable in comp:
                 var_name = variable.attrib["name"]
-                id = "{}.{}[REAL]".format(comp_name, var_name)
-                data = csv[id]
-                plt.plot(t, data, label=id)
+                identifier = "{}.{}".format(comp_name, var_name)
+                m = csv.columns.str.contains(identifier)
+                data = csv.loc[:, m]
+                plt.plot(t, data, label=identifier)
+
+    plt.legend(loc='upper right')
+    plt.show()
+
+
+def make_xy_series(csv, xyseries):
+
+    plt.title(xyseries.attrib["title"])
+    plt.xlabel("time[s]")
+    plt.ylabel(xyseries.attrib["label"])
+    for series in xyseries:
+        pass
+        # for xy in series:
+        #     comp_name = comp.attrib["name"]
+        #     for variable in comp:
+        #         var_name = variable.attrib["name"]
+        #         id = "{}.{}[REAL]".format(comp_name, var_name)
+        #         data = csv[id]
+        #         plt.plot(t, data, label=id)
 
     plt.legend(loc='upper right')
     plt.show()

@@ -1,6 +1,7 @@
 #include <vico/algorithm/fixed_step_algorithm.hpp>
 #include <vico/fmi/fmi_model.hpp>
 #include <vico/structure/simulation_structure.hpp>
+#include <vico/listeners/csv_writer.hpp>
 
 #include <iostream>
 
@@ -26,6 +27,9 @@ int main()
 
     auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     auto p = sim->get_real_property("chassis.zChassis");
+
+    const auto& config = csv_config::parse("../data/fmus/2.0/quarter-truck/LogConfig.xml");
+    sim->add_listener(std::make_unique<csv_writer>("results/quarter_truck_with_config.csv", config));
 
     sim->init("initialValues");
     while (sim->time() < 1) {

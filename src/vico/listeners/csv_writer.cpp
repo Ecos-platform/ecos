@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <pugixml.hpp>
+
 using namespace vico;
 
 namespace
@@ -188,4 +190,36 @@ bool csv_config::shouldLogInstance(const std::string& instanceName) const
         return v.instanceName == instanceName;
     }) != std::end(variablesToLog_);
     return log;
+}
+
+csv_config csv_config::parse(const std::filesystem::path& configPath)
+{
+    if (!std::filesystem::exists(configPath)) {
+        throw std::runtime_error("No such file: " + std::filesystem::absolute(configPath).string());
+    }
+    const auto ext = configPath.extension().string();
+    if (ext != ".xml") {
+        throw std::runtime_error("Wrong config extension. Was " + ext + ", expected " + ".xml");
+    }
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(configPath.c_str());
+    if (!result) {
+        throw std::runtime_error(
+            "Unable to parse '" + std::filesystem::absolute(configPath).string() + "': " +
+            result.description());
+    }
+
+    csv_config config;
+    const auto root = doc.child("vico:LogConfig");
+    const auto components = root.child("vico:components");
+    for (const auto& instances : components)
+    {
+        const auto instanceName = instances.attribute("name").as_string();
+        for (const auto& variable : instances)
+        {
+            const auto variableName = variable.attribute("name").as_string();
+            config.log_variable(variable_identifier{instanceName, variableName});
+        }
+    }
+    return config;
 }

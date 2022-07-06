@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vico:LogConfig xmlns:vico="http://github.com/Vico-platform/libvico/resources/schema/LogConfig">
+
+    <vico:components>
+        <vico:component name="chassis">
+            <vico:variable name="zChassis"/>
+        </vico:component>
+        <vico:component name="wheel">
+            <vico:variable name="zWheel"/>
+        </vico:component>
+        <vico:component name="ground">
+            <vico:variable name="zGround"/>
+        </vico:component>
+    </vico:components>
+
+</vico:LogConfig>

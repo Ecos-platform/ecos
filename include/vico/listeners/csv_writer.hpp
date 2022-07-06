@@ -17,6 +17,8 @@ namespace vico
 struct csv_config
 {
 
+    csv_config() = default;
+
     void log_variable(const std::string& v)
     {
         log_variable(variable_identifier{v});
@@ -32,6 +34,8 @@ struct csv_config
     [[nodiscard]] bool shouldLogVariable(const std::string& variableName) const;
 
     void verify(const std::vector<variable_identifier>& ids);
+
+    static csv_config parse(const std::filesystem::path& configPath);
 
 private:
     std::vector<variable_identifier> variablesToLog_;

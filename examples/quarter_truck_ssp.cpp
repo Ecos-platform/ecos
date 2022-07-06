@@ -18,7 +18,9 @@ int main()
     config.log_variable("wheel.zWheel");
     config.log_variable("ground.zGround");
 
-    sim->add_listener(std::make_unique<csv_writer>("results/quarter_truck.csv", config));
+    auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck.csv", config);
+    csvWriter->enable_plotting("../data/ssp/quarter_truck/ChartConfig.xml");
+    sim->add_listener(std::move(csvWriter));
 
     sim->init("initialValues");
     while (sim->time() < 10) {

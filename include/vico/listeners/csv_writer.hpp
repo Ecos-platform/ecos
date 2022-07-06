@@ -47,6 +47,8 @@ class csv_writer : public simulation_listener
 public:
     explicit csv_writer(const std::filesystem::path& path, std::optional<csv_config> config = std::nullopt);
 
+    void enable_plotting(const std::filesystem::path& plotConfig);
+
     void pre_init(simulation& sim) override;
 
     void post_init(simulation& sim) override;
@@ -57,7 +59,9 @@ public:
 
 private:
     std::ofstream outFile_;
+    std::filesystem::path path_;
     std::optional<csv_config> config_;
+    std::optional<std::filesystem::path> plotConfig_;
 };
 
 } // namespace vico

@@ -76,4 +76,8 @@ install(
         DIRECTORY "${publicHeaderDir}/vico"
         DESTINATION "${VICO_HEADER_INSTALL_DIR}"
 )
+install(
+        FILES "${CMAKE_SOURCE_DIR}/resources/plot/vico_plotter.py"
+        DESTINATION "${CMAKE_BINARY_DIR}/bin"
+)
 

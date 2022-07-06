@@ -4,9 +4,8 @@
 #include "vico/simulation.hpp"
 
 #include <iostream>
-#include <sstream>
-
 #include <pugixml.hpp>
+#include <sstream>
 
 using namespace vico;
 
@@ -64,16 +63,17 @@ void writeData(std::ofstream& out, const simulation& sim, const std::optional<cs
 } // namespace
 
 csv_writer::csv_writer(const std::filesystem::path& path, std::optional<csv_config> config)
-    : config_(std::move(config))
+    : path_(std::filesystem::absolute(path))
+    , config_(std::move(config))
 {
     if (path.extension().string() != ".csv") {
         throw std::runtime_error("File extension must be .csv, was: " + path.extension().string());
     }
 
-    const auto parentPath = std::filesystem::absolute(path).parent_path();
+    const auto parentPath = path_.parent_path();
     if (!std::filesystem::exists(parentPath)) {
         if (!std::filesystem::create_directories(parentPath)) {
-            throw std::runtime_error("Unable to create missing directories for path: " + std::filesystem::absolute(path).string());
+            throw std::runtime_error("Unable to create missing directories for path: " + path_.string());
         }
     }
 
@@ -147,7 +147,21 @@ void csv_writer::post_step(simulation& sim)
 void csv_writer::post_terminate(simulation& sim)
 {
     outFile_.close();
+    if (plotConfig_) {
+        if (!std::filesystem::exists(*plotConfig_)) {
+            throw std::runtime_error("No such file: " + plotConfig_->string());
+        }
+        std::stringstream ss;
+        ss << "python vico_plotter.py \"" << path_.string() << "\" \"" <<  plotConfig_->string() << "\"";
+        system(ss.str().c_str());
+    }
 }
+
+void csv_writer::enable_plotting(const std::filesystem::path& plotConfig)
+{
+    plotConfig_ = std::filesystem::absolute(plotConfig);
+}
+
 
 void csv_config::verify(const std::vector<variable_identifier>& ids)
 {
@@ -214,11 +228,9 @@ csv_config csv_config::parse(const std::filesystem::path& configPath)
     csv_config config;
     const auto root = doc.child("vico:LogConfig");
     const auto components = root.child("vico:components");
-    for (const auto& instances : components)
-    {
+    for (const auto& instances : components) {
         const auto instanceName = instances.attribute("name").as_string();
-        for (const auto& variable : instances)
-        {
+        for (const auto& variable : instances) {
             const auto variableName = variable.attribute("name").as_string();
             config.log_variable(variable_identifier{instanceName, variableName});
         }

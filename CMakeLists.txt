@@ -30,6 +30,7 @@ set(VICO_INSTALL_DESTINATIONS
         INCLUDES DESTINATION "${VICO_HEADER_INSTALL_DIR}")
 set(VICO_EXPORT_TARGET "${PROJECT_NAME}-targets")
 
+file(COPY resources/plot/vico_plotter.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 # ==============================================================================
 # Dependencies

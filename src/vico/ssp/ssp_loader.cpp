@@ -1,12 +1,34 @@
 
 #include "vico/ssp/ssp_loader.hpp"
 
-#include <vico/fmi/fmi_model.hpp>
+#include "vico/fmi/fmi_model.hpp"
+#include "vico/proxyfmu/proxy_model.hpp"
 
 #include <ssp/ssp.hpp>
 
 using namespace vico;
 
+namespace
+{
+
+std::unique_ptr<model> resolve_(
+    const ssp::SystemStructureDescription& desc,
+    const std::string& source)
+{
+    if (source.rfind("proxyfmu", 0) == 0) {
+        const auto find = source.find("file=", 0);
+        if (find == std::string::npos) {
+            throw std::runtime_error("proxyfmu source missing file= component..");
+        }
+        const auto fmuFile = desc.file(source.substr(find+5));
+        return std::make_unique<proxy_model>(fmuFile);
+    } else {
+        const auto fmuFile = desc.file(source);
+        return std::make_unique<fmi_model>(fmuFile);
+    }
+}
+
+} // namespace
 
 simulation_structure vico::load_ssp(const std::filesystem::path& path)
 {
@@ -26,13 +48,12 @@ simulation_structure vico::load_ssp(const std::filesystem::path& path)
     std::unordered_map<std::string, std::shared_ptr<model>> modelCache;
 
     for (const auto& [name, component] : components) {
-        const auto fmuFile = desc.file(component.source);
         std::shared_ptr<model> model;
-        if (modelCache.count(fmuFile.string())) {
-            model = modelCache[fmuFile.string()];
+        if (modelCache.count(component.source)) {
+            model = modelCache[component.source];
         } else {
-            model = std::make_shared<fmi_model>(fmuFile);
-            modelCache[fmuFile.string()] = model;
+            model = resolve_(desc, component.source);
+            modelCache[component.source] = model;
         }
         ss.add_model(name, model);
     }
@@ -68,15 +89,14 @@ simulation_structure vico::load_ssp(const std::filesystem::path& path)
     }
 
     for (const auto& [parameterSetName, sets] : parameterSets) {
-        std::map<variable_identifier, std::variant<double, int , bool, std::string>> map;
+        std::map<variable_identifier, std::variant<double, int, bool, std::string>> map;
         for (const auto& [component, parameters] : sets) {
             for (const auto& p : parameters) {
                 variable_identifier v{component.name, p.name};
                 map[v] = p.type.value;
             }
         }
-        if (!map.empty())
-        {
+        if (!map.empty()) {
             ss.add_parameter_set(parameterSetName, map);
         }
     }

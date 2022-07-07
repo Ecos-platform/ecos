@@ -90,7 +90,6 @@ void csv_writer::pre_init(simulation& sim)
 
     for (auto& instance : sim.get_instances()) {
 
-
         bool logInstance = true;
         const auto instanceName = instance->instanceName;
         if (config_) {
@@ -104,28 +103,28 @@ void csv_writer::pre_init(simulation& sim)
                 if (config_) {
                     logVar = config_->shouldLogVariable(variableName);
                 }
-                if (logVar) outFile_ << ", " << instanceName << "." << variableName << "[REAL]";
+                if (logVar) outFile_ << ", " << instanceName << "::" << variableName << "[REAL]";
             }
-            for (auto& [name, p] : properties.get_integers()) {
+            for (auto& [variableName, p] : properties.get_integers()) {
                 bool logVar = true;
                 if (config_) {
-                    logVar = config_->shouldLogVariable(name);
+                    logVar = config_->shouldLogVariable(variableName);
                 }
-                if (logVar) outFile_ << ", " << name << "[INT]";
+                if (logVar) outFile_ << ", " << instanceName << "::" << variableName << "[INT]";
             }
-            for (auto& [name, p] : properties.get_booleans()) {
+            for (auto& [variableName, p] : properties.get_booleans()) {
                 bool logVar = true;
                 if (config_) {
-                    logVar = config_->shouldLogVariable(name);
+                    logVar = config_->shouldLogVariable(variableName);
                 }
-                if (logVar) outFile_ << ", " << name << "[BOOL]";
+                if (logVar) outFile_ << ", " << instanceName << "::" << variableName << "[BOOL]";
             }
-            for (auto& [name, p] : properties.get_strings()) {
+            for (auto& [variableName, p] : properties.get_strings()) {
                 bool logVar = true;
                 if (config_) {
-                    logVar = config_->shouldLogVariable(name);
+                    logVar = config_->shouldLogVariable(variableName);
                 }
-                if (logVar) outFile_ << ", " << name << "[STR]";
+                if (logVar) outFile_ << ", " << instanceName << "::" << variableName << "[STR]";
             }
         }
     }

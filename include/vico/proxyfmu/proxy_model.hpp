@@ -15,12 +15,12 @@ namespace vico
 class proxy_model : public model
 {
 public:
-    proxy_model(const std::filesystem::path& fmuPath)
+    explicit proxy_model(const std::filesystem::path& fmuPath)
         : fmu_(fmuPath)
     {
     }
 
-    std::unique_ptr<model_instance> instantiate(std::string instanceName)
+    std::unique_ptr<model_instance> instantiate(const std::string& instanceName) override
     {
         return std::make_unique<fmi_model_instance>(std::move(fmu_.new_instance(instanceName)));
     }

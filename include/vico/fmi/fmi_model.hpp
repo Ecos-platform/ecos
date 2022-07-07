@@ -25,7 +25,7 @@ public:
         return fmu_->get_model_description();
     }
 
-    std::unique_ptr<model_instance> instantiate(std::string instanceName) override
+    std::unique_ptr<model_instance> instantiate(const std::string& instanceName) override
     {
         return std::make_unique<fmi_model_instance>(fmu_->new_instance(instanceName));
     }

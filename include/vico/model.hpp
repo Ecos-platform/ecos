@@ -11,7 +11,7 @@ namespace vico
 class model {
 
 public:
-    virtual std::unique_ptr<model_instance> instantiate(std::string instanceName) = 0;
+    virtual std::unique_ptr<model_instance> instantiate(const std::string& instanceName) = 0;
 
     virtual ~model() = default;
 };

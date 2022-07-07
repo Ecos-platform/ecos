@@ -39,14 +39,23 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
                       << " instances" << std::endl;
         }
 
-        for (auto& instance : instances_) {
-            instance->get_properties().applySets();
-            instance->get_properties().applyGets();
+        for (unsigned i = 0; i < instances_.size(); ++i) {
+            for (auto& instance : instances_) {
+                instance->get_properties().applySets();
+                instance->get_properties().applyGets();
+            }
+            for (auto& c : connections_) {
+                c->transferData();
+            }
         }
 
         for (auto& instance : instances_) {
             instance->exit_initialization_mode();
             instance->get_properties().applyGets();
+        }
+
+        for (auto& c : connections_) {
+            c->transferData();
         }
 
         for (auto& listener : listeners_) {

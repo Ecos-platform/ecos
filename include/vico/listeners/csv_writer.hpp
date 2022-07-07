@@ -45,6 +45,8 @@ class csv_writer : public simulation_listener
 public:
     explicit csv_writer(const std::filesystem::path& path, std::optional<csv_config> config = std::nullopt);
 
+    explicit csv_writer(const std::filesystem::path& path, const std::filesystem::path& configPath);
+
     void enable_plotting(const std::filesystem::path& plotConfig);
 
     void pre_init(simulation& sim) override;

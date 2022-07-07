@@ -80,6 +80,10 @@ csv_writer::csv_writer(const std::filesystem::path& path, std::optional<csv_conf
     outFile_.open(path.string());
 }
 
+csv_writer::csv_writer(const std::filesystem::path& path, const std::filesystem::path& configPath)
+    : csv_writer(path, csv_config::parse(configPath))
+{ }
+
 void csv_writer::pre_init(simulation& sim)
 {
     outFile_ << "iterations, time";
@@ -151,7 +155,7 @@ void csv_writer::post_terminate(simulation& sim)
             throw std::runtime_error("No such file: " + plotConfig_->string());
         }
         std::stringstream ss;
-        ss << "python vico_plotter.py \"" << path_.string() << "\" \"" <<  plotConfig_->string() << "\"";
+        ss << "python vico_plotter.py \"" << path_.string() << "\" \"" << plotConfig_->string() << "\"";
         system(ss.str().c_str());
     }
 }

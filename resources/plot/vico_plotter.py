@@ -32,7 +32,6 @@ def make_time_series(csv, timeseries):
                 plt.plot(t, data, label=csv.columns[m][0])
 
     plt.legend(loc='upper right')
-    plt.show()
 
 
 def make_xy_series(csv, xyseries):
@@ -55,7 +54,6 @@ def make_xy_series(csv, xyseries):
         plt.plot(data1, data2, label=series.attrib["name"])
 
     plt.legend(loc='upper right')
-    plt.show()
 
 
 if __name__ == "__main__":
@@ -75,5 +73,5 @@ if __name__ == "__main__":
                 pass
             else:
                 pass
-
+    plt.show()
 

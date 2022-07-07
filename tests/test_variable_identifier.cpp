@@ -7,7 +7,7 @@ using namespace vico;
 
 TEST_CASE("test_variable_identifier")
 {
-    variable_identifier v1("instanceName.nested.variableName");
+    variable_identifier v1("instanceName::nested.variableName");
 
     CHECK("instanceName" == v1.instanceName);
     CHECK("nested.variableName" == v1.variableName);

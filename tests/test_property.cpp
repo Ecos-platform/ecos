@@ -10,6 +10,7 @@ TEST_CASE("test_property")
     {
         int value = -100;
         property_t<int> p(
+            {"::intValue"},
             [&] { return value; },
             [&](auto v) { value = v; });
 
@@ -19,11 +20,14 @@ TEST_CASE("test_property")
         p.applyGet();
         CHECK(p.get_value() == -101);
         CHECK(value == -101);
+        REQUIRE(p.id.instanceName.empty());
+        REQUIRE(p.id.variableName == "intValue");
     }
 
     {
         double value = -100;
         property_t<double> p(
+            {"::doubleValue"},
             [&] { return value; },
             [&](auto v) { value = v; });
 

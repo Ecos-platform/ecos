@@ -25,23 +25,25 @@ public:
             std::string propertyName(v.name);
             if (v.is_integer()) {
                 auto p = property_t<int>::create(
+                    {slave_->instanceName, propertyName},
                     [&v, this] { return slave_->get_integer(v.vr); },
                     [&v, this](auto value) { slave_->set_integer({v.vr}, {value}); });
                 properties_.add_int_property(propertyName, std::move(p));
             } else if (v.is_real()) {
                 auto p = property_t<double>::create(
-                    [&v, this] {
-                        return slave_->get_real(v.vr);
-                    },
+                    {slave_->instanceName, propertyName},
+                    [&v, this] {return slave_->get_real(v.vr);},
                     [&v, this](auto value) { slave_->set_real({v.vr}, {value}); });
                 properties_.add_real_property(propertyName, std::move(p));
             } else if (v.is_string()) {
                 auto p = property_t<std::string>::create(
+                    {slave_->instanceName, propertyName},
                     [&v, this] { return slave_->get_string(v.vr); },
                     [&v, this](auto value) { slave_->set_string({v.vr}, {value}); });
                 properties_.add_string_property(propertyName, std::move(p));
             } else if (v.is_boolean()) {
                 auto p = property_t<bool>::create(
+                    {slave_->instanceName, propertyName},
                     [&v, this] { return slave_->get_boolean(v.vr); },
                     [&v, this](auto value) { slave_->set_boolean({v.vr}, {value}); });
                 properties_.add_bool_property(propertyName, std::move(p));

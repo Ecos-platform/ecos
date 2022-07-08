@@ -2,6 +2,8 @@
 #ifndef VICO_PROPERTY_HPP
 #define VICO_PROPERTY_HPP
 
+#include "vico/variable_identifier.hpp"
+
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -15,6 +17,11 @@ namespace vico
 
 struct property
 {
+    const variable_identifier id;
+
+    explicit property(variable_identifier id)
+        : id(std::move(id))
+    { }
 
     virtual void applySet() = 0;
     virtual void applyGet() = 0;
@@ -28,9 +35,11 @@ struct property_t : property
 {
 
     explicit property_t(
+        const variable_identifier& id,
         const std::function<T()>& getter,
         const std::optional<std::function<void(const T&)>>& setter = std::nullopt)
-        : getter(getter)
+        : property(id)
+        , getter(getter)
         , setter(setter)
     { }
 
@@ -89,10 +98,11 @@ struct property_t : property
     }
 
     static std::unique_ptr<property_t<T>> create(
+        const variable_identifier& id,
         const std::function<T()>& getter,
         const std::optional<std::function<void(const T&)>>& setter = std::nullopt)
     {
-        return std::make_unique<property_t<T>>(getter, setter);
+        return std::make_unique<property_t<T>>(id, getter, setter);
     }
 
 private:

@@ -1,6 +1,6 @@
 #include <vico/algorithm/fixed_step_algorithm.hpp>
 #include <vico/ssp/ssp_loader.hpp>
-#include "vico/listeners/csv_writer.hpp"
+#include <vico/listeners/csv_writer.hpp>
 
 #include <iostream>
 

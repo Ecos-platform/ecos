@@ -46,6 +46,7 @@ set(sources
         "vico/ssp/ssp_loader.cpp"
         "vico/structure/simulation_structure.cpp"
         "vico/util/temp_dir.cpp"
+        "vico/util/unzipper.cpp"
 
         )
 

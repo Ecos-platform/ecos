@@ -18,7 +18,8 @@ class VicoConan(ConanFile):
         "fmilibcpp/0.1.5@ais/testing",
         "simple-ssp-parser/0.2.1@ais/testing",
         "proxyfmu/0.2.8@osp/testing-subprocess",
-        "libzip/1.8.0"
+        "libzip/1.8.0",
+        "spdlog/1.10.0"
     )
 
     def set_version(self):

@@ -3,7 +3,6 @@
 
 #include "vico/variable_identifier.hpp"
 
-#include <fmilibcpp/model_description.hpp>
 #include <utility>
 
 using namespace vico;

@@ -1,10 +1,11 @@
 
 #include "vico/listeners/csv_writer.hpp"
 
+#include "pugixml.hpp"
+#include "spdlog/spdlog.h"
+
 #include "vico/simulation.hpp"
 
-#include <iostream>
-#include <pugixml.hpp>
 #include <sstream>
 
 using namespace vico;
@@ -166,7 +167,7 @@ void csv_writer::enable_plotting(const std::filesystem::path& plotConfig)
     if (std::filesystem::exists(plotter)) {
         plotConfig_ = std::filesystem::absolute(plotConfig);
     } else {
-        std::cerr << "[warning] Plotting disabled as " << std::filesystem::absolute(plotter).string() << " is not present." << std::endl;
+        spdlog::error("Plotting disabled as {} is not present.", std::filesystem::absolute(plotter).string());
     }
 }
 
@@ -193,11 +194,9 @@ void csv_config::verify(const std::vector<variable_identifier>& ids)
         }
     }
     if (missingCount > 0) {
-        std::cerr << "[warning] Missing " << missingCount << " variables declared for logging: "
-                  << missing.str() << std::endl;
+        spdlog::error("Missing {} variables declared for logging: {}", missingCount, missing.str());
     }
-    std::cout << "[info] Logging " << foundCount << " variables: "
-              << found.str() << std::endl;
+    spdlog::info("Logging {} variables: ", foundCount, found.str());
 }
 
 bool csv_config::shouldLogVariable(const std::string& variableName) const

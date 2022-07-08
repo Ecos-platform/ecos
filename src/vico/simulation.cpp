@@ -1,9 +1,9 @@
 
 #include "vico/simulation.hpp"
 
-#include "vico/listeners/simulation_listener.hpp"
+#include "spdlog/spdlog.h"
 
-#include <iostream>
+#include "vico/listeners/simulation_listener.hpp"
 
 using namespace vico;
 
@@ -34,9 +34,7 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
             }
         }
         if (parameterSet) {
-            std::cout << "[info] Parameterset '" << *parameterSet
-                      << "' applied to " << parameterSetAppliedCount
-                      << " instances" << std::endl;
+            spdlog::info("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
         }
 
         for (unsigned i = 0; i < instances_.size(); ++i) {

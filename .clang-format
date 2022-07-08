@@ -30,7 +30,7 @@ IncludeCategories:
     Priority: 10
   - Regex:      '^[<"]vico[/.]'
     Priority:   20
-  - Regex:      '^[<"](fmilibcpp|proxyfmu|)[/.]'
+  - Regex:      '^[<"](ssp|spdlog|fmilibcpp|proxyfmu|)[/.]'
     Priority:   30
   - Regex:      '^"'
     Priority:   10

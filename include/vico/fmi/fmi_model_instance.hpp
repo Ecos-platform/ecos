@@ -3,7 +3,7 @@
 #ifndef VICO_FMI_MODEL_INSTANCE_HPP
 #define VICO_FMI_MODEL_INSTANCE_HPP
 
-#include "../model_instance.hpp"
+#include "vico/model_instance.hpp"
 
 #include <fmilibcpp/slave.hpp>
 
@@ -76,7 +76,8 @@ public:
         slave_->terminate();
     }
 
-    void reset() override {
+    void reset() override
+    {
         slave_->reset();
     }
 

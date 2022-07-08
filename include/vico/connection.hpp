@@ -4,9 +4,9 @@
 
 #include "property.hpp"
 
-#include <utility>
-#include <stdexcept>
 #include <functional>
+#include <stdexcept>
+#include <utility>
 
 namespace vico
 {
@@ -34,12 +34,12 @@ struct connection_te : public connection
     void transferData() override
     {
         T value = source->get_value();
-       if (modifier) {
-           E mod = modifier.value()(value);
-           sink->set_value(mod);
-       } else {
-           throw std::runtime_error("Modifier required!");
-       }
+        if (modifier) {
+            E mod = modifier.value()(value);
+            sink->set_value(mod);
+        } else {
+            throw std::runtime_error("Modifier required!");
+        }
     }
 
 protected:

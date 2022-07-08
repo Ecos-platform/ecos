@@ -225,7 +225,7 @@ public:
     [[nodiscard]] bool hasProperty(const std::string& name) const
     {
         const auto& names = get_property_names();
-        return std::find_if(names.begin(), names.end(), [name](const auto& n){
+        return std::find_if(names.begin(), names.end(), [name](const auto& n) {
             return n == name;
         }) != std::end(names);
     }

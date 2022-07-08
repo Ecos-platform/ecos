@@ -2,7 +2,9 @@
 #ifndef FMI4CPP_UNZIPPER_HPP
 #define FMI4CPP_UNZIPPER_HPP
 
-#include <vico/util/temp_dir.hpp>
+#include "zip.h"
+
+#include "vico/util/temp_dir.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -10,7 +12,6 @@
 #include <optional>
 #include <sstream>
 #include <string>
-#include <zip.h>
 
 namespace
 {

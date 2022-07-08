@@ -1,10 +1,10 @@
 
 #include "vico/ssp/ssp_loader.hpp"
 
+#include "ssp/ssp.hpp"
+
 #include "vico/fmi/fmi_model.hpp"
 #include "vico/proxyfmu/proxy_model.hpp"
-
-#include <ssp/ssp.hpp>
 
 using namespace vico;
 
@@ -20,7 +20,7 @@ std::unique_ptr<model> resolve_(
         if (find == std::string::npos) {
             throw std::runtime_error("proxyfmu source missing file= component..");
         }
-        const auto fmuFile = desc.file(source.substr(find+5));
+        const auto fmuFile = desc.file(source.substr(find + 5));
         return std::make_unique<proxy_model>(fmuFile);
     } else {
         const auto fmuFile = desc.file(source);

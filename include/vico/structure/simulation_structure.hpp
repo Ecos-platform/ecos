@@ -7,7 +7,6 @@
 #include "vico/simulation.hpp"
 #include "vico/variable_identifier.hpp"
 
-#include <fmilibcpp/fmu.hpp>
 #include <map>
 #include <optional>
 #include <unordered_map>

@@ -2,10 +2,10 @@
 #ifndef VICO_VARIABLE_IDENTIFIER_HPP
 #define VICO_VARIABLE_IDENTIFIER_HPP
 
+#include <ostream>
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include <ostream>
 
 namespace vico
 {
@@ -25,19 +25,23 @@ struct variable_identifier
         , variableName(std::move(variableName))
     { }
 
-    [[nodiscard]] std::string str() const {
+    [[nodiscard]] std::string str() const
+    {
         return instanceName + "::" + variableName;
     }
 
-    bool operator==(const variable_identifier& other) const {
+    bool operator==(const variable_identifier& other) const
+    {
         return instanceName == other.instanceName && variableName == other.variableName;
     }
 
-    bool operator!=(const variable_identifier& other) const {
+    bool operator!=(const variable_identifier& other) const
+    {
         return !(*this == other);
     }
 
-    bool operator<(const variable_identifier& other) const {
+    bool operator<(const variable_identifier& other) const
+    {
         return instanceName < other.instanceName || (instanceName == other.instanceName && variableName < other.variableName);
     }
 
@@ -48,7 +52,6 @@ struct variable_identifier
     }
 
 private:
-
     static variable_identifier parse(const std::string& identifier)
     {
         auto result = identifier.find("::");

@@ -32,7 +32,6 @@ endforeach ()
 set(privateHeaders
 
         "vico/util/temp_dir.hpp"
-        "vico/util/random.hpp"
         "vico/util/unzipper.hpp"
         "vico/util/uuid.hpp"
 
@@ -58,7 +57,15 @@ target_include_directories(vico
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
-target_link_libraries(vico PUBLIC CONAN_PKG::fmilibcpp CONAN_PKG::proxyfmu CONAN_PKG::simple-ssp-parser PRIVATE CONAN_PKG::pugixml CONAN_PKG::libzip)
+target_link_libraries(vico
+        PUBLIC
+        CONAN_PKG::fmilibcpp
+        CONAN_PKG::proxyfmu
+        PRIVATE
+        CONAN_PKG::simple-ssp-parser
+        CONAN_PKG::spdlog
+        CONAN_PKG::pugixml
+        CONAN_PKG::libzip)
 if (UNIX)
     target_link_libraries(vico INTERFACE stdc++fs)
 endif ()

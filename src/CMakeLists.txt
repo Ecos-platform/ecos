@@ -47,6 +47,7 @@ set(sources
         "vico/structure/simulation_structure.cpp"
         "vico/util/temp_dir.cpp"
         "vico/util/unzipper.cpp"
+        "vico/util/uuid.cpp"
 
         )
 

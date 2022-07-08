@@ -1,6 +1,6 @@
-#include <vico/algorithm/fixed_step_algorithm.hpp>
-#include <vico/proxyfmu/proxy_model.hpp>
-#include <vico/simulation.hpp>
+#include "vico/algorithm/fixed_step_algorithm.hpp"
+#include "vico/fmi/fmi_model.hpp"
+#include "vico/simulation.hpp"
 
 #include <iostream>
 
@@ -8,8 +8,8 @@ using namespace vico;
 
 int main()
 {
-    std::string fmuPath("../data/fmus/2.0/20sim/ControlledTemperature.fmu");
-    auto fmuModel = proxy_model(fmuPath);
+    std::string fmuPath("../../data/fmus/2.0/20sim/ControlledTemperature.fmu");
+    auto fmuModel = fmi_model(fmuPath);
 
     simulation sim(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     sim.add_slave(fmuModel.instantiate("slave"));

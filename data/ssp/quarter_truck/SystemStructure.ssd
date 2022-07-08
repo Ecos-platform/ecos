@@ -62,7 +62,7 @@
 
     </ssd:System>
 
-    <ssd:DefaultExperiment start="10">
+    <ssd:DefaultExperiment startTime="10">
         <ssd:Annotations>
             <ssc:Annotation type="com.opensimulationplatform">
                 <osp:Algorithm>

@@ -1,7 +1,7 @@
-#include <vico/algorithm/fixed_step_algorithm.hpp>
-#include <vico/fmi/fmi_model.hpp>
-#include <vico/structure/simulation_structure.hpp>
-#include <vico/listeners/csv_writer.hpp>
+#include "vico/algorithm/fixed_step_algorithm.hpp"
+#include "vico/fmi/fmi_model.hpp"
+#include "vico/listeners/csv_writer.hpp"
+#include "vico/structure/simulation_structure.hpp"
 
 #include <iostream>
 
@@ -12,9 +12,10 @@ int main()
 
     simulation_structure ss;
 
-    ss.add_model("chassis", std::make_shared<fmi_model>("../data/fmus/2.0/quarter-truck/chassis.fmu"));
-    ss.add_model("ground", std::make_shared<fmi_model>("../data/fmus/2.0/quarter-truck/ground.fmu"));
-    ss.add_model("wheel", std::make_shared<fmi_model>("../data/fmus/2.0/quarter-truck/wheel.fmu"));
+    const std::filesystem::path fmuDir("../../data/fmus/2.0/quarter-truck");
+    ss.add_model("chassis", std::make_shared<fmi_model>(fmuDir / "chassis.fmu"));
+    ss.add_model("ground", std::make_shared<fmi_model>(fmuDir / "ground.fmu"));
+    ss.add_model("wheel", std::make_shared<fmi_model>(fmuDir / "wheel.fmu"));
 
     ss.make_connection<double>("chassis::p.e", "wheel::p1.e");
     ss.make_connection<double>("wheel::p1.f", "chassis::p.f");
@@ -28,7 +29,7 @@ int main()
     auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     auto p = sim->get_real_property("chassis::zChassis");
 
-    const auto& config = csv_config::parse("../data/ssp/quarter_truck/LogConfig.xml");
+    const auto& config = csv_config::parse("../../data/ssp/quarter_truck/LogConfig.xml");
     sim->add_listener(std::make_unique<csv_writer>("results/quarter_truck_with_config.csv", config));
 
     sim->init("initialValues");

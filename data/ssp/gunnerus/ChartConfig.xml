@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vico:ChartConfig xmlns:vico="http://github.com/Vico-platform/libvico/resources/schema/ChartConfig">
+
+    <vico:chart>
+        <vico:xyseries title="NE-plot" xLabel="East[m]" yLabel="North[m]">
+            <vico:series name="Trajectory">
+                <vico:x component="vesselModel" variable="cgShipMotion.nedDisplacement.east"/>
+                <vico:y component="vesselModel" variable="cgShipMotion.nedDisplacement.north"/>
+            </vico:series>
+        </vico:xyseries>
+    </vico:chart>
+
+</vico:ChartConfig>

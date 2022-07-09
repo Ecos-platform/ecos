@@ -4,6 +4,7 @@
 #include "zip.h"
 
 #include <fstream>
+#include <vector>
 
 bool vico::unzip(const std::filesystem::path& zip_file, const std::filesystem::path& tmp_path)
 {

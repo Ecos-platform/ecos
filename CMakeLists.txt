@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 file(STRINGS "${CMAKE_SOURCE_DIR}/version.txt" projectVersion)
-project("vico" VERSION ${projectVersion})
+project("libvico" VERSION ${projectVersion})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 
 # ==============================================================================

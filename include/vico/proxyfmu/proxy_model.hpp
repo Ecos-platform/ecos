@@ -16,8 +16,9 @@ namespace vico
 class proxy_model : public model
 {
 public:
-    explicit proxy_model(const std::filesystem::path& fmuPath,std::shared_ptr<ssp::temp_dir> tempDir)
-        : fmu_(fmuPath), tempDir_(std::move(tempDir))
+    explicit proxy_model(const std::filesystem::path& fmuPath, std::shared_ptr<ssp::temp_dir> tempDir = nullptr)
+        : fmu_(fmuPath)
+        , tempDir_(std::move(tempDir))
     {
     }
 

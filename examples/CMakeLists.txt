@@ -1,4 +1,4 @@
-link_libraries(vico)
+link_libraries(vico CONAN_PKG::spdlog)
 
 add_executable(quarter_truck quarter_truck/quarter_truck.cpp)
 add_executable(quarter_truck_ssp quarter_truck/quarter_truck_ssp.cpp)

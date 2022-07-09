@@ -5,10 +5,14 @@
 #include <iostream>
 #include <filesystem>
 
+#include <spdlog/spdlog.h>
+
 using namespace vico;
 
 int main()
 {
+
+    spdlog::set_level(spdlog::level::debug);
 
     const auto sspFile = "../../data/ssp/gunnerus/gunnerus-trajectory.ssp";
     if (!std::filesystem::exists(sspFile)) {

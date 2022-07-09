@@ -16,6 +16,7 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
     if (!initialized) {
 
         initialized = true;
+        spdlog::debug("Initializing simulation..");
 
         for (auto& listener : listeners_) {
             listener->pre_init(*this);
@@ -59,6 +60,8 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
         for (auto& listener : listeners_) {
             listener->post_init(*this);
         }
+
+        spdlog::debug("Initialized.");
     }
 }
 
@@ -92,6 +95,8 @@ void simulation::step(unsigned int numStep)
 
 void simulation::terminate()
 {
+    spdlog::debug("Terminating simulation..");
+
     for (auto& instance : instances_) {
         instance->terminate();
     }
@@ -99,6 +104,8 @@ void simulation::terminate()
     for (auto& listener : listeners_) {
         listener->post_terminate(*this);
     }
+
+    spdlog::debug("Terminated.");
 }
 
 void simulation::reset()

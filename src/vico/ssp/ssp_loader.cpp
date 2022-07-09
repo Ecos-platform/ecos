@@ -21,7 +21,7 @@ std::unique_ptr<model> resolve_(
             throw std::runtime_error("proxyfmu source missing file= component..");
         }
         const auto fmuFile = desc.file(source.substr(find + 5));
-        return std::make_unique<proxy_model>(fmuFile);
+        return std::make_unique<proxy_model>(fmuFile, desc.get_temp_dir());
     } else {
         const auto fmuFile = desc.file(source);
         return std::make_unique<fmi_model>(fmuFile);

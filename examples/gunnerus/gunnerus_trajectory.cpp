@@ -16,7 +16,7 @@ int main()
     }
 
     auto ss = load_ssp(sspFile);
-    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
+    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(0.05));
 
     csv_config config;
     config.log_variable("vesselModel::cgShipMotion.nedDisplacement.north");
@@ -27,9 +27,21 @@ int main()
     csvWriter->enable_plotting("../../data/ssp/gunnerus/ChartConfig.xml");
     sim->add_listener(std::move(csvWriter));
 
+    bool reset = false;
+    auto resetProperty = sim->get_bool_property("vesselModel::reset_position");
+    auto trackControllerProperty = sim->get_bool_property("trackController::enable");
+
     sim->init("initialValues");
-    while (sim->time() < 5) {
-        sim->step();
+    while (sim->time() < 500) {
+        if (sim->time() > 50 && !reset) {
+            resetProperty->set_value(true);
+            sim->step();
+            resetProperty->set_value(false);
+            trackControllerProperty->set_value(true);
+            reset = true;
+        } else {
+            sim->step();
+        }
     }
 
     sim->terminate();

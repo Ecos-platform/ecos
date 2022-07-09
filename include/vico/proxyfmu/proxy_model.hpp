@@ -8,7 +8,6 @@
 #include "vico/model.hpp"
 
 #include <filesystem>
-#include <ssp/util/temp_dir.hpp>
 
 namespace vico
 {
@@ -16,9 +15,8 @@ namespace vico
 class proxy_model : public model
 {
 public:
-    explicit proxy_model(const std::filesystem::path& fmuPath, std::shared_ptr<ssp::temp_dir> tempDir = nullptr)
+    explicit proxy_model(const std::filesystem::path& fmuPath)
         : fmu_(fmuPath)
-        , tempDir_(std::move(tempDir))
     {
     }
 
@@ -29,7 +27,6 @@ public:
 
 private:
     proxyfmu::client::proxy_fmu fmu_;
-    std::shared_ptr<ssp::temp_dir> tempDir_;
 };
 
 } // namespace vico

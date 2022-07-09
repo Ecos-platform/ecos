@@ -63,12 +63,11 @@ target_link_libraries(vico
         PUBLIC
         CONAN_PKG::fmilibcpp
         CONAN_PKG::proxyfmu
-        CONAN_PKG::simple-ssp-parser
         PRIVATE
-
         CONAN_PKG::spdlog
         CONAN_PKG::pugixml
-        CONAN_PKG::libzip)
+        CONAN_PKG::libzip
+        CONAN_PKG::simple-ssp-parser)
 if (UNIX)
     target_link_libraries(vico INTERFACE stdc++fs)
 endif ()

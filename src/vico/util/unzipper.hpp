@@ -1,6 +1,6 @@
 
-#ifndef FMI4CPP_UNZIPPER_HPP
-#define FMI4CPP_UNZIPPER_HPP
+#ifndef VICO_UNZIPPER_HPP
+#define VICO_UNZIPPER_HPP
 
 #include <filesystem>
 
@@ -11,4 +11,4 @@ bool unzip(const std::filesystem::path& zip_file, const std::filesystem::path& t
 
 } // namespace vico
 
-#endif // FMI4CPP_UNZIPPER_HPP
+#endif // VICO_UNZIPPER_HPP

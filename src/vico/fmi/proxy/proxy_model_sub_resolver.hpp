@@ -10,7 +10,7 @@ namespace vico
 class proxy_model_sub_resolver : public model_sub_resolver
 {
 public:
-    std::unique_ptr<model> resolve(const std::filesystem::path& base, const std::string& uri);
+    std::unique_ptr<model> resolve(const std::filesystem::path& base, const std::string& uri) override;
 };
 
 } // namespace vico

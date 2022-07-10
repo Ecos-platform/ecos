@@ -2,9 +2,8 @@
 #include "vico/listeners/csv_writer.hpp"
 #include "vico/ssp/ssp_loader.hpp"
 
-#include <iostream>
 #include <filesystem>
-
+#include <iostream>
 #include <spdlog/spdlog.h>
 
 using namespace vico;

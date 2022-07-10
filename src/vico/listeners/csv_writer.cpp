@@ -157,7 +157,7 @@ void csv_writer::post_terminate(simulation& sim)
         }
         std::stringstream ss;
         ss << "python vico_plotter.py \"" << path_.string() << "\" \"" << plotConfig_->string() << "\"";
-        auto t = std::thread([&ss]{
+        auto t = std::thread([&ss] {
             system(ss.str().c_str());
         });
         spdlog::info("Waiting for plotting window(s) to close..");

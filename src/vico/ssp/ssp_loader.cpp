@@ -3,9 +3,6 @@
 
 #include "ssp/ssp.hpp"
 
-#include "vico/fmi/fmi_model.hpp"
-#include "vico/fmi/proxy/proxy_model.hpp"
-
 #include "vico/model_resolver.hpp"
 
 using namespace vico;
@@ -13,39 +10,12 @@ using namespace vico;
 namespace
 {
 
-//class proxy_model_ssp: public proxy_model
-//{
-//
-//public:
-//    proxy_model_ssp(const std::filesystem::path& fmuPath, std::shared_ptr<ssp::temp_dir> tempDir)
-//        : proxy_model(fmuPath), tempDir_(std::move(tempDir)) {}
-//
-//private:
-//    std::shared_ptr<ssp::temp_dir> tempDir_;
-//};
-//
-//std::unique_ptr<model> resolve_(
-//    const ssp::SystemStructureDescription& desc,
-//    const std::string& source)
-//{
-//    if (source.rfind("proxyfmu", 0) == 0) {
-//        const auto find = source.find("file=", 0);
-//        if (find == std::string::npos) {
-//            throw std::runtime_error("proxyfmu source missing file= component..");
-//        }
-//        const auto fmuFile = desc.file(source.substr(find + 5));
-//        return std::make_unique<proxy_model_ssp>(fmuFile, desc.get_temp_dir());
-//    } else {
-//        const auto fmuFile = desc.file(source);
-//        return std::make_unique<fmi_model>(fmuFile);
-//    }
-//}
-
-class ssp_based_simulation_structure: public simulation_structure
+class ssp_based_simulation_structure : public simulation_structure
 {
 public:
     explicit ssp_based_simulation_structure(const std::filesystem::path& path)
-        : desc_(path) {
+        : desc_(path)
+    {
 
         const auto& system = desc_.system;
         const auto& parameterSets = system.elements.parameterSets;
@@ -101,7 +71,7 @@ public:
             }
         }
     }
-    
+
 private:
     ssp::SystemStructureDescription desc_;
 };

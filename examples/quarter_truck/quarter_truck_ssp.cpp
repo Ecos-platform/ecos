@@ -8,6 +8,8 @@ using namespace vico;
 
 int main()
 {
+    spdlog::set_level(spdlog::level::debug);
+
     auto ss = load_ssp("../../data/ssp/quarter_truck");
     auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
 

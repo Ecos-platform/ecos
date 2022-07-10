@@ -1,7 +1,7 @@
 
 #include "vico/algorithm/fixed_step_algorithm.hpp"
-#include "vico/simulation.hpp"
 #include "vico/model_resolver.hpp"
+#include "vico/simulation.hpp"
 
 #include <iostream>
 

@@ -116,6 +116,15 @@ private:
     std::optional<std::function<T(const T&)>> outputModifier_;
 };
 
+
+struct property_listener
+{
+    virtual void on_apply_sets() = 0;
+    virtual void on_appy_gets() = 0;
+
+    virtual ~property_listener() = default;
+};
+
 class properties
 {
 
@@ -124,7 +133,7 @@ public:
     properties(const properties&) = delete;
     properties(const properties&&) = delete;
 
-    void applySets()
+    void apply_sets()
     {
         for (auto& [name, p] : realProperties_) {
             p->applySet();
@@ -138,10 +147,20 @@ public:
         for (auto& [name, p] : boolProperties_) {
             p->applySet();
         }
+
+        for (auto& l : listeners_) {
+            l->on_apply_sets();
+        }
+
     }
 
     void applyGets()
     {
+
+        for (auto& l : listeners_) {
+            l->on_appy_gets();
+        }
+
         for (auto& [name, p] : realProperties_) {
             p->applyGet();
         }
@@ -258,7 +277,13 @@ public:
         return names;
     }
 
+    void add_listener(std::unique_ptr<property_listener> l)
+    {
+        listeners_.emplace_back(std::move(l));
+    }
+
 private:
+    std::vector<std::unique_ptr<property_listener>> listeners_;
     std::unordered_map<std::string, std::unique_ptr<property_t<int>>> intProperties_;
     std::unordered_map<std::string, std::unique_ptr<property_t<bool>>> boolProperties_;
     std::unordered_map<std::string, std::unique_ptr<property_t<double>>> realProperties_;

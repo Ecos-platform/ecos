@@ -38,6 +38,14 @@ public:
         throw std::runtime_error("Reset not implemented!");
     }
 
+//    virtual void set_values() {
+//
+//    }
+//
+//    virtual void get_values() {
+//
+//    }
+
     bool apply_parameter_set(const std::string& name)
     {
         if (parameterSets_.count(name)) {

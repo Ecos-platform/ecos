@@ -7,7 +7,7 @@ double fixed_step_algorithm::step(double currentTime, std::vector<std::unique_pt
 {
 
     auto f = [currentTime, this](auto& instance) {
-        instance->get_properties().applySets();
+        instance->get_properties().apply_sets();
         instance->step(currentTime, stepSize_);
         instance->get_properties().applyGets();
     };

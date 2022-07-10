@@ -42,7 +42,7 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
 
         for (unsigned i = 0; i < instances_.size(); ++i) {
             for (auto& instance : instances_) {
-                instance->get_properties().applySets();
+                instance->get_properties().apply_sets();
                 instance->get_properties().applyGets();
             }
             for (auto& c : connections_) {
@@ -57,6 +57,11 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
 
         for (auto& c : connections_) {
             c->transferData();
+        }
+
+        for (auto& instance : instances_) {
+            instance->get_properties().apply_sets();
+            instance->get_properties().applyGets();
         }
 
         for (auto& listener : listeners_) {
@@ -83,6 +88,11 @@ void simulation::step(unsigned int numStep)
 
         for (auto& c : connections_) {
             c->transferData();
+        }
+
+        for (auto& instance : instances_) {
+            instance->get_properties().apply_sets();
+            instance->get_properties().applyGets();
         }
 
         currentTime_ = newT;

@@ -25,7 +25,9 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
         int parameterSetAppliedCount = 0;
         for (auto& instance : instances_) {
             double start = startTime.value_or(0);
-            if (start < 0) throw std::runtime_error("Explicitly defined startTime must be greater than 0!");
+            if (start < 0) {
+                throw std::runtime_error("Explicitly defined startTime must be greater than 0!");
+            }
             instance->setup_experiment(start);
             instance->enter_initialization_mode();
             if (parameterSet) {
@@ -35,7 +37,7 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
             }
         }
         if (parameterSet) {
-            spdlog::info("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
+            spdlog::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
         }
 
         for (unsigned i = 0; i < instances_.size(); ++i) {
@@ -110,6 +112,7 @@ void simulation::terminate()
 
 void simulation::reset()
 {
+    spdlog::debug("Resetting simulation at t={}", time());
     for (auto& instance : instances_) {
         instance->reset();
     }

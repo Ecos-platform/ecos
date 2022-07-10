@@ -13,9 +13,11 @@ using namespace vico;
 namespace
 {
 
+const char* separator = ", ";
+
 void writeData(std::ofstream& out, const simulation& sim, const std::optional<csv_config>& config)
 {
-    out << sim.iterations() << ", " << sim.time();
+    out << sim.iterations() << separator << sim.time();
 
     for (auto& instance : sim.get_instances()) {
 
@@ -32,28 +34,28 @@ void writeData(std::ofstream& out, const simulation& sim, const std::optional<cs
                 if (config) {
                     logVar = config->shouldLogVariable(name);
                 }
-                if (logVar) out << ", " << std::to_string(p->get_value());
+                if (logVar) out << separator << std::to_string(p->get_value());
             }
             for (auto& [name, p] : properties.get_integers()) {
                 bool logVar = true;
                 if (config) {
                     logVar = config->shouldLogVariable(name);
                 }
-                if (logVar) out << ", " << std::to_string(p->get_value());
+                if (logVar) out << separator << std::to_string(p->get_value());
             }
             for (auto& [name, p] : properties.get_booleans()) {
                 bool logVar = true;
                 if (config) {
                     logVar = config->shouldLogVariable(name);
                 }
-                if (logVar) out << ", " << std::noboolalpha << p->get_value();
+                if (logVar) out << separator << std::noboolalpha << p->get_value();
             }
             for (auto& [name, p] : properties.get_strings()) {
                 bool logVar = true;
                 if (config) {
                     logVar = config->shouldLogVariable(name);
                 }
-                if (logVar) out << ", " << p->get_value();
+                if (logVar) out << separator << p->get_value();
             }
         }
     }
@@ -87,7 +89,7 @@ csv_writer::csv_writer(const std::filesystem::path& path, const std::filesystem:
 
 void csv_writer::pre_init(simulation& sim)
 {
-    outFile_ << "iterations, time";
+    outFile_ << "iterations" << separator << "time";
 
     if (config_) {
         config_->verify(sim.identifiers());
@@ -108,28 +110,28 @@ void csv_writer::pre_init(simulation& sim)
                 if (config_) {
                     logVar = config_->shouldLogVariable(variableName);
                 }
-                if (logVar) outFile_ << ", " << instanceName << "::" << variableName << "[REAL]";
+                if (logVar) outFile_ << separator << instanceName << "::" << variableName << "[REAL]";
             }
             for (auto& [variableName, p] : properties.get_integers()) {
                 bool logVar = true;
                 if (config_) {
                     logVar = config_->shouldLogVariable(variableName);
                 }
-                if (logVar) outFile_ << ", " << instanceName << "::" << variableName << "[INT]";
+                if (logVar) outFile_ << separator << instanceName << "::" << variableName << "[INT]";
             }
             for (auto& [variableName, p] : properties.get_booleans()) {
                 bool logVar = true;
                 if (config_) {
                     logVar = config_->shouldLogVariable(variableName);
                 }
-                if (logVar) outFile_ << ", " << instanceName << "::" << variableName << "[BOOL]";
+                if (logVar) outFile_ << separator << instanceName << "::" << variableName << "[BOOL]";
             }
             for (auto& [variableName, p] : properties.get_strings()) {
                 bool logVar = true;
                 if (config_) {
                     logVar = config_->shouldLogVariable(variableName);
                 }
-                if (logVar) outFile_ << ", " << instanceName << "::" << variableName << "[STR]";
+                if (logVar) outFile_ << separator << instanceName << "::" << variableName << "[STR]";
             }
         }
     }
@@ -172,7 +174,7 @@ void csv_writer::enable_plotting(const std::filesystem::path& plotConfig)
     if (std::filesystem::exists(plotter)) {
         plotConfig_ = std::filesystem::absolute(plotConfig);
     } else {
-        spdlog::error("Plotting disabled as {} is not present.", std::filesystem::absolute(plotter).string());
+        spdlog::warn("Plotting will be disabled as {} is not present.", std::filesystem::absolute(plotter).string());
     }
 }
 
@@ -199,9 +201,9 @@ void csv_config::verify(const std::vector<variable_identifier>& ids)
         }
     }
     if (missingCount > 0) {
-        spdlog::error("Missing {} variables declared for logging: {}", missingCount, missing.str());
+        spdlog::warn("Missing {} variables declared for logging: {}", missingCount, missing.str());
     }
-    spdlog::info("Logging {} variables: ", foundCount, found.str());
+    spdlog::debug("Logging {} variables: ", foundCount, found.str());
 }
 
 bool csv_config::shouldLogVariable(const std::string& variableName) const

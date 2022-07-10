@@ -4,6 +4,7 @@
 #include "spdlog/spdlog.h"
 
 #include "vico/listeners/simulation_listener.hpp"
+#include <execution>
 
 using namespace vico;
 
@@ -90,10 +91,10 @@ void simulation::step(unsigned int numStep)
             c->transferData();
         }
 
-        for (auto& instance : instances_) {
+        std::for_each(std::execution::par, instances_.begin(), instances_.end(), [](auto& instance){
             instance->get_properties().apply_sets();
             instance->get_properties().applyGets();
-        }
+        });
 
         currentTime_ = newT;
 

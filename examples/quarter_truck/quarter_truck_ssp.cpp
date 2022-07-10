@@ -25,9 +25,7 @@ int main()
     sim->add_listener(std::move(csvWriter));
 
     sim->init("initialValues");
-    while (sim->time() < 5) {
-        sim->step();
-    }
+    sim->step_until(5);
     std::cout << p->operator()() << std::endl;
 
     sim->terminate();

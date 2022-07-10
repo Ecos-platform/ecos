@@ -79,19 +79,27 @@ void simulation::step(unsigned int numStep)
             listener->pre_step(*this);
         }
 
-        double newT = algorithm_->step(currentTime, instances_);
+        double newT = algorithm_->step(currentTime_, instances_);
 
         for (auto& c : connections_) {
             c->transferData();
         }
 
-        currentTime = newT;
+        currentTime_ = newT;
 
         for (auto& listener : listeners_) {
             listener->post_step(*this);
         }
 
         num_iterations++;
+    }
+}
+
+void simulation::step_until(double t)
+{
+    while (currentTime_ < t)
+    {
+        step();
     }
 }
 

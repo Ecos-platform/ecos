@@ -28,7 +28,7 @@ public:
 
     [[nodiscard]] double time() const
     {
-        return currentTime;
+        return currentTime_;
     }
 
     [[nodiscard]] unsigned long iterations() const
@@ -88,6 +88,8 @@ public:
     void init(std::optional<double> startTime = std::nullopt, std::optional<std::string> parameterSet = std::nullopt);
 
     void step(unsigned int numStep = 1);
+
+    void step_until(double t);
 
     void terminate();
 
@@ -181,7 +183,7 @@ public:
     }
 
 private:
-    double currentTime{0};
+    double currentTime_{0};
     bool initialized{false};
     unsigned long num_iterations{0};
 

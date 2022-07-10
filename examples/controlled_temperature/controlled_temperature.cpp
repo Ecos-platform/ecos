@@ -9,6 +9,8 @@ using namespace vico;
 
 int main()
 {
+    spdlog::set_level(spdlog::level::debug);
+
     std::string fmuPath("../../data/fmus/2.0/20sim/ControlledTemperature.fmu");
     auto resolver = default_model_resolver();
     auto fmuModel = resolver->resolve(fmuPath);

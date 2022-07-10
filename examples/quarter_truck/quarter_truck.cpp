@@ -9,11 +9,9 @@ using namespace vico;
 
 int main()
 {
-
     spdlog::set_level(spdlog::level::debug);
 
     simulation_structure ss;
-
     const std::filesystem::path fmuDir("../../data/fmus/2.0/quarter-truck");
 
     ss.add_model("chassis", fmuDir / "chassis.fmu");

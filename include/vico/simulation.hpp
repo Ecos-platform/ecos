@@ -33,7 +33,7 @@ public:
 
     [[nodiscard]] unsigned long iterations() const
     {
-        return num_iterations;
+        return num_iterations_;
     }
 
     real_connection* make_real_connection(const variable_identifier& source, const variable_identifier& sink)
@@ -90,6 +90,8 @@ public:
     void step(unsigned int numStep = 1);
 
     void step_until(double t);
+
+    void step_for(double t);
 
     void terminate();
 
@@ -184,8 +186,8 @@ public:
 
 private:
     double currentTime_{0};
-    bool initialized{false};
-    unsigned long num_iterations{0};
+    bool initialized_{false};
+    unsigned long num_iterations_{0};
 
     std::unique_ptr<algorithm> algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;

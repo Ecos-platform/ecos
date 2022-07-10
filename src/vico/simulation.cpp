@@ -13,9 +13,9 @@ simulation::simulation(std::unique_ptr<algorithm> algorithm)
 
 void simulation::init(std::optional<double> startTime, std::optional<std::string> parameterSet)
 {
-    if (!initialized) {
+    if (!initialized_) {
 
-        initialized = true;
+        initialized_ = true;
         spdlog::debug("Initializing simulation..");
 
         for (auto& listener : listeners_) {
@@ -69,7 +69,7 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
 
 void simulation::step(unsigned int numStep)
 {
-    if (!initialized) {
+    if (!initialized_) {
         throw std::runtime_error("init() has not been invoked!");
     }
 
@@ -91,16 +91,25 @@ void simulation::step(unsigned int numStep)
             listener->post_step(*this);
         }
 
-        num_iterations++;
+        num_iterations_++;
     }
 }
 
 void simulation::step_until(double t)
 {
-    while (currentTime_ < t)
-    {
-        step();
+    if (t <= currentTime_) {
+        spdlog::warn("Input time {} is not greater than the current simulation time. Simulation will not progress.", t, currentTime_);
+    } else {
+        while (currentTime_ < t) {
+            step();
+        }
     }
+}
+
+void simulation::step_for(double t)
+{
+    double newT = currentTime_ + t;
+    step_until(newT);
 }
 
 void simulation::terminate()
@@ -124,7 +133,7 @@ void simulation::reset()
     for (auto& instance : instances_) {
         instance->reset();
     }
-    initialized = false;
+    initialized_ = false;
 }
 
 void simulation::add_listener(std::unique_ptr<simulation_listener> listener)

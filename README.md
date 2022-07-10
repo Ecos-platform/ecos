@@ -6,6 +6,7 @@ Vico supports:
 * FMI for Co-simulation version 1.0 & 2.0
 * SSP version 1.0
 * Optional sandboxed/remote model execution using proxy-fmu
+* Post-simulation plotting
 
 ### Example
 
@@ -13,9 +14,9 @@ Vico supports:
 simulation_structure ss;
 
 // add models
-ss.add_model("chassis", std::make_shared<fmi_model>("../data/fmus/2.0/quarter-truck/chassis.fmu"));
-ss.add_model("ground", std::make_shared<fmi_model>("../data/fmus/2.0/quarter-truck/ground.fmu"));
-ss.add_model("wheel", std::make_shared<fmi_model>("../data/fmus/2.0/quarter-truck/wheel.fmu"));
+ss.add_model("chassis", "../data/fmus/2.0/quarter-truck/chassis.fmu");
+ss.add_model("ground", "../data/fmus/2.0/quarter-truck/ground.fmu");
+ss.add_model("wheel", "../data/fmus/2.0/quarter-truck/wheel.fmu");
 
 //make connections
 ss.make_connection<double>("chassis.p.e", "wheel.p1.e");
@@ -44,14 +45,15 @@ sim->terminate();
 auto ss = load_ssp("../data/ssp/quarter_truck/quarter-truck.ssp");
 
 // use a fixed-step algorithm and apply parameterset from SSP file
-auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
-
-auto p = sim->get_real_property("chassis.zChassis");
+auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
 
 // setup csv logging
 csv_config config;
 config.log_variable("chassis.zChassis"); // logs a single variable
-sim->add_listener(std::make_unique<csv_writer>("data.csv", config));
+
+auto csvWriter = std::make_unique<csv_writer>("data.csv", config);
+csvWriter->enable_plotting("ChartConfig.xml");
+sim->add_listener(std::move(csvWriter));
 
 sim->init();
 while (sim->time() < 1) {

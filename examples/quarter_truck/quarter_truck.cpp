@@ -24,17 +24,19 @@ int main()
     ss.make_connection<double>("ground::p.f", "wheel::p.f");
 
     std::map<variable_identifier, std::variant<double, int, bool, std::string>> map;
-    map[variable_identifier{"chassis::C.mChassis"}] = 4000.0;
+    map[variable_identifier{"chassis::C.mChassis"}] = 400.0;
     ss.add_parameter_set("initialValues", map);
 
     auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     auto p = sim->get_real_property("chassis::zChassis");
 
     const auto& config = csv_config::parse("../../data/ssp/quarter_truck/LogConfig.xml");
-    sim->add_listener(std::make_unique<csv_writer>("results/quarter_truck_with_config.csv", config));
+    auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck_with_config.csv", config);
+    csvWriter->enable_plotting("../../data/ssp/quarter_truck/ChartConfig.xml");
+    sim->add_listener(std::move(csvWriter));
 
     sim->init("initialValues");
-    sim->step_until(10);
+    sim->step_until(5);
     std::cout << p->operator()() << std::endl;
 
     sim->terminate();

@@ -20,6 +20,22 @@ overloaded(Ts...) -> overloaded<Ts...>;
 
 } // namespace
 
+simulation_structure::simulation_structure()
+    : resolver_(default_model_resolver())
+{
+}
+
+void simulation_structure::add_model(const std::string& instanceName, const std::string& uri)
+{
+    auto model = resolver_->resolve(uri);
+    add_model(instanceName, model);
+}
+
+void simulation_structure::add_model(const std::string& instanceName, const std::filesystem::path& path)
+{
+    add_model(instanceName, std::filesystem::relative(path).string());
+}
+
 void simulation_structure::add_model(const std::string& instanceName, std::shared_ptr<model> model)
 {
     models_.emplace_back(instanceName, std::move(model));

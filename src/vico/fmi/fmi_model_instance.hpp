@@ -32,7 +32,7 @@ public:
             } else if (v.is_real()) {
                 auto p = property_t<double>::create(
                     {slave_->instanceName, propertyName},
-                    [&v, this] {return slave_->get_real(v.vr);},
+                    [&v, this] { return slave_->get_real(v.vr); },
                     [&v, this](auto value) { slave_->set_real({v.vr}, {value}); });
                 properties_.add_real_property(propertyName, std::move(p));
             } else if (v.is_string()) {

@@ -1,5 +1,5 @@
+
 #include "vico/algorithm/fixed_step_algorithm.hpp"
-#include "vico/fmi/fmi_model.hpp"
 #include "vico/listeners/csv_writer.hpp"
 #include "vico/structure/simulation_structure.hpp"
 
@@ -13,9 +13,10 @@ int main()
     simulation_structure ss;
 
     const std::filesystem::path fmuDir("../../data/fmus/2.0/quarter-truck");
-    ss.add_model("chassis", std::make_shared<fmi_model>(fmuDir / "chassis.fmu"));
-    ss.add_model("ground", std::make_shared<fmi_model>(fmuDir / "ground.fmu"));
-    ss.add_model("wheel", std::make_shared<fmi_model>(fmuDir / "wheel.fmu"));
+
+    ss.add_model("chassis", fmuDir / "chassis.fmu");
+    ss.add_model("ground", fmuDir / "ground.fmu");
+    ss.add_model("wheel", fmuDir / "wheel.fmu");
 
     ss.make_connection<double>("chassis::p.e", "wheel::p1.e");
     ss.make_connection<double>("wheel::p1.f", "chassis::p.f");

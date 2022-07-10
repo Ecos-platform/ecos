@@ -9,7 +9,7 @@ using namespace vico;
 int main()
 {
     auto ss = load_ssp("../../data/ssp/quarter_truck");
-    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
+    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
 
     auto p = sim->get_real_property("chassis::zChassis");
 

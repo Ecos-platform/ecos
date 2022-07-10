@@ -5,11 +5,12 @@
 #include "vico/structure/simulation_structure.hpp"
 
 #include <filesystem>
+#include <memory>
 
 namespace vico
 {
 
-simulation_structure load_ssp(const std::filesystem::path& path);
+std::unique_ptr<simulation_structure> load_ssp(const std::filesystem::path& path);
 
 } // namespace vico
 

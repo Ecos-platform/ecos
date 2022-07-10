@@ -20,7 +20,7 @@ int main()
     }
 
     auto ss = load_ssp(sspFile);
-    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(0.05));
+    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(0.05));
 
     csv_config config;
     config.log_variable("vesselModel::cgShipMotion.nedDisplacement.north");
@@ -36,7 +36,7 @@ int main()
     auto trackControllerProperty = sim->get_bool_property("trackController::enable");
 
     sim->init("initialValues");
-    while (sim->time() < 500) {
+    while (sim->time() < 250) {
         if (sim->time() > 50 && !reset) {
             resetProperty->set_value(true);
             sim->step();

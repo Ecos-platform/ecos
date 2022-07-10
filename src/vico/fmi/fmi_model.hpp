@@ -2,9 +2,9 @@
 #ifndef VICO_FMI_MODEL_HPP
 #define VICO_FMI_MODEL_HPP
 
+#include "fmi_model_instance.hpp"
 #include "fmilibcpp/fmu.hpp"
 
-#include "vico/fmi/fmi_model_instance.hpp"
 #include "vico/model.hpp"
 
 #include <filesystem>

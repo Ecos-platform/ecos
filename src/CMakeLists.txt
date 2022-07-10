@@ -5,17 +5,13 @@ set(publicHeaders
         "vico/connection.hpp"
         "vico/model.hpp"
         "vico/model_instance.hpp"
+        "vico/model_resolver.hpp"
         "vico/property.hpp"
         "vico/simulation.hpp"
         "vico/variable_identifier.hpp"
 
         "vico/algorithm/algorithm.hpp"
         "vico/algorithm/fixed_step_algorithm.hpp"
-
-        "vico/fmi/fmi_model.hpp"
-        "vico/fmi/fmi_model_instance.hpp"
-
-        "vico/proxyfmu/proxy_model.hpp"
 
         "vico/listeners/simulation_listener.hpp"
         "vico/listeners/csv_writer.hpp"
@@ -31,6 +27,12 @@ endforeach ()
 
 set(privateHeaders
 
+        "vico/fmi/fmi_model.hpp"
+        "vico/fmi/fmi_model_instance.hpp"
+        "vico/fmi/fmi_model_sub_resolver.hpp"
+        "vico/fmi/proxy/proxy_model.hpp"
+        "vico/fmi/proxy/proxy_model_sub_resolver.hpp"
+
         "vico/util/temp_dir.hpp"
         "vico/util/unzipper.hpp"
         "vico/util/uuid.hpp"
@@ -39,8 +41,11 @@ set(privateHeaders
 
 set(sources
 
+        "vico/model_resolver.cpp"
         "vico/simulation.cpp"
         "vico/algorithm/fixed_step_algorithm.cpp"
+        "vico/fmi/fmi_model_sub_resolver.cpp"
+        "vico/fmi/proxy/proxy_model_sub_resolver.cpp"
         "vico/listeners/csv_writer.cpp"
         "vico/listeners/simulation_listener.cpp"
         "vico/ssp/ssp_loader.cpp"
@@ -60,10 +65,9 @@ target_include_directories(vico
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
 target_link_libraries(vico
-        PUBLIC
+        PRIVATE
         CONAN_PKG::fmilibcpp
         CONAN_PKG::proxyfmu
-        PRIVATE
         CONAN_PKG::spdlog
         CONAN_PKG::pugixml
         CONAN_PKG::libzip

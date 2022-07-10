@@ -3,6 +3,7 @@
 #define VICO_SIMULATION_STRUCTURE_HPP
 
 #include "vico/model.hpp"
+#include "vico/model_resolver.hpp"
 #include "vico/property.hpp"
 #include "vico/simulation.hpp"
 #include "vico/variable_identifier.hpp"
@@ -43,6 +44,12 @@ class simulation_structure
 {
 
 public:
+    simulation_structure();
+
+    void add_model(const std::string& instanceName, const std::string& uri);
+
+    void add_model(const std::string& instanceName, const std::filesystem::path& path);
+
     void add_model(const std::string& instanceName, std::shared_ptr<model> model);
 
     template<class T>
@@ -66,6 +73,7 @@ public:
     std::unique_ptr<simulation> load(std::unique_ptr<algorithm> algorithm);
 
 private:
+    std::unique_ptr<model_resolver> resolver_;
     std::vector<unbound_connection> connections_;
     std::vector<std::pair<std::string, std::shared_ptr<model>>> models_;
     std::unordered_map<std::string, std::map<variable_identifier, std::variant<double, int, bool, std::string>>> parameterSets;

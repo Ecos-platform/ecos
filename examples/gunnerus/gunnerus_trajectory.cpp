@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include <spdlog/stopwatch.h>
 
 using namespace vico;
 
@@ -33,6 +34,7 @@ int main()
     auto resetProperty = sim->get_bool_property("vesselModel::reset_position");
     auto trackControllerProperty = sim->get_bool_property("trackController::enable");
 
+    spdlog::stopwatch sw;
     sim->init("initialValues");
     while (sim->time() < 250) {
         if (sim->time() > 50 && !reset) {
@@ -46,5 +48,7 @@ int main()
         }
     }
 
+    spdlog::info("Elapsed {}", sw);
     sim->terminate();
+
 }

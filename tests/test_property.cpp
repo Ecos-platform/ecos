@@ -15,9 +15,8 @@ TEST_CASE("test_property")
             [&](auto v) { value = v; });
 
         CHECK(value == p.get_value());
-        p(value - 1);
+        p.set_value(value - 1);
         p.applySet();
-        p.applyGet();
         CHECK(p.get_value() == -101);
         CHECK(value == -101);
         REQUIRE(p.id.instanceName.empty());
@@ -32,9 +31,8 @@ TEST_CASE("test_property")
             [&](auto v) { value = v; });
 
         CHECK(value == Approx(p.get_value()));
-        p(value - 1);
+        p.set_value(value - 1);
         p.applySet();
-        p.applyGet();
         CHECK(p.get_value() == Approx(-101));
         CHECK(value == Approx(-101));
     }

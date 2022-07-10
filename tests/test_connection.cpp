@@ -16,7 +16,6 @@ TEST_CASE("test_real_connection")
 
     real_connection c{&source, &sink};
 
-    source.applyGet();
     c.transferData();
     sink.applySet();
 
@@ -35,7 +34,6 @@ TEST_CASE("test_int_connection")
 
     int_connection c{&source, &sink};
 
-    source.applyGet();
     c.transferData();
     sink.applySet();
 
@@ -57,7 +55,6 @@ TEST_CASE("test_bool_connection")
 
     bool_connection c{&source, &sink};
 
-    source.applyGet();
     c.transferData();
     sink.applySet();
 
@@ -79,7 +76,6 @@ TEST_CASE("test_string_connection")
 
     string_connection c{&source, &sink};
 
-    source.applyGet();
     c.transferData();
     sink.applySet();
 
@@ -100,7 +96,6 @@ TEST_CASE("test_double_string_connection")
 
     connection_te<double, std::string> c{&source, &sink, [](double value) { return std::to_string(value); }};
 
-    source.applyGet();
     c.transferData();
     sink.applySet();
 

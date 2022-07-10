@@ -26,7 +26,7 @@ int main()
 
     sim->init("initialValues");
     sim->step_until(5);
-    std::cout << p->operator()() << std::endl;
+    std::cout << p->get_value() << std::endl;
 
     sim->terminate();
 }

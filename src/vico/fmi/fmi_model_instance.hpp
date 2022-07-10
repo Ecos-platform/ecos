@@ -27,7 +27,7 @@ public:
                 auto p = property_t<int>::create(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
-                        slave_->mark_for_reading(v.name);
+//                        slave_->mark_for_reading(v.name);
                         return slave_->fmilibcpp::slave::get_integer(v.vr);
                     },
                     [&v, this](auto value) { slave_->set_integer({v.vr}, {value}); });
@@ -36,7 +36,7 @@ public:
                 auto p = property_t<double>::create(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
-                        //                        slave_->mark_for_reading(v.name);
+//                        slave_->mark_for_reading(v.name);
                         return slave_->fmilibcpp::slave::get_real(v.vr);
                     },
                     [&v, this](auto value) { slave_->set_real({v.vr}, {value}); });
@@ -45,7 +45,7 @@ public:
                 auto p = property_t<std::string>::create(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
-                        slave_->mark_for_reading(v.name);
+//                        slave_->mark_for_reading(v.name);
                         return slave_->fmilibcpp::slave::get_string(v.vr);
                     },
                     [&v, this](auto value) { slave_->set_string({v.vr}, {value}); });
@@ -54,7 +54,7 @@ public:
                 auto p = property_t<bool>::create(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
-                        slave_->mark_for_reading(v.name);
+//                        slave_->mark_for_reading(v.name);
                         return slave_->fmilibcpp::slave::get_boolean(v.vr);
                     },
                     [&v, this](auto value) { slave_->set_boolean({v.vr}, {value}); });
@@ -66,16 +66,6 @@ public:
 
         properties_.add_listener(std::make_unique<prop_lister>(*slave_));
     }
-//
-//    void set_values() override
-//    {
-//        slave_->transferCachedSets();
-//    }
-//
-//    void get_values() override
-//    {
-//        slave_->receiveCachedGets();
-//    }
 
     void setup_experiment(double start) override
     {

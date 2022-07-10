@@ -24,7 +24,7 @@ struct property
     { }
 
     virtual void applySet() = 0;
-    virtual void applyGet() = 0;
+//    virtual void applyGet() = 0;
 
     virtual ~property() = default;
 };
@@ -45,10 +45,15 @@ struct property_t : property
 
     T get_value()
     {
-        if (!cachedGet) {
-            applyGet();
+        //        if (!cachedGet) {
+        //            applyGet();
+        //        }
+        //        return *cachedGet;
+        auto value = getter();
+        if (outputModifier_) {
+            value = outputModifier_->operator()(value);
         }
-        return *cachedGet;
+        return value;
     }
 
     void set_value(const T& value)
@@ -68,14 +73,14 @@ struct property_t : property
         }
     }
 
-    void applyGet() override
-    {
-        auto value = getter();
-        if (outputModifier_) {
-            value = outputModifier_->operator()(value);
-        }
-        cachedGet = value;
-    }
+//        void applyGet() override
+//        {
+//            auto value = getter();
+//            if (outputModifier_) {
+//                value = outputModifier_->operator()(value);
+//            }
+//            cachedGet = value;
+//        }
 
     void set_input_modifier(std::function<T(const T&)> modifier)
     {
@@ -85,16 +90,6 @@ struct property_t : property
     void set_output_modifier(std::function<T(const T&)> modifier)
     {
         outputModifier_ = std::move(modifier);
-    }
-
-    T operator()()
-    {
-        return get_value();
-    }
-
-    void operator()(const T& value)
-    {
-        set_value(value);
     }
 
     static std::unique_ptr<property_t<T>> create(
@@ -151,7 +146,6 @@ public:
         for (auto& l : listeners_) {
             l->on_apply_sets();
         }
-
     }
 
     void applyGets()
@@ -161,18 +155,18 @@ public:
             l->on_appy_gets();
         }
 
-        for (auto& [name, p] : realProperties_) {
-            p->applyGet();
-        }
-        for (auto& [name, p] : intProperties_) {
-            p->applyGet();
-        }
-        for (auto& [name, p] : stringProperties_) {
-            p->applyGet();
-        }
-        for (auto& [name, p] : boolProperties_) {
-            p->applyGet();
-        }
+        //        for (auto& [name, p] : realProperties_) {
+        //            p->applyGet();
+        //        }
+        //        for (auto& [name, p] : intProperties_) {
+        //            p->applyGet();
+        //        }
+        //        for (auto& [name, p] : stringProperties_) {
+        //            p->applyGet();
+        //        }
+        //        for (auto& [name, p] : boolProperties_) {
+        //            p->applyGet();
+        //        }
     }
 
     property_t<double>* get_real_property(const std::string& name)

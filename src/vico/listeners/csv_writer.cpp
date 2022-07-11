@@ -137,7 +137,6 @@ void csv_writer::pre_init(simulation& sim)
     }
 
     outFile_ << "\n";
-    outFile_.flush();
 }
 
 void csv_writer::post_init(simulation& sim)
@@ -152,6 +151,7 @@ void csv_writer::post_step(simulation& sim)
 
 void csv_writer::post_terminate(simulation& sim)
 {
+    outFile_.flush();
     outFile_.close();
     if (plotConfig_) {
         if (!std::filesystem::exists(*plotConfig_)) {
@@ -203,7 +203,7 @@ void csv_config::verify(const std::vector<variable_identifier>& ids)
     if (missingCount > 0) {
         spdlog::warn("Missing {} variables declared for logging: {}", missingCount, missing.str());
     }
-    spdlog::debug("Logging {} variables: ", foundCount, found.str());
+    spdlog::debug("Logging {} variables: {}", foundCount, found.str());
 }
 
 bool csv_config::shouldLogVariable(const std::string& variableName) const

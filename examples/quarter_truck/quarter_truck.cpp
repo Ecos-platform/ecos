@@ -24,7 +24,7 @@ int main()
     ss.make_connection<double>("ground::p.f", "wheel::p.f");
 
     std::map<variable_identifier, std::variant<double, int, bool, std::string>> map;
-    map[variable_identifier{"chassis::C.mChassis"}] = 400.0;
+    map["chassis::C.mChassis"] = 400.0;
     ss.add_parameter_set("initialValues", map);
 
     auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));

@@ -103,11 +103,6 @@ public:
 
     model_instance* get_instance(const std::string& name);
 
-    property_t<double>* get_real_property(const std::string& identifier)
-    {
-        return get_real_property(variable_identifier{identifier});
-    }
-
     property_t<double>* get_real_property(const variable_identifier& identifier)
     {
         for (auto& instance : instances_) {
@@ -117,11 +112,6 @@ public:
             }
         }
         return nullptr;
-    }
-
-    property_t<int>* get_int_property(const std::string& identifier)
-    {
-        return get_int_property(variable_identifier{identifier});
     }
 
     property_t<int>* get_int_property(const variable_identifier& identifier)
@@ -135,11 +125,6 @@ public:
         return nullptr;
     }
 
-    property_t<std::string>* get_string_property(const std::string& identifier)
-    {
-        return get_string_property(variable_identifier{identifier});
-    }
-
     property_t<std::string>* get_string_property(const variable_identifier& identifier)
     {
         for (auto& instance : instances_) {
@@ -149,11 +134,6 @@ public:
             }
         }
         return nullptr;
-    }
-
-    property_t<bool>* get_bool_property(const std::string& identifier)
-    {
-        return get_bool_property(variable_identifier{identifier});
     }
 
     property_t<bool>* get_bool_property(const variable_identifier& identifier)
@@ -166,7 +146,6 @@ public:
         }
         return nullptr;
     }
-
 
     [[nodiscard]] const std::vector<std::unique_ptr<model_instance>>& get_instances() const
     {

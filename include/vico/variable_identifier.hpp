@@ -16,7 +16,7 @@ struct variable_identifier
     const std::string instanceName;
     const std::string variableName;
 
-    variable_identifier(const std::string& identifier)
+    variable_identifier(const char* identifier)
         : variable_identifier(parse(identifier))
     { }
 

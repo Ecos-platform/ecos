@@ -17,11 +17,6 @@ namespace vico
 struct csv_config
 {
 
-    void log_variable(const std::string& v)
-    {
-        log_variable(variable_identifier{v});
-    }
-
     void log_variable(variable_identifier v)
     {
         variablesToLog_.emplace_back(std::move(v));

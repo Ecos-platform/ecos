@@ -8,6 +8,7 @@ set(publicHeaders
         "ecos/model_resolver.hpp"
         "ecos/property.hpp"
         "ecos/simulation.hpp"
+        "ecos/simulation_runner.hpp"
         "ecos/variable_identifier.hpp"
 
         "ecos/algorithm/algorithm.hpp"
@@ -43,6 +44,7 @@ set(sources
 
         "ecos/model_resolver.cpp"
         "ecos/simulation.cpp"
+        "ecos/simulation_runner.cpp"
         "ecos/algorithm/fixed_step_algorithm.cpp"
         "ecos/fmi/fmi_model_sub_resolver.cpp"
         "ecos/fmi/proxy/proxy_model_sub_resolver.cpp"

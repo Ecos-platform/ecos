@@ -73,19 +73,20 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
     }
 }
 
-void simulation::step(unsigned int numStep)
+double simulation::step(unsigned int numStep)
 {
     if (!initialized_) {
         throw std::runtime_error("init() has not been invoked!");
     }
 
-    for (unsigned i = 0; i < numStep; i++) {
+    double newT = time();
+    for (unsigned i = 0; i < numStep; ++i) {
 
         for (auto& listener : listeners_) {
             listener->pre_step(*this);
         }
 
-        double newT = algorithm_->step(currentTime_, instances_);
+        newT = algorithm_->step(currentTime_, instances_);
 
         for (auto& c : connections_) {
             c->transferData();
@@ -103,7 +104,10 @@ void simulation::step(unsigned int numStep)
         }
 
         num_iterations_++;
+
     }
+
+    return newT;
 }
 
 void simulation::step_until(double t)
@@ -170,4 +174,48 @@ void simulation::add_slave(std::unique_ptr<model_instance> instance)
     }
 
     instances_.emplace_back(std::move(instance));
+}
+
+real_connection* simulation::make_real_connection(const variable_identifier& source, const variable_identifier& sink)
+{
+    auto p1 = get_real_property(source);
+    if (!p1) throw std::runtime_error("No such real property: " + source.str());
+    auto p2 = get_real_property(sink);
+    if (!p2) throw std::runtime_error("No such real property: " + sink.str());
+
+    connections_.emplace_back(std::make_unique<real_connection>(p1, p2));
+    return dynamic_cast<real_connection*>(connections_.back().get());
+}
+
+int_connection* simulation::make_int_connection(const variable_identifier& source, const variable_identifier& sink)
+{
+    auto p1 = get_int_property(source);
+    if (!p1) throw std::runtime_error("No such int property: " + source.str());
+    auto p2 = get_int_property(sink);
+    if (!p2) throw std::runtime_error("No such int property: " + sink.str());
+
+    connections_.emplace_back(std::make_unique<int_connection>(p1, p2));
+    return dynamic_cast<int_connection*>(connections_.back().get());
+}
+
+bool_connection* simulation::make_bool_connection(const variable_identifier& source, const variable_identifier& sink)
+{
+    auto p1 = get_bool_property(source);
+    if (!p1) throw std::runtime_error("No such bool property: " + source.str());
+    auto p2 = get_bool_property(sink);
+    if (!p2) throw std::runtime_error("No such bool property: " + sink.str());
+
+    connections_.emplace_back(std::make_unique<bool_connection>(p1, p2));
+    return dynamic_cast<bool_connection*>(connections_.back().get());
+}
+
+string_connection* simulation::make_string_connection(const variable_identifier& source, const variable_identifier& sink)
+{
+    auto p1 = get_string_property(source);
+    if (!p1) throw std::runtime_error("No such string property: " + source.str());
+    auto p2 = get_string_property(sink);
+    if (!p2) throw std::runtime_error("No such string property: " + sink.str());
+
+    connections_.emplace_back(std::make_unique<string_connection>(p1, p2));
+    return dynamic_cast<string_connection*>(connections_.back().get());
 }

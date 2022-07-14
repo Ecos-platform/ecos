@@ -2,8 +2,8 @@ from conans import ConanFile, CMake, tools
 from os import path
 
 
-class VicoConan(ConanFile):
-    name = "vico"
+class EcosConan(ConanFile):
+    name = "ecos"
     author = "Lars Ivar Hatledal"
     license = "MIT"
     exports = "version.txt"
@@ -42,4 +42,4 @@ class VicoConan(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["vico"]
+        self.cpp_info.libs = ["ecos"]

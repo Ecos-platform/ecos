@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 file(STRINGS "${CMAKE_SOURCE_DIR}/version.txt" projectVersion)
-project("libvico" VERSION ${projectVersion})
+project("libecos" VERSION ${projectVersion})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 
 # ==============================================================================
@@ -8,9 +8,9 @@ message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 # ==============================================================================
 
 option(BUILD_SHARED_LIBS OFF)
-option(VICO_BUILD_TESTS "Build tests" ON)
-option(VICO_BUILD_EXAMPLES "Build examples" OFF)
-option(VICO_BUILD_CLI "Build CLI" ON)
+option(ECOS_BUILD_TESTS "Build tests" ON)
+option(ECOS_BUILD_EXAMPLES "Build examples" OFF)
+option(ECOS_BUILD_CLI "Build CLI" ON)
 
 # ==============================================================================
 # Global internal configuration
@@ -20,17 +20,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # Prepare for export and installation.
-set(VICO_HEADER_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
-set(VICO_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+set(ECOS_HEADER_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
+set(ECOS_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
 
-set(VICO_INSTALL_DESTINATIONS
+set(ECOS_INSTALL_DESTINATIONS
         ARCHIVE DESTINATION "lib"
         LIBRARY DESTINATION "lib"
         RUNTIME DESTINATION "bin"
-        INCLUDES DESTINATION "${VICO_HEADER_INSTALL_DIR}")
-set(VICO_EXPORT_TARGET "${PROJECT_NAME}-targets")
+        INCLUDES DESTINATION "${ECOS_HEADER_INSTALL_DIR}")
+set(ECOS_EXPORT_TARGET "${PROJECT_NAME}-targets")
 
-file(COPY resources/plot/vico_plotter.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+file(COPY resources/plot/ecos_plotter.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 # ==============================================================================
 # Dependencies
@@ -63,18 +63,18 @@ endif ()
 
 add_subdirectory(src)
 
-if (VICO_BUILD_CLI)
+if (ECOS_BUILD_CLI)
     add_subdirectory(cli)
 endif()
 
-if (VICO_BUILD_EXAMPLES OR VICO_BUILD_TESTS)
+if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
     file(COPY data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-    if (VICO_BUILD_EXAMPLES)
+    if (ECOS_BUILD_EXAMPLES)
         add_subdirectory(examples)
     endif ()
 
-    if (VICO_BUILD_TESTS)
+    if (ECOS_BUILD_TESTS)
 
         Include(FetchContent)
 

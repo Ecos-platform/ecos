@@ -1,11 +1,11 @@
-#include "vico/algorithm/fixed_step_algorithm.hpp"
-#include "vico/listeners/csv_writer.hpp"
-#include "vico/ssp/ssp_loader.hpp"
+#include "ecos/algorithm/fixed_step_algorithm.hpp"
+#include "ecos/listeners/csv_writer.hpp"
+#include "ecos/ssp/ssp_loader.hpp"
 
 #include <iostream>
 #include <spdlog/stopwatch.h>
 
-using namespace vico;
+using namespace ecos;
 
 int main()
 {

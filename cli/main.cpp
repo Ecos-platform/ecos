@@ -5,7 +5,7 @@ using namespace popl;
 
 int main(int argc, char** argv)
 {
-    OptionParser op("vico [USAGE]");
+    OptionParser op("ecos [USAGE]");
     auto help_option   = op.add<Switch>("h", "help", "produce help message");
     op.parse(argc, argv);
 

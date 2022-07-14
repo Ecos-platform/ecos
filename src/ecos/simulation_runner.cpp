@@ -6,7 +6,7 @@ using namespace ecos;
 namespace
 {
 
-inline double measure_time(std::function<void()> f)
+inline double measure_time(const std::function<void()>& f)
 {
     const auto start = std::chrono::steady_clock::now();
     f();

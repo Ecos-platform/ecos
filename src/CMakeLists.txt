@@ -8,6 +8,7 @@ set(publicHeaders
         "ecos/model_resolver.hpp"
         "ecos/property.hpp"
         "ecos/scenario.hpp"
+        "ecos/scenario_loader.hpp"
         "ecos/simulation.hpp"
         "ecos/simulation_runner.hpp"
         "ecos/variable_identifier.hpp"
@@ -44,6 +45,7 @@ set(privateHeaders
 set(sources
 
         "ecos/model_resolver.cpp"
+        "ecos/scenario_loader_xml.cpp"
         "ecos/simulation.cpp"
         "ecos/simulation_runner.cpp"
         "ecos/algorithm/fixed_step_algorithm.cpp"

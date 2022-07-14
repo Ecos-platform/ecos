@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecos:Scenario xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ScenarioConfig">
+
+    <ecos:action t="50">
+        <ecos:variable id="vesselModel::reset">
+            <ecos:boolean value="true"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="50.05">
+        <ecos:variable id="vesselModel::reset">
+            <ecos:boolean value="false"/>
+        </ecos:variable>
+    </ecos:action>
+
+</ecos:Scenario>

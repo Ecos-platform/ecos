@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ScenarioConfig"
+           elementFormDefault="qualified"
+           targetNamespace="http://github.com/Ecos-platform/libecos/resources/schema/ScenarioConfig">
+
+    <xs:element name="Scenario" type="ecos:TAssignments"/>
+
+    <xs:complexType name="TAssignments">
+        <xs:sequence>
+            <xs:element name="action" type="ecos:TVariable" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TVariable">
+        <xs:sequence>
+            <xs:element name="variable" type="ecos:TAssign" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="t" type="xs:float" use="required"/>
+        <xs:attribute name="eps" type="xs:float"/>
+    </xs:complexType>
+
+    <xs:complexType name="TReal">
+        <xs:attribute name="value" type="xs:float" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="TInteger">
+        <xs:attribute name="value" type="xs:int" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="TBoolean">
+        <xs:attribute name="value" type="xs:boolean" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="TString">
+        <xs:attribute name="value" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="TAssign">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="real" type="ecos:TReal"/>
+                <xs:element name="integer" type="ecos:TInteger"/>
+                <xs:element name="boolean" type="ecos:TBoolean"/>
+                <xs:element name="string" type="ecos:TString"/>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+    </xs:complexType>
+
+</xs:schema>

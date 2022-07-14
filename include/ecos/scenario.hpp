@@ -1,8 +1,9 @@
 
-#ifndef LIBECOS_SCENARIO_HPP
+#ifndef LIBECOS_SCENARIO_CPP
 #define LIBECOS_SCENARIO_HPP
 
 #include <algorithm>
+#include <filesystem>
 #include <functional>
 #include <utility>
 #include <vector>
@@ -160,6 +161,7 @@ private:
     std::vector<timed_action> timedActionsQueue_;
 };
 
+
 } // namespace ecos
 
-#endif // LIBECOS_SCENARIO_HPP
+#endif // LIBECOS_SCENARIO_CPP

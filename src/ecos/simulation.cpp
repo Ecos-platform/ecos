@@ -1,9 +1,10 @@
 
 #include "ecos/simulation.hpp"
 
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 #include "ecos/listeners/simulation_listener.hpp"
+
 #include <execution>
 
 using namespace ecos;
@@ -41,7 +42,7 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
             spdlog::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
         }
 
-        scenario.runInitActions();
+        scenario_.runInitActions();
 
         for (unsigned i = 0; i < instances_.size(); ++i) {
             for (auto& instance : instances_) {
@@ -88,7 +89,7 @@ double simulation::step(unsigned int numStep)
             listener->pre_step(*this);
         }
 
-        scenario.apply(time());
+        scenario_.apply(time());
 
         newT = algorithm_->step(currentTime_, instances_);
 
@@ -96,7 +97,7 @@ double simulation::step(unsigned int numStep)
             c->transferData();
         }
 
-        std::for_each(std::execution::par, instances_.begin(), instances_.end(), [](auto& instance){
+        std::for_each(std::execution::par, instances_.begin(), instances_.end(), [](auto& instance) {
             instance->get_properties().apply_sets();
             instance->get_properties().apply_gets();
         });
@@ -108,7 +109,6 @@ double simulation::step(unsigned int numStep)
         }
 
         num_iterations_++;
-
     }
 
     return newT;
@@ -152,7 +152,7 @@ void simulation::reset()
     for (auto& instance : instances_) {
         instance->reset();
     }
-    scenario.reset();
+    scenario_.reset();
     currentTime_ = 0;
     initialized_ = false;
 }
@@ -224,4 +224,9 @@ string_connection* simulation::make_string_connection(const variable_identifier&
 
     connections_.emplace_back(std::make_unique<string_connection>(p1, p2));
     return dynamic_cast<string_connection*>(connections_.back().get());
+}
+
+void simulation::load_scenario(const std::filesystem::path& xmlConfig)
+{
+    scenario_.load_configuration(xmlConfig);
 }

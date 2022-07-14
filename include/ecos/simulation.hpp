@@ -11,6 +11,7 @@
 #include "ecos/scenario.hpp"
 #include "ecos/variable_identifier.hpp"
 
+#include <filesystem>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -133,22 +134,26 @@ public:
         return ids;
     }
 
-    void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action) {
-        scenario.invoke_when(predicate_action{predicate, action});
+    void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action)
+    {
+        scenario_.invoke_when(predicate_action{predicate, action});
     }
 
-    void invoke_at(const std::function<void()>& f, double timePoint, double eps = 0) {
-        scenario.invoke_at(timed_action(f, timePoint, eps));
+    void invoke_at(const std::function<void()>& f, double timePoint, double eps = 0)
+    {
+        scenario_.invoke_at(timed_action(f, timePoint, eps));
     }
+
+    void load_scenario(const std::filesystem::path& xmlConfig);
 
 private:
     double currentTime_{0};
     bool initialized_{false};
     unsigned long num_iterations_{0};
 
-    scenario scenario;
+    scenario scenario_;
 
-    std::unique_ptr<algorithm>algorithm_;
+    std::unique_ptr<algorithm> algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;
     std::vector<std::unique_ptr<connection>> connections_;
     std::vector<std::unique_ptr<simulation_listener>> listeners_;

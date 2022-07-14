@@ -1,5 +1,5 @@
 include_directories("${CMAKE_SOURCE_DIR}/src")
-link_libraries(vico CONAN_PKG::fmilibcpp Catch2::Catch2)
+link_libraries(ecos CONAN_PKG::fmilibcpp Catch2::Catch2)
 
 add_executable(test_identity test_identity.cpp)
 add_test(NAME test_identity COMMAND test_identity)
@@ -15,6 +15,9 @@ add_test(NAME test_connection COMMAND test_connection)
 
 add_executable(test_property test_property.cpp)
 add_test(NAME test_property COMMAND test_property)
+
+add_executable(test_runner test_runner.cpp)
+add_test(NAME test_runner COMMAND test_runner)
 
 add_executable(test_unzipper test_unzipper.cpp)
 add_test(NAME test_unzipper COMMAND test_unzipper)

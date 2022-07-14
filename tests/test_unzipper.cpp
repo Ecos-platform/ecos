@@ -1,10 +1,10 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include <vico/util/unzipper.hpp>
-#include <vico/util/temp_dir.hpp>
+#include <ecos/util/unzipper.hpp>
+#include <ecos/util/temp_dir.hpp>
 
-using namespace vico;
+using namespace ecos;
 
 TEST_CASE("test_unzipper")
 {

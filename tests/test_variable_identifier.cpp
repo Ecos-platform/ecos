@@ -1,9 +1,9 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include <vico/variable_identifier.hpp>
+#include <ecos/variable_identifier.hpp>
 
-using namespace vico;
+using namespace ecos;
 
 TEST_CASE("test_variable_identifier")
 {

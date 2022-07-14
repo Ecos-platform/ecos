@@ -1,11 +1,12 @@
 
-#include "vico/algorithm/fixed_step_algorithm.hpp"
-#include "vico/listeners/csv_writer.hpp"
-#include "vico/structure/simulation_structure.hpp"
+#include "ecos/algorithm/fixed_step_algorithm.hpp"
+#include "ecos/listeners/csv_writer.hpp"
+#include "ecos/structure/simulation_structure.hpp"
 
 #include <iostream>
+#include <spdlog/spdlog.h>
 
-using namespace vico;
+using namespace ecos;
 
 int main()
 {

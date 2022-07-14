@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:vico="http://github.com/Vico-platform/libvico/resources/schema/LogConfig"
+           xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/LogConfig"
            elementFormDefault="qualified"
-           targetNamespace="http://github.com/Vico-platform/libvico/resources/schema/LogConfig">
+           targetNamespace="http://github.com/Ecos-platform/libecos/resources/schema/LogConfig">
 
-    <xs:element name="LogConfig" type="vico:TLogConfig"/>
+    <xs:element name="LogConfig" type="ecos:TLogConfig"/>
 
     <xs:complexType name="TLogConfig">
         <xs:sequence>
-            <xs:element name="components" type="vico:TComponents"/>
+            <xs:element name="components" type="ecos:TComponents"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="TComponents">
         <xs:sequence>
-            <xs:element name="component" type="vico:TComponent" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="component" type="ecos:TComponent" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="TComponent">
         <xs:sequence>
-            <xs:element name="variable" type="vico:TVariable" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="variable" type="ecos:TVariable" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="TVariable">
         <xs:sequence>
-            <xs:element name="linearTransformation" type="vico:TLinearTransformation" minOccurs="0"/>
+            <xs:element name="linearTransformation" type="ecos:TLinearTransformation" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" use="required"/>
     </xs:complexType>

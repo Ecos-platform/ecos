@@ -2,21 +2,22 @@ set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 
 set(publicHeaders
 
-        "vico/connection.hpp"
-        "vico/model.hpp"
-        "vico/model_instance.hpp"
-        "vico/model_resolver.hpp"
-        "vico/property.hpp"
-        "vico/simulation.hpp"
-        "vico/variable_identifier.hpp"
+        "ecos/connection.hpp"
+        "ecos/model.hpp"
+        "ecos/model_instance.hpp"
+        "ecos/model_resolver.hpp"
+        "ecos/property.hpp"
+        "ecos/simulation.hpp"
+        "ecos/simulation_runner.hpp"
+        "ecos/variable_identifier.hpp"
 
-        "vico/algorithm/algorithm.hpp"
-        "vico/algorithm/fixed_step_algorithm.hpp"
+        "ecos/algorithm/algorithm.hpp"
+        "ecos/algorithm/fixed_step_algorithm.hpp"
 
-        "vico/listeners/simulation_listener.hpp"
-        "vico/listeners/csv_writer.hpp"
+        "ecos/listeners/simulation_listener.hpp"
+        "ecos/listeners/csv_writer.hpp"
 
-        "vico/structure/simulation_structure.hpp"
+        "ecos/structure/simulation_structure.hpp"
 
         )
 
@@ -27,44 +28,45 @@ endforeach ()
 
 set(privateHeaders
 
-        "vico/fmi/fmi_model.hpp"
-        "vico/fmi/fmi_model_instance.hpp"
-        "vico/fmi/fmi_model_sub_resolver.hpp"
-        "vico/fmi/proxy/proxy_model.hpp"
-        "vico/fmi/proxy/proxy_model_sub_resolver.hpp"
+        "ecos/fmi/fmi_model.hpp"
+        "ecos/fmi/fmi_model_instance.hpp"
+        "ecos/fmi/fmi_model_sub_resolver.hpp"
+        "ecos/fmi/proxy/proxy_model.hpp"
+        "ecos/fmi/proxy/proxy_model_sub_resolver.hpp"
 
-        "vico/util/temp_dir.hpp"
-        "vico/util/unzipper.hpp"
-        "vico/util/uuid.hpp"
+        "ecos/util/temp_dir.hpp"
+        "ecos/util/unzipper.hpp"
+        "ecos/util/uuid.hpp"
 
         )
 
 set(sources
 
-        "vico/model_resolver.cpp"
-        "vico/simulation.cpp"
-        "vico/algorithm/fixed_step_algorithm.cpp"
-        "vico/fmi/fmi_model_sub_resolver.cpp"
-        "vico/fmi/proxy/proxy_model_sub_resolver.cpp"
-        "vico/listeners/csv_writer.cpp"
-        "vico/listeners/simulation_listener.cpp"
-        "vico/ssp/ssp_loader.cpp"
-        "vico/structure/simulation_structure.cpp"
-        "vico/util/temp_dir.cpp"
-        "vico/util/unzipper.cpp"
-        "vico/util/uuid.cpp"
+        "ecos/model_resolver.cpp"
+        "ecos/simulation.cpp"
+        "ecos/simulation_runner.cpp"
+        "ecos/algorithm/fixed_step_algorithm.cpp"
+        "ecos/fmi/fmi_model_sub_resolver.cpp"
+        "ecos/fmi/proxy/proxy_model_sub_resolver.cpp"
+        "ecos/listeners/csv_writer.cpp"
+        "ecos/listeners/simulation_listener.cpp"
+        "ecos/ssp/ssp_loader.cpp"
+        "ecos/structure/simulation_structure.cpp"
+        "ecos/util/temp_dir.cpp"
+        "ecos/util/unzipper.cpp"
+        "ecos/util/uuid.cpp"
 
         )
 
-add_library(vico ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources})
-target_compile_features(vico PUBLIC "cxx_std_17")
-target_include_directories(vico
+add_library(ecos ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources})
+target_compile_features(ecos PUBLIC "cxx_std_17")
+target_include_directories(ecos
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
-target_link_libraries(vico
+target_link_libraries(ecos
         PRIVATE
         CONAN_PKG::fmilibcpp
         CONAN_PKG::proxyfmu
@@ -73,7 +75,7 @@ target_link_libraries(vico
         CONAN_PKG::libzip
         CONAN_PKG::simple-ssp-parser)
 if (UNIX)
-    target_link_libraries(vico INTERFACE stdc++fs)
+    target_link_libraries(ecos INTERFACE stdc++fs)
 endif ()
 
 
@@ -82,16 +84,16 @@ endif ()
 # ==============================================================================
 
 install(
-        TARGETS vico
-        EXPORT "${VICO_EXPORT_TARGET}"
-        ${VICO_INSTALL_DESTINATIONS}
+        TARGETS ecos
+        EXPORT "${ECOS_EXPORT_TARGET}"
+        ${ECOS_INSTALL_DESTINATIONS}
 )
 install(
-        DIRECTORY "${publicHeaderDir}/vico"
-        DESTINATION "${VICO_HEADER_INSTALL_DIR}"
+        DIRECTORY "${publicHeaderDir}/ecos"
+        DESTINATION "${ECOS_HEADER_INSTALL_DIR}"
 )
 install(
-        FILES "${CMAKE_SOURCE_DIR}/resources/plot/vico_plotter.py"
+        FILES "${CMAKE_SOURCE_DIR}/resources/plot/ecos_plotter.py"
         DESTINATION "${CMAKE_BINARY_DIR}/bin"
 )
 

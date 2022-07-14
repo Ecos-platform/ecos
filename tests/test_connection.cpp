@@ -1,9 +1,9 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include <vico/connection.hpp>
+#include <ecos/connection.hpp>
 
-using namespace vico;
+using namespace ecos;
 
 TEST_CASE("test_real_connection")
 {

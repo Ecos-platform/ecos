@@ -1,12 +1,12 @@
-#include "vico/algorithm/fixed_step_algorithm.hpp"
-#include "vico/model_resolver.hpp"
-#include "vico/simulation.hpp"
+#include "ecos/algorithm/fixed_step_algorithm.hpp"
+#include "ecos/model_resolver.hpp"
+#include "ecos/simulation.hpp"
 
 #include <iostream>
 
 #include <spdlog/spdlog.h>
 
-using namespace vico;
+using namespace ecos;
 
 int main()
 {

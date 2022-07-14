@@ -28,7 +28,7 @@ IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^[<"]catch2[/.]'
     Priority: 10
-  - Regex:      '^[<"]vico[/.]'
+  - Regex:      '^[<"]ecos[/.]'
     Priority:   20
   - Regex:      '^[<"](ssp|spdlog|fmilibcpp|proxyfmu|)[/.]'
     Priority:   30

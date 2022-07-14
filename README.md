@@ -1,8 +1,11 @@
-# Vico
+# Ecos
 
->Vico is a co-simulation engine.
+>Ecos is a co-simulation engine.
 
-Vico supports:
+Ecos (Easy co-simulation) is a fast and easy to use co-simulation
+engine written in modern C++.
+
+Ecos supports:
 * FMI for Co-simulation version 1.0 & 2.0
 * SSP version 1.0
 * Optional sandboxed/remote model execution using proxy-fmu
@@ -32,9 +35,7 @@ ss.add_parameter_set("initialValues", map);
 auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
 
 sim->init();
-while (sim->time() < 1) {
-    sim->step();
-}
+sim->step_until(10);
 
 sim->terminate();
 ```
@@ -56,9 +57,7 @@ csvWriter->enable_plotting("ChartConfig.xml");
 sim->add_listener(std::move(csvWriter));
 
 sim->init();
-while (sim->time() < 1) {
-    sim->step();
-}
+sim->step_until(10);
 
 sim->terminate();
 ```

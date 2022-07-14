@@ -19,6 +19,8 @@ struct simulation_listener
 
     virtual void post_terminate(simulation& sim);
 
+    virtual void reset();
+
     virtual ~simulation_listener() = default;
 };
 

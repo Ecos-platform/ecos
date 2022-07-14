@@ -8,6 +8,7 @@
 #include "ecos/listeners/simulation_listener.hpp"
 #include "ecos/model_instance.hpp"
 #include "ecos/property.hpp"
+#include "ecos/scenario.hpp"
 #include "ecos/variable_identifier.hpp"
 
 #include <memory>
@@ -132,12 +133,22 @@ public:
         return ids;
     }
 
+    void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action) {
+        scenario.invoke_when(predicate_action{predicate, action});
+    }
+
+    void invoke_at(const std::function<void()>& f, double timePoint, double eps = 0) {
+        scenario.invoke_at(timed_action(f, timePoint, eps));
+    }
+
 private:
     double currentTime_{0};
     bool initialized_{false};
     unsigned long num_iterations_{0};
 
-    std::unique_ptr<algorithm> algorithm_;
+    scenario scenario;
+
+    std::unique_ptr<algorithm>algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;
     std::vector<std::unique_ptr<connection>> connections_;
     std::vector<std::unique_ptr<simulation_listener>> listeners_;

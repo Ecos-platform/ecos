@@ -7,6 +7,7 @@ set(publicHeaders
         "ecos/model_instance.hpp"
         "ecos/model_resolver.hpp"
         "ecos/property.hpp"
+        "ecos/scenario.hpp"
         "ecos/simulation.hpp"
         "ecos/simulation_runner.hpp"
         "ecos/variable_identifier.hpp"

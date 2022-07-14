@@ -14,4 +14,6 @@ void simulation_listener::post_step(simulation& sim) { }
 
 void simulation_listener::post_terminate(simulation& sim) { }
 
+void simulation_listener::reset() { }
+
 } // namespace ecos

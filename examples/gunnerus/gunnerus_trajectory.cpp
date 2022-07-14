@@ -30,24 +30,24 @@ int main()
     csvWriter->enable_plotting("../../data/ssp/gunnerus/ChartConfig.xml");
     sim->add_listener(std::move(csvWriter));
 
-    bool reset = false;
     auto resetProperty = sim->get_bool_property("vesselModel::reset_position");
     auto trackControllerProperty = sim->get_bool_property("trackController::enable");
 
-    spdlog::stopwatch sw;
-    sim->init("initialValues");
-    while (sim->time() < 250) {
-        if (sim->time() > 50 && !reset) {
-            resetProperty->set_value(true);
-            sim->step();
+
+    sim->invoke_at([&sim, &resetProperty, &trackControllerProperty]{
+        resetProperty->set_value(true);
+
+        sim->invoke_at([&resetProperty, &trackControllerProperty]{
             resetProperty->set_value(false);
             trackControllerProperty->set_value(true);
-            reset = true;
-        } else {
-            sim->step();
-        }
-    }
+        }, 50);
 
+    }, 50, 0.01);
+
+
+    spdlog::stopwatch sw;
+    sim->init("initialValues");
+    sim->step_until(250);
     spdlog::info("Elapsed {}", sw);
     sim->terminate();
 

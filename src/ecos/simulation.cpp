@@ -41,6 +41,8 @@ void simulation::init(std::optional<double> startTime, std::optional<std::string
             spdlog::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
         }
 
+        scenario.runInitActions();
+
         for (unsigned i = 0; i < instances_.size(); ++i) {
             for (auto& instance : instances_) {
                 instance->get_properties().apply_sets();
@@ -79,12 +81,14 @@ double simulation::step(unsigned int numStep)
         throw std::runtime_error("init() has not been invoked!");
     }
 
-    double newT = time();
+    double newT;
     for (unsigned i = 0; i < numStep; ++i) {
 
         for (auto& listener : listeners_) {
             listener->pre_step(*this);
         }
+
+        scenario.apply(time());
 
         newT = algorithm_->step(currentTime_, instances_);
 
@@ -148,6 +152,8 @@ void simulation::reset()
     for (auto& instance : instances_) {
         instance->reset();
     }
+    scenario.reset();
+    currentTime_ = 0;
     initialized_ = false;
 }
 

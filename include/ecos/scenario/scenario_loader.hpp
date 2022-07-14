@@ -3,10 +3,12 @@
 #define LIBECOS_SCENARIO_LOADER_HPP
 
 #include <filesystem>
+#include "ecos/simulation.hpp"
+
 
 namespace ecos {
 
-void load_configuration(const std::filesystem::path& config);
+void load_scenario(simulation& sim, const std::filesystem::path& config);
 
 }
 

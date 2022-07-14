@@ -1,5 +1,6 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
+#include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
 #include <filesystem>
@@ -30,25 +31,11 @@ int main()
     csvWriter->enable_plotting("../../data/ssp/gunnerus/ChartConfig.xml");
     sim->add_listener(std::move(csvWriter));
 
-    auto resetProperty = sim->get_bool_property("vesselModel::reset_position");
-    auto trackControllerProperty = sim->get_bool_property("trackController::enable");
-
-
-    sim->invoke_at([&sim, &resetProperty, &trackControllerProperty]{
-        resetProperty->set_value(true);
-
-        sim->invoke_at([&resetProperty, &trackControllerProperty]{
-            resetProperty->set_value(false);
-            trackControllerProperty->set_value(true);
-        }, 50);
-
-    }, 50, 0.01);
-
+    load_scenario(*sim, "../../data/ssp/gunnerus/scenario.xml");
 
     spdlog::stopwatch sw;
     sim->init("initialValues");
-    sim->step_until(250);
+    sim->step_until(1000);
     spdlog::info("Elapsed {}", sw);
     sim->terminate();
-
 }

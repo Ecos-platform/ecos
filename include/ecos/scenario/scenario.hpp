@@ -1,10 +1,11 @@
 
-#ifndef LIBECOS_SCENARIO_CPP
+#ifndef LIBECOS_SCENARIO_HPP
 #define LIBECOS_SCENARIO_HPP
 
 #include <algorithm>
 #include <filesystem>
 #include <functional>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -38,9 +39,9 @@ class timed_action
 {
 
 public:
-    timed_action(std::function<void()> f, double timePoint, double eps = 0)
+    timed_action(double timePoint, std::function<void()> f, const std::optional<double>& eps = std::nullopt)
         : f_(std::move(f))
-        , eps_(eps)
+        , eps_(eps.value_or(0))
         , timePoint_(timePoint)
     { }
 
@@ -48,7 +49,6 @@ public:
     {
         return eps_;
     }
-
 
     [[nodiscard]] double time_point() const
     {
@@ -82,42 +82,7 @@ public:
         }
     }
 
-    void apply(double t)
-    {
-
-        active_ = true;
-
-        for (auto& q : timedActionsQueue_) {
-            timedActions.insert(std::upper_bound(timedActions.begin(), timedActions.end(), q), std::move(q));
-        }
-        timedActionsQueue_.clear();
-
-        while (!timedActions.empty()) {
-            auto& action = timedActions.back();
-            const double nextT = action.time_point();
-            double diff = std::abs(t - nextT);
-            if (nextT < t || diff < action.eps()) {
-
-                action.invoke();
-                discardedTimedActions.emplace_back(std::move(action));
-                timedActions.pop_back();
-            } else {
-                break;
-            }
-        }
-
-        if (!predicateActions.empty()) {
-            auto it = predicateActions.begin();
-            while (it != predicateActions.end()) {
-                if (it->invoke()) {
-                    discardedPredicateActions.emplace_back(std::move(*it));
-                    it = predicateActions.erase(it);
-                }
-            }
-        }
-
-        active_ = false;
-    }
+    void apply(double t);
 
     void on_init(std::function<void()> f)
     {
@@ -164,4 +129,4 @@ private:
 
 } // namespace ecos
 
-#endif // LIBECOS_SCENARIO_CPP
+#endif // LIBECOS_SCENARIO_HPP

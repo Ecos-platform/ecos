@@ -8,7 +8,7 @@
 #include "ecos/listeners/simulation_listener.hpp"
 #include "ecos/model_instance.hpp"
 #include "ecos/property.hpp"
-#include "ecos/scenario.hpp"
+#include "ecos/scenario/scenario.hpp"
 #include "ecos/variable_identifier.hpp"
 
 #include <filesystem>
@@ -139,12 +139,10 @@ public:
         scenario_.invoke_when(predicate_action{predicate, action});
     }
 
-    void invoke_at(const std::function<void()>& f, double timePoint, double eps = 0)
+    void invoke_at(double timePoint, const std::function<void()>& f, const std::optional<double>& eps = 0)
     {
-        scenario_.invoke_at(timed_action(f, timePoint, eps));
+        scenario_.invoke_at(timed_action(timePoint, f, eps));
     }
-
-    void load_scenario(const std::filesystem::path& xmlConfig);
 
 private:
     double currentTime_{0};

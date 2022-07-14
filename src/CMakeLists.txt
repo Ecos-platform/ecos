@@ -45,7 +45,8 @@ set(privateHeaders
 set(sources
 
         "ecos/model_resolver.cpp"
-        "ecos/scenario_loader_xml.cpp"
+        "ecos/scenario/scenario.cpp"
+        "ecos/scenario/scenario_loader_xml.cpp"
         "ecos/simulation.cpp"
         "ecos/simulation_runner.cpp"
         "ecos/algorithm/fixed_step_algorithm.cpp"

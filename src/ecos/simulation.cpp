@@ -225,8 +225,3 @@ string_connection* simulation::make_string_connection(const variable_identifier&
     connections_.emplace_back(std::make_unique<string_connection>(p1, p2));
     return dynamic_cast<string_connection*>(connections_.back().get());
 }
-
-void simulation::load_scenario(const std::filesystem::path& xmlConfig)
-{
-    scenario_.load_configuration(xmlConfig);
-}

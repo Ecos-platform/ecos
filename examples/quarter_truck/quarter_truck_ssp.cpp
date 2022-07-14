@@ -3,6 +3,7 @@
 #include "ecos/ssp/ssp_loader.hpp"
 
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <spdlog/stopwatch.h>
 
 using namespace ecos;

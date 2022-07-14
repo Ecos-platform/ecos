@@ -1,9 +1,10 @@
 
 #include "ecos/model_resolver.hpp"
+
 #include "ecos/fmi/fmi_model_sub_resolver.hpp"
 #include "ecos/fmi/proxy/proxy_model_sub_resolver.hpp"
 
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 using namespace ecos;
 

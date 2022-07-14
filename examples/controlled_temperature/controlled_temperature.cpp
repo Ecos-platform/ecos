@@ -4,6 +4,7 @@
 #include "ecos/simulation.hpp"
 
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 using namespace ecos;
 

@@ -6,7 +6,6 @@
 
 #include <filesystem>
 #include <memory>
-#include <spdlog/spdlog.h>
 #include <vector>
 
 namespace ecos

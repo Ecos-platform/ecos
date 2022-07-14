@@ -60,7 +60,6 @@ void writeData(std::ofstream& out, const simulation& sim, const std::optional<cs
         }
     }
     out << "\n";
-    out.flush();
 }
 
 } // namespace
@@ -137,6 +136,7 @@ void csv_writer::pre_init(simulation& sim)
     }
 
     outFile_ << "\n";
+    outFile_.flush();
 }
 
 void csv_writer::post_init(simulation& sim)

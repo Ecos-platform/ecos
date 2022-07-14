@@ -26,33 +26,58 @@ public:
                 auto p = property_t<int>::create(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
-                        return slave_->fmilibcpp::slave::get_integer(v.vr);
+                        vrBuf[0] = v.vr;
+                        slave_->get_integer(vrBuf, iBuf);
+                        return iBuf.back();
                     },
-                    [&v, this](auto value) { slave_->set_integer({v.vr}, {value}); });
+                    [&v, this](auto value) {
+                        vrBuf[0] = v.vr;
+                        iBuf[0] = value;
+                        slave_->set_integer(vrBuf, iBuf);
+                    });
                 properties_.add_int_property(propertyName, std::move(p));
             } else if (v.is_real()) {
                 auto p = property_t<double>::create(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
-                        return slave_->fmilibcpp::slave::get_real(v.vr);
+                        vrBuf[0] = v.vr;
+                        slave_->get_real(vrBuf, rBuf);
+                        return rBuf.back();
                     },
-                    [&v, this](auto value) { slave_->set_real({v.vr}, {value}); });
+                    [&v, this](auto value) {
+                        vrBuf[0] = v.vr;
+                        rBuf[0] = value;
+                        slave_->set_real(vrBuf, rBuf);
+                    });
                 properties_.add_real_property(propertyName, std::move(p));
             } else if (v.is_string()) {
                 auto p = property_t<std::string>::create(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
-                        return slave_->fmilibcpp::slave::get_string(v.vr);
+                        vrBuf[0] = v.vr;
+                        slave_->get_string(vrBuf, sBuf);
+                        return sBuf.back();
                     },
-                    [&v, this](auto value) { slave_->set_string({v.vr}, {value}); });
+                    [&v, this](auto& value) {
+                        vrBuf[0] = v.vr;
+                        sBuf[0] = value;
+                        slave_->set_string(vrBuf, sBuf);
+                    });
                 properties_.add_string_property(propertyName, std::move(p));
             } else if (v.is_boolean()) {
                 auto p = property_t<bool>::create(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
-                        return slave_->fmilibcpp::slave::get_boolean(v.vr);
+                        vrBuf[0] = v.vr;
+                        slave_->get_boolean(vrBuf, bBuf);
+                        return bBuf.back();
                     },
-                    [&v, this](auto value) { slave_->set_boolean({v.vr}, {value}); });
+                    [&v, this](auto value) {
+                        vrBuf[0] = v.vr;
+                        bBuf[0] = value;
+                        slave_->set_boolean(vrBuf, bBuf);
+                        return bBuf.back();
+                    });
                 properties_.add_bool_property(propertyName, std::move(p));
             } else {
                 throw std::runtime_error("Assertion error");
@@ -93,6 +118,11 @@ public:
     }
 
 private:
+    std::vector<fmilibcpp::value_ref> vrBuf = std::vector<fmilibcpp::value_ref>(1);
+    std::vector<double> rBuf = std::vector<double>(1);
+    std::vector<int> iBuf = std::vector<int>(1);
+    std::vector<bool> bBuf = std::vector<bool>(1);
+    std::vector<std::string> sBuf = std::vector<std::string>(1);
     std::unique_ptr<fmilibcpp::buffered_slave> slave_;
 
     struct prop_lister : property_listener

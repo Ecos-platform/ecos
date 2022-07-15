@@ -48,4 +48,4 @@ class EcosConan(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["ecos"]
+        self.cpp_info.libs = ["libecos"]

@@ -27,6 +27,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install prerequisites
         run: |
+          sudo apt install libtbb-dev
           sudo pip3 install --upgrade setuptools pip
           sudo pip3 install conan
       - name: Configure Conan

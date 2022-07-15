@@ -23,10 +23,6 @@ jobs:
           sudo pip3 install --upgrade setuptools pip
           sudo pip3 install conan
 
-      - name: Run conan
-        run: |
-          conan install . -s build_type=${{ matrix.build_type }} -s compiler.libcxx=libstdc++11 --install-folder=build -b missing
-
       - name: Configure and build
         run: |
           cmake . -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON
@@ -52,10 +48,6 @@ jobs:
         run: |
           pip3 install --upgrade setuptools pip
           pip3 install conan
-
-      - name: Run conan
-        run: |
-          conan install . -s build_type=${{ matrix.build_type }} --install-folder=build -b missing
 
       - name: Configure and build
         run: |

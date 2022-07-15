@@ -20,7 +20,9 @@ class EcosConan(ConanFile):
         "proxyfmu/0.2.8@osp/testing",
         "libzip/1.8.0",
         "spdlog/1.10.0",
-        "boost/1.71.0"
+        "boost/1.71.0",
+        # conflict resolution
+        "openssl/1.1.1n"
     )
 
     def set_version(self):

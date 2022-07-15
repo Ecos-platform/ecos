@@ -1,0 +1,68 @@
+name: Build
+
+env:
+  CONAN_REVISIONS_ENABLED: 1
+  CONAN_NON_INTERACTIVE: True
+
+on: [push, workflow_dispatch]
+
+jobs:
+  cmake-on-linux:
+    name: cmake
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04]
+        build_type: [Debug, Release]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install prerequisites
+        run: |
+          sudo pip3 install --upgrade setuptools pip
+          sudo pip3 install conan
+
+      - name: Run conan
+        run: |
+          conan install . -s build_type=${{ matrix.build_type }} -s compiler.libcxx=libstdc++11 --install-folder=build -b missing
+
+      - name: Configure and build
+        run: |
+          cmake . -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON
+          cmake --build build
+        shell: bash
+      - name: Test
+        run: |
+         cd build/tests
+         ctest --output-on-failure
+
+  cmake-on-windows:
+    name: cmake
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019]
+        build_type: [Debug, Release]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install prerequisites
+        run: |
+          pip3 install --upgrade setuptools pip
+          pip3 install conan
+
+      - name: Run conan
+        run: |
+          conan install . -s build_type=${{ matrix.build_type }} --install-folder=build -b missing
+
+      - name: Configure and build
+        run: |
+          cmake . -A x64 -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON
+          cmake --build build --config ${{ matrix.build_type }}
+
+      - name: Test
+        run: |
+         cd build/tests
+         ctest -C ${{ matrix.build_type }} --output-on-failure

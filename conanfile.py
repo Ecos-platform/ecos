@@ -31,6 +31,8 @@ class EcosConan(ConanFile):
 
     def configure_cmake(self):
         cmake = CMake(self)
+        cmake.definitions["ECOS_BUILD_TESTS"] = "OFF"
+        cmake.definitions["ECOS_BUILD_EXAMPLES"] = "OFF"
         cmake.configure()
         return cmake
 

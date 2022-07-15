@@ -65,7 +65,7 @@ add_subdirectory(src)
 
 if (ECOS_BUILD_CLI)
     add_subdirectory(cli)
-endif()
+endif ()
 
 if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
 

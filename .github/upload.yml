@@ -6,7 +6,7 @@ env:
   CONAN_REVISIONS_ENABLED: 1
   CONAN_NON_INTERACTIVE: True
 
-on: [push, workflow_dispatch]
+on: [ push, workflow_dispatch ]
 
 jobs:
   conan-on-linux:
@@ -18,10 +18,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]
-        build_type: [Debug, Release]
-        compiler_version: [9]
-        compiler_libcxx: [libstdc++11]
+        os: [ ubuntu-20.04 ]
+        build_type: [ Debug, Release ]
+        compiler_version: [ 9 ]
+        compiler_libcxx: [ libstdc++11 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -54,8 +54,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019]
-        build_type: [Debug, Release]
+        os: [ windows-2019 ]
+        build_type: [ Debug, Release ]
 
     steps:
       - uses: actions/checkout@v2

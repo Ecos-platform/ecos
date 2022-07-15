@@ -4,7 +4,7 @@ env:
   CONAN_REVISIONS_ENABLED: 1
   CONAN_NON_INTERACTIVE: True
 
-on: [push, workflow_dispatch]
+on: [ push, workflow_dispatch ]
 
 jobs:
   cmake-on-linux:
@@ -13,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]
-        build_type: [Debug, Release]
+        os: [ ubuntu-20.04 ]
+        build_type: [ Debug, Release ]
 
     steps:
       - uses: actions/checkout@v2
@@ -31,8 +31,8 @@ jobs:
         shell: bash
       - name: Test
         run: |
-         cd build/tests
-         ctest --output-on-failure
+          cd build/tests
+          ctest --output-on-failure
 
   cmake-on-windows:
     name: cmake
@@ -40,8 +40,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019]
-        build_type: [Debug, Release]
+        os: [ windows-2019 ]
+        build_type: [ Debug, Release ]
 
     steps:
       - uses: actions/checkout@v2
@@ -57,5 +57,5 @@ jobs:
 
       - name: Test
         run: |
-         cd build/tests
-         ctest -C ${{ matrix.build_type }} --output-on-failure
+          cd build/tests
+          ctest -C ${{ matrix.build_type }} --output-on-failure

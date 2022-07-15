@@ -1,13 +1,13 @@
-name: Upload conan recipe
-
-env:
-  CONAN_LOGIN_USERNAME_AIS: ${{ secrets.CONAN_LOGIN_USERNAME_AIS }}
-  CONAN_PASSWORD_AIS: ${{ secrets.CONAN_PASSWORD_AIS }}
-  CONAN_REVISIONS_ENABLED: 1
-  CONAN_NON_INTERACTIVE: True
-
-on: [push, workflow_dispatch]
-
+#name: Upload conan recipe
+#
+#env:
+#  CONAN_LOGIN_USERNAME_AIS: ${{ secrets.CONAN_LOGIN_USERNAME_AIS }}
+#  CONAN_PASSWORD_AIS: ${{ secrets.CONAN_PASSWORD_AIS }}
+#  CONAN_REVISIONS_ENABLED: 1
+#  CONAN_NON_INTERACTIVE: True
+#
+#on: [push, workflow_dispatch]
+#
 #jobs:
 #  conan-on-linux:
 #    name: Conan

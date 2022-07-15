@@ -20,7 +20,7 @@ TEST_CASE("test simulation runner")
     sim.init();
 
     auto runner = simulation_runner(sim);
-    runner.target_real_time_factor() = 1;
+    runner.set_real_time_factor(1);
     auto future = runner.run_while([&sim] {
         return sim.time() < 1;
     });

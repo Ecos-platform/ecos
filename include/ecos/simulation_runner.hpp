@@ -22,12 +22,16 @@ public:
 
     double real_time_factor() const;
 
-    double& target_real_time_factor()
+    double target_real_time_factor() const
     {
         return targetRtf_;
     }
 
-    void set_callback(const std::optional<std::function<void()>>& callback);
+    double wall_clock() const;
+
+    simulation_runner& set_real_time_factor(double target);
+
+    simulation_runner& set_callback(const std::optional<std::function<void()>>& callback);
 
     void start()
     {

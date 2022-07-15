@@ -1,14 +1,18 @@
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
-#include "ecos/simulation.hpp"
+#include "ecos/simulation_runner.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 using namespace ecos;
 namespace po = boost::program_options;
+
+namespace
+{
 
 int printHelp(boost::program_options::options_description& desc)
 {
@@ -16,6 +20,8 @@ int printHelp(boost::program_options::options_description& desc)
               << desc << std::endl;
     return 0;
 }
+
+} // namespace
 
 int main(int argc, char** argv)
 {
@@ -27,6 +33,7 @@ int main(int argc, char** argv)
     desc.add_options()("stopTime", po::value<double>()->default_value(1), "Simulation end.");
     desc.add_options()("startTime", po::value<double>()->default_value(0), "Simulation start.");
     desc.add_options()("stepSize", po::value<double>()->required(), "Simulation stepSize.");
+    desc.add_options()("rtf", po::value<double>()->default_value(-1), "Target real time factor (non-positive number -> inf).");
     desc.add_options()("noLog", po::bool_switch()->default_value(false), "Disable CSV logging.");
     desc.add_options()("noParallel", po::bool_switch()->default_value(false), "Run single-threaded.");
     desc.add_options()("logConfig", po::value<std::string>(), "Path to logging configuration.");
@@ -94,7 +101,6 @@ int main(int argc, char** argv)
         double stepSize = vm["stepSize"].as<double>();
         double stopTime = vm["stopTime"].as<double>();
 
-
         auto sim = ss->load(std::make_unique<fixed_step_algorithm>(stepSize));
 
         if (!vm["noLog"].as<bool>()) {
@@ -112,7 +118,33 @@ int main(int argc, char** argv)
         }
 
         sim->init(startTime);
-        sim->step_until(stopTime);
+
+        simulation_runner runner(*sim);
+        runner.set_real_time_factor(vm["rtf"].as<double>());
+
+        double totalSimulationTime = stopTime - startTime;
+        unsigned long numSteps = static_cast<long>(totalSimulationTime / stepSize);
+        unsigned long aTenth = numSteps / 10;
+
+        runner.set_callback([&] {
+            unsigned long i = sim->iterations();
+            double percentComplete = static_cast<double>(i) / numSteps * 100;
+            if (i != 0L && i % aTenth == 0 || i == numSteps) {
+                spdlog::info("{}% complete, simulated {:.3}s in {:.3}s, target RTF={:.3}, actual RTF={:.3}",
+                    percentComplete,
+                    sim->time(),
+                    runner.wall_clock(),
+                    runner.target_real_time_factor(),
+                    runner.real_time_factor());
+            }
+        });
+
+        auto f = runner.run_while([&] {
+            return sim->time() <= stopTime;
+        });
+
+        f.get();
+
         sim->terminate();
 
     } catch (std::exception& e) {

@@ -2,14 +2,15 @@
 
 >Ecos is a co-simulation engine.
 
-Ecos (Easy co-simulation) is a fast and easy to use co-simulation
-engine written in modern C++.
+Ecos (Easy co-simulation) is a fast, efficient and easy to use co-simulation
+engine written in modern C++. More importantly, it is easy very easy to use.
 
-Ecos supports:
+Ecos provides the following features:
 * FMI for Co-simulation version 1.0 & 2.0
 * SSP version 1.0
 * Optional sandboxed/remote model execution using proxy-fmu
 * Post-simulation plotting
+* Command-line-interface (CLI)
 
 ### Example
 

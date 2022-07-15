@@ -19,7 +19,8 @@ class EcosConan(ConanFile):
         "simple-ssp-parser/0.2.9@ais/testing",
         "proxyfmu/0.2.8@osp/testing",
         "libzip/1.8.0",
-        "spdlog/1.10.0"
+        "spdlog/1.10.0",
+        "boost/1.71.0"
     )
 
     def set_version(self):

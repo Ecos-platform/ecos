@@ -154,6 +154,7 @@ void simulation::reset()
     }
     scenario_.reset();
     currentTime_ = 0;
+    num_iterations_ = 0;
     initialized_ = false;
 }
 

@@ -134,6 +134,11 @@ public:
         return ids;
     }
 
+    void on_init(const std::function<void()>& f)
+    {
+        scenario_.on_init(f);
+    }
+
     void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action)
     {
         scenario_.invoke_when(predicate_action{predicate, action});
@@ -150,7 +155,6 @@ private:
     unsigned long num_iterations_{0};
 
     scenario scenario_;
-
     std::unique_ptr<algorithm> algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;
     std::vector<std::unique_ptr<connection>> connections_;

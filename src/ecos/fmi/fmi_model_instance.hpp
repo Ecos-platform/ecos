@@ -13,7 +13,7 @@ class fmi_model_instance : public model_instance
 {
 
 public:
-    fmi_model_instance(std::unique_ptr<fmilibcpp::slave> slave)
+    explicit fmi_model_instance(std::unique_ptr<fmilibcpp::slave> slave)
         : model_instance(slave->instanceName)
         , slave_(std::make_unique<fmilibcpp::buffered_slave>(std::move(slave)))
     {

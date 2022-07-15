@@ -1,8 +1,10 @@
 set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
+set(generatedSourcesDir "${CMAKE_BINARY_DIR}/generated")
 
 set(publicHeaders
 
         "ecos/connection.hpp"
+        "ecos/lib_info.hpp"
         "ecos/model.hpp"
         "ecos/model_instance.hpp"
         "ecos/model_resolver.hpp"
@@ -62,7 +64,15 @@ set(sources
 
         )
 
-add_library(libecos ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources})
+# Generate sources from .in files
+set(generatedFiles "${generatedSourcesDir}/ecos/lib_info.cpp")
+configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/ecos/lib_info.cpp.in"
+        "${generatedFiles}"
+        @ONLY
+)
+
+add_library(libecos ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
 target_compile_features(libecos PUBLIC "cxx_std_17")
 target_include_directories(libecos
         PUBLIC

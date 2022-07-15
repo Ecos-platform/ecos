@@ -1,5 +1,6 @@
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
+#include "ecos/lib_info.hpp"
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/simulation_runner.hpp"
@@ -15,10 +16,17 @@ namespace po = boost::program_options;
 namespace
 {
 
-int printHelp(boost::program_options::options_description& desc)
+int print_help(const po::options_description& desc)
 {
-    std::cout << "ecos" << '\n'
+    std::cout << "ecos\n"
               << desc << std::endl;
+    return 0;
+}
+
+int print_version()
+{
+    const auto v = library_version();
+    std::cout << "v." << v.major << "." << v.minor << "." << v.patch << std::endl;
     return 0;
 }
 
@@ -26,7 +34,7 @@ po::options_description create_description()
 {
     po::options_description desc("Options");
     desc.add_options()("help,h", "Print this help message and quits.");
-    //    desc.add_options()("version,v", "Print program version.");
+    desc.add_options()("version,v", "Print program version.");
     desc.add_options()("path", po::value<std::string>()->required(), "Location of the fmu/ssp to run_simulation.");
     desc.add_options()("stopTime", po::value<double>()->default_value(1), "Simulation end.");
     desc.add_options()("startTime", po::value<double>()->default_value(0), "Simulation start.");
@@ -134,7 +142,6 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
 
     bool inputQuit = false;
     std::thread inputThread = std::thread([&inputQuit, &sim, &runner] {
-
         std::cout << "Command line options:" << std::endl;
         std::cout << "\t'q' -> exit application.." << std::endl;
         std::cout << "\t'p' -> pause simulation.." << std::endl;
@@ -173,7 +180,6 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
         }
         inputThread.join();
     }
-
 }
 
 } // namespace
@@ -184,7 +190,7 @@ int main(int argc, char** argv)
     po::options_description desc = create_description();
 
     if (argc == 1) {
-        return printHelp(desc);
+        return print_help(desc);
     }
 
     try {
@@ -195,7 +201,9 @@ int main(int argc, char** argv)
             po::store(po::parse_command_line(argc, argv, desc), vm);
 
             if (vm.count("help")) {
-                return printHelp(desc);
+                return print_help(desc);
+            } else if (vm.count("version")) {
+                return print_version();
             }
 
             po::notify(vm);

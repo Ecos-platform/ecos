@@ -3,7 +3,7 @@ from os import path
 
 
 class EcosConan(ConanFile):
-    name = "ecos"
+    name = "libecos"
     author = "Lars Ivar Hatledal"
     license = "MIT"
     exports = "version.txt"

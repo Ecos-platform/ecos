@@ -92,3 +92,10 @@ Options:
 * Python3 (required for plotting)
   * matplotlib
   * pandas
+
+
+---
+> Want to build FMUs in C++? Check out [FMU4cpp](https://github.com/Vico-platform/fmu4cpp) </br>
+> Want to build FMUs in Kotlin/Java? Check out [FMU4j](https://github.com/Vico-platform/FMU4j) </br>
+> Want to build FMUs in Python? Check out [PythonFMU](https://github.com/NTNU-IHB/PythonFMU) </br>
+> SSP generation made easy? Check out [SSPgen](https://github.com/Vico-platform/sspgen) </br>

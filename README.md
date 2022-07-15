@@ -63,6 +63,24 @@ sim->step_until(10);
 sim->terminate();
 ```
 
+### Command line interface
+
+```
+Options:
+  -h [ --help ]         Print this help message and quits.
+  --path arg            Location of the fmu/ssp to run_simulation.
+  --stopTime arg (=1)   Simulation end.
+  --startTime arg (=0)  Simulation start.
+  --stepSize arg        Simulation stepSize.
+  --rtf arg (=-1)       Target real time factor (non-positive number -> inf).
+  --noLog               Disable CSV logging.
+  --noParallel          Run single-threaded.
+  --logConfig arg       Path to logging configuration.
+  --chartConfig arg     Path to chart configuration.
+  --scenarioConfig arg  Path to scenario configuration.
+```
+
+---
 
 ### Compile-time requirements
 
@@ -73,4 +91,4 @@ sim->terminate();
 ### Run-time requirements
 * Python3 (required for plotting)
   * matplotlib
-  * numpy
+  * pandas

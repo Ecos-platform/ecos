@@ -59,8 +59,8 @@ struct connection_t : public connection_te<T, T>
 
     void transferData() override
     {
-        T value = source->get_value();
-        sink->set_value(value);
+        T value = this->source->get_value();
+        this->sink->set_value(value);
     }
 };
 

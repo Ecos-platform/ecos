@@ -75,43 +75,17 @@ class scenario
 {
 
 public:
-    void runInitActions()
-    {
-        for (auto& a : initActions) {
-            a();
-        }
-    }
+    void runInitActions();
 
     void apply(double t);
 
-    void on_init(std::function<void()> f)
-    {
-        initActions.emplace_back(std::move(f));
-    }
+    void on_init(std::function<void()> f);
 
-    void invoke_when(predicate_action pa)
-    {
-        predicateActions.emplace_back(std::move(pa));
-    }
+    void invoke_when(predicate_action pa);
 
-    void invoke_at(timed_action ta)
-    {
-        if (!active_) {
-            timedActions.insert(std::upper_bound(timedActions.begin(), timedActions.end(), ta), std::move(ta));
-        } else {
-            timedActionsQueue_.emplace_back(std::move(ta));
-        }
-    }
+    void invoke_at(timed_action ta);
 
-    void reset()
-    {
-        for (auto& a : discardedTimedActions) {
-            timedActions.emplace_back(std::move(a));
-        }
-        for (auto& a : discardedPredicateActions) {
-            predicateActions.emplace_back(std::move(a));
-        }
-    }
+    void reset();
 
 
 private:

@@ -42,7 +42,7 @@ public:
 
     void stop();
 
-    void toogle_pause()
+    void toggle_pause()
     {
         paused_ = !paused_;
     }

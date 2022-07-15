@@ -71,7 +71,7 @@ void simulation_runner::run()
                             (*callback_)();
                         }
                     } else {
-                        std::this_thread::sleep_for(std::chrono::nanoseconds(10));
+                        std::this_thread::sleep_for(std::chrono::nanoseconds(1));
                     }
                 }
             });

@@ -130,7 +130,7 @@ int main(int argc, char** argv)
             unsigned long i = sim->iterations();
             double percentComplete = static_cast<double>(i) / numSteps * 100;
             if (i != 0L && i % aTenth == 0 || i == numSteps) {
-                spdlog::info("{}% complete, simulated {:.3}s in {:.3}s, target RTF={:.3}, actual RTF={:.3}",
+                spdlog::info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
                     percentComplete,
                     sim->time(),
                     runner.wall_clock(),

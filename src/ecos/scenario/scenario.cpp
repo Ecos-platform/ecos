@@ -3,7 +3,22 @@
 
 #include <spdlog/spdlog.h>
 
-void ecos::scenario::apply(double t)
+using namespace ecos;
+
+void scenario::runInitActions()
+{
+    for (auto& a : initActions) {
+        a();
+    }
+}
+
+void scenario::on_init(std::function<void()> f)
+{
+    initActions.emplace_back(std::move(f));
+}
+
+
+void scenario::apply(double t)
 {
 
     active_ = true;
@@ -21,7 +36,7 @@ void ecos::scenario::apply(double t)
             action.invoke();
             discardedTimedActions.emplace_back(std::move(action));
             timedActions.pop_back();
-            spdlog::debug("Invoked timed action at t={}", t);
+            spdlog::debug("Invoked timed action at t={:.3f}", t);
         } else {
             break;
         }
@@ -33,10 +48,34 @@ void ecos::scenario::apply(double t)
             if (it->invoke()) {
                 discardedPredicateActions.emplace_back(std::move(*it));
                 it = predicateActions.erase(it);
-                spdlog::debug("Invoked predicate action at t={}", t);
+                spdlog::debug("Invoked predicate action at t={:.3f}", t);
             }
         }
     }
 
     active_ = false;
+}
+
+void scenario::invoke_at(timed_action ta)
+{
+    if (!active_) {
+        timedActions.insert(std::upper_bound(timedActions.begin(), timedActions.end(), ta), std::move(ta));
+    } else {
+        timedActionsQueue_.emplace_back(std::move(ta));
+    }
+}
+
+void scenario::invoke_when(predicate_action pa)
+{
+    predicateActions.emplace_back(std::move(pa));
+}
+
+void scenario::reset()
+{
+    for (auto& a : discardedTimedActions) {
+        timedActions.emplace_back(std::move(a));
+    }
+    for (auto& a : discardedPredicateActions) {
+        predicateActions.emplace_back(std::move(a));
+    }
 }

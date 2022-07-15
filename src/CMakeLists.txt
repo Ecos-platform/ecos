@@ -93,7 +93,7 @@ install(
         ${ECOS_INSTALL_DESTINATIONS}
 )
 install(
-        DIRECTORY "${publicHeaderDir}/libecos"
+        DIRECTORY "${publicHeaderDir}/ecos"
         DESTINATION "${ECOS_HEADER_INSTALL_DIR}"
 )
 install(

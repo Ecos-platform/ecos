@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-20.04]
         build_type: [Debug, Release]
 
     steps:
@@ -25,7 +25,7 @@ jobs:
 
       - name: Configure and build
         run: |
-          cmake . -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON
+          cmake . -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           cmake --build build
         shell: bash
       - name: Test
@@ -51,7 +51,7 @@ jobs:
 
       - name: Configure and build
         run: |
-          cmake . -A x64 -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON
+          cmake . -A x64 -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           cmake --build build --config ${{ matrix.build_type }}
 
       - name: Test

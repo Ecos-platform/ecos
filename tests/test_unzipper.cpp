@@ -9,11 +9,11 @@ using namespace ecos;
 TEST_CASE("test_unzipper")
 {
 
-    const auto quarter_truck = "../data/ssp/quarter_truck/quarter-truck.ssp";
+    const std::string quarter_truck = std::string(DATA_FOLDER) + "/ssp/quarter_truck/quarter-truck.ssp";
 
     temp_dir tmp("ssp");
-    auto folder = unzip(quarter_truck, tmp.path());
-    REQUIRE(folder);
+    bool success = unzip(quarter_truck, tmp.path());
+    REQUIRE(success);
     REQUIRE(std::filesystem::exists(tmp.path() / "SystemStructure.ssd"));
     REQUIRE(std::filesystem::exists(tmp.path() / "resources/chassis.fmu"));
     REQUIRE(std::filesystem::exists(tmp.path() / "resources/ground.fmu"));

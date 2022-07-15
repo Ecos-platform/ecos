@@ -13,7 +13,7 @@ int main()
     spdlog::set_level(spdlog::level::debug);
 
     simulation_structure ss;
-    const std::filesystem::path fmuDir("../../data/fmus/2.0/quarter-truck");
+    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/fmus/2.0/quarter-truck";
 
     try {
         ss.add_model("chassis", fmuDir / "chassis.fmu");

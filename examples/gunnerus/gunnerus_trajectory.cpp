@@ -14,7 +14,7 @@ int main()
 {
     spdlog::set_level(spdlog::level::debug);
 
-    const auto sspFile = "../../data/ssp/gunnerus/gunnerus-trajectory.ssp";
+    const auto sspFile = std::string(DATA_FOLDER) + "/ssp/gunnerus/gunnerus-trajectory.ssp";
     if (!std::filesystem::exists(sspFile)) {
         spdlog::error("gunnerus-trajectory.ssp has not been generated yet. Run sspgen.");
         return -1;

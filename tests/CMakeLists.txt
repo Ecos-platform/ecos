@@ -1,5 +1,6 @@
 include_directories("${CMAKE_SOURCE_DIR}/src")
 link_libraries(libecos CONAN_PKG::fmilibcpp Catch2::Catch2)
+add_compile_definitions(DATA_FOLDER="${CMAKE_SOURCE_DIR}/data")
 
 add_executable(test_identity test_identity.cpp)
 add_test(NAME test_identity COMMAND test_identity)

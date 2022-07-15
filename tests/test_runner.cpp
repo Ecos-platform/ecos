@@ -11,7 +11,7 @@ using namespace ecos;
 TEST_CASE("test simulation runner")
 {
 
-    std::string fmuPath("../../data/fmus/2.0/20sim/ControlledTemperature.fmu");
+    std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/2.0/20sim/ControlledTemperature.fmu";
     auto resolver = default_model_resolver();
     auto fmuModel = resolver->resolve(fmuPath);
 

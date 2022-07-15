@@ -39,7 +39,7 @@ void test(fmu& fmu)
 
 TEST_CASE("fmi_test_controlled_temp")
 {
-    std::string fmuPath("../data/fmus/2.0/20sim/ControlledTemperature.fmu");
+    std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/2.0/20sim/ControlledTemperature.fmu";
     auto fmu = loadFmu(fmuPath);
     test(*fmu);
 }

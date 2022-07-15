@@ -13,7 +13,7 @@ int main()
     spdlog::set_level(spdlog::level::debug);
 
     try {
-        auto ss = load_ssp("../../data/ssp/quarter_truck");
+        auto ss = load_ssp(std::string(DATA_FOLDER) + "/ssp/quarter_truck");
         auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
 
         csv_config config;

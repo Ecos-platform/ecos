@@ -68,7 +68,6 @@ if (ECOS_BUILD_CLI)
 endif()
 
 if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
-    file(COPY data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
     if (ECOS_BUILD_EXAMPLES)
         add_subdirectory(examples)

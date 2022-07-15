@@ -11,7 +11,7 @@ using namespace ecos;
 int main()
 {
     spdlog::set_level(spdlog::level::debug);
-    std::string fmuPath("../../data/fmus/2.0/20sim/ControlledTemperature.fmu");
+    const std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/2.0/20sim/ControlledTemperature.fmu";
 
     try {
         auto resolver = default_model_resolver();

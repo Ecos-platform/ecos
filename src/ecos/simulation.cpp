@@ -13,7 +13,7 @@ simulation::simulation(std::unique_ptr<algorithm> algorithm)
     : algorithm_(std::move(algorithm))
 { }
 
-void simulation::init(std::optional<double> startTime, std::optional<std::string> parameterSet)
+void simulation::init(std::optional<double> startTime, const std::optional<std::string>& parameterSet)
 {
     if (!initialized_) {
 
@@ -117,7 +117,7 @@ double simulation::step(unsigned int numStep)
 void simulation::step_until(double t)
 {
     if (t <= currentTime_) {
-        spdlog::warn("Input time {} is not greater than the current simulation time. Simulation will not progress.", t, currentTime_);
+        spdlog::warn("Input time {} is not greater than the current simulation time {}. Simulation will not progress.", t, currentTime_);
     } else {
         while (currentTime_ < t) {
             step();

@@ -35,7 +35,7 @@ int main()
 
     spdlog::stopwatch sw;
     sim->init("initialValues");
-    sim->step_until(1000);
+    sim->step_until(250);
     spdlog::info("Elapsed {}", sw);
     sim->terminate();
 }

@@ -43,12 +43,12 @@ public:
         return initialized_;
     }
 
-    void init(std::string parameterSet)
+    void init(const std::string& parameterSet)
     {
         init(std::nullopt, parameterSet);
     }
 
-    void init(std::optional<double> startTime = std::nullopt, std::optional<std::string> parameterSet = std::nullopt);
+    void init(std::optional<double> startTime = std::nullopt, const std::optional<std::string>& parameterSet = std::nullopt);
 
     double step(unsigned int numStep = 1);
 

@@ -30,12 +30,5 @@ int main()
     sim.step(10);
     std::cout << p->get_value() << std::endl;
 
-    sim.reset();
-
-    sim.init();
-    std::cout << p->get_value() << std::endl;
-    sim.step(10);
-    std::cout << p->get_value() << std::endl;
-
     sim.terminate();
 }

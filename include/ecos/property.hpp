@@ -87,7 +87,6 @@ struct property_t : property
     }
 
 private:
-    std::optional<T> cachedGet;
     std::optional<T> cachedSet;
 
     std::function<T()> getter;

@@ -7,6 +7,7 @@
 #include "ecos/simulation.hpp"
 
 #include <sstream>
+#include <thread>
 
 using namespace ecos;
 

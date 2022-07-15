@@ -134,10 +134,11 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
 
     bool inputQuit = false;
     std::thread inputThread = std::thread([&inputQuit, &sim, &runner] {
+
         std::cout << "Command line options:" << std::endl;
         std::cout << "\t'q' -> exit application.." << std::endl;
         std::cout << "\t'p' -> pause simulation.." << std::endl;
-        std::cout << "\n" << std::endl;
+
         std::string s;
         while (true) {
             std::getline(std::cin, s);

@@ -86,5 +86,7 @@ void simulation_runner::run()
 void simulation_runner::stop()
 {
     stop_ = true;
-    t_.join();
+    if (t_.joinable()) {
+        t_.join();
+    }
 }

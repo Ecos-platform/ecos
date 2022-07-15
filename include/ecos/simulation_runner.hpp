@@ -42,9 +42,10 @@ public:
 
     void stop();
 
-    void toggle_pause()
+    bool toggle_pause()
     {
         paused_ = !paused_;
+        return paused_;
     }
 
 
@@ -61,6 +62,8 @@ private:
 
     std::optional<std::function<void()>> callback_;
     std::function<bool()> predicate_;
+
+    std::mutex m_;
 
     void run();
 };

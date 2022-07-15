@@ -8,7 +8,7 @@ engine written in modern C++. More importantly, it is easy very easy to use.
 Ecos provides the following features:
 * FMI for Co-simulation version 1.0 & 2.0
 * SSP version 1.0
-* Optional sandboxed/remote model execution using proxy-fmu
+* Optional sandboxed/remote model execution using [proxy-fmu](https://github.com/open-simulation-platform/proxy-fmu)
 * Post-simulation plotting
 * Command-line-interface (CLI)
 
@@ -54,7 +54,7 @@ csv_config config;
 config.log_variable("chassis.zChassis"); // logs a single variable
 
 auto csvWriter = std::make_unique<csv_writer>("data.csv", config);
-csvWriter->enable_plotting("ChartConfig.xml");
+csvWriter->enable_plotting("ChartConfig.xml"); // enable post-simulation plotting
 sim->add_listener(std::move(csvWriter));
 
 sim->init();
@@ -64,8 +64,13 @@ sim->terminate();
 ```
 
 
-### Requirements
+### Compile-time requirements
 
 * Conan
 * C++17 compiler (MSVC 16 || gcc9 >=)
 * CMake >= 3.15
+
+### Run-time requirements
+* Python3 (required for plotting)
+  * matplotlib
+  * numpy

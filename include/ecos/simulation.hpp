@@ -152,6 +152,7 @@ public:
 private:
     double currentTime_{0};
     bool initialized_{false};
+    bool terminated_{false};
     unsigned long num_iterations_{0};
 
     scenario scenario_;

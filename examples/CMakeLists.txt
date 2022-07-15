@@ -1,4 +1,4 @@
-link_libraries(ecos CONAN_PKG::spdlog)
+link_libraries(libecos CONAN_PKG::spdlog)
 
 add_executable(quarter_truck quarter_truck/quarter_truck.cpp)
 add_executable(quarter_truck_ssp quarter_truck/quarter_truck_ssp.cpp)

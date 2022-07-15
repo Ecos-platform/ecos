@@ -62,15 +62,15 @@ set(sources
 
         )
 
-add_library(ecos ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources})
-target_compile_features(ecos PUBLIC "cxx_std_17")
-target_include_directories(ecos
+add_library(libecos ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources})
+target_compile_features(libecos PUBLIC "cxx_std_17")
+target_include_directories(libecos
         PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
-target_link_libraries(ecos
+target_link_libraries(libecos
         PRIVATE
         CONAN_PKG::fmilibcpp
         CONAN_PKG::proxyfmu
@@ -88,12 +88,12 @@ endif ()
 # ==============================================================================
 
 install(
-        TARGETS ecos
+        TARGETS libecos
         EXPORT "${ECOS_EXPORT_TARGET}"
         ${ECOS_INSTALL_DESTINATIONS}
 )
 install(
-        DIRECTORY "${publicHeaderDir}/ecos"
+        DIRECTORY "${publicHeaderDir}/libecos"
         DESTINATION "${ECOS_HEADER_INSTALL_DIR}"
 )
 install(

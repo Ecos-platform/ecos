@@ -1,6 +1,8 @@
 
 #include "ecos/simulation_runner.hpp"
 
+#include <iostream>
+
 using namespace ecos;
 
 namespace
@@ -48,13 +50,18 @@ std::future<void> simulation_runner::run_while(std::function<bool()> predicate)
 
     return std::async(std::launch::async, [this] {
         run();
-        t_.join();
+
+        std::lock_guard<std::mutex> lck(m_);
+        if (t_.joinable()) {
+            t_.join();
+        }
     });
 }
 
 void simulation_runner::run()
 {
     t_ = std::thread([this] {
+
         while (!stop_) {
 
             if (paused_) continue;
@@ -86,6 +93,7 @@ void simulation_runner::run()
 void simulation_runner::stop()
 {
     stop_ = true;
+    std::lock_guard<std::mutex> lck(m_);
     if (t_.joinable()) {
         t_.join();
     }

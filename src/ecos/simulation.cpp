@@ -133,17 +133,21 @@ void simulation::step_for(double t)
 
 void simulation::terminate()
 {
-    spdlog::debug("Terminating simulation..");
+    if (!terminated_) {
+        terminated_ = true;
 
-    for (auto& instance : instances_) {
-        instance->terminate();
+        spdlog::debug("Terminating simulation..");
+
+        for (auto& instance : instances_) {
+            instance->terminate();
+        }
+
+        for (auto& listener : listeners_) {
+            listener->post_terminate(*this);
+        }
+
+        spdlog::debug("Terminated.");
     }
-
-    for (auto& listener : listeners_) {
-        listener->post_terminate(*this);
-    }
-
-    spdlog::debug("Terminated.");
 }
 
 void simulation::reset()

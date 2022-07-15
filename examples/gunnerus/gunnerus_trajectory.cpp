@@ -17,25 +17,30 @@ int main()
     const auto sspFile = "../../data/ssp/gunnerus/gunnerus-trajectory.ssp";
     if (!std::filesystem::exists(sspFile)) {
         std::cerr << "gunnerus-trajectory.ssp has not been generated yet. Run sspgen." << std::endl;
+        return -1;
     }
 
-    auto ss = load_ssp(sspFile);
-    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(0.05));
+    try {
+        auto ss = load_ssp(sspFile);
+        auto sim = ss->load(std::make_unique<fixed_step_algorithm>(0.05));
 
-    csv_config config;
-    config.log_variable("vesselModel::cgShipMotion.nedDisplacement.north");
-    config.log_variable("vesselModel::cgShipMotion.nedDisplacement.east");
-    config.log_variable("vesselModel::cgShipMotion.nedDisplacement.down");
+        csv_config config;
+        config.log_variable("vesselModel::cgShipMotion.nedDisplacement.north");
+        config.log_variable("vesselModel::cgShipMotion.nedDisplacement.east");
+        config.log_variable("vesselModel::cgShipMotion.nedDisplacement.down");
 
-    auto csvWriter = std::make_unique<csv_writer>("results/gunnerus.csv", config);
-    csvWriter->enable_plotting("../../data/ssp/gunnerus/ChartConfig.xml");
-    sim->add_listener(std::move(csvWriter));
+        auto csvWriter = std::make_unique<csv_writer>("results/gunnerus.csv", config);
+        csvWriter->enable_plotting("../../data/ssp/gunnerus/ChartConfig.xml");
+        sim->add_listener(std::move(csvWriter));
 
-    load_scenario(*sim, "../../data/ssp/gunnerus/scenario.xml");
+        load_scenario(*sim, "../../data/ssp/gunnerus/scenario.xml");
 
-    spdlog::stopwatch sw;
-    sim->init("initialValues");
-    sim->step_until(250);
-    spdlog::info("Elapsed {:.3}s", sw);
-    sim->terminate();
+        spdlog::stopwatch sw;
+        sim->init("initialValues");
+        sim->step_until(250);
+        spdlog::info("Elapsed {:.3}s", sw);
+        sim->terminate();
+    } catch (std::exception& ex) {
+        std::cerr << "[ERROR]: " << ex.what() << std::endl;
+    }
 }

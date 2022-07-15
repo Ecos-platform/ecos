@@ -153,6 +153,8 @@ void csv_writer::post_terminate(simulation& sim)
 {
     outFile_.flush();
     outFile_.close();
+    spdlog::info("Wrote CSV data to file: {}", path_.string());
+
     if (plotConfig_) {
         if (!std::filesystem::exists(*plotConfig_)) {
             throw std::runtime_error("No such file: " + plotConfig_->string());

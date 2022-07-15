@@ -145,9 +145,11 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
             if (!s.empty()) {
                 switch (s[0]) {
                     case 'q':
-                        runner.stop();
-                        inputQuit = true;
-                        spdlog::info("Simulation manually aborted at t={:.3f}", sim.time());
+                        if (!sim.terminated()) {
+                            runner.stop();
+                            inputQuit = true;
+                            spdlog::info("Simulation manually aborted at t={:.3f}", sim.time());
+                        }
                         return;
                     case 'p':
                         if (runner.toggle_pause()) {

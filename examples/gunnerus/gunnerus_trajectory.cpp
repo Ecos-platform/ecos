@@ -16,7 +16,7 @@ int main()
 
     const auto sspFile = "../../data/ssp/gunnerus/gunnerus-trajectory.ssp";
     if (!std::filesystem::exists(sspFile)) {
-        std::cerr << "gunnerus-trajectory.ssp has not been generated yet. Run sspgen." << std::endl;
+        spdlog::error("gunnerus-trajectory.ssp has not been generated yet. Run sspgen.");
         return -1;
     }
 

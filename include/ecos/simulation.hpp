@@ -1,5 +1,4 @@
 
-
 #ifndef ECOS_SIMULATION_HPP
 #define ECOS_SIMULATION_HPP
 
@@ -41,6 +40,10 @@ public:
     [[nodiscard]] bool initialized() const
     {
         return initialized_;
+    }
+
+    [[nodiscard]] bool terminated() const {
+        return terminated_;
     }
 
     void init(const std::string& parameterSet)

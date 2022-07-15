@@ -1,7 +1,6 @@
 .idea
 thrift.*
 
-cmake-build-debug
-cmake-build-release
+cmake-build-*
 
 /**/gunnerus/*.ssp

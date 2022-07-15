@@ -79,7 +79,7 @@ target_link_libraries(libecos
         CONAN_PKG::libzip
         CONAN_PKG::simple-ssp-parser)
 if (UNIX)
-    target_link_libraries(ecos INTERFACE stdc++fs)
+    target_link_libraries(libecos INTERFACE stdc++fs)
 endif ()
 
 

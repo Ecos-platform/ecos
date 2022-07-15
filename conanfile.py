@@ -22,7 +22,8 @@ class EcosConan(ConanFile):
         "spdlog/1.10.0",
         "boost/1.71.0",
         # conflict resolution
-        "openssl/1.1.1n"
+        "openssl/1.1.1n",
+        "zlib/1.2.12"
     )
 
     def set_version(self):

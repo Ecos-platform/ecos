@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <memory>
 #include <optional>
+#include <unordered_map>
 #include <utility>
 #include <variant>
 #include <vector>

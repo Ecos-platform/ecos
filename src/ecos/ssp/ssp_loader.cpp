@@ -45,7 +45,7 @@ public:
                 std::optional<std::function<double(double)>> f;
                 if (connection.linearTransformation) {
                     f = [connection](double value) {
-                        return value + connection.linearTransformation->offset * connection.linearTransformation->factor;
+                        return value * connection.linearTransformation->factor + connection.linearTransformation->offset;
                     };
                 }
                 make_connection<double>(source, sink, f);

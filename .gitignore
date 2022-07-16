@@ -3,4 +3,4 @@ thrift.*
 
 cmake-build-*
 
-/**/gunnerus/*.ssp
+/**/gunnerus/**/*.ssp

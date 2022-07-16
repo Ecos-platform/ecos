@@ -8,5 +8,6 @@ if (WIN32)
     add_executable(quarter_truck quarter_truck/quarter_truck.cpp)
     add_executable(quarter_truck_ssp quarter_truck/quarter_truck_ssp.cpp)
 
-    add_executable(gunnerus_trajectory gunnerus/gunnerus_trajectory.cpp)
+    add_executable(gunnerus_trajectory gunnerus/trajectory/gunnerus_trajectory.cpp)
+    target_compile_definitions(gunnerus_trajectory PRIVATE SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/gunnerus/trajectory")
 endif ()

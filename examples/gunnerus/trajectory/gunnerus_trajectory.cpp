@@ -14,7 +14,7 @@ int main()
 {
     spdlog::set_level(spdlog::level::debug);
 
-    const auto sspFile = std::string(DATA_FOLDER) + "/ssp/gunnerus/gunnerus-trajectory.ssp";
+    const auto sspFile = std::string(SOURCE_DIR) + "/gunnerus-trajectory.ssp";
     if (!std::filesystem::exists(sspFile)) {
         spdlog::error("gunnerus-trajectory.ssp has not been generated yet. Run sspgen.");
         return -1;
@@ -29,11 +29,11 @@ int main()
         config.log_variable("vesselModel::cgShipMotion.nedDisplacement.east");
         config.log_variable("vesselModel::cgShipMotion.nedDisplacement.down");
 
-        auto csvWriter = std::make_unique<csv_writer>("results/gunnerus.csv", config);
-        csvWriter->enable_plotting("../../data/ssp/gunnerus/ChartConfig.xml");
+        auto csvWriter = std::make_unique<csv_writer>("results/gunnerus_trajectory.csv", config);
+        csvWriter->enable_plotting(std::string(SOURCE_DIR) + "/ChartConfig.xml");
         sim->add_listener(std::move(csvWriter));
 
-        load_scenario(*sim, "../../data/ssp/gunnerus/scenario.xml");
+        load_scenario(*sim, std::string(SOURCE_DIR) + "/scenario.xml");
 
         spdlog::stopwatch sw;
         sim->init("initialValues");

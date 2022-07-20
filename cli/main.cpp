@@ -247,7 +247,8 @@ int main(int argc, char** argv)
         std::unique_ptr<simulation_structure> ss = create_structure(path, csvName);
 
         double stepSize = vm["stepSize"].as<double>();
-        auto sim = ss->load(std::make_unique<fixed_step_algorithm>(stepSize));
+        bool parallel = !vm.count("noParallel");
+        auto sim = ss->load(std::make_unique<fixed_step_algorithm>(stepSize, parallel));
         setup_logging(vm, *sim, csvName);
         setup_scenario(vm, *sim);
 

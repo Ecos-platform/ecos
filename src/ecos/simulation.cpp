@@ -103,12 +103,12 @@ double simulation::step(unsigned int numStep)
         });
 
         currentTime_ = newT;
+        ++num_iterations_;
 
         for (auto& listener : listeners_) {
             listener->post_step(*this);
         }
 
-        num_iterations_++;
     }
 
     return newT;

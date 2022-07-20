@@ -1,11 +1,10 @@
 
 #include "ecos/simulation.hpp"
 
-#include <spdlog/spdlog.h>
-
 #include "ecos/listeners/simulation_listener.hpp"
 
 #include <execution>
+#include <spdlog/spdlog.h>
 
 using namespace ecos;
 
@@ -108,7 +107,6 @@ double simulation::step(unsigned int numStep)
         for (auto& listener : listeners_) {
             listener->post_step(*this);
         }
-
     }
 
     return newT;

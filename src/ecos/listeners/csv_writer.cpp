@@ -157,9 +157,6 @@ void csv_writer::post_terminate(simulation& sim)
     spdlog::info("Wrote CSV data to file: {}", path_.string());
 
     if (plotConfig_) {
-        if (!std::filesystem::exists(*plotConfig_)) {
-            throw std::runtime_error("No such file: " + plotConfig_->string());
-        }
         std::stringstream ss;
         ss << "python ecos_plotter.py \"" << path_.string() << "\" \"" << plotConfig_->string() << "\"";
         auto t = std::thread([&ss] {
@@ -174,11 +171,15 @@ void csv_writer::post_terminate(simulation& sim)
 void csv_writer::enable_plotting(const std::filesystem::path& plotConfig)
 {
     std::filesystem::path plotter("ecos_plotter.py");
-    if (std::filesystem::exists(plotter)) {
-        plotConfig_ = std::filesystem::absolute(plotConfig);
-    } else {
+    if (!std::filesystem::exists(plotter)) {
         spdlog::warn("Plotting will be disabled as {} is not present.", std::filesystem::absolute(plotter).string());
+        return;
     }
+    if (!std::filesystem::exists(plotConfig)) {
+        spdlog::warn("No such file: {}", std::filesystem::absolute(plotConfig).string());
+        return;
+    }
+    plotConfig_ = std::filesystem::absolute(plotConfig);
 }
 
 

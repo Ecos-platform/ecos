@@ -30,11 +30,31 @@ int print_version()
     return 0;
 }
 
+void set_logging_level(const std::string& lvl)
+{
+    if (lvl == "trace") {
+        spdlog::set_level(spdlog::level::trace);
+    } else if (lvl == "debug") {
+        spdlog::set_level(spdlog::level::debug);
+    } else if (lvl == "info") {
+        spdlog::set_level(spdlog::level::info);
+    } else if (lvl == "warn") {
+        spdlog::set_level(spdlog::level::warn);
+    } else if (lvl == "err") {
+        spdlog::set_level(spdlog::level::err);
+    } else if (lvl == "off") {
+        spdlog::set_level(spdlog::level::off);
+    } else {
+        std::cerr << "[WARN] Unknown logging level: " << lvl << std::endl;
+    }
+}
+
 po::options_description create_description()
 {
     po::options_description desc("Options");
     desc.add_options()("help,h", "Print this help message and quits.");
     desc.add_options()("version,v", "Print program version.");
+    desc.add_options()("logLevel,l", po::value<std::string>()->default_value("info"), "Set logging level [trace,debug,info,warn,err,off].");
     desc.add_options()("path", po::value<std::string>()->required(), "Location of the fmu/ssp to run_simulation.");
     desc.add_options()("stopTime", po::value<double>()->default_value(1), "Simulation end.");
     desc.add_options()("startTime", po::value<double>()->default_value(0), "Simulation start.");
@@ -52,7 +72,7 @@ po::options_description create_description()
 std::unique_ptr<simulation_structure> create_structure(const std::filesystem::path& path, std::string& csvName)
 {
     if (!std::filesystem::exists(path)) {
-        throw std::runtime_error("No such file: " + path.string());
+        throw std::runtime_error("No such file: " + std::filesystem::absolute(path).string());
     }
 
     std::unique_ptr<simulation_structure> ss;
@@ -205,6 +225,8 @@ int main(int argc, char** argv)
             } else if (vm.count("version")) {
                 return print_version();
             }
+
+            set_logging_level(vm["logLevel"].as<std::string>());
 
             po::notify(vm);
 

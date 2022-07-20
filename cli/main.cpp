@@ -2,13 +2,13 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/lib_info.hpp"
 #include "ecos/listeners/csv_writer.hpp"
+#include "ecos/logger.hpp"
 #include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/simulation_runner.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
 #include <boost/program_options.hpp>
 #include <iostream>
-#include <spdlog/spdlog.h>
 
 using namespace ecos;
 namespace po = boost::program_options;
@@ -33,17 +33,17 @@ int print_version()
 void set_logging_level(const std::string& lvl)
 {
     if (lvl == "trace") {
-        spdlog::set_level(spdlog::level::trace);
+        logger().set_level(spdlog::level::trace);
     } else if (lvl == "debug") {
-        spdlog::set_level(spdlog::level::debug);
+        logger().set_level(spdlog::level::debug);
     } else if (lvl == "info") {
-        spdlog::set_level(spdlog::level::info);
+        logger().set_level(spdlog::level::info);
     } else if (lvl == "warn") {
-        spdlog::set_level(spdlog::level::warn);
+        logger().set_level(spdlog::level::warn);
     } else if (lvl == "err") {
-        spdlog::set_level(spdlog::level::err);
+        logger().set_level(spdlog::level::err);
     } else if (lvl == "off") {
-        spdlog::set_level(spdlog::level::off);
+        logger().set_level(spdlog::level::off);
     } else {
         std::cerr << "[WARN] Unknown logging level: " << lvl << std::endl;
     }
@@ -130,6 +130,8 @@ void setup_logging(const po::variables_map& vm, simulation& sim, const std::stri
 void run_simulation(const po::variables_map& vm, simulation& sim)
 {
 
+    bool interactive = vm.count("interactive");
+
     double startTime = vm["startTime"].as<double>();
     double stepSize = vm["stepSize"].as<double>();
     double stopTime = vm["stopTime"].as<double>();
@@ -148,7 +150,7 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
         unsigned long i = sim.iterations();
         double percentComplete = static_cast<double>(i) / numSteps * 100;
         if (i != 0 && i % aTenth == 0 || i == numSteps) {
-            spdlog::info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
+            logger().info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
                 percentComplete,
                 sim.time(),
                 runner.wall_clock(),
@@ -157,21 +159,24 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
         }
     });
 
+    if (interactive) {
+        std::cout << "Command line options:" << std::endl;
+        std::cout << "\t'q' -> exit application.." << std::endl;
+        std::cout << "\t'p' -> pause simulation.." << std::endl;
+    }
+
+    logger().info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}", startTime, stopTime, stepSize, rtf);
     auto f = runner.run_while([&] {
         return sim.time() <= stopTime;
     });
 
     bool inputQuit = false;
     std::thread inputThread;
-
-    if (vm.count("interactive")) {
+    if (interactive) {
         inputThread = std::thread([&inputQuit, &sim, &runner] {
-            std::cout << "Command line options:" << std::endl;
-            std::cout << "\t'q' -> exit application.." << std::endl;
-            std::cout << "\t'p' -> pause simulation.." << std::endl;
 
             std::string s;
-            while (true) {
+            while (!sim.terminated()) {
                 std::getline(std::cin, s);
                 if (!s.empty()) {
                     switch (s[0]) {
@@ -179,14 +184,14 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
                             if (!sim.terminated()) {
                                 runner.stop();
                                 inputQuit = true;
-                                spdlog::info("Simulation manually aborted at t={:.3f}", sim.time());
+                                logger().info("Simulation manually aborted at t={:.3f}s", sim.time());
                             }
                             return;
                         case 'p':
                             if (runner.toggle_pause()) {
-                                spdlog::info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
+                                logger().info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
                             } else {
-                                spdlog::info("Simulation un-paused..");
+                                logger().info("Simulation un-paused..");
                             }
                             break;
                     }
@@ -201,7 +206,7 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
 
     if (inputThread.joinable()) {
         if (!inputQuit) {
-            spdlog::info("Press 'q' to exit application..");
+            std::cerr << "Press 'q' to exit application.." << std::endl;
         }
         inputThread.join();
     }

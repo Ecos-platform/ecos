@@ -1,5 +1,6 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
+#include "ecos/logger.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
 #include <iostream>
@@ -10,7 +11,7 @@ using namespace ecos;
 
 int main()
 {
-    spdlog::set_level(spdlog::level::debug);
+    logger().set_level(spdlog::level::debug);
 
     try {
         auto ss = load_ssp(std::string(DATA_FOLDER) + "/ssp/quarter_truck");
@@ -28,7 +29,7 @@ int main()
         spdlog::stopwatch sw;
         sim->init("initialValues");
         sim->step_until(5);
-        spdlog::info("Elapsed {:.4f}s", sw);
+        logger().info("Elapsed {:.4f}s", sw);
 
         sim->terminate();
     } catch (std::exception& ex) {

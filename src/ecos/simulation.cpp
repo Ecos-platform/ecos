@@ -2,9 +2,9 @@
 #include "ecos/simulation.hpp"
 
 #include "ecos/listeners/simulation_listener.hpp"
+#include "ecos/logger.hpp"
 
 #include <execution>
-#include <spdlog/spdlog.h>
 
 using namespace ecos;
 
@@ -17,7 +17,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
     if (!initialized_) {
 
         initialized_ = true;
-        spdlog::debug("Initializing simulation..");
+        logger().debug("Initializing simulation..");
 
         for (auto& listener : listeners_) {
             listener->pre_init(*this);
@@ -38,7 +38,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
             }
         }
         if (parameterSet) {
-            spdlog::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
+            logger().debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
         }
 
         scenario_.runInitActions();
@@ -71,7 +71,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
             listener->post_init(*this);
         }
 
-        spdlog::debug("Initialized.");
+        logger().debug("Initialized.");
     }
 }
 
@@ -115,7 +115,7 @@ double simulation::step(unsigned int numStep)
 void simulation::step_until(double t)
 {
     if (t <= currentTime_) {
-        spdlog::warn("Input time {} is not greater than the current simulation time {}. Simulation will not progress.", t, currentTime_);
+        logger().warn("Input time {} is not greater than the current simulation time {}. Simulation will not progress.", t, currentTime_);
     } else {
         while (currentTime_ < t) {
             step();
@@ -134,7 +134,7 @@ void simulation::terminate()
     if (!terminated_) {
         terminated_ = true;
 
-        spdlog::debug("Terminating simulation..");
+        logger().debug("Terminating simulation..");
 
         for (auto& instance : instances_) {
             instance->terminate();
@@ -144,13 +144,13 @@ void simulation::terminate()
             listener->post_terminate(*this);
         }
 
-        spdlog::debug("Terminated.");
+        logger().debug("Terminated.{}");
     }
 }
 
 void simulation::reset()
 {
-    spdlog::debug("Resetting simulation at t={}", time());
+    logger().debug("Resetting simulation at t={}", time());
     for (auto& instance : instances_) {
         instance->reset();
     }

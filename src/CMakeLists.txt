@@ -5,6 +5,7 @@ set(publicHeaders
 
         "ecos/connection.hpp"
         "ecos/lib_info.hpp"
+        "ecos/logger.hpp"
         "ecos/model.hpp"
         "ecos/model_instance.hpp"
         "ecos/model_resolver.hpp"
@@ -46,6 +47,7 @@ set(privateHeaders
 
 set(sources
 
+        "ecos/logger.cpp"
         "ecos/model_resolver.cpp"
         "ecos/scenario/scenario.cpp"
         "ecos/scenario/scenario_loader_xml.cpp"

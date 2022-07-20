@@ -3,8 +3,7 @@
 
 #include "ecos/fmi/fmi_model_sub_resolver.hpp"
 #include "ecos/fmi/proxy/proxy_model_sub_resolver.hpp"
-
-#include <spdlog/spdlog.h>
+#include "ecos/logger.hpp"
 
 using namespace ecos;
 
@@ -20,7 +19,7 @@ std::shared_ptr<model> model_resolver::resolve(const std::filesystem::path& base
 {
     std::string key = base.string() + "::" + uri;
     if (cache_.count(key)) {
-        spdlog::debug("Resolver cache hit for key {}", key);
+        logger().debug("Resolver cache hit for key {}", key);
         return cache_.at(key);
     }
     for (auto& resolver : subResolvers_) {
@@ -30,6 +29,6 @@ std::shared_ptr<model> model_resolver::resolve(const std::filesystem::path& base
             return model;
         }
     }
-    spdlog::warn("No registered resolvers able to resolve uri: {}", uri);
+    logger().warn("No registered resolvers able to resolve uri: {}", uri);
     return nullptr;
 }

@@ -1,22 +1,22 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
+#include "ecos/logger.hpp"
 #include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
 #include <filesystem>
 #include <iostream>
-#include <spdlog/spdlog.h>
 #include <spdlog/stopwatch.h>
 
 using namespace ecos;
 
 int main()
 {
-    spdlog::set_level(spdlog::level::debug);
+    logger().set_level(spdlog::level::debug);
 
     const auto sspFile = std::string(SOURCE_DIR) + "/gunnerus-trajectory.ssp";
     if (!std::filesystem::exists(sspFile)) {
-        spdlog::error("gunnerus-trajectory.ssp has not been generated yet. Run sspgen.");
+        logger().error("gunnerus-trajectory.ssp has not been generated yet. Run sspgen.");
         return -1;
     }
 
@@ -38,7 +38,7 @@ int main()
         spdlog::stopwatch sw;
         sim->init("initialValues");
         sim->step_until(250);
-        spdlog::info("Elapsed {:.3}s", sw);
+        logger().info("Elapsed {:.3}s", sw);
         sim->terminate();
     } catch (std::exception& ex) {
         std::cerr << "[ERROR]: " << ex.what() << std::endl;

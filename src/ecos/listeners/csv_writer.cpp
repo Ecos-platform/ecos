@@ -1,11 +1,10 @@
 
 #include "ecos/listeners/csv_writer.hpp"
 
-#include "pugixml.hpp"
-#include "spdlog/spdlog.h"
-
+#include "ecos/logger.hpp"
 #include "ecos/simulation.hpp"
 
+#include <pugixml.hpp>
 #include <sstream>
 #include <thread>
 
@@ -154,7 +153,7 @@ void csv_writer::post_terminate(simulation& sim)
 {
     outFile_.flush();
     outFile_.close();
-    spdlog::info("Wrote CSV data to file: {}", path_.string());
+    logger().info("Wrote CSV data to file: {}", path_.string());
 
     if (plotConfig_) {
         std::stringstream ss;
@@ -162,12 +161,12 @@ void csv_writer::post_terminate(simulation& sim)
         auto t = std::thread([&ss] {
             int status = system(ss.str().c_str());
             if (status) {
-                spdlog::warn("Command {} returned with status: {}", ss.str(), status);
+                logger().warn("Command {} returned with status: {}", ss.str(), status);
             }
         });
-        spdlog::info("Waiting for plotting window(s) to close..");
+        logger().info("Waiting for plotting window(s) to close..");
         t.join();
-        spdlog::info("Plotting window(s) closed.");
+        logger().info("Plotting window(s) closed.");
     }
 }
 
@@ -175,11 +174,11 @@ void csv_writer::enable_plotting(const std::filesystem::path& plotConfig)
 {
     std::filesystem::path plotter("ecos_plotter.py");
     if (!std::filesystem::exists(plotter)) {
-        spdlog::warn("Plotting will be disabled as {} is not present.", std::filesystem::absolute(plotter).string());
+        logger().warn("Plotting will be disabled as {} is not present.", std::filesystem::absolute(plotter).string());
         return;
     }
     if (!std::filesystem::exists(plotConfig)) {
-        spdlog::warn("No such file: {}", std::filesystem::absolute(plotConfig).string());
+        logger().warn("No such file: {}", std::filesystem::absolute(plotConfig).string());
         return;
     }
     plotConfig_ = std::filesystem::absolute(plotConfig);
@@ -208,9 +207,9 @@ void csv_config::verify(const std::vector<variable_identifier>& ids)
         }
     }
     if (missingCount > 0) {
-        spdlog::warn("Missing {} variables declared for logging: {}", missingCount, missing.str());
+        logger().warn("Missing {} variables declared for logging: {}", missingCount, missing.str());
     }
-    spdlog::debug("Logging {} variables: {}", foundCount, found.str());
+    logger().debug("Logging {} variables: {}", foundCount, found.str());
 }
 
 bool csv_config::shouldLogVariable(const std::string& variableName) const

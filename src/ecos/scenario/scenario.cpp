@@ -1,7 +1,7 @@
 
 #include "ecos/scenario/scenario.hpp"
 
-#include <spdlog/spdlog.h>
+#include "ecos/logger.hpp"
 
 using namespace ecos;
 
@@ -36,7 +36,7 @@ void scenario::apply(double t)
             action.invoke();
             discardedTimedActions.emplace_back(std::move(action));
             timedActions.pop_back();
-            spdlog::debug("Invoked timed action at t={:.3f}", t);
+            logger().debug("Invoked timed action at t={:.3f}", t);
         } else {
             break;
         }
@@ -48,7 +48,7 @@ void scenario::apply(double t)
             if (it->invoke()) {
                 discardedPredicateActions.emplace_back(std::move(*it));
                 it = predicateActions.erase(it);
-                spdlog::debug("Invoked predicate action at t={:.3f}", t);
+                logger().debug("Invoked predicate action at t={:.3f}", t);
             }
         }
     }

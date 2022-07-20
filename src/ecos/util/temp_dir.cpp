@@ -1,10 +1,9 @@
 
 #include "ecos/util/temp_dir.hpp"
 
-#include "spdlog/spdlog.h"
 #include "uuid.hpp"
 
-#include <string>
+#include "ecos/logger.hpp"
 
 using namespace ecos;
 
@@ -19,6 +18,6 @@ temp_dir::~temp_dir()
     std::error_code status;
     std::filesystem::remove_all(path_, status);
     if (status) {
-        spdlog::warn("Failed to remove temp folder '{}': {}", path_.string(), status.message());
+        logger().warn("Failed to remove temp folder '{}': {}", path_.string(), status.message());
     }
 }

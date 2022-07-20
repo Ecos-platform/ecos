@@ -19,7 +19,7 @@ public:
         , parallel_(parallel)
     { }
 
-    double step(double currentTime, std::vector<std::unique_ptr<model_instance>>& instances) override;
+    double step(double currentTime, const std::vector<std::unique_ptr<model_instance>>& instances) override;
 
     ~fixed_step_algorithm() override = default;
 

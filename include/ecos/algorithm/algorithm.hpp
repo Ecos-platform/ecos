@@ -14,7 +14,7 @@ namespace ecos
 struct algorithm
 {
 
-    virtual double step(double currentTime, std::vector<std::unique_ptr<model_instance>>& instances) = 0;
+    virtual double step(double currentTime, const std::vector<std::unique_ptr<model_instance>>& instances) = 0;
 
     virtual ~algorithm() = default;
 };

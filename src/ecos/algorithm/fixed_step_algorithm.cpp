@@ -3,7 +3,7 @@
 
 using namespace ecos;
 
-double fixed_step_algorithm::step(double currentTime, std::vector<std::unique_ptr<model_instance>>& instances)
+double fixed_step_algorithm::step(double currentTime, const std::vector<std::unique_ptr<model_instance>>& instances)
 {
 
     auto f = [currentTime, this](auto& instance) {

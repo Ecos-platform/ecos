@@ -3,6 +3,7 @@ file(STRINGS "${CMAKE_SOURCE_DIR}/version.txt" projectVersion)
 project("libecos" VERSION ${projectVersion})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 
+
 # ==============================================================================
 # Build settings
 # ==============================================================================
@@ -12,12 +13,17 @@ option(ECOS_BUILD_TESTS "Build tests" ON)
 option(ECOS_BUILD_EXAMPLES "Build examples" OFF)
 option(ECOS_BUILD_CLI "Build CLI" ON)
 
+
 # ==============================================================================
 # Global internal configuration
 # ==============================================================================
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2")
+endif ()
 
 # Prepare for export and installation.
 set(ECOS_HEADER_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
@@ -31,6 +37,7 @@ set(ECOS_INSTALL_DESTINATIONS
 set(ECOS_EXPORT_TARGET "${PROJECT_NAME}-targets")
 
 file(COPY resources/plot/ecos_plotter.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
 
 # ==============================================================================
 # Dependencies

@@ -54,6 +54,7 @@ po::options_description create_description()
     po::options_description desc("Options");
     desc.add_options()("help,h", "Print this help message and quits.");
     desc.add_options()("version,v", "Print program version.");
+    desc.add_options()("interactive,i", "Make execution interactive.");
     desc.add_options()("logLevel,l", po::value<std::string>()->default_value("info"), "Set logging level [trace,debug,info,warn,err,off].");
     desc.add_options()("path", po::value<std::string>()->required(), "Location of the fmu/ssp to run_simulation.");
     desc.add_options()("stopTime", po::value<double>()->default_value(1), "Simulation end.");
@@ -161,34 +162,38 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
     });
 
     bool inputQuit = false;
-    std::thread inputThread = std::thread([&inputQuit, &sim, &runner] {
-        std::cout << "Command line options:" << std::endl;
-        std::cout << "\t'q' -> exit application.." << std::endl;
-        std::cout << "\t'p' -> pause simulation.." << std::endl;
+    std::thread inputThread;
 
-        std::string s;
-        while (true) {
-            std::getline(std::cin, s);
-            if (!s.empty()) {
-                switch (s[0]) {
-                    case 'q':
-                        if (!sim.terminated()) {
-                            runner.stop();
-                            inputQuit = true;
-                            spdlog::info("Simulation manually aborted at t={:.3f}", sim.time());
-                        }
-                        return;
-                    case 'p':
-                        if (runner.toggle_pause()) {
-                            spdlog::info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
-                        } else {
-                            spdlog::info("Simulation un-paused..");
-                        }
-                        break;
+    if (vm.count("interactive")) {
+        inputThread = std::thread([&inputQuit, &sim, &runner] {
+            std::cout << "Command line options:" << std::endl;
+            std::cout << "\t'q' -> exit application.." << std::endl;
+            std::cout << "\t'p' -> pause simulation.." << std::endl;
+
+            std::string s;
+            while (true) {
+                std::getline(std::cin, s);
+                if (!s.empty()) {
+                    switch (s[0]) {
+                        case 'q':
+                            if (!sim.terminated()) {
+                                runner.stop();
+                                inputQuit = true;
+                                spdlog::info("Simulation manually aborted at t={:.3f}", sim.time());
+                            }
+                            return;
+                        case 'p':
+                            if (runner.toggle_pause()) {
+                                spdlog::info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
+                            } else {
+                                spdlog::info("Simulation un-paused..");
+                            }
+                            break;
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
     f.get();
 

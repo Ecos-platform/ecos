@@ -1,4 +1,4 @@
-link_libraries(libecos CONAN_PKG::spdlog)
+link_libraries(libecos)
 add_compile_definitions(DATA_FOLDER="${CMAKE_SOURCE_DIR}/data")
 
 add_executable(controlled_temperature controlled_temperature/controlled_temperature.cpp)

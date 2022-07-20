@@ -81,10 +81,11 @@ target_include_directories(libecos
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
 target_link_libraries(libecos
+        PUBLIC
+        CONAN_PKG::spdlog
         PRIVATE
         CONAN_PKG::fmilibcpp
         CONAN_PKG::proxyfmu
-        CONAN_PKG::spdlog
         CONAN_PKG::pugixml
         CONAN_PKG::libzip
         CONAN_PKG::simple-ssp-parser)
@@ -110,4 +111,3 @@ install(
         FILES "${CMAKE_SOURCE_DIR}/resources/plot/ecos_plotter.py"
         DESTINATION "${CMAKE_BINARY_DIR}/bin"
 )
-

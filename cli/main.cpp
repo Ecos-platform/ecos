@@ -55,8 +55,8 @@ po::options_description create_description()
     desc.add_options()("help,h", "Print this help message and quits.");
     desc.add_options()("version,v", "Print program version.");
     desc.add_options()("interactive,i", "Make execution interactive.");
-    desc.add_options()("logLevel,l", po::value<std::string>()->default_value("info"), "Set logging level [trace,debug,info,warn,err,off].");
-    desc.add_options()("path", po::value<std::string>()->required(), "Location of the fmu/ssp to run_simulation.");
+    desc.add_options()("logLevel,l", po::value<std::string>()->default_value("info"), "Specify log level [trace,debug,info,warn,err,off].");
+    desc.add_options()("path", po::value<std::string>()->required(), "Location of the fmu/ssp to simulate.");
     desc.add_options()("stopTime", po::value<double>()->default_value(1), "Simulation end.");
     desc.add_options()("startTime", po::value<double>()->default_value(0), "Simulation start.");
     desc.add_options()("stepSize", po::value<double>()->required(), "Simulation stepSize.");

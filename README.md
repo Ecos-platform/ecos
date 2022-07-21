@@ -79,17 +79,23 @@ Then add a dependency to: </br>
 
 ```
 Options:
-  -h [ --help ]         Print this help message and quits.
-  --path arg            Location of the fmu/ssp to run_simulation.
-  --stopTime arg (=1)   Simulation end.
-  --startTime arg (=0)  Simulation start.
-  --stepSize arg        Simulation stepSize.
-  --rtf arg (=-1)       Target real time factor (non-positive number -> inf).
-  --noLog               Disable CSV logging.
-  --noParallel          Run single-threaded.
-  --logConfig arg       Path to logging configuration.
-  --chartConfig arg     Path to chart configuration.
-  --scenarioConfig arg  Path to scenario configuration.
+  -h [ --help ]                 Print this help message and quits.
+  -v [ --version ]              Print program version.
+  -i [ --interactive ]          Make execution interactive.
+  -l [ --logLevel ] arg (=info) Specify log level [trace,debug,info,warn,err,of
+                                f].
+  --path arg                    Location of the fmu/ssp to simulate.
+  --stopTime arg (=1)           Simulation end.
+  --startTime arg (=0)          Simulation start.
+  --stepSize arg                Simulation stepSize.
+  --rtf arg (=-1)               Target real time factor (non-positive number ->
+                                inf).
+  --noLog                       Disable CSV logging.
+  --noParallel                  Run single-threaded.
+  --logConfig arg               Path to logging configuration.
+  --chartConfig arg             Path to chart configuration.
+  --scenarioConfig arg          Path to scenario configuration.
+
 ```
 
 ---

@@ -10,6 +10,7 @@ set(publicHeaders
         "ecos/model_instance.hpp"
         "ecos/model_resolver.hpp"
         "ecos/property.hpp"
+        "ecos/scalar.hpp"
         "ecos/scenario.hpp"
         "ecos/scenario_loader.hpp"
         "ecos/simulation.hpp"

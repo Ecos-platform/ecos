@@ -29,8 +29,8 @@ ss.make_connection<double>("wheel::p.e", "ground.p::e");
 ss.make_connection<double>("ground::p.f", "wheel.p::f");
 
 // setup initialValues
-std::map<variable_identifier, std::variant<double, int, bool, std::string>> map;
-map[variable_identifier{"chassis::C.mChassis"}] = 4000.0;
+std::map<variable_identifier, scalar_value> map;
+map["chassis::C.mChassis"] = 4000.0;
 ss.add_parameter_set("initialValues", map);
 
 auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
@@ -62,6 +62,18 @@ sim->step_until(10);
 
 sim->terminate();
 ```
+
+### Installing
+
+The ecos C++ library, `libecos`, is available through the conan remote ais:
+
+`conan remote add ais https://ais.jfrog.io/artifactory/api/conan/ais-conan-local`
+
+Then add a dependency to: </br>
+`libecos/<version>@ais/stable` (stable channel -> releases) </br>
+`libecos/<version>@ais/testing` (development builds -> master) </br>
+`libecos/<version>@ais/testing-<branch>` (development builds -> branches)
+
 
 ### Command line interface
 

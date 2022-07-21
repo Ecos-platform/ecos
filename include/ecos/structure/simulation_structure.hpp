@@ -5,6 +5,7 @@
 #include "ecos/model.hpp"
 #include "ecos/model_resolver.hpp"
 #include "ecos/property.hpp"
+#include "ecos/scalar.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/variable_identifier.hpp"
 
@@ -59,7 +60,7 @@ public:
         connections_.emplace_back(c);
     }
 
-    void add_parameter_set(const std::string& name, const std::map<variable_identifier, std::variant<double, int, bool, std::string>>& map)
+    void add_parameter_set(const std::string& name, const std::map<variable_identifier, scalar_value>& map)
     {
         parameterSets[name] = map;
     }
@@ -70,7 +71,7 @@ private:
     std::unique_ptr<model_resolver> resolver_;
     std::vector<unbound_connection> connections_;
     std::vector<std::pair<std::string, std::shared_ptr<model>>> models_;
-    std::unordered_map<std::string, std::map<variable_identifier, std::variant<double, int, bool, std::string>>> parameterSets;
+    std::unordered_map<std::string, std::map<variable_identifier, scalar_value>> parameterSets;
 };
 
 } // namespace ecos

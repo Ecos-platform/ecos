@@ -1,6 +1,7 @@
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
+#include "ecos/scalar.hpp"
 #include "ecos/structure/simulation_structure.hpp"
 
 #include <iostream>
@@ -25,7 +26,7 @@ int main()
         ss.make_connection<double>("wheel::p.e", "ground::p.e");
         ss.make_connection<double>("ground::p.f", "wheel::p.f");
 
-        std::map<variable_identifier, std::variant<double, int, bool, std::string>> map;
+        std::map<variable_identifier, scalar_value> map;
         map["chassis::C.mChassis"] = 400.0;
         ss.add_parameter_set("initialValues", map);
 

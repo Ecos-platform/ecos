@@ -3,6 +3,7 @@
 #define ECOS_COMPONENT_HPP
 
 #include "property.hpp"
+#include "scalar.hpp"
 
 #include <stdexcept>
 #include <unordered_map>
@@ -23,7 +24,8 @@ public:
     model_instance(const model_instance&) = delete;
     model_instance(const model_instance&&) = delete;
 
-    void setup_experiment() {
+    void setup_experiment()
+    {
         setup_experiment(0);
     }
 
@@ -93,7 +95,7 @@ public:
         return false;
     }
 
-    void add_parameter_set(const std::string& name, const std::unordered_map<std::string, std::variant<double, int, bool, std::string>>& parameterSet)
+    void add_parameter_set(const std::string& name, const std::unordered_map<std::string, scalar_value>& parameterSet)
     {
         parameterSets_.emplace(name, parameterSet);
     }
@@ -101,7 +103,7 @@ public:
     void add_parameterset_entry(
         const std::string& parameterSetName,
         const std::string& variableName,
-        const std::variant<double, int, bool, std::string>& value)
+        const scalar_value& value)
     {
         parameterSets_[parameterSetName][variableName] = value;
     }
@@ -115,7 +117,7 @@ public:
 
 protected:
     properties properties_;
-    std::unordered_map<std::string, std::unordered_map<std::string, std::variant<double, int, bool, std::string>>> parameterSets_;
+    std::unordered_map<std::string, std::unordered_map<std::string, scalar_value>> parameterSets_;
 };
 
 } // namespace ecos

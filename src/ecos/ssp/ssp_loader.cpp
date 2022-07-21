@@ -4,6 +4,7 @@
 #include "ssp/ssp.hpp"
 
 #include "ecos/model_resolver.hpp"
+#include "ecos/scalar.hpp"
 
 using namespace ecos;
 
@@ -59,7 +60,7 @@ public:
         }
 
         for (const auto& [parameterSetName, sets] : parameterSets) {
-            std::map<variable_identifier, std::variant<double, int, bool, std::string>> map;
+            std::map<variable_identifier, scalar_value> map;
             for (const auto& [component, parameters] : sets) {
                 for (const auto& p : parameters) {
                     variable_identifier v{component.name, p.name};

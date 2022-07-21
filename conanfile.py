@@ -17,7 +17,7 @@ class EcosConan(ConanFile):
     requires = (
         "fmilibcpp/0.2.1@ais/testing",
         "simple-ssp-parser/0.2.9@ais/testing",
-        "proxyfmu/0.2.8@osp/testing-thrift_0.16.0",
+        "proxyfmu/0.2.8@osp/testing",
         "libzip/1.8.0",
         "spdlog/1.10.0",
         "boost/1.71.0",

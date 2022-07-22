@@ -56,7 +56,6 @@ else ()
 
     # Force add remotes
     conan_add_remote(NAME ais URL https://ais.jfrog.io/artifactory/api/conan/ais-conan-local)
-    conan_add_remote(NAME osp URL https://osp.jfrog.io/artifactory/api/conan/conan-local)
 
     conan_cmake_run(
             CONANFILE conanfile.py

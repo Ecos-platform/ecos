@@ -61,10 +61,12 @@ std::future<void> simulation_runner::run_while(std::function<bool()> predicate)
 void simulation_runner::run()
 {
     t_ = std::thread([this] {
-
         while (!stop_) {
 
-            if (paused_) continue;
+            if (paused_) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                continue;
+            }
 
             const double elapsed = measure_time([&] {
                 if (!predicate_()) {

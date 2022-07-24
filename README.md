@@ -8,7 +8,7 @@ engine written in modern C++. More importantly, it is easy very easy to use.
 Ecos provides the following features:
 * FMI for Co-simulation version 1.0 & 2.0
 * SSP version 1.0
-* Optional sandboxed/remote model execution using [proxy-fmu](https://github.com/open-simulation-platform/proxy-fmu)
+* Optional sandboxed/remote model execution using [proxy-fmu](https://github.com/Ecos-platform/proxy-fmu)
 * Post-simulation plotting
 * Command-line-interface (CLI)
 

@@ -148,7 +148,7 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
 
     runner.set_callback([&] {
         unsigned long i = sim.iterations();
-        double percentComplete = static_cast<double>(i) / numSteps * 100;
+        double percentComplete = static_cast<double>(i) / static_cast<double>(numSteps * 100);
         if (i != 0 && i % aTenth == 0 || i == numSteps) {
             logger().info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
                 percentComplete,
@@ -165,7 +165,8 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
         std::cout << "\t'p' -> pause simulation.." << std::endl;
     }
 
-    logger().info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}", startTime, stopTime, stepSize, rtf);
+    logger().info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}",
+        startTime, stopTime, stepSize, runner.target_real_time_factor());
     auto f = runner.run_while([&] {
         return sim.time() <= stopTime;
     });
@@ -174,7 +175,6 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
     std::thread inputThread;
     if (interactive) {
         inputThread = std::thread([&inputQuit, &sim, &runner] {
-
             std::string s;
             while (!sim.terminated()) {
                 std::getline(std::cin, s);
@@ -244,7 +244,7 @@ int main(int argc, char** argv)
             std::cerr << "ERROR: " << e.what() << std::endl
                       << std::endl;
             std::cerr << desc << std::endl;
-            return -1;
+            return 1;
         }
 
         std::string csvName;
@@ -260,7 +260,7 @@ int main(int argc, char** argv)
         run_simulation(vm, *sim);
 
     } catch (std::exception& e) {
-        std::cerr << "[ecos] Unhandled Exception reached the top of main: " << e.what() << ", application will now exit" << std::endl;
-        return -1;
+        std::cerr << "[ecos] Unhandled Exception reached the top of main: '" << e.what() << "', application will now exit" << std::endl;
+        return 1;
     }
 }

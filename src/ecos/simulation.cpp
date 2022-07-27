@@ -144,7 +144,7 @@ void simulation::terminate()
             listener->post_terminate(*this);
         }
 
-        logger().debug("Terminated.{}");
+        logger().debug("Terminated.");
     }
 }
 

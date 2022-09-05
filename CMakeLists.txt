@@ -21,6 +21,9 @@ option(ECOS_BUILD_CLI "Build CLI" ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -53,14 +56,19 @@ if (CONAN_EXPORTED) # in conan local cache
 else ()
 
     include(cmake/conan.cmake)
+    conan_check(REQUIRED)
+
+    conan_cmake_autodetect(settings)
 
     # Force add remotes
     conan_add_remote(NAME ais URL https://ais.jfrog.io/artifactory/api/conan/ais-conan-local)
 
-    conan_cmake_run(
-            CONANFILE conanfile.py
+    conan_cmake_install(PATH_OR_REFERENCE ..
             BUILD missing
-            BASIC_SETUP CMAKE_TARGETS)
+            SETTINGS ${settings})
+
+    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    conan_basic_setup(TARGETS)
 
 endif ()
 

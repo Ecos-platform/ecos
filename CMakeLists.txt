@@ -77,9 +77,22 @@ endif ()
 # Targets
 # ==============================================================================
 
+if (ECOS_BUILD_CLI OR ECOS_BUILD_TESTS)
+    include(FetchContent)
+endif()
+
 add_subdirectory(src)
 
 if (ECOS_BUILD_CLI)
+
+    FetchContent_Declare(
+            cli11
+            GIT_REPOSITORY https://github.com/CLIUtils/CLI11
+            GIT_TAG        v2.2.0
+    )
+
+    FetchContent_MakeAvailable(cli11)
+
     add_subdirectory(cli)
 endif ()
 
@@ -90,8 +103,6 @@ if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
     endif ()
 
     if (ECOS_BUILD_TESTS)
-
-        Include(FetchContent)
 
         FetchContent_Declare(
                 Catch2

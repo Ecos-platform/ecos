@@ -7,19 +7,38 @@
 #include "ecos/simulation_runner.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
-#include <boost/program_options.hpp>
+#include <CLI/CLI.hpp>
 #include <iostream>
 
 using namespace ecos;
-namespace po = boost::program_options;
 
 namespace
 {
 
-int print_help(const po::options_description& desc)
+enum class log_level : int
 {
-    std::cout << "ecos\n"
-              << desc << std::endl;
+    trace,
+    debug,
+    info,
+    warn,
+    err,
+    off
+};
+
+std::unordered_map<std::string, log_level> map{
+    {"trace", log_level::trace},
+    {"debug", log_level::debug},
+    {"info", log_level::info},
+    {"warn", log_level::warn},
+    {"err", log_level::err},
+    {"off", log_level::off},
+};
+
+log_level lvl = log_level::info;
+
+int print_help(const CLI::App& desc)
+{
+    std::cout << desc.help() << std::endl;
     return 0;
 }
 
@@ -30,44 +49,42 @@ int print_version()
     return 0;
 }
 
-void set_logging_level(const std::string& lvl)
+
+void set_logging_level()
 {
-    if (lvl == "trace") {
+    if (lvl == log_level::trace) {
         logger().set_level(spdlog::level::trace);
-    } else if (lvl == "debug") {
+    } else if (lvl == log_level::debug) {
         logger().set_level(spdlog::level::debug);
-    } else if (lvl == "info") {
+    } else if (lvl == log_level::info) {
         logger().set_level(spdlog::level::info);
-    } else if (lvl == "warn") {
+    } else if (lvl == log_level::warn) {
         logger().set_level(spdlog::level::warn);
-    } else if (lvl == "err") {
+    } else if (lvl == log_level::err) {
         logger().set_level(spdlog::level::err);
-    } else if (lvl == "off") {
+    } else if (lvl == log_level::off) {
         logger().set_level(spdlog::level::off);
     } else {
-        std::cerr << "[WARN] Unknown logging level: " << lvl << std::endl;
+        throw std::runtime_error("Invalid log level");
     }
 }
 
-po::options_description create_description()
+void create_options(CLI::App& app)
 {
-    po::options_description desc("Options");
-    desc.add_options()("help,h", "Print this help message and quits.");
-    desc.add_options()("version,v", "Print program version.");
-    desc.add_options()("interactive,i", "Make execution interactive.");
-    desc.add_options()("logLevel,l", po::value<std::string>()->default_value("info"), "Specify log level [trace,debug,info,warn,err,off].");
-    desc.add_options()("path", po::value<std::string>()->required(), "Location of the fmu/ssp to simulate.");
-    desc.add_options()("stopTime", po::value<double>()->default_value(1), "Simulation end.");
-    desc.add_options()("startTime", po::value<double>()->default_value(0), "Simulation start.");
-    desc.add_options()("stepSize", po::value<double>()->required(), "Simulation stepSize.");
-    desc.add_options()("rtf", po::value<double>()->default_value(-1), "Target real time factor (non-positive number -> inf).");
-    desc.add_options()("noLog", po::bool_switch()->default_value(false), "Disable CSV logging.");
-    desc.add_options()("noParallel", po::bool_switch()->default_value(false), "Run single-threaded.");
-    desc.add_options()("logConfig", po::value<std::string>(), "Path to logging configuration.");
-    desc.add_options()("chartConfig", po::value<std::string>(), "Path to chart configuration.");
-    desc.add_options()("scenarioConfig", po::value<std::string>(), "Path to scenario configuration.");
+    app.add_flag("-v,--version,", "Print program version.")->configurable(false);
+    app.add_flag("-i,--interactive", "Make execution interactive.")->configurable(false);
+    app.add_flag("--noLog", "Disable CSV logging.")->configurable(false);
+    app.add_flag("--noParallel", "Run single-threaded.")->configurable(false);
 
-    return desc;
+    app.add_option("--path", "Location of the fmu/ssp to simulate.")->required();
+    app.add_option("--stopTime", "Simulation end.")->default_val(1.0);
+    app.add_option("--startTime", "Simulation start.")->default_val(0.0);
+    app.add_option("--stepSize", "Simulation stepSize.")->required();
+    app.add_option("--rtf", "Target real time factor (non-positive number -> inf).")->default_val(-1);
+    app.add_option("--logConfig", "Path to logging configuration.");
+    app.add_option("--chartConfig", "Path to chart configuration.");
+    app.add_option("--scenarioConfig", "Path to scenario configuration.");
+    app.add_option("-l,--logLevel", lvl, "Specify log level.")->transform(CLI::CheckedTransformer(map, CLI::ignore_case));
 }
 
 std::unique_ptr<simulation_structure> create_structure(const std::filesystem::path& path, std::string& csvName)
@@ -102,53 +119,53 @@ std::unique_ptr<simulation_structure> create_structure(const std::filesystem::pa
     return ss;
 }
 
-void setup_scenario(const po::variables_map& vm, simulation& sim)
+void setup_scenario(const CLI::App& vm, simulation& sim)
 {
-    if (vm.count("scenarioConfig")) {
-        std::filesystem::path config = vm["scenarioConfig"].as<std::string>();
+    if (vm.count("--scenarioConfig")) {
+        std::filesystem::path config = vm["--scenarioConfig"]->as<std::string>();
         load_scenario(sim, config);
     }
 }
 
-void setup_logging(const po::variables_map& vm, simulation& sim, const std::string& csvName)
+void setup_logging(const CLI::App& vm, simulation& sim, const std::string& csvName)
 {
-    if (!vm["noLog"].as<bool>()) {
+    if (!vm.get_option("--noLog")->as<bool>()) {
 
         std::optional<csv_config> config;
-        if (vm.count("logConfig")) {
-            config = csv_config::parse(vm["logConfig"].as<std::string>());
+        if (vm.count("--logConfig")) {
+            config = csv_config::parse(vm["--logConfig"]->as<std::string>());
         }
 
         auto logger = std::make_unique<csv_writer>(csvName + ".csv", config);
-        if (vm.count("chartConfig")) {
-            logger->enable_plotting(vm["chartConfig"].as<std::string>());
+        if (vm.count("--chartConfig")) {
+            logger->enable_plotting(vm["--chartConfig"]->as<std::string>());
         }
         sim.add_listener(std::move(logger));
     }
 }
 
-void run_simulation(const po::variables_map& vm, simulation& sim)
+void run_simulation(const CLI::App& vm, simulation& sim)
 {
 
-    bool interactive = vm.count("interactive");
+    const auto interactive = vm["--interactive"]->as<bool>();
 
-    double startTime = vm["startTime"].as<double>();
-    double stepSize = vm["stepSize"].as<double>();
-    double stopTime = vm["stopTime"].as<double>();
+    const auto startTime = vm["--startTime"]->as<double>();
+    const auto stepSize = vm["--stepSize"]->as<double>();
+    const auto stopTime = vm["--stopTime"]->as<double>();
 
     sim.init(startTime);
 
-    double rtf = vm["rtf"].as<double>();
+    const auto rtf = vm["--rtf"]->as<double>();
     simulation_runner runner(sim);
     runner.set_real_time_factor(rtf);
 
-    double totalSimulationTime = stopTime - startTime;
-    unsigned long numSteps = static_cast<long>(totalSimulationTime / stepSize);
-    unsigned long aTenth = numSteps / 10;
+    const double totalSimulationTime = stopTime - startTime;
+    const unsigned long numSteps = static_cast<long>(totalSimulationTime / stepSize);
+    const unsigned long aTenth = numSteps / 10;
 
     runner.set_callback([&] {
-        unsigned long i = sim.iterations();
-        double percentComplete = static_cast<double>(i) / static_cast<double>(numSteps * 100);
+        const unsigned long i = sim.iterations();
+        const double percentComplete = static_cast<double>(i) / static_cast<double>(numSteps) * 100;
         if (i != 0 && i % aTenth == 0 || i == numSteps) {
             logger().info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
                 percentComplete,
@@ -217,47 +234,35 @@ void run_simulation(const po::variables_map& vm, simulation& sim)
 int main(int argc, char** argv)
 {
 
-    po::options_description desc = create_description();
+    CLI::App app("ecos");
+    create_options(app);
 
     if (argc == 1) {
-        return print_help(desc);
+        return print_help(app);
     }
 
+
     try {
-        po::variables_map vm;
 
-        try {
+        CLI11_PARSE(app, argc, argv)
 
-            po::store(po::parse_command_line(argc, argv, desc), vm);
-
-            if (vm.count("help")) {
-                return print_help(desc);
-            } else if (vm.count("version")) {
-                return print_version();
-            }
-
-            set_logging_level(vm["logLevel"].as<std::string>());
-
-            po::notify(vm);
-
-        } catch (po::error& e) {
-            std::cerr << "ERROR: " << e.what() << std::endl
-                      << std::endl;
-            std::cerr << desc << std::endl;
-            return 1;
+        if (app["--version"]->as<bool>()) {
+            return print_version();
         }
 
+        set_logging_level();
+
         std::string csvName;
-        const std::filesystem::path path = vm["path"].as<std::string>();
+        const std::filesystem::path path = app["--path"]->as<std::string>();
         std::unique_ptr<simulation_structure> ss = create_structure(path, csvName);
 
-        double stepSize = vm["stepSize"].as<double>();
-        bool parallel = !vm.count("noParallel");
+        const auto stepSize = app["--stepSize"]->as<double>();
+        const bool parallel = !app["--noParallel"]->as<bool>();
         auto sim = ss->load(std::make_unique<fixed_step_algorithm>(stepSize, parallel));
-        setup_logging(vm, *sim, csvName);
-        setup_scenario(vm, *sim);
+        setup_logging(app, *sim, csvName);
+        setup_scenario(app, *sim);
 
-        run_simulation(vm, *sim);
+        run_simulation(app, *sim);
 
     } catch (std::exception& e) {
         std::cerr << "[ecos] Unhandled Exception reached the top of main: '" << e.what() << "', application will now exit" << std::endl;

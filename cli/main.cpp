@@ -9,6 +9,7 @@
 
 #include <CLI/CLI.hpp>
 #include <iostream>
+#include <sstream>
 
 using namespace ecos;
 
@@ -42,11 +43,12 @@ int print_help(const CLI::App& desc)
     return 0;
 }
 
-int print_version()
+std::string version()
 {
     const auto v = library_version();
-    std::cout << "v." << v.major << "." << v.minor << "." << v.patch << std::endl;
-    return 0;
+    std::stringstream ss;
+    ss << "v" << v.major << "." << v.minor << "." << v.patch;
+    return ss.str();
 }
 
 
@@ -71,7 +73,8 @@ void set_logging_level()
 
 void create_options(CLI::App& app)
 {
-    app.add_flag("-v,--version,", "Print program version.")->configurable(false);
+    app.set_version_flag("-v,--version", version());
+
     app.add_flag("-i,--interactive", "Make execution interactive.")->configurable(false);
     app.add_flag("--noLog", "Disable CSV logging.")->configurable(false);
     app.add_flag("--noParallel", "Run single-threaded.")->configurable(false);
@@ -241,14 +244,9 @@ int main(int argc, char** argv)
         return print_help(app);
     }
 
-
     try {
 
         CLI11_PARSE(app, argc, argv)
-
-        if (app["--version"]->as<bool>()) {
-            return print_version();
-        }
 
         set_logging_level();
 

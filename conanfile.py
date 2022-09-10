@@ -17,7 +17,7 @@ class EcosConan(ConanFile):
     requires = (
         "libzip/1.8.0",
         "spdlog/1.10.0",
-        "proxyfmu/0.3.1@ais/testing-subcommand",
+        "proxyfmu/0.3.1@ais/testing-fix_linking_test",
         "simple-ssp-parser/0.2.9@ais/testing",
         # conflict resolution
         "openssl/1.1.1n"

@@ -85,12 +85,13 @@ target_include_directories(libecos
         )
 target_link_libraries(libecos
         PUBLIC
-        CONAN_PKG::spdlog
+        CONAN_PKG::fmt
         PRIVATE
         CONAN_PKG::fmilibcpp
         CONAN_PKG::proxyfmu
         CONAN_PKG::pugixml
         CONAN_PKG::libzip
+        CONAN_PKG::spdlog
         CONAN_PKG::simple-ssp-parser)
 if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)

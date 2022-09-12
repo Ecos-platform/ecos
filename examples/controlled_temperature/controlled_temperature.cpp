@@ -2,15 +2,15 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/model_resolver.hpp"
 #include "ecos/simulation.hpp"
+#include "ecos/logger.hpp"
 
 #include <iostream>
-#include <spdlog/spdlog.h>
 
 using namespace ecos;
 
 int main()
 {
-    spdlog::set_level(spdlog::level::debug);
+    logger().set_level(ecos::ecos_logger::level::debug);
     const std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/2.0/20sim/ControlledTemperature.fmu";
 
     try {

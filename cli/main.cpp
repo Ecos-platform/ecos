@@ -16,26 +16,16 @@ using namespace ecos;
 namespace
 {
 
-enum class log_level : int
-{
-    trace,
-    debug,
-    info,
-    warn,
-    err,
-    off
+std::unordered_map<std::string, ecos_logger::level> map{
+    {"trace",  ecos_logger::level::trace},
+    {"debug",  ecos_logger::level::debug},
+    {"info",  ecos_logger::level::info},
+    {"warn",  ecos_logger::level::warn},
+    {"err",  ecos_logger::level::err},
+    {"off",  ecos_logger::level::off},
 };
 
-std::unordered_map<std::string, log_level> map{
-    {"trace", log_level::trace},
-    {"debug", log_level::debug},
-    {"info", log_level::info},
-    {"warn", log_level::warn},
-    {"err", log_level::err},
-    {"off", log_level::off},
-};
-
-log_level lvl = log_level::info;
+ecos_logger::level lvl =  ecos_logger::level::info;
 
 int print_help(const CLI::App& desc)
 {
@@ -49,26 +39,6 @@ std::string version()
     std::stringstream ss;
     ss << "v" << v.major << "." << v.minor << "." << v.patch;
     return ss.str();
-}
-
-
-void set_logging_level()
-{
-    if (lvl == log_level::trace) {
-        logger().set_level(spdlog::level::trace);
-    } else if (lvl == log_level::debug) {
-        logger().set_level(spdlog::level::debug);
-    } else if (lvl == log_level::info) {
-        logger().set_level(spdlog::level::info);
-    } else if (lvl == log_level::warn) {
-        logger().set_level(spdlog::level::warn);
-    } else if (lvl == log_level::err) {
-        logger().set_level(spdlog::level::err);
-    } else if (lvl == log_level::off) {
-        logger().set_level(spdlog::level::off);
-    } else {
-        throw std::runtime_error("Invalid log level");
-    }
 }
 
 void create_options(CLI::App& app)
@@ -248,7 +218,7 @@ int main(int argc, char** argv)
 
         CLI11_PARSE(app, argc, argv)
 
-        set_logging_level();
+        logger().set_level(lvl);
 
         std::string csvName;
         const std::filesystem::path path = app["--path"]->as<std::string>();

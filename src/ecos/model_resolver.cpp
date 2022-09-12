@@ -19,7 +19,7 @@ std::shared_ptr<model> model_resolver::resolve(const std::filesystem::path& base
 {
     std::string key = base.string() + "::" + uri;
     if (cache_.count(key)) {
-        logger().debug("Resolver cache hit for key {}", key);
+        debug("Resolver cache hit for key {}", key);
         return cache_.at(key);
     }
     for (auto& resolver : subResolvers_) {
@@ -29,6 +29,6 @@ std::shared_ptr<model> model_resolver::resolve(const std::filesystem::path& base
             return model;
         }
     }
-    logger().warn("No registered resolvers able to resolve uri: {}", uri);
+    warn("No registered resolvers able to resolve uri: {}", uri);
     return nullptr;
 }

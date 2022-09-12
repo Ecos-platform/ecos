@@ -12,11 +12,11 @@ using namespace ecos;
 
 int main()
 {
-    logger().set_level(spdlog::level::debug);
+    set_level(spdlog::level::debug);
 
     const auto sspFile = std::string(SOURCE_DIR) + "/gunnerus-trajectory.ssp";
     if (!std::filesystem::exists(sspFile)) {
-        logger().error("gunnerus-trajectory.ssp has not been generated yet. Run sspgen.");
+        error("gunnerus-trajectory.ssp has not been generated yet. Run sspgen.");
         return -1;
     }
 
@@ -38,7 +38,7 @@ int main()
         spdlog::stopwatch sw;
         sim->init("initialValues");
         sim->step_until(250);
-        logger().info("Elapsed {:.3}s", sw);
+        info("Elapsed {:.3}s", sw);
         sim->terminate();
     } catch (std::exception& ex) {
         std::cerr << "[ERROR]: " << ex.what() << std::endl;

@@ -140,7 +140,7 @@ void run_simulation(const CLI::App& vm, simulation& sim)
         const unsigned long i = sim.iterations();
         const double percentComplete = static_cast<double>(i) / static_cast<double>(numSteps) * 100;
         if (i != 0 && i % aTenth == 0 || i == numSteps) {
-            logger().info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
+            info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
                 percentComplete,
                 sim.time(),
                 runner.wall_clock(),
@@ -155,7 +155,7 @@ void run_simulation(const CLI::App& vm, simulation& sim)
         std::cout << "\t'p' -> pause simulation.." << std::endl;
     }
 
-    logger().info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}",
+    info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}",
         startTime, stopTime, stepSize, runner.target_real_time_factor());
     auto f = runner.run_while([&] {
         return sim.time() <= stopTime;
@@ -174,14 +174,14 @@ void run_simulation(const CLI::App& vm, simulation& sim)
                             if (!sim.terminated()) {
                                 runner.stop();
                                 inputQuit = true;
-                                logger().info("Simulation manually aborted at t={:.3f}s", sim.time());
+                                info("Simulation manually aborted at t={:.3f}s", sim.time());
                             }
                             return;
                         case 'p':
                             if (runner.toggle_pause()) {
-                                logger().info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
+                                info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
                             } else {
-                                logger().info("Simulation un-paused..");
+                                info("Simulation un-paused..");
                             }
                             break;
                     }
@@ -218,7 +218,7 @@ int main(int argc, char** argv)
 
         CLI11_PARSE(app, argc, argv)
 
-        logger().set_level(lvl);
+        set_logging_level(lvl);
 
         std::string csvName;
         const std::filesystem::path path = app["--path"]->as<std::string>();

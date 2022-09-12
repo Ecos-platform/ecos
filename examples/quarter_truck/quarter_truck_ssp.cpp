@@ -11,7 +11,7 @@ using namespace ecos;
 
 int main()
 {
-    logger().set_level(spdlog::level::debug);
+    set_level(spdlog::level::debug);
 
     try {
         auto ss = load_ssp(std::string(DATA_FOLDER) + "/ssp/quarter_truck");
@@ -29,7 +29,7 @@ int main()
         spdlog::stopwatch sw;
         sim->init("initialValues");
         sim->step_until(5);
-        logger().info("Elapsed {:.4f}s", sw);
+        info("Elapsed {:.4f}s", sw);
 
         sim->terminate();
     } catch (std::exception& ex) {

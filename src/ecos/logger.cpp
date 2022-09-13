@@ -32,28 +32,13 @@ spdlog::level::level_enum convert(log::level lvl)
 
 struct ecos_logger
 {
-
     ecos_logger()
         : logger_(spdlog::stdout_color_mt("ecos"))
     { }
-    
+
     void set_level(log::level lvl)
     {
-        if (lvl == log::level::trace) {
-            logger_->set_level(spdlog::level::trace);
-        } else if (lvl == log::level::debug) {
-            logger_->set_level(spdlog::level::debug);
-        } else if (lvl == log::level::info) {
-            logger_->set_level(spdlog::level::info);
-        } else if (lvl == log::level::warn) {
-            logger_->set_level(spdlog::level::warn);
-        } else if (lvl == log::level::err) {
-            logger_->set_level(spdlog::level::err);
-        } else if (lvl == log::level::off) {
-            logger_->set_level(spdlog::level::off);
-        } else {
-            throw std::runtime_error("Invalid log level");
-        }
+        logger_->set_level(convert(lvl));
     }
 
     void log(log::level lvl, const std::string& msg)

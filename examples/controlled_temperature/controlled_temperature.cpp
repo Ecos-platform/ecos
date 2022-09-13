@@ -4,13 +4,11 @@
 #include "ecos/simulation.hpp"
 #include "ecos/logger.hpp"
 
-#include <iostream>
-
 using namespace ecos;
 
 int main()
 {
-    set_logging_level(ecos::log::level::debug);
+    set_logging_level(log::level::debug);
     const std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/2.0/20sim/ControlledTemperature.fmu";
 
     try {
@@ -31,7 +29,7 @@ int main()
         std::cout << p->get_value() << std::endl;
 
         sim.terminate();
-    } catch (std::exception& ex) {
-        std::cerr << "[ERROR]: " << ex.what() << std::endl;
+    } catch (const std::exception& ex) {
+        log::err(ex.what());
     }
 }

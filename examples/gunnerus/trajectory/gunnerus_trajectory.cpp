@@ -5,19 +5,18 @@
 #include "ecos/ssp/ssp_loader.hpp"
 
 #include <filesystem>
-#include <iostream>
 #include <spdlog/stopwatch.h>
 
 using namespace ecos;
 
 int main()
 {
-    set_level(spdlog::level::debug);
+    log::set_logging_level(ecos::log::level::debug);
 
     const auto sspFile = std::string(SOURCE_DIR) + "/gunnerus-trajectory.ssp";
     if (!std::filesystem::exists(sspFile)) {
-        error("gunnerus-trajectory.ssp has not been generated yet. Run sspgen.");
-        return -1;
+        log::err("gunnerus-trajectory.ssp has not been generated yet. Run sspgen.");
+        return 1;
     }
 
     try {
@@ -38,9 +37,9 @@ int main()
         spdlog::stopwatch sw;
         sim->init("initialValues");
         sim->step_until(250);
-        info("Elapsed {:.3}s", sw);
+        log::info("Elapsed {:.3}s", sw);
         sim->terminate();
-    } catch (std::exception& ex) {
-        std::cerr << "[ERROR]: " << ex.what() << std::endl;
+    } catch (const std::exception& ex) {
+        log::err(ex.what());
     }
 }

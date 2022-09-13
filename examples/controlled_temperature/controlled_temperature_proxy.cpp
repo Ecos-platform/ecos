@@ -1,9 +1,7 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
+#include "ecos/logger.hpp"
 #include "ecos/model_resolver.hpp"
 #include "ecos/simulation.hpp"
-#include "ecos/logger.hpp"
-
-#include <iostream>
 
 using namespace ecos;
 
@@ -25,12 +23,12 @@ int main()
         });
 
         sim.init();
-        std::cout << p->get_value() << std::endl;
+        log::info("Value={}", p->get_value());
         sim.step(10);
-        std::cout << p->get_value() << std::endl;
+        log::info("Value={}", p->get_value());
 
         sim.terminate();
-    } catch (std::exception& ex) {
-        std::cerr << "[ERROR]: " << ex.what() << std::endl;
+    } catch (const std::exception& ex) {
+        log::err(ex.what());
     }
 }

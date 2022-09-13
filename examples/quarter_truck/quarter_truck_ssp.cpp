@@ -3,15 +3,13 @@
 #include "ecos/logger.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
-#include <iostream>
-#include <spdlog/spdlog.h>
 #include <spdlog/stopwatch.h>
 
 using namespace ecos;
 
 int main()
 {
-    set_level(spdlog::level::debug);
+    log::set_logging_level(ecos::log::level::debug);
 
     try {
         auto ss = load_ssp(std::string(DATA_FOLDER) + "/ssp/quarter_truck");
@@ -29,10 +27,10 @@ int main()
         spdlog::stopwatch sw;
         sim->init("initialValues");
         sim->step_until(5);
-        info("Elapsed {:.4f}s", sw);
+        log::info("Elapsed {:.4f}s", sw);
 
         sim->terminate();
-    } catch (std::exception& ex) {
-        std::cerr << "[ERROR]: " << ex.what() << std::endl;
+    } catch (const std::exception& ex) {
+        log::err(ex.what());
     }
 }

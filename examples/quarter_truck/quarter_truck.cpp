@@ -1,17 +1,15 @@
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
+#include "ecos/logger.hpp"
 #include "ecos/scalar.hpp"
 #include "ecos/structure/simulation_structure.hpp"
-
-#include <iostream>
-#include <spdlog/spdlog.h>
 
 using namespace ecos;
 
 int main()
 {
-    spdlog::set_level(spdlog::level::debug);
+    log::set_logging_level(ecos::log::level::debug);
 
     simulation_structure ss;
     const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/fmus/2.0/quarter-truck";
@@ -43,7 +41,7 @@ int main()
         std::cout << p->get_value() << std::endl;
 
         sim->terminate();
-    } catch (std::exception& ex) {
-        std::cerr << "[ERROR]: " << ex.what() << std::endl;
+    } catch (const std::exception& ex) {
+        log::err(ex.what());
     }
 }

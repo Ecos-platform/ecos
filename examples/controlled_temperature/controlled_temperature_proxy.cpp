@@ -9,7 +9,7 @@ using namespace ecos;
 
 int main()
 {
-    set_logging_level(ecos::ecos_logger::level::info);
+    set_logging_level(ecos::log::level::info);
     std::string fmuPath = "proxyfmu://localhost?file=" + std::string(DATA_FOLDER) + "/fmus/2.0/20sim/ControlledTemperature.fmu";
 
     try {

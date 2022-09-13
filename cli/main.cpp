@@ -9,23 +9,22 @@
 
 #include <CLI/CLI.hpp>
 #include <iostream>
-#include <sstream>
 
 using namespace ecos;
 
 namespace
 {
 
-std::unordered_map<std::string, ecos_logger::level> map{
-    {"trace",  ecos_logger::level::trace},
-    {"debug",  ecos_logger::level::debug},
-    {"info",  ecos_logger::level::info},
-    {"warn",  ecos_logger::level::warn},
-    {"err",  ecos_logger::level::err},
-    {"off",  ecos_logger::level::off},
+std::unordered_map<std::string, log::level> map{
+    {"trace",  log::level::trace},
+    {"debug",  log::level::debug},
+    {"info",  log::level::info},
+    {"warn",  log::level::warn},
+    {"err",  log::level::err},
+    {"off",  log::level::off},
 };
 
-ecos_logger::level lvl =  ecos_logger::level::info;
+log::level lvl =  log::level::info;
 
 int print_help(const CLI::App& desc)
 {
@@ -140,7 +139,7 @@ void run_simulation(const CLI::App& vm, simulation& sim)
         const unsigned long i = sim.iterations();
         const double percentComplete = static_cast<double>(i) / static_cast<double>(numSteps) * 100;
         if (i != 0 && i % aTenth == 0 || i == numSteps) {
-            info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
+            log::info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
                 percentComplete,
                 sim.time(),
                 runner.wall_clock(),
@@ -155,7 +154,7 @@ void run_simulation(const CLI::App& vm, simulation& sim)
         std::cout << "\t'p' -> pause simulation.." << std::endl;
     }
 
-    info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}",
+    log::info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}",
         startTime, stopTime, stepSize, runner.target_real_time_factor());
     auto f = runner.run_while([&] {
         return sim.time() <= stopTime;
@@ -174,14 +173,14 @@ void run_simulation(const CLI::App& vm, simulation& sim)
                             if (!sim.terminated()) {
                                 runner.stop();
                                 inputQuit = true;
-                                info("Simulation manually aborted at t={:.3f}s", sim.time());
+                                log::info("Simulation manually aborted at t={:.3f}s", sim.time());
                             }
                             return;
                         case 'p':
                             if (runner.toggle_pause()) {
-                                info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
+                                log::info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
                             } else {
-                                info("Simulation un-paused..");
+                                log::info("Simulation un-paused..");
                             }
                             break;
                     }

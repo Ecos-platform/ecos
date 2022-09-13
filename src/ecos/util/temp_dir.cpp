@@ -18,6 +18,6 @@ temp_dir::~temp_dir()
     std::error_code status;
     std::filesystem::remove_all(path_, status);
     if (status) {
-        warn("Failed to remove temp folder '{}': {}", path_.string(), status.message());
+        log::warn("Failed to remove temp folder '{}': {}", path_.string(), status.message());
     }
 }

@@ -9,19 +9,19 @@ using namespace ecos;
 namespace
 {
 
-spdlog::level::level_enum convert(ecos_logger::level lvl)
+spdlog::level::level_enum convert(log::level lvl)
 {
-    if (lvl == ecos_logger::level::trace) {
+    if (lvl == log::level::trace) {
         return spdlog::level::trace;
-    } else if (lvl == ecos_logger::level::debug) {
+    } else if (lvl == log::level::debug) {
         return spdlog::level::debug;
-    } else if (lvl == ecos_logger::level::info) {
+    } else if (lvl == log::level::info) {
         return spdlog::level::info;
-    } else if (lvl == ecos_logger::level::warn) {
+    } else if (lvl == log::level::warn) {
         return spdlog::level::warn;
-    } else if (lvl == ecos_logger::level::err) {
+    } else if (lvl == log::level::err) {
         return spdlog::level::err;
-    } else if (lvl == ecos_logger::level::off) {
+    } else if (lvl == log::level::off) {
         return spdlog::level::off;
     } else {
         throw std::runtime_error("Invalid log level");
@@ -30,53 +30,53 @@ spdlog::level::level_enum convert(ecos_logger::level lvl)
 
 } // namespace
 
-struct ecos_logger::impl
+struct ecos_logger
 {
 
-    impl()
+    ecos_logger()
         : logger_(spdlog::stdout_color_mt("ecos"))
     { }
-
-    ~impl() = default;
-
-    void set_level(level lvl)
+    
+    void set_level(log::level lvl)
     {
-        if (lvl == ecos_logger::level::trace) {
+        if (lvl == log::level::trace) {
             logger_->set_level(spdlog::level::trace);
-        } else if (lvl == ecos_logger::level::debug) {
+        } else if (lvl == log::level::debug) {
             logger_->set_level(spdlog::level::debug);
-        } else if (lvl == ecos_logger::level::info) {
+        } else if (lvl == log::level::info) {
             logger_->set_level(spdlog::level::info);
-        } else if (lvl == ecos_logger::level::warn) {
+        } else if (lvl == log::level::warn) {
             logger_->set_level(spdlog::level::warn);
-        } else if (lvl == ecos_logger::level::err) {
+        } else if (lvl == log::level::err) {
             logger_->set_level(spdlog::level::err);
-        } else if (lvl == ecos_logger::level::off) {
+        } else if (lvl == log::level::off) {
             logger_->set_level(spdlog::level::off);
         } else {
             throw std::runtime_error("Invalid log level");
         }
     }
 
-    void log(ecos_logger::level lvl, fmt::basic_string_view<char> fmt)
+    void log(log::level lvl, const std::string& msg)
     {
-        logger_->log(convert(lvl), fmt);
+        logger_->log(convert(lvl), msg);
     }
 
+    static ecos_logger& get_instance()
+    {
+        static ecos_logger l;
+        return l;
+    }
 
 private:
     std::shared_ptr<spdlog::logger> logger_;
 };
 
-void ecos_logger::set_level(level lvl)
+void log::set_logging_level(level lvl)
 {
-    pimpl_->set_level(lvl);
+    ecos_logger::get_instance().set_level(lvl);
 }
 
-void ecos_logger::log(ecos_logger::level lvl, const std::string& msg)
+void log::log(log::level lvl, const std::string& msg)
 {
-    pimpl_->log(lvl, msg);
+    ecos_logger::get_instance().log(lvl, msg);
 }
-
-ecos::ecos_logger::ecos_logger(): pimpl_(std::make_unique<impl>()) {}
-ecos::ecos_logger::~ecos_logger() = default;

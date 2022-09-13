@@ -153,7 +153,7 @@ void csv_writer::post_terminate(simulation& sim)
 {
     outFile_.flush();
     outFile_.close();
-    info("Wrote CSV data to file: {}", path_.string());
+    log::info("Wrote CSV data to file: {}", path_.string());
 
     if (plotConfig_) {
         std::stringstream ss;
@@ -161,12 +161,12 @@ void csv_writer::post_terminate(simulation& sim)
         auto t = std::thread([&ss] {
             int status = system(ss.str().c_str());
             if (status) {
-                warn("Command {} returned with status: {}", ss.str(), status);
+                log::warn("Command {} returned with status: {}", ss.str(), status);
             }
         });
-        info("Waiting for plotting window(s) to close..");
+        log::info("Waiting for plotting window(s) to close..");
         t.join();
-        info("Plotting window(s) closed.");
+        log::info("Plotting window(s) closed.");
     }
 }
 
@@ -174,11 +174,11 @@ void csv_writer::enable_plotting(const std::filesystem::path& plotConfig)
 {
     std::filesystem::path plotter("ecos_plotter.py");
     if (!std::filesystem::exists(plotter)) {
-        warn("Plotting will be disabled as {} is not present.", std::filesystem::absolute(plotter).string());
+        log::warn("Plotting will be disabled as {} is not present.", std::filesystem::absolute(plotter).string());
         return;
     }
     if (!std::filesystem::exists(plotConfig)) {
-        warn("No such file: {}", std::filesystem::absolute(plotConfig).string());
+        log::warn("No such file: {}", std::filesystem::absolute(plotConfig).string());
         return;
     }
     plotConfig_ = std::filesystem::absolute(plotConfig);
@@ -207,9 +207,9 @@ void csv_config::verify(const std::vector<variable_identifier>& ids)
         }
     }
     if (missingCount > 0) {
-        warn("Missing {} variables declared for logging: {}", missingCount, missing.str());
+        log::warn("Missing {} variables declared for logging: {}", missingCount, missing.str());
     }
-    debug("Logging {} variables: {}", foundCount, found.str());
+    log::debug("Logging {} variables: {}", foundCount, found.str());
 }
 
 bool csv_config::shouldLogVariable(const std::string& variableName) const

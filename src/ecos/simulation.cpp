@@ -17,7 +17,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
     if (!initialized_) {
 
         initialized_ = true;
-        debug("Initializing simulation..");
+        log::debug("Initializing simulation..");
 
         for (auto& listener : listeners_) {
             listener->pre_init(*this);
@@ -38,7 +38,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
             }
         }
         if (parameterSet) {
-            debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
+            log::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
         }
 
         scenario_.runInitActions();
@@ -71,7 +71,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
             listener->post_init(*this);
         }
 
-        debug("Initialized.");
+        log::debug("Initialized.");
     }
 }
 
@@ -115,7 +115,7 @@ double simulation::step(unsigned int numStep)
 void simulation::step_until(double t)
 {
     if (t <= currentTime_) {
-        warn("Input time {} is not greater than the current simulation time {}. Simulation will not progress.", t, currentTime_);
+        log::warn("Input time {} is not greater than the current simulation time {}. Simulation will not progress.", t, currentTime_);
     } else {
         while (currentTime_ < t) {
             step();
@@ -134,7 +134,7 @@ void simulation::terminate()
     if (!terminated_) {
         terminated_ = true;
 
-        debug("Terminating simulation..");
+        log::debug("Terminating simulation..");
 
         for (auto& instance : instances_) {
             instance->terminate();
@@ -144,13 +144,13 @@ void simulation::terminate()
             listener->post_terminate(*this);
         }
 
-        debug("Terminated.");
+        log::debug("Terminated.");
     }
 }
 
 void simulation::reset()
 {
-    debug("Resetting simulation at t={}", time());
+    log::debug("Resetting simulation at t={}", time());
     for (auto& instance : instances_) {
         instance->reset();
     }

@@ -36,7 +36,7 @@ void scenario::apply(double t)
             action.invoke();
             discardedTimedActions.emplace_back(std::move(action));
             timedActions.pop_back();
-            debug("Invoked timed action at t={:.3f}", t);
+            log::debug("Invoked timed action at t={:.3f}", t);
         } else {
             break;
         }
@@ -48,7 +48,7 @@ void scenario::apply(double t)
             if (it->invoke()) {
                 discardedPredicateActions.emplace_back(std::move(*it));
                 it = predicateActions.erase(it);
-                debug("Invoked predicate action at t={:.3f}", t);
+                log::debug("Invoked predicate action at t={:.3f}", t);
             }
         }
     }

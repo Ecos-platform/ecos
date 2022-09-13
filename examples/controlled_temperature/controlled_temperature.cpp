@@ -10,7 +10,7 @@ using namespace ecos;
 
 int main()
 {
-    set_logging_level(ecos::ecos_logger::level::debug);
+    set_logging_level(ecos::log::level::debug);
     const std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/2.0/20sim/ControlledTemperature.fmu";
 
     try {

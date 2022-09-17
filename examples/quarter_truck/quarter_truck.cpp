@@ -38,7 +38,7 @@ int main()
 
         sim->init("initialValues");
         sim->step_until(5);
-        std::cout << p->get_value() << std::endl;
+        log::info("value={}", p->get_value());
 
         sim->terminate();
     } catch (const std::exception& ex) {

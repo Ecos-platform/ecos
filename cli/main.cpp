@@ -103,15 +103,16 @@ void setup_logging(const CLI::App& vm, simulation& sim, const std::string& csvNa
 {
     if (!vm.get_option("--noLog")->as<bool>()) {
 
-        std::optional<csv_config> config;
+        auto logger = std::make_unique<csv_writer>(csvName + ".csv");
+        csv_config& config = logger->config();
+
         if (vm.count("--logConfig")) {
-            config = csv_config::parse(vm["--logConfig"]->as<std::string>());
+            config.load(vm["--logConfig"]->as<std::string>());
+        }
+        if (vm.count("--chartConfig")) {
+            config.enable_plotting(vm["--chartConfig"]->as<std::string>());
         }
 
-        auto logger = std::make_unique<csv_writer>(csvName + ".csv", config);
-        if (vm.count("--chartConfig")) {
-            logger->enable_plotting(vm["--chartConfig"]->as<std::string>());
-        }
         sim.add_listener(std::move(logger));
     }
 }

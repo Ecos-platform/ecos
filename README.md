@@ -51,7 +51,7 @@ auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialV
 
 // setup csv logging
 csv_config config;
-config.log_variable("chassis::zChassis"); // logs a single variable
+config.register_variable("chassis::zChassis"); // logs a single variable
 
 auto csvWriter = std::make_unique<csv_writer>("data.csv", config);
 csvWriter->enable_plotting("ChartConfig.xml"); // enable post-simulation plotting

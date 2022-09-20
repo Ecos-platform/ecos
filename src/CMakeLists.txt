@@ -97,8 +97,10 @@ if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)
 endif ()
 
-add_library(libecosc SHARED "${CMAKE_CURRENT_SOURCE_DIR}/ecos/ecos.cpp")
-target_link_libraries(libecosc PUBLIC libecos)
+if (MSVC AND ECOS_BUILD_CLIB)
+    add_library(libecosc SHARED "${CMAKE_CURRENT_SOURCE_DIR}/ecos/ecos.cpp")
+    target_link_libraries(libecosc PRIVATE libecos)
+endif()
 
 
 # ==============================================================================

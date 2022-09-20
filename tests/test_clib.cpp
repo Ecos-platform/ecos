@@ -21,5 +21,7 @@ TEST_CASE("Test C lib")
     ecos_simulation_init(sim, 0, "initialValues");
     ecos_simulation_step(sim, 100);
 
+    ecos_simulation_terminate(sim);
+
     ecos_simulation_destroy(sim);
 }

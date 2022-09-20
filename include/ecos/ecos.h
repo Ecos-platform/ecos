@@ -21,6 +21,8 @@ bool ecos_simulation_init(ecos_simulation_t* sim, double startTime = 0, const ch
 
 void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps = 1);
 
+void ecos_simulation_terminate(ecos_simulation_t* sim);
+
 bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* configFile = NULL);
 
 void ecos_simulation_destroy(ecos_simulation_t* sim);
@@ -33,7 +35,7 @@ typedef struct
     int patch;
 } ecos_version;
 
-ecos_version ecos_library_version();
+ecos_version* ecos_library_version();
 
 
 #ifdef __cplusplus

@@ -8,7 +8,6 @@
 #include "ecos/ssp/ssp_loader.hpp"
 
 #include <memory>
-#include <sstream>
 
 std::string g_last_error_msg;
 
@@ -96,6 +95,12 @@ bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFi
     }
 }
 
+void ecos_simulation_terminate(ecos_simulation_t* sim)
+{
+    if (!sim) return;
+    sim->cpp_sim->terminate();
+}
+
 void ecos_simulation_destroy(ecos_simulation_t* sim)
 {
     if (!sim) return;
@@ -103,8 +108,8 @@ void ecos_simulation_destroy(ecos_simulation_t* sim)
 }
 
 
-ecos_version ecos_library_version()
+ecos_version* ecos_library_version()
 {
     ecos::version v = ecos::library_version();
-    return {v.major, v.minor, v.patch};
+    return new ecos_version {v.major, v.minor, v.patch};
 }

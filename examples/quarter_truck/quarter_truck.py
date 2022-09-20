@@ -28,8 +28,8 @@ def create_sim(lib):
     sim = simCreate(b"../../data/ssp/quarter_truck", 1.0/100)
 
     simAddCsv = lib.ecos_simulation_add_csv_writer
-    simAddCsv.argtypes = [c_void_p, c_char_p]
-    simAddCsv(sim, b"results/python/quarter_truck.csv")
+    simAddCsv.argtypes = [c_void_p, c_char_p, c_char_p, c_char_p]
+    simAddCsv(sim, b"results/python/quarter_truck.csv", b"../../data/ssp/quarter_truck/LogConfig.xml", b"../../data/ssp/quarter_truck/ChartConfig.xml")
 
     return sim
 
@@ -67,6 +67,6 @@ if __name__ == "__main__":
 
     sim = create_sim(lib)
     init_sim(lib, sim)
-    step_sim(lib, sim, 10)
+    step_sim(lib, sim, 500)
     terminate_sim(lib, sim)
     destroy_sim(lib, sim)

@@ -6,6 +6,7 @@
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
+#include "ecos/logger.hpp"
 
 #include <memory>
 
@@ -77,13 +78,16 @@ void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps)
     sim->cpp_sim->step(numSteps);
 }
 
-bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* configFile)
+bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* logConfig, const char* plotConfig)
 {
     try {
 
         auto writer = std::make_unique<ecos::csv_writer>(resultFile);
-        if (configFile) {
-            writer->config().load(configFile);
+        if (logConfig) {
+            writer->config().load(logConfig);
+        }
+        if (plotConfig) {
+            writer->config().enable_plotting(plotConfig);
         }
 
         sim->cpp_sim->add_listener(std::move(writer));

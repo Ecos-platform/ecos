@@ -17,13 +17,13 @@ typedef struct ecos_simulation ecos_simulation_t;
 
 ecos_simulation_t* ecos_simulation_create(const char* sspPath, double stepSize);
 
-bool ecos_simulation_init(ecos_simulation_t* sim, double startTime = 0, const char* parameterSet = NULL);
+bool ecos_simulation_init(ecos_simulation_t* sim, double startTime = 0, const char* parameterSet = nullptr);
 
 void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps = 1);
 
 void ecos_simulation_terminate(ecos_simulation_t* sim);
 
-bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* configFile = NULL);
+bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* logConfig = nullptr, const char* plotConfig = nullptr);
 
 void ecos_simulation_destroy(ecos_simulation_t* sim);
 

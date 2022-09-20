@@ -4,6 +4,7 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
+#include "ecos/listeners/csv_writer.hpp"
 
 #include <memory>
 
@@ -24,6 +25,11 @@ struct ecos_simulation_structure
     std::unique_ptr<ecos::simulation_structure> cpp_structure;
 };
 
+struct ecos_simulation_listener
+{
+    std::unique_ptr<ecos::simulation_listener> cpp_listener;
+};
+
 void handle_current_exception()
 {
     try {
@@ -34,26 +40,14 @@ void handle_current_exception()
 }
 
 
-ecos_simulation_structure_t* ecos_simulation_structure_create_from_ssp(const char* path)
+ecos_simulation_t* ecos_simulation_create(const char* sspPath, double stepSize)
 {
     try {
-        auto ss = ecos::load_ssp(path);
-        auto ss_c = std::make_unique<ecos_simulation_structure_t>();
-        ss_c->cpp_structure = std::move(ss);
+        auto ss = ecos::load_ssp(sspPath);
 
-        return ss_c.release();
-    } catch (...) {
-        handle_current_exception();
-        return nullptr;
-    }
-}
-
-ecos_simulation_t* ecos_simulation_create(ecos_simulation_structure_t* ss, double stepSize)
-{
-    try {
         auto algorithm = std::make_unique<ecos::fixed_step_algorithm>(stepSize);
         auto sim = std::make_unique<ecos_simulation_t>();
-        sim->cpp_sim = ss->cpp_structure->load(std::move(algorithm));
+        sim->cpp_sim = ss->load(std::move(algorithm));
         return sim.release();
     } catch (...) {
         handle_current_exception();
@@ -81,10 +75,22 @@ void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps)
     sim->cpp_sim->step(numSteps);
 }
 
-void ecos_simulation_structure_destroy(ecos_simulation_structure_t* ss)
+bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* configFile)
 {
-    if (!ss) return;
-    delete (ss);
+    try {
+        std::optional<ecos::csv_config> config;
+        if (configFile) {
+            config = ecos::csv_config::parse(configFile);
+        }
+
+        auto writer = std::make_unique<ecos::csv_writer>(resultFile, config);
+        sim->cpp_sim->add_listener(std::move(writer));
+
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
 }
 
 void ecos_simulation_destroy(ecos_simulation_t* sim)

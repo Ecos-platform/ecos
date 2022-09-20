@@ -2,13 +2,16 @@
 #include "ecos/ecos.h"
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
+#include "ecos/lib_info.hpp"
+#include "ecos/listeners/csv_writer.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
-#include "ecos/listeners/csv_writer.hpp"
 
 #include <memory>
+#include <sstream>
 
 std::string g_last_error_msg;
+
 
 const char* ecos_last_error_msg()
 {
@@ -97,4 +100,11 @@ void ecos_simulation_destroy(ecos_simulation_t* sim)
 {
     if (!sim) return;
     delete (sim);
+}
+
+
+ecos_version ecos_library_version()
+{
+    ecos::version v = ecos::library_version();
+    return {v.major, v.minor, v.patch};
 }

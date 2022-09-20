@@ -8,7 +8,7 @@ TEST_CASE("Test C lib")
 {
 
     auto v = ecos_library_version();
-    std::cout << "Using libcosim version: " << v->major << "." << v->minor << "." << v->patch;
+    std::cout << "Using libecos version: " << v->major << "." << v->minor << "." << v->patch << std::endl;
     delete (v);
 
     std::string sspPath = std::string(DATA_FOLDER) + "/ssp/quarter_truck";

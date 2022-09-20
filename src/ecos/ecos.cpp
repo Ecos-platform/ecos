@@ -80,12 +80,12 @@ void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps)
 bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* configFile)
 {
     try {
-        std::optional<ecos::csv_config> config;
+
+        auto writer = std::make_unique<ecos::csv_writer>(resultFile);
         if (configFile) {
-            config = ecos::csv_config::parse(configFile);
+            writer->config().load(configFile);
         }
 
-        auto writer = std::make_unique<ecos::csv_writer>(resultFile, config);
         sim->cpp_sim->add_listener(std::move(writer));
 
         return true;

@@ -12,6 +12,7 @@ option(BUILD_SHARED_LIBS OFF)
 option(ECOS_BUILD_TESTS "Build tests" ON)
 option(ECOS_BUILD_EXAMPLES "Build examples" OFF)
 option(ECOS_BUILD_CLI "Build CLI" ON)
+option(ECOS_BUILD_CLIB "Build C library (Windows only)" ON)
 
 
 # ==============================================================================

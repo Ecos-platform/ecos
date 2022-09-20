@@ -37,6 +37,8 @@ private:
     std::optional<std::filesystem::path> plotConfig_;
     std::vector<variable_identifier> variable_register;
 
+    csv_config() = default;
+
     friend class csv_writer;
 };
 

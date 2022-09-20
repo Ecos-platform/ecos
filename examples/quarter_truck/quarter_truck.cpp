@@ -31,9 +31,10 @@ int main()
         auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
         auto p = sim->get_real_property("chassis::zChassis");
 
-        const auto& config = csv_config::parse("../../data/ssp/quarter_truck/LogConfig.xml");
-        auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck_with_config.csv", config);
-        csvWriter->enable_plotting("../../data/ssp/quarter_truck/ChartConfig.xml");
+        auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck_with_config.csv");
+        csv_config& config = csvWriter->config();
+        config.load("../../data/ssp/quarter_truck/LogConfig.xml");
+        config.enable_plotting("../../data/ssp/quarter_truck/ChartConfig.xml");
         sim->add_listener(std::move(csvWriter));
 
         sim->init("initialValues");

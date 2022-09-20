@@ -18,10 +18,14 @@ namespace ecos
 struct csv_config
 {
 
-    void log_variable(variable_identifier v)
+    void load(const std::filesystem::path& configPath);
+
+    void register_variable(variable_identifier v)
     {
-        variablesToLog_.emplace_back(std::move(v));
+        variable_register.emplace_back(std::move(v));
     }
+
+    void enable_plotting(const std::filesystem::path& plotConfig);
 
     [[nodiscard]] bool shouldLogInstance(const std::string& instanceName) const;
 
@@ -29,21 +33,22 @@ struct csv_config
 
     void verify(const std::vector<variable_identifier>& ids);
 
-    static csv_config parse(const std::filesystem::path& configPath);
-
 private:
-    std::vector<variable_identifier> variablesToLog_;
+    std::optional<std::filesystem::path> plotConfig_;
+    std::vector<variable_identifier> variable_register;
+
+    friend class csv_writer;
 };
 
 class csv_writer : public simulation_listener
 {
 
 public:
-    explicit csv_writer(const std::filesystem::path& path, std::optional<csv_config> config = std::nullopt);
+    explicit csv_writer(const std::filesystem::path& path);
 
-    explicit csv_writer(const std::filesystem::path& path, const std::filesystem::path& configPath);
-
-    void enable_plotting(const std::filesystem::path& plotConfig);
+    csv_config& config() {
+        return config_;
+    }
 
     void pre_init(simulation& sim) override;
 
@@ -54,10 +59,10 @@ public:
     void post_terminate(simulation& sim) override;
 
 private:
+    csv_config config_;
     std::ofstream outFile_;
     std::filesystem::path path_;
-    std::optional<csv_config> config_;
-    std::optional<std::filesystem::path> plotConfig_;
+
 };
 
 } // namespace ecos

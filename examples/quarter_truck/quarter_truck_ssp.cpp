@@ -15,13 +15,12 @@ int main()
         auto ss = load_ssp(std::string(DATA_FOLDER) + "/ssp/quarter_truck");
         auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
 
-        csv_config config;
-        config.log_variable("chassis::zChassis");
-        config.log_variable("wheel::zWheel");
-        config.log_variable("ground::zGround");
-
-        auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck.csv", config);
-        csvWriter->enable_plotting("../../data/ssp/quarter_truck/ChartConfig.xml");
+        auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck.csv");
+        csv_config& config = csvWriter->config();
+        config.register_variable("chassis::zChassis");
+        config.register_variable("wheel::zWheel");
+        config.register_variable("ground::zGround");
+        config.enable_plotting("../../data/ssp/quarter_truck/ChartConfig.xml");
         sim->add_listener(std::move(csvWriter));
 
         spdlog::stopwatch sw;

@@ -11,6 +11,7 @@ Ecos provides the following features:
 * Optional sandboxed/remote model execution using [proxy-fmu](https://github.com/Ecos-platform/proxy-fmu)
 * Post-simulation plotting using matplotlib
 * Command-line-interface (CLI)
+* Simplified C interface
 
 ### Example
 

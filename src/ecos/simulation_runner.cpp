@@ -1,22 +1,10 @@
 
 #include "ecos/simulation_runner.hpp"
 
-#include <iostream>
+#include "spdlog/stopwatch.h"
 
 using namespace ecos;
 
-namespace
-{
-
-inline double measure_time(const std::function<void()>& f)
-{
-    const auto start = std::chrono::steady_clock::now();
-    f();
-    const auto end = std::chrono::steady_clock::now();
-    return std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count();
-}
-
-} // namespace
 
 simulation_runner::simulation_runner(simulation& sim)
     : sim_(sim)
@@ -68,22 +56,22 @@ void simulation_runner::run()
                 continue;
             }
 
-            const double elapsed = measure_time([&] {
-                if (!predicate_()) {
-                    stop_ = true;
-                } else {
+            spdlog::stopwatch sw;
+            if (!predicate_()) {
+                stop_ = true;
+            } else {
 
-                    if (rtf_ < targetRtf_) {
-                        sim_.step();
+                if (rtf_ < targetRtf_) {
+                    sim_.step();
 
-                        if (callback_) {
-                            (*callback_)();
-                        }
-                    } else {
-                        std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+                    if (callback_) {
+                        (*callback_)();
                     }
+                } else {
+                    std::this_thread::sleep_for(std::chrono::nanoseconds(1));
                 }
-            });
+            }
+            double elapsed = sw.elapsed().count();
 
             const double t = sim_.time();
             wallClock_ += elapsed;

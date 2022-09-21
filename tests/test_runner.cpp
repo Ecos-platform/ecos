@@ -4,12 +4,15 @@
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/model_resolver.hpp"
-#include <ecos/simulation_runner.hpp>
+#include "ecos/simulation_runner.hpp"
+#include "ecos/logger.hpp"
 
 using namespace ecos;
 
 TEST_CASE("test simulation runner")
 {
+
+    log::set_logging_level(ecos::log::level::debug);
 
     std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/2.0/20sim/ControlledTemperature.fmu";
     auto resolver = default_model_resolver();
@@ -26,6 +29,8 @@ TEST_CASE("test simulation runner")
     });
 
     future.get();
+
+    log::debug("Simulated {:.3f}s in {:.4f}s, RTF={:.3f}", sim.time(), runner.wall_clock(), runner.real_time_factor());
 
     REQUIRE(runner.real_time_factor() == Approx(runner.target_real_time_factor()).epsilon(0.1));
 

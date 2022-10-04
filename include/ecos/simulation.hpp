@@ -80,7 +80,7 @@ public:
     property_t<double>* get_real_property(const variable_identifier& identifier)
     {
         for (auto& instance : instances_) {
-            if (instance->instanceName == identifier.instanceName) {
+            if (instance->instanceName() == identifier.instanceName) {
                 auto p = instance->get_properties().get_real_property(identifier.variableName);
                 if (p) return p;
             }
@@ -91,7 +91,7 @@ public:
     property_t<int>* get_int_property(const variable_identifier& identifier)
     {
         for (auto& instance : instances_) {
-            if (instance->instanceName == identifier.instanceName) {
+            if (instance->instanceName() == identifier.instanceName) {
                 auto p = instance->get_properties().get_int_property(identifier.variableName);
                 if (p) return p;
             }
@@ -102,7 +102,7 @@ public:
     property_t<std::string>* get_string_property(const variable_identifier& identifier)
     {
         for (auto& instance : instances_) {
-            if (instance->instanceName == identifier.instanceName) {
+            if (instance->instanceName() == identifier.instanceName) {
                 auto p = instance->get_properties().get_string_property(identifier.variableName);
                 if (p) return p;
             }
@@ -113,7 +113,7 @@ public:
     property_t<bool>* get_bool_property(const variable_identifier& identifier)
     {
         for (auto& instance : instances_) {
-            if (instance->instanceName == identifier.instanceName) {
+            if (instance->instanceName() == identifier.instanceName) {
                 auto p = instance->get_properties().get_bool_property(identifier.variableName);
                 if (p) return p;
             }
@@ -131,7 +131,7 @@ public:
         std::vector<variable_identifier> ids;
         for (auto& instance : instances_) {
             for (auto& p : instance->get_properties().get_property_names()) {
-                ids.emplace_back(variable_identifier{instance->instanceName, p});
+                ids.emplace_back(variable_identifier{instance->instanceName(), p});
             }
         }
         return ids;

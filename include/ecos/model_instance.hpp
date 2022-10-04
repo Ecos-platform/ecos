@@ -15,21 +15,25 @@ class model_instance
 {
 
 public:
-    const std::string instanceName;
-
-    explicit model_instance(std::string instanceName)
-        : instanceName(std::move(instanceName))
+    explicit model_instance(std::string instanceName, std::optional<double> stepSizeHint = std::nullopt)
+        : instanceName_(std::move(instanceName))
+        , stepSizeHint_(stepSizeHint)
     { }
 
     model_instance(const model_instance&) = delete;
     model_instance(const model_instance&&) = delete;
 
-    void setup_experiment()
+    [[nodiscard]] const std::string& instanceName() const
     {
-        setup_experiment(0);
+        return instanceName_;
     }
 
-    virtual void setup_experiment(double start) = 0;
+    [[nodiscard]] const std::optional<double>& stepSizeHint() const
+    {
+        return stepSizeHint_;
+    }
+
+    virtual void setup_experiment(double start = 0) = 0;
 
     virtual void enter_initialization_mode() = 0;
 
@@ -56,7 +60,7 @@ public:
                         auto p = properties_.get_real_property(variableName);
                         if (!p) {
                             throw std::runtime_error("No variable named '" + variableName +
-                                "' of type real registered for instance '" + instanceName + "'");
+                                "' of type real registered for instance '" + instanceName_ + "'");
                         }
                         p->set_value(std::get<double>(value));
                         break;
@@ -65,7 +69,7 @@ public:
                         auto p = properties_.get_int_property(variableName);
                         if (!p) {
                             throw std::runtime_error("No variable named '" + variableName +
-                                "' of type int registered for instance '" + instanceName + "'");
+                                "' of type int registered for instance '" + instanceName_ + "'");
                         }
                         p->set_value(std::get<int>(value));
                         break;
@@ -74,7 +78,7 @@ public:
                         auto p = properties_.get_bool_property(variableName);
                         if (!p) {
                             throw std::runtime_error("No variable named '" + variableName +
-                                "' of type bool registered for instance '" + instanceName + "'");
+                                "' of type bool registered for instance '" + instanceName_ + "'");
                         }
                         p->set_value(std::get<bool>(value));
                         break;
@@ -83,7 +87,7 @@ public:
                         auto p = properties_.get_string_property(variableName);
                         if (!p) {
                             throw std::runtime_error("No variable named '" + variableName +
-                                "' of type string registered for instance '" + instanceName + "'");
+                                "' of type string registered for instance '" + instanceName_ + "'");
                         }
                         p->set_value(std::get<std::string>(value));
                         break;
@@ -117,6 +121,10 @@ public:
 
 protected:
     properties properties_;
+
+    std::string instanceName_;
+    std::optional<double> stepSizeHint_;
+
     std::unordered_map<std::string, std::unordered_map<std::string, scalar_value>> parameterSets_;
 };
 

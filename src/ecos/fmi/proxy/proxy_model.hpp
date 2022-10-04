@@ -20,9 +20,9 @@ public:
     {
     }
 
-    std::unique_ptr<model_instance> instantiate(const std::string& instanceName) override
+    std::unique_ptr<model_instance> instantiate(const std::string& instanceName, std::optional<double> stepSizeHint) override
     {
-        return std::make_unique<fmi_model_instance>(std::move(fmu_.new_instance(instanceName)));
+        return std::make_unique<fmi_model_instance>(std::move(fmu_.new_instance(instanceName)), stepSizeHint);
     }
 
 private:

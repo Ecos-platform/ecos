@@ -21,7 +21,7 @@ void writeData(std::ofstream& out, const simulation& sim, const csv_config& conf
 
     for (auto& instance : sim.get_instances()) {
 
-        bool logInstance = config.shouldLogInstance(instance->instanceName);
+        bool logInstance = config.shouldLogInstance(instance->instanceName());
 
         if (logInstance) {
             auto& properties = instance->get_properties();
@@ -75,7 +75,7 @@ void csv_writer::pre_init(simulation& sim)
 
     for (auto& instance : sim.get_instances()) {
 
-        const auto instanceName = instance->instanceName;
+        const auto instanceName = instance->instanceName();
         bool logInstance = config_.shouldLogInstance(instanceName);
 
         if (logInstance) {

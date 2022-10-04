@@ -65,6 +65,8 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
         for (auto& instance : instances_) {
             instance->get_properties().apply_sets();
             instance->get_properties().apply_gets();
+
+            algorithm_->model_instance_added(instance.get());
         }
 
         for (auto& listener : listeners_) {
@@ -90,7 +92,7 @@ double simulation::step(unsigned int numStep)
 
         scenario_.apply(time());
 
-        newT = algorithm_->step(currentTime_, instances_);
+        newT = algorithm_->step(currentTime_);
 
         for (auto& c : connections_) {
             c->transferData();
@@ -138,6 +140,8 @@ void simulation::terminate()
 
         for (auto& instance : instances_) {
             instance->terminate();
+
+            algorithm_->model_instance_removed(instance.get());
         }
 
         for (auto& listener : listeners_) {
@@ -168,7 +172,7 @@ void simulation::add_listener(std::unique_ptr<simulation_listener> listener)
 model_instance* simulation::get_instance(const std::string& name)
 {
     for (auto& instance : instances_) {
-        if (instance->instanceName == name) {
+        if (instance->instanceName() == name) {
             return instance.get();
         }
     }
@@ -177,7 +181,7 @@ model_instance* simulation::get_instance(const std::string& name)
 
 void simulation::add_slave(std::unique_ptr<model_instance> instance)
 {
-    const auto name = instance->instanceName;
+    const auto name = instance->instanceName();
     if (get_instance(name)) {
         throw std::runtime_error("A model instance named '" + name + "' has already been added!");
     }

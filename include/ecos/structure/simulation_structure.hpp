@@ -47,11 +47,11 @@ class simulation_structure
 public:
     simulation_structure();
 
-    void add_model(const std::string& instanceName, const std::string& uri);
+    void add_model(const std::string& instanceName, const std::string& uri, std::optional<double> stepSizeHint = std::nullopt);
 
-    void add_model(const std::string& instanceName, const std::filesystem::path& path);
+    void add_model(const std::string& instanceName, const std::filesystem::path& path, std::optional<double> stepSizeHint = std::nullopt);
 
-    void add_model(const std::string& instanceName, std::shared_ptr<model> model);
+    void add_model(const std::string& instanceName, std::shared_ptr<model> model, std::optional<double> stepSizeHint = std::nullopt);
 
     template<class T>
     void make_connection(variable_identifier source, variable_identifier sink, const std::optional<std::function<T(const T&)>>& modifier = std::nullopt)
@@ -70,8 +70,9 @@ public:
 private:
     std::unique_ptr<model_resolver> resolver_;
     std::vector<unbound_connection> connections_;
-    std::vector<std::pair<std::string, std::shared_ptr<model>>> models_;
     std::unordered_map<std::string, std::map<variable_identifier, scalar_value>> parameterSets;
+    std::unordered_map<std::string, std::pair<std::shared_ptr<model>, std::optional<double>>> models_;
+
 };
 
 } // namespace ecos

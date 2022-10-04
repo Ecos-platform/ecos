@@ -4,6 +4,8 @@
 
 #include "algorithm.hpp"
 
+#include "ecos/logger.hpp"
+
 #include <algorithm>
 #include <execution>
 
@@ -14,18 +16,18 @@ struct fixed_step_algorithm : public algorithm
 {
 
 public:
-    explicit fixed_step_algorithm(double stepSize, bool parallel = true)
-        : stepSize_(stepSize)
-        , parallel_(parallel)
-    { }
+    explicit fixed_step_algorithm(double stepSize, bool parallel = true);
 
-    double step(double currentTime, const std::vector<std::unique_ptr<model_instance>>& instances) override;
+    void model_instance_added(model_instance* instance) override;
 
-    ~fixed_step_algorithm() override = default;
+    double step(double currentTime) override;
+
+    ~fixed_step_algorithm() override;
 
 private:
-    bool parallel_;
-    double stepSize_;
+    class impl;
+    std::unique_ptr<impl> pimpl_;
+
 };
 
 

@@ -1,6 +1,8 @@
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 
+#include <cmath>
+
 using namespace ecos;
 
 namespace
@@ -20,7 +22,7 @@ int calculateDecimationFactor(const model_instance& m, double baseStepSize)
     auto stepSizeHint = m.stepSizeHint();
     if (!stepSizeHint) return 1;
 
-    long decimationFactor = std::max(1, static_cast<int>(std::ceil(*stepSizeHint / baseStepSize)));
+    int decimationFactor = std::max(1, static_cast<int>(std::ceil(*stepSizeHint / baseStepSize)));
     double actualStepSize = baseStepSize * decimationFactor;
     double diff = std::fabs(actualStepSize - *stepSizeHint);
     if (diff >= EPS) {

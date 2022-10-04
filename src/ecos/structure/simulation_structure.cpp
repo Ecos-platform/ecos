@@ -25,30 +25,30 @@ simulation_structure::simulation_structure()
 {
 }
 
-void simulation_structure::add_model(const std::string& instanceName, const std::string& uri)
+void simulation_structure::add_model(const std::string& instanceName, const std::string& uri, std::optional<double> stepSizeHint)
 {
     auto model = resolver_->resolve(uri);
-    add_model(instanceName, model);
+    add_model(instanceName, model, stepSizeHint);
 }
 
-void simulation_structure::add_model(const std::string& instanceName, const std::filesystem::path& path)
+void simulation_structure::add_model(const std::string& instanceName, const std::filesystem::path& path, std::optional<double> stepSizeHint)
 {
-    add_model(instanceName, std::filesystem::relative(path).string());
+    add_model(instanceName, std::filesystem::relative(path).string(), stepSizeHint);
 }
 
-void simulation_structure::add_model(const std::string& instanceName, std::shared_ptr<model> model)
+void simulation_structure::add_model(const std::string& instanceName, std::shared_ptr<model> model, std::optional<double> stepSizeHint)
 {
     if (models_.count(instanceName)) {
         throw std::runtime_error("A model named " + instanceName + " has already been added!");
     }
-    models_[instanceName] = std::move(model);
+    models_[instanceName] = {std::move(model), stepSizeHint};
 }
 
 std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm> algorithm)
 {
     std::unordered_map<std::string, std::unique_ptr<model_instance>> instances;
     for (auto& [name, model] : models_) {
-        instances.emplace(name, model->instantiate(name));
+        instances.emplace(name, model.first->instantiate(name, model.second));
     }
 
     for (auto& [parameterSetName, map] : parameterSets) {

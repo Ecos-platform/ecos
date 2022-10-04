@@ -15,14 +15,15 @@ struct instance_wrapper
 int calculateDecimationFactor(const model_instance& m, double baseStepSize)
 {
 
-    static double EPS = 1e-5;
+    static double EPS = 1e-3;
 
     auto stepSizeHint = m.stepSizeHint();
     if (!stepSizeHint) return 1;
 
     long decimationFactor = std::max(1, static_cast<int>(std::ceil(*stepSizeHint / baseStepSize)));
     double actualStepSize = baseStepSize * decimationFactor;
-    if (std::fabs(actualStepSize - *stepSizeHint) <= EPS) {
+    double diff = std::fabs(actualStepSize - *stepSizeHint);
+    if (diff >= EPS) {
         log::warn("Actual stepSize for {} will be {} rather than requested value {}", m.instanceName(), actualStepSize, *stepSizeHint);
     }
     return decimationFactor;

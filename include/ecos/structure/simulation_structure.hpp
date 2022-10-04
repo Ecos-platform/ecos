@@ -70,7 +70,7 @@ public:
 private:
     std::unique_ptr<model_resolver> resolver_;
     std::vector<unbound_connection> connections_;
-    std::vector<std::pair<std::string, std::shared_ptr<model>>> models_;
+    std::unordered_map<std::string, std::shared_ptr<model>> models_;
     std::unordered_map<std::string, std::map<variable_identifier, scalar_value>> parameterSets;
 };
 

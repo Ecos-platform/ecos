@@ -38,12 +38,14 @@ void simulation_structure::add_model(const std::string& instanceName, const std:
 
 void simulation_structure::add_model(const std::string& instanceName, std::shared_ptr<model> model)
 {
-    models_.emplace_back(instanceName, std::move(model));
+    if (models_.count(instanceName)) {
+        throw std::runtime_error("A model named " + instanceName + " has already been added!");
+    }
+    models_[instanceName] = std::move(model);
 }
 
 std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm> algorithm)
 {
-
     std::unordered_map<std::string, std::unique_ptr<model_instance>> instances;
     for (auto& [name, model] : models_) {
         instances.emplace(name, model->instantiate(name));

@@ -64,7 +64,7 @@ else ()
     # Force add remotes
     conan_add_remote(NAME ais URL https://ais.jfrog.io/artifactory/api/conan/ais-conan-local)
 
-    conan_cmake_install(PATH_OR_REFERENCE ..
+    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
             BUILD missing
             SETTINGS ${settings})
 

@@ -5,13 +5,11 @@ from setuptools.command.build_ext import build_ext
 
 WINDOWS = (os.name == 'nt')
 
-# cwd = os.getcwd()
-buildFolder = "build-pip"
-# nativeSources = os.path.join(cwd, "..")
+buildFolder = "build"
 
 
 def version():
-    with open("version.txt", "r") as f:
+    with open("../version.txt", "r") as f:
         return f.readline().strip()
 
 
@@ -30,13 +28,11 @@ class CMakeBuild(build_ext):
 
     def build_extension(self, ext):
 
-        # os.chdir(nativeSources)
-
         build_type = 'Release'
         # configure
         cmake_args = [
             'cmake',
-            '.',
+            '..',
             '-B',
             buildFolder,
             '-DCMAKE_BUILD_TYPE={}'.format(build_type)
@@ -54,8 +50,6 @@ class CMakeBuild(build_ext):
             cmake_args_build.extend(['--config', 'Release'])
         subprocess.check_call(cmake_args_build)
 
-        # os.chdir(cwd)
-
 
 setup(name="ecospy",
     version=version(),
@@ -65,7 +59,7 @@ setup(name="ecospy",
     include_package_data=True,
     packages=['ecospy'],
     package_dir={'ecospy': '.'},
-    package_data={'ecospy': [f"{buildFolder}/bin/*.dll", f"{buildFolder}build/bin/*.py"]},
+    package_data={'ecospy': [f"{buildFolder}/bin/*.dll", f"{buildFolder}/bin/*.py"]},
     ext_modules=[CMakeExtension('ecospy')],
     cmdclass=dict(build_ext=CMakeBuild),
 )

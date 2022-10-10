@@ -2,16 +2,17 @@
 import os
 from ctypes import *
 
+from ecospy import *
 
-class Version(Structure):
-    _fields_ = [("major", c_int), ("minor", c_int), ("patch", c_int)]
+# class Version(Structure):
+#     _fields_ = [("major", c_int), ("minor", c_int), ("patch", c_int)]
 
 
-def suffix() -> str:
-    if os.name == "nt":
-        return ".dll"
-    else:
-        return ".so"
+# def suffix() -> str:
+#     if os.name == "nt":
+#         return ".dll"
+#     else:
+#         return ".so"
 
 
 def print_version(lib):
@@ -60,13 +61,13 @@ def destroy_sim(lib, sim):
 
 if __name__ == "__main__":
 
-    path = os.path.abspath(f"libecosc{suffix()}")
-    lib = CDLL(path)
+    # path = os.path.abspath(f"libecosc{suffix()}")
+    lib = loadlib()
 
     print_version(lib)
 
-    sim = create_sim(lib)
-    init_sim(lib, sim)
-    step_sim(lib, sim, 500)
-    terminate_sim(lib, sim)
-    destroy_sim(lib, sim)
+    # sim = create_sim(lib)
+    # init_sim(lib, sim)
+    # step_sim(lib, sim, 500)
+    # terminate_sim(lib, sim)
+    # destroy_sim(lib, sim)

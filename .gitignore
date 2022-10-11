@@ -2,9 +2,10 @@
 thrift.*
 
 build
-build-pip
 cmake-build-*
 
 *.egg-info
 
 /**/gunnerus/**/*.ssp
+
+/**/results/**/*.csv

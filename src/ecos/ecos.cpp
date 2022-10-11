@@ -5,7 +5,6 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/lib_info.hpp"
 #include "ecos/listeners/csv_writer.hpp"
-#include "ecos/logger.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 

@@ -249,3 +249,38 @@ ecos_version* ecos_library_version()
     ecos::version v = ecos::library_version();
     return new ecos_version{v.major, v.minor, v.patch};
 }
+
+class my_listener: public ecos::simulation_listener {
+
+public:
+    explicit  my_listener(simlation_listener_config config) {
+        if (config.preStepCallback) {
+            preStepCallback_ = config.preStepCallback;
+        }
+        if (config.postStepCallback) {
+            postStepCallback_ = config.postStepCallback;
+        }
+    }
+
+    void pre_step(ecos::simulation& sim) override
+    {
+        preStepCallback_();
+    }
+
+    void post_step(ecos::simulation& sim) override
+    {
+        postStepCallback_();
+    }
+
+private:
+    std::function<void()> preStepCallback_ = []{};
+    std::function<void()> postStepCallback_ = []{};
+};
+
+ecos_simulation_listener_t* ecos_listener_create(simlation_listener_config config)
+{
+    auto l = std::make_unique<ecos_simulation_listener_t>();
+    l->cpp_listener = std::make_unique<my_listener>(config);
+
+    return l.release();
+}

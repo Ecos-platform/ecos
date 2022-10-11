@@ -99,6 +99,12 @@ Options:
 
 ```
 
+### Python interface (currently windows only)
+
+To use the python interface, simply clone the project and run:
+
+`pip install ecospy`
+
 ---
 
 ### Compile-time requirements

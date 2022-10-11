@@ -15,7 +15,7 @@ if __name__ == "__main__":
     sim.add_csv_writer(resultFile, f"{sspDir}/LogConfig.xml")
     sim.init("initialValues")
 
-    sim.step_until(15)
+    sim.step_until(10)
 
     sim.terminate()
     sim.destroy()

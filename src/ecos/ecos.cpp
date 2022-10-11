@@ -25,7 +25,7 @@ struct ecos_simulation
 
 struct ecos_simulation_listener
 {
-    std::shared_ptr<ecos::simulation_listener> cpp_listener;
+    std::unique_ptr<ecos::simulation_listener> cpp_listener;
 };
 
 void handle_current_exception()
@@ -94,10 +94,10 @@ void ecos_simulation_step_until(ecos_simulation_t* sim, double timePoint)
     sim->cpp_sim->step_until(timePoint);
 }
 
-bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* name, int* value)
+bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier, int* value)
 {
     try {
-        auto prop = sim->cpp_sim->get_int_property(name);
+        auto prop = sim->cpp_sim->get_int_property(identifier);
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -106,10 +106,10 @@ bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* name, int* 
     }
 }
 
-bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* name, double* value)
+bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, double* value)
 {
     try {
-        auto prop = sim->cpp_sim->get_real_property(name);
+        auto prop = sim->cpp_sim->get_real_property(identifier);
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -118,10 +118,10 @@ bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* name, double* 
     }
 }
 
-bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* name, bool* value)
+bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bool* value)
 {
     try {
-        auto prop = sim->cpp_sim->get_bool_property(name);
+        auto prop = sim->cpp_sim->get_bool_property(identifier);
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -130,11 +130,59 @@ bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* name, bool* va
     }
 }
 
-bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* name, const char* value)
+bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, const char* value)
 {
     try {
-        auto prop = sim->cpp_sim->get_string_property(name);
+        auto prop = sim->cpp_sim->get_string_property(identifier);
         value = prop->get_value().c_str();
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_simulation_set_integer(ecos_simulation_t* sim, const char* identifier, int value)
+{
+    try {
+        auto prop = sim->cpp_sim->get_int_property(identifier);
+        prop->set_value(value);
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_simulation_set_real(ecos_simulation_t* sim, const char* identifier, double value)
+{
+    try {
+        auto prop = sim->cpp_sim->get_real_property(identifier);
+        prop->set_value(value);
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_simulation_set_bool(ecos_simulation_t* sim, const char* identifier, bool value)
+{
+    try {
+        auto prop = sim->cpp_sim->get_bool_property(identifier);
+        prop->set_value(value);
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_simulation_set_string(ecos_simulation_t* sim, const char* identifier, const char* value)
+{
+    try {
+        auto prop = sim->cpp_sim->get_string_property(identifier);
+        prop->set_value(value);
         return true;
     } catch (...) {
         handle_current_exception();
@@ -146,7 +194,7 @@ bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* name, const 
 void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener)
 {
     if (listener) {
-        sim->cpp_sim->add_listener(name, listener->cpp_listener);
+        sim->cpp_sim->add_listener(name, std::move(listener->cpp_listener));
     }
 }
 
@@ -155,11 +203,6 @@ void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name)
     if (name) {
         sim->cpp_sim->remove_listener(name);
     }
-}
-
-void ecos_simulation_listener_destroy(ecos_simulation_listener_t* listener)
-{
-    delete listener;
 }
 
 ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* logConfig, const char* plotConfig)
@@ -184,27 +227,6 @@ ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const
         return nullptr;
     }
 }
-
-// bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* logConfig, const char* plotConfig)
-//{
-//     try {
-//
-//         auto writer = std::make_unique<ecos::csv_writer>(resultFile);
-//         if (logConfig) {
-//             writer->config().load(logConfig);
-//         }
-//         if (plotConfig) {
-//             writer->config().enable_plotting(plotConfig);
-//         }
-//
-//         sim->cpp_sim->add_listener(std::move(writer));
-//
-//         return true;
-//     } catch (...) {
-//         handle_current_exception();
-//         return false;
-//     }
-// }
 
 void ecos_simulation_terminate(ecos_simulation_t* sim)
 {

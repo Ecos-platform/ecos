@@ -70,6 +70,22 @@ class EcosSimulation:
         self.__getString.argtypes = [c_void_p, c_char_p, c_char_p]
         self.__getString.restype = c_bool
 
+        self.__setInteger = lib.ecos_simulation_set_integer
+        self.__setInteger.argtypes = [c_void_p, c_char_p, c_int]
+        self.__setInteger.restype = c_bool
+
+        self.__setReal = lib.ecos_simulation_set_real
+        self.__setReal.argtypes = [c_void_p, c_char_p, c_double]
+        self.__setReal.restype = c_bool
+
+        self.__setBool = lib.ecos_simulation_set_bool
+        self.__setBool.argtypes = [c_void_p, c_char_p, c_bool]
+        self.__setBool.restype = c_bool
+
+        self.__setString = lib.ecos_simulation_set_string
+        self.__setString.argtypes = [c_void_p, c_char_p, c_char_p]
+        self.__setString.restype = c_bool
+
         simCreate = lib.ecos_simulation_create
         simCreate.restype = c_void_p
         simCreate.argtypes = [c_char_p, c_double]
@@ -77,12 +93,12 @@ class EcosSimulation:
         if self.sim is None:
             raise Exception(get_last_error())
 
-    def add_csv_writer(self, resultFile: str, logConfig: str = None):
+    def add_csv_writer(self, result_file: str, log_config: str = None):
         createCsv = lib.ecos_csv_writer_create
         createCsv.argtypes = [c_char_p, c_char_p, c_char_p]
         createCsv.restype = c_void_p
 
-        listener = createCsv(resultFile.encode(), None if logConfig is None else logConfig.encode(), None)
+        listener = createCsv(result_file.encode(), None if log_config is None else log_config.encode(), None)
 
         if listener is None:
             raise Exception(get_last_error())
@@ -115,11 +131,27 @@ class EcosSimulation:
             raise Exception(get_last_error())
         return val.value
 
-    def init(self, parameterSet: str = None):
+    def set_integer(self, identifier: str, value: int):
+        if not self.__getInteger(self.sim, identifier.encode(), value):
+            raise Exception(get_last_error())
+
+    def set_real(self, identifier: str, value: float):
+        if not self.__getReal(self.sim, identifier.encode(), value):
+            raise Exception(get_last_error())
+
+    def set_bool(self, identifier: str, value: bool):
+        if not self.__setBool(self.sim, identifier.encode(), value):
+            raise Exception(get_last_error())
+
+    def set_string(self, identifier: str, value: str):
+        if not self.__setString(self.sim, identifier.encode(), value.encode()):
+            raise Exception(get_last_error())
+
+    def init(self, parameter_set: str = None):
         simInit = lib.ecos_simulation_init
         simInit.argtypes = [c_void_p, c_double, c_char_p]
         simInit.restype = c_bool
-        return simInit(self.sim, 0, None if parameterSet is None else parameterSet.encode())
+        return simInit(self.sim, 0, None if parameter_set is None else parameter_set.encode())
 
     def step(self, num_steps: int = 1):
         self.__simStep(self.sim, num_steps)

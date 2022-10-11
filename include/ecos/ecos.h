@@ -11,11 +11,6 @@ extern "C" {
 
 const char* ecos_last_error_msg();
 
-struct simlation_listener_config {
-    void (*preStepCallback)() = nullptr;
-    void (*postStepCallback)() = nullptr;
-};
-
 typedef struct ecos_simulation ecos_simulation_t;
 typedef struct ecos_simulation_listener ecos_simulation_listener_t;
 
@@ -43,7 +38,13 @@ void ecos_simulation_terminate(ecos_simulation_t* sim);
 void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener);
 void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name);
 ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* logConfig = nullptr, const char* plotConfig = nullptr);
-ecos_simulation_listener_t* ecos_listener_create(simlation_listener_config config);
+
+typedef struct ecos_simulation_listener_config {
+    void (*preStepCallback)(double) = nullptr;
+    void (*postStepCallback)(double) = nullptr;
+} ecos_simulation_listener_config;
+
+ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_listener_config config);
 
 void ecos_simulation_destroy(ecos_simulation_t* sim);
 

@@ -20,6 +20,10 @@ class Version(Structure):
     _fields_ = [("major", c_int), ("minor", c_int), ("patch", c_int)]
 
 
+class ListenerConfig(Structure):
+    _fields_ = [("preStepCallback", CFUNCTYPE(None, c_double)), ("postStepCallback", CFUNCTYPE(None, c_double))]
+
+
 def version():
     version_fun = lib.ecos_library_version
     version_fun.restype = c_void_p
@@ -86,12 +90,43 @@ class EcosSimulation:
         self.__setString.argtypes = [c_void_p, c_char_p, c_char_p]
         self.__setString.restype = c_bool
 
+        self.listener_configs = []
+
         simCreate = lib.ecos_simulation_create
         simCreate.restype = c_void_p
         simCreate.argtypes = [c_char_p, c_double]
         self.sim = simCreate(ssp_path.encode(), step_size)
         if self.sim is None:
             raise Exception(get_last_error())
+
+    def add_listener(self, name: str, preStep = None, postStep = None):
+
+        if preStep is None and postStep is None:
+            return
+
+        config = ListenerConfig()
+        self.listener_configs.append(config)
+
+        if preStep is not None:
+            @CFUNCTYPE(None, c_double)
+            def pre(t: float):
+                preStep(t)
+            config.preStepCallback = pre
+
+        if postStep is not None:
+            @CFUNCTYPE(None, c_double)
+            def post(t: float):
+                postStep(t)
+            config.postStepCallback = post
+
+        createListener = lib.ecos_simulation_listener_create
+        createListener.argtypes = [ListenerConfig]
+        createListener.restype = c_void_p
+        listener = createListener(config)
+
+        simAddListener = lib.ecos_simulation_add_listener
+        simAddListener.argtypes = [c_void_p, c_char_p, c_void_p]
+        simAddListener(self.sim, name.encode(), listener)
 
     def add_csv_writer(self, result_file: str, log_config: str = None):
         createCsv = lib.ecos_csv_writer_create

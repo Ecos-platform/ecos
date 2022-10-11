@@ -21,6 +21,8 @@ bool ecos_simulation_init(ecos_simulation_t* sim, double startTime = 0, const ch
 
 void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps = 1);
 
+void ecos_simulation_step_until(ecos_simulation_t* sim, double timePoint);
+
 bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier, int* value);
 
 bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, double* value);

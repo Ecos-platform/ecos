@@ -45,6 +45,9 @@ class EcosSimulation:
         self.__simStep = lib.ecos_simulation_step
         self.__simStep.argtypes = [c_void_p, c_size_t]
 
+        self.__simStepUntil = lib.ecos_simulation_step_until
+        self.__simStepUntil.argtypes = [c_void_p, c_double]
+
         self.__getInteger = lib.ecos_simulation_get_integer
         self.__getInteger.argtypes = [c_void_p, c_char_p, POINTER(c_int)]
         self.__getInteger.restype = c_bool
@@ -68,7 +71,7 @@ class EcosSimulation:
         if not self.sim:
             raise Exception(getLastError())
 
-    def add_csv_writer(self, resultFile: str, logConfig: str, plotConfig: str) -> bool:
+    def add_csv_writer(self, resultFile: str, logConfig: str = None, plotConfig: str = None) -> bool:
         simAddCsv = lib.ecos_simulation_add_csv_writer
         simAddCsv.argtypes = [c_void_p, c_char_p, c_char_p, c_char_p]
         simAddCsv.restype = c_bool
@@ -106,8 +109,11 @@ class EcosSimulation:
         simInit.restype = c_bool
         return simInit(self.sim, 0, None if parameterSet is None else parameterSet.encode())
 
-    def step(self, numSteps: int = 1):
-        self.__simStep(self.sim, numSteps)
+    def step(self, num_steps: int = 1):
+        self.__simStep(self.sim, num_steps)
+
+    def step_until(self, time_point: float):
+        self.__simStepUntil(self.sim, time_point)
 
     def terminate(self):
         simTerminate = lib.ecos_simulation_terminate

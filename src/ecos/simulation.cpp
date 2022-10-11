@@ -19,7 +19,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
         initialized_ = true;
         log::debug("Initializing simulation..");
 
-        for (auto& listener : listeners_) {
+        for (auto& [_, listener] : listeners_) {
             listener->pre_init(*this);
         }
 
@@ -69,7 +69,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
             algorithm_->model_instance_added(instance.get());
         }
 
-        for (auto& listener : listeners_) {
+        for (auto& [_, listener] : listeners_) {
             listener->post_init(*this);
         }
 
@@ -86,7 +86,7 @@ double simulation::step(unsigned int numStep)
     double newT;
     for (unsigned i = 0; i < numStep; ++i) {
 
-        for (auto& listener : listeners_) {
+        for (auto& [_, listener] : listeners_) {
             listener->pre_step(*this);
         }
 
@@ -106,7 +106,7 @@ double simulation::step(unsigned int numStep)
         currentTime_ = newT;
         ++num_iterations_;
 
-        for (auto& listener : listeners_) {
+        for (auto& [_, listener] : listeners_) {
             listener->post_step(*this);
         }
     }
@@ -144,7 +144,7 @@ void simulation::terminate()
             algorithm_->model_instance_removed(instance.get());
         }
 
-        for (auto& listener : listeners_) {
+        for (auto& [_, listener] : listeners_) {
             listener->post_terminate(*this);
         }
 
@@ -164,9 +164,19 @@ void simulation::reset()
     initialized_ = false;
 }
 
-void simulation::add_listener(std::unique_ptr<simulation_listener> listener)
+void simulation::add_listener(const std::string& name, std::shared_ptr<simulation_listener> listener)
 {
-    listeners_.emplace_back(std::move(listener));
+    if (listeners_.count(name)) {
+        log::warn("A listener named {} already exists..");
+        return;
+    } else {
+        listeners_[name] = std::move(listener);
+    }
+}
+
+void simulation::remove_listener(const std::string& name)
+{
+    listeners_.erase(name);
 }
 
 model_instance* simulation::get_instance(const std::string& name)

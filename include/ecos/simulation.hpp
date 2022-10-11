@@ -65,7 +65,9 @@ public:
 
     void add_slave(std::unique_ptr<model_instance> slave);
 
-    void add_listener(std::unique_ptr<simulation_listener> listener);
+    void add_listener(const std::string& name, std::shared_ptr<simulation_listener> listener);
+
+    void remove_listener(const std::string& name);
 
     model_instance* get_instance(const std::string& name);
 
@@ -162,7 +164,7 @@ private:
     std::unique_ptr<algorithm> algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;
     std::vector<std::unique_ptr<connection>> connections_;
-    std::vector<std::unique_ptr<simulation_listener>> listeners_;
+    std::unordered_map<std::string, std::shared_ptr<simulation_listener>> listeners_;
 };
 
 } // namespace ecos

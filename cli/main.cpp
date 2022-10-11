@@ -113,7 +113,7 @@ void setup_logging(const CLI::App& vm, simulation& sim, const std::string& csvNa
             config.enable_plotting(vm["--chartConfig"]->as<std::string>());
         }
 
-        sim.add_listener(std::move(logger));
+        sim.add_listener("csv_writer", std::move(logger));
     }
 }
 

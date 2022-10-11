@@ -11,7 +11,7 @@ Ecos provides the following features:
 * Optional sandboxed/remote model execution using [proxy-fmu](https://github.com/Ecos-platform/proxy-fmu)
 * Post-simulation plotting using matplotlib
 * Command-line-interface (CLI)
-* Simplified C interface
+* Simplified Python and C interface
 
 ### Example
 
@@ -98,6 +98,12 @@ Options:
   --scenarioConfig arg          Path to scenario configuration.
 
 ```
+
+### Python interface (currently windows only)
+
+To use the python interface, simply clone the project and run:
+
+`pip install ecospy`
 
 ---
 

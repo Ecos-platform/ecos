@@ -9,7 +9,7 @@ message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 # ==============================================================================
 
 option(BUILD_SHARED_LIBS OFF)
-option(ECOS_BUILD_TESTS "Build tests" ON)
+option(ECOS_BUILD_TESTS "Build tests" OFF)
 option(ECOS_BUILD_EXAMPLES "Build examples" OFF)
 option(ECOS_BUILD_CLI "Build CLI" ON)
 option(ECOS_BUILD_CLIB "Build C library (Windows only)" ON)
@@ -64,7 +64,7 @@ else ()
     # Force add remotes
     conan_add_remote(NAME ais URL https://ais.jfrog.io/artifactory/api/conan/ais-conan-local)
 
-    conan_cmake_install(PATH_OR_REFERENCE ..
+    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
             BUILD missing
             SETTINGS ${settings})
 

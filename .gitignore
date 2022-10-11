@@ -1,6 +1,11 @@
 .idea
 thrift.*
 
+build
 cmake-build-*
 
+*.egg-info
+
 /**/gunnerus/**/*.ssp
+
+/**/results/**/*.csv

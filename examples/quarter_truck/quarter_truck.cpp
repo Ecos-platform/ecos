@@ -35,7 +35,7 @@ int main()
         csv_config& config = csvWriter->config();
         config.load("../../data/ssp/quarter_truck/LogConfig.xml");
         config.enable_plotting("../../data/ssp/quarter_truck/ChartConfig.xml");
-        sim->add_listener(std::move(csvWriter));
+        sim->add_listener("csv_writer", std::move(csvWriter));
 
         sim->init("initialValues");
         sim->step_until(5);

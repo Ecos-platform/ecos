@@ -21,7 +21,7 @@ int main()
         config.register_variable("wheel::zWheel");
         config.register_variable("ground::zGround");
         config.enable_plotting("../../data/ssp/quarter_truck/ChartConfig.xml");
-        sim->add_listener(std::move(csvWriter));
+        sim->add_listener("csv_writer", std::move(csvWriter));
 
         spdlog::stopwatch sw;
         sim->init("initialValues");

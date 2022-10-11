@@ -4,7 +4,6 @@ from ctypes import *
 
 
 def __loadlib():
-
     def suffix() -> str:
         if os.name == "nt":
             return ".dll"
@@ -42,6 +41,10 @@ def getLastError():
 class EcosSimulation:
 
     def __init__(self, sspPath: str, stepSize: float):
+
+        self.__simStep = lib.ecos_simulation_step
+        self.__simStep.argtypes = [c_void_p, c_size_t]
+
         simCreate = lib.ecos_simulation_create
         simCreate.restype = c_void_p
         simCreate.argtypes = [c_char_p, c_double]
@@ -49,18 +52,20 @@ class EcosSimulation:
         if not self.sim:
             raise Exception(getLastError())
 
+    def add_csv_writer(self, resultFile: str, logConfig: str, plotConfig: str) -> bool:
+        simAddCsv = lib.ecos_simulation_add_csv_writer
+        simAddCsv.argtypes = [c_void_p, c_char_p, c_char_p, c_char_p]
+        return simAddCsv(self.sim, resultFile.encode(),
+                  None if logConfig is None else logConfig.encode(),
+                  None if plotConfig is None else plotConfig.encode())
+
     def init(self, parameterSet: str = None):
         simInit = lib.ecos_simulation_init
         simInit.argtypes = [c_void_p, c_double, c_char_p]
-        if parameterSet is None:
-            simInit(self.sim, 0, None)
-        else:
-            simInit(self.sim, 0, parameterSet.encode())
+        return simInit(self.sim, 0, None if parameterSet is None else parameterSet.encode())
 
     def step(self, numSteps: int = 1):
-        simStep = lib.ecos_simulation_step
-        simStep.argtypes = [c_void_p, c_size_t]
-        simStep(self.sim, numSteps)
+        self.__simStep(self.sim, numSteps)
 
     def terminate(self):
         simTerminate = lib.ecos_simulation_terminate

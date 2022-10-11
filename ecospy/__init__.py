@@ -45,7 +45,7 @@ class EcosSimulation:
         self.__simStep = lib.ecos_simulation_step
         self.__simStep.argtypes = [c_void_p, c_size_t]
 
-        self.__getInteger = lib.ecos_simulation_get_real
+        self.__getInteger = lib.ecos_simulation_get_integer
         self.__getInteger.argtypes = [c_void_p, c_char_p, POINTER(c_int)]
         self.__getInteger.restype = c_bool
 
@@ -53,11 +53,11 @@ class EcosSimulation:
         self.__getReal.argtypes = [c_void_p, c_char_p, POINTER(c_double)]
         self.__getReal.restype = c_bool
 
-        self.__getBool = lib.ecos_simulation_get_real
+        self.__getBool = lib.ecos_simulation_get_bool
         self.__getBool.argtypes = [c_void_p, c_char_p, POINTER(c_bool)]
         self.__getBool.restype = c_bool
 
-        self.__getString = lib.ecos_simulation_get_real
+        self.__getString = lib.ecos_simulation_get_string
         self.__getString.argtypes = [c_void_p, c_char_p, c_char_p]
         self.__getString.restype = c_bool
 

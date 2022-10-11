@@ -23,14 +23,9 @@ struct ecos_simulation
     std::unique_ptr<ecos::simulation> cpp_sim;
 };
 
-struct ecos_simulation_structure
-{
-    std::unique_ptr<ecos::simulation_structure> cpp_structure;
-};
-
 struct ecos_simulation_listener
 {
-    std::unique_ptr<ecos::simulation_listener> cpp_listener;
+    std::shared_ptr<ecos::simulation_listener> cpp_listener;
 };
 
 void handle_current_exception()
@@ -131,7 +126,27 @@ bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* name, const 
     }
 }
 
-bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* logConfig, const char* plotConfig)
+
+void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener)
+{
+    if (listener) {
+        sim->cpp_sim->add_listener(name, listener->cpp_listener);
+    }
+}
+
+void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name)
+{
+    if (name) {
+        sim->cpp_sim->remove_listener(name);
+    }
+}
+
+void ecos_simulation_listener_destroy(ecos_simulation_listener_t* listener)
+{
+    delete listener;
+}
+
+ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* logConfig, const char* plotConfig)
 {
     try {
 
@@ -143,25 +158,48 @@ bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFi
             writer->config().enable_plotting(plotConfig);
         }
 
-        sim->cpp_sim->add_listener(std::move(writer));
+        auto l = std::make_unique<ecos_simulation_listener_t>();
+        l->cpp_listener = std::move(writer);
 
-        return true;
+        return l.release();
+
     } catch (...) {
         handle_current_exception();
-        return false;
+        return nullptr;
     }
 }
 
+// bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* logConfig, const char* plotConfig)
+//{
+//     try {
+//
+//         auto writer = std::make_unique<ecos::csv_writer>(resultFile);
+//         if (logConfig) {
+//             writer->config().load(logConfig);
+//         }
+//         if (plotConfig) {
+//             writer->config().enable_plotting(plotConfig);
+//         }
+//
+//         sim->cpp_sim->add_listener(std::move(writer));
+//
+//         return true;
+//     } catch (...) {
+//         handle_current_exception();
+//         return false;
+//     }
+// }
+
 void ecos_simulation_terminate(ecos_simulation_t* sim)
 {
-    if (!sim) return;
-    sim->cpp_sim->terminate();
+    if (sim) {
+        sim->cpp_sim->terminate();
+    }
 }
 
 void ecos_simulation_destroy(ecos_simulation_t* sim)
 {
-    if (!sim) return;
-    delete (sim);
+    delete sim;
 }
 
 

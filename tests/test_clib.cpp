@@ -16,7 +16,8 @@ TEST_CASE("Test C lib")
     auto sim = ecos_simulation_create(sspPath.c_str(), 1.0 / 100);
     REQUIRE(sim);
 
-    REQUIRE(ecos_simulation_add_csv_writer(sim, "results/quarter_truck.csv"));
+    auto writer = ecos_csv_writer_create("results/quarter_truck.csv");
+    ecos_simulation_add_listener(sim, "csv_writer", writer);
 
     ecos_simulation_init(sim, 0, "initialValues");
     ecos_simulation_step(sim, 100);

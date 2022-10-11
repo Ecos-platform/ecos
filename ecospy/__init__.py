@@ -68,16 +68,24 @@ class EcosSimulation:
         simCreate.restype = c_void_p
         simCreate.argtypes = [c_char_p, c_double]
         self.sim = simCreate(sspPath.encode(), stepSize)
-        if not self.sim:
+        if self.sim is None:
             raise Exception(getLastError())
 
-    def add_csv_writer(self, resultFile: str, logConfig: str = None, plotConfig: str = None) -> bool:
-        simAddCsv = lib.ecos_simulation_add_csv_writer
-        simAddCsv.argtypes = [c_void_p, c_char_p, c_char_p, c_char_p]
-        simAddCsv.restype = c_bool
-        return simAddCsv(self.sim, resultFile.encode(),
+    def add_csv_writer(self, resultFile: str, logConfig: str = None, plotConfig: str = None):
+        createCsv = lib.ecos_csv_writer_create
+        createCsv.argtypes = [c_char_p, c_char_p, c_char_p]
+        createCsv.restype = c_void_p
+
+        listener = createCsv(resultFile.encode(),
                   None if logConfig is None else logConfig.encode(),
                   None if plotConfig is None else plotConfig.encode())
+
+        if listener is None:
+            raise Exception(getLastError())
+
+        simAddListener = lib.ecos_simulation_add_listener
+        simAddListener.argtypes = [c_void_p, c_char_p, c_void_p]
+        simAddListener(self.sim, b'csv_writer', listener)
 
     def get_integer(self, identifier: str):
         val = c_int()

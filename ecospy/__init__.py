@@ -45,6 +45,22 @@ class EcosSimulation:
         self.__simStep = lib.ecos_simulation_step
         self.__simStep.argtypes = [c_void_p, c_size_t]
 
+        self.__getInteger = lib.ecos_simulation_get_real
+        self.__getInteger.argtypes = [c_void_p, c_char_p, POINTER(c_int)]
+        self.__getInteger.restype = c_bool
+
+        self.__getReal = lib.ecos_simulation_get_real
+        self.__getReal.argtypes = [c_void_p, c_char_p, POINTER(c_double)]
+        self.__getReal.restype = c_bool
+
+        self.__getBool = lib.ecos_simulation_get_real
+        self.__getBool.argtypes = [c_void_p, c_char_p, POINTER(c_bool)]
+        self.__getBool.restype = c_bool
+
+        self.__getString = lib.ecos_simulation_get_real
+        self.__getString.argtypes = [c_void_p, c_char_p, c_char_p]
+        self.__getString.restype = c_bool
+
         simCreate = lib.ecos_simulation_create
         simCreate.restype = c_void_p
         simCreate.argtypes = [c_char_p, c_double]
@@ -55,13 +71,39 @@ class EcosSimulation:
     def add_csv_writer(self, resultFile: str, logConfig: str, plotConfig: str) -> bool:
         simAddCsv = lib.ecos_simulation_add_csv_writer
         simAddCsv.argtypes = [c_void_p, c_char_p, c_char_p, c_char_p]
+        simAddCsv.restype = c_bool
         return simAddCsv(self.sim, resultFile.encode(),
                   None if logConfig is None else logConfig.encode(),
                   None if plotConfig is None else plotConfig.encode())
 
+    def get_integer(self, identifier: str):
+        val = c_int()
+        if not self.__getInteger(self.sim, identifier.encode(), byref(val)):
+            raise Exception(getLastError())
+        return val.value
+
+    def get_real(self, identifier: str):
+        val = c_double()
+        if not self.__getReal(self.sim, identifier.encode(), byref(val)):
+            raise Exception(getLastError())
+        return val.value
+
+    def get_bool(self, identifier: str):
+        val = c_bool()
+        if not self.__getBool(self.sim, identifier.encode(), byref(val)):
+            raise Exception(getLastError())
+        return val.value
+
+    def get_string(self, identifier: str):
+        val = c_char()
+        if not self.__getString(self.sim, identifier.encode(), byref(val)):
+            raise Exception(getLastError())
+        return val.value
+
     def init(self, parameterSet: str = None):
         simInit = lib.ecos_simulation_init
         simInit.argtypes = [c_void_p, c_double, c_char_p]
+        simInit.restype = c_bool
         return simInit(self.sim, 0, None if parameterSet is None else parameterSet.encode())
 
     def step(self, numSteps: int = 1):

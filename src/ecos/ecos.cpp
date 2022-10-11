@@ -4,9 +4,9 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/lib_info.hpp"
 #include "ecos/listeners/csv_writer.hpp"
+#include "ecos/logger.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
-#include "ecos/logger.hpp"
 
 #include <memory>
 
@@ -78,6 +78,54 @@ void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps)
     sim->cpp_sim->step(numSteps);
 }
 
+bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* name, int* value)
+{
+    try {
+        auto prop = sim->cpp_sim->get_int_property(name);
+        *value = prop->get_value();
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* name, double* value)
+{
+    try {
+        auto prop = sim->cpp_sim->get_real_property(name);
+        *value = prop->get_value();
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* name, bool* value)
+{
+    try {
+        auto prop = sim->cpp_sim->get_bool_property(name);
+        *value = prop->get_value();
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* name, const char* value)
+{
+    try {
+        auto prop = sim->cpp_sim->get_string_property(name);
+        value = prop->get_value().c_str();
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
 bool ecos_simulation_add_csv_writer(ecos_simulation_t* sim, const char* resultFile, const char* logConfig, const char* plotConfig)
 {
     try {
@@ -115,5 +163,5 @@ void ecos_simulation_destroy(ecos_simulation_t* sim)
 ecos_version* ecos_library_version()
 {
     ecos::version v = ecos::library_version();
-    return new ecos_version {v.major, v.minor, v.patch};
+    return new ecos_version{v.major, v.minor, v.patch};
 }

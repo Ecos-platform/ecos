@@ -195,6 +195,8 @@ void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos
 {
     if (listener) {
         sim->cpp_sim->add_listener(name, std::move(listener->cpp_listener));
+        delete listener;
+        listener = nullptr;
     }
 }
 
@@ -238,6 +240,7 @@ void ecos_simulation_terminate(ecos_simulation_t* sim)
 void ecos_simulation_destroy(ecos_simulation_t* sim)
 {
     delete sim;
+    sim = nullptr;
 }
 
 

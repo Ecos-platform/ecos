@@ -1,6 +1,7 @@
 
 #include "ecos/ecos.h"
 
+#include "ecos/logger.hpp"
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/lib_info.hpp"
 #include "ecos/listeners/csv_writer.hpp"
@@ -34,6 +35,22 @@ void handle_current_exception()
         throw;
     } catch (const std::exception& ex) {
         g_last_error_msg = ex.what();
+    }
+}
+
+void set_log_level(const char* level) {
+    if (std::string("trace") == level) {
+        ecos::log::set_logging_level(ecos::log::level::trace);
+    } else if (std::string("debug") == level) {
+        ecos::log::set_logging_level(ecos::log::level::debug);
+    } else if (std::string("info") == level) {
+        ecos::log::set_logging_level(ecos::log::level::info);
+    } else if (std::string("warn") == level) {
+        ecos::log::set_logging_level(ecos::log::level::warn);
+    } else if (std::string("err") == level) {
+        ecos::log::set_logging_level(ecos::log::level::err);
+    } else if (std::string("off") == level) {
+        ecos::log::set_logging_level(ecos::log::level::off);
     }
 }
 

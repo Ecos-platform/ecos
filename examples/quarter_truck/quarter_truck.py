@@ -6,6 +6,8 @@ if __name__ == "__main__":
 
     print_version()
 
+    set_log_level("debug")
+
     sspDir = f"{__file__}/../../../data/ssp/quarter_truck/"
     resultFile = f"{__file__}/../results/python/quarter_truck.csv"
 

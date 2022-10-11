@@ -15,6 +15,7 @@ const char* ecos_last_error_msg();
 typedef struct ecos_simulation ecos_simulation_t;
 typedef struct ecos_simulation_listener ecos_simulation_listener_t;
 
+void set_log_level(const char* level);
 
 ecos_simulation_t* ecos_simulation_create(const char* sspPath, double stepSize);
 

@@ -31,16 +31,22 @@ def print_version():
     print(f"v{v.major}.{v.minor}.{v.patch}")
 
 
-def getLastError():
+def get_last_error():
     last_error_fun = lib.ecos_last_error_msg
     last_error_fun.restype = c_char_p
     err = last_error_fun()
     return err.decode()
 
 
+def set_log_level(lvl: str):
+    setLogLevel = lib.set_log_level
+    setLogLevel.argtypes = [c_char_p]
+    setLogLevel(lvl.encode())
+
+
 class EcosSimulation:
 
-    def __init__(self, sspPath: str, stepSize: float):
+    def __init__(self, ssp_path: str, step_size: float):
 
         self.__simStep = lib.ecos_simulation_step
         self.__simStep.argtypes = [c_void_p, c_size_t]
@@ -67,21 +73,19 @@ class EcosSimulation:
         simCreate = lib.ecos_simulation_create
         simCreate.restype = c_void_p
         simCreate.argtypes = [c_char_p, c_double]
-        self.sim = simCreate(sspPath.encode(), stepSize)
+        self.sim = simCreate(ssp_path.encode(), step_size)
         if self.sim is None:
-            raise Exception(getLastError())
+            raise Exception(get_last_error())
 
-    def add_csv_writer(self, resultFile: str, logConfig: str = None, plotConfig: str = None):
+    def add_csv_writer(self, resultFile: str, logConfig: str = None):
         createCsv = lib.ecos_csv_writer_create
         createCsv.argtypes = [c_char_p, c_char_p, c_char_p]
         createCsv.restype = c_void_p
 
-        listener = createCsv(resultFile.encode(),
-                  None if logConfig is None else logConfig.encode(),
-                  None if plotConfig is None else plotConfig.encode())
+        listener = createCsv(resultFile.encode(), None if logConfig is None else logConfig.encode(), None)
 
         if listener is None:
-            raise Exception(getLastError())
+            raise Exception(get_last_error())
 
         simAddListener = lib.ecos_simulation_add_listener
         simAddListener.argtypes = [c_void_p, c_char_p, c_void_p]
@@ -90,25 +94,25 @@ class EcosSimulation:
     def get_integer(self, identifier: str):
         val = c_int()
         if not self.__getInteger(self.sim, identifier.encode(), byref(val)):
-            raise Exception(getLastError())
+            raise Exception(get_last_error())
         return val.value
 
     def get_real(self, identifier: str):
         val = c_double()
         if not self.__getReal(self.sim, identifier.encode(), byref(val)):
-            raise Exception(getLastError())
+            raise Exception(get_last_error())
         return val.value
 
     def get_bool(self, identifier: str):
         val = c_bool()
         if not self.__getBool(self.sim, identifier.encode(), byref(val)):
-            raise Exception(getLastError())
+            raise Exception(get_last_error())
         return val.value
 
     def get_string(self, identifier: str):
         val = c_char()
         if not self.__getString(self.sim, identifier.encode(), byref(val)):
-            raise Exception(getLastError())
+            raise Exception(get_last_error())
         return val.value
 
     def init(self, parameterSet: str = None):

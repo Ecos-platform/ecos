@@ -29,7 +29,7 @@ int main()
         config.register_variable("vesselModel::cgShipMotion.nedDisplacement.east");
         config.register_variable("vesselModel::cgShipMotion.nedDisplacement.down");
         config.enable_plotting(std::string(SOURCE_DIR) + "/ChartConfig.xml");
-        sim->add_listener(std::move(csvWriter));
+        sim->add_listener("csv_writer", std::move(csvWriter));
 
         load_scenario(*sim, std::string(SOURCE_DIR) + "/scenario.xml");
 

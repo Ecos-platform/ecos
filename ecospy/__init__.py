@@ -1,7 +1,7 @@
 import os
 import os.path
 from ctypes import *
-from ecospy.listener import SimulationListener
+from ecospy.listener import *
 
 
 def __loadlib():
@@ -22,7 +22,10 @@ class Version(Structure):
 
 
 class ListenerConfig(Structure):
-    _fields_ = [("preStepCallback", CFUNCTYPE(None, c_double)), ("postStepCallback", CFUNCTYPE(None, c_double))]
+    _fields_ = [
+        ("preStepCallback", CFUNCTYPE(None, SimulationInfo)),
+        ("postStepCallback", CFUNCTYPE(None, SimulationInfo))
+    ]
 
 
 def version():
@@ -105,17 +108,19 @@ class EcosSimulation:
         if not isinstance(listener, SimulationListener):
             raise Exception("listener must be of type SimulationListener")
 
+        listener.name = name
+
         config = ListenerConfig()
         self.listener_configs[name] = config
 
-        @CFUNCTYPE(None, c_double)
-        def pre(t: float):
-            listener.pre(t)
+        @CFUNCTYPE(None, SimulationInfo)
+        def pre(info: SimulationInfo):
+            listener.pre(info)
         config.preStepCallback = pre
 
-        @CFUNCTYPE(None, c_double)
-        def post(t: float):
-            listener.post(t)
+        @CFUNCTYPE(None, SimulationInfo)
+        def post(info: SimulationInfo):
+            listener.post(info)
         config.postStepCallback = post
 
         createListener = lib.ecos_simulation_listener_create
@@ -126,6 +131,11 @@ class EcosSimulation:
         simAddListener = lib.ecos_simulation_add_listener
         simAddListener.argtypes = [c_void_p, c_char_p, c_void_p]
         simAddListener(self.sim, name.encode(), cpp_listener)
+
+    def remove_listener(self, name: str):
+        removeListener = lib.ecos_simulation_remove_listener
+        removeListener.argtypes = [c_void_p, c_char_p]
+        removeListener(self.sim, name.encode())
 
     def add_csv_writer(self, result_file: str, log_config: str = None):
         createCsv = lib.ecos_csv_writer_create

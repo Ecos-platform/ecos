@@ -39,9 +39,14 @@ void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos
 void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name);
 ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* logConfig = nullptr, const char* plotConfig = nullptr);
 
+typedef struct ecos_simulation_info {
+    double time;
+    size_t iterations;
+} ecos_simulation_info;
+
 typedef struct ecos_simulation_listener_config {
-    void (*preStepCallback)(double) = nullptr;
-    void (*postStepCallback)(double) = nullptr;
+    void (*preStepCallback)(ecos_simulation_info) = nullptr;
+    void (*postStepCallback)(ecos_simulation_info) = nullptr;
 } ecos_simulation_listener_config;
 
 ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_listener_config config);
@@ -49,7 +54,7 @@ ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_list
 void ecos_simulation_destroy(ecos_simulation_t* sim);
 
 
-typedef struct
+typedef struct ecos_version
 {
     int major;
     int minor;

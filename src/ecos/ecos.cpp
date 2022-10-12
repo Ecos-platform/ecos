@@ -264,17 +264,24 @@ public:
 
     void pre_step(ecos::simulation& sim) override
     {
-        preStepCallback_(sim.time());
+        if (preStepCallback_) preStepCallback_->operator()(createInfo(sim));
     }
 
     void post_step(ecos::simulation& sim) override
     {
-        postStepCallback_(sim.time());
+        if (postStepCallback_) postStepCallback_->operator()(createInfo(sim));
     }
 
 private:
-    std::function<void(double)> preStepCallback_ = [](double){};
-    std::function<void(double)> postStepCallback_ = [](double){};
+    std::optional<std::function<void(ecos_simulation_info)>> preStepCallback_;
+    std::optional<std::function<void(ecos_simulation_info)>> postStepCallback_;
+
+    static ecos_simulation_info createInfo(const ecos::simulation& sim) {
+        return ecos_simulation_info{
+            sim.time(),
+            sim.iterations()
+        };
+    }
 };
 
 ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_listener_config config)

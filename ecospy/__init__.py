@@ -1,6 +1,7 @@
 import os
 import os.path
 from ctypes import *
+from ecospy.listener import SimulationListener
 
 
 def __loadlib():
@@ -90,7 +91,7 @@ class EcosSimulation:
         self.__setString.argtypes = [c_void_p, c_char_p, c_char_p]
         self.__setString.restype = c_bool
 
-        self.listener_configs = []
+        self.listener_configs = {}
 
         simCreate = lib.ecos_simulation_create
         simCreate.restype = c_void_p
@@ -99,34 +100,32 @@ class EcosSimulation:
         if self.sim is None:
             raise Exception(get_last_error())
 
-    def add_listener(self, name: str, preStep = None, postStep = None):
+    def add_listener(self, name: str, listener: SimulationListener):
 
-        if preStep is None and postStep is None:
-            return
+        if not isinstance(listener, SimulationListener):
+            raise Exception("listener must be of type SimulationListener")
 
         config = ListenerConfig()
-        self.listener_configs.append(config)
+        self.listener_configs[name] = config
 
-        if preStep is not None:
-            @CFUNCTYPE(None, c_double)
-            def pre(t: float):
-                preStep(t)
-            config.preStepCallback = pre
+        @CFUNCTYPE(None, c_double)
+        def pre(t: float):
+            listener.pre(t)
+        config.preStepCallback = pre
 
-        if postStep is not None:
-            @CFUNCTYPE(None, c_double)
-            def post(t: float):
-                postStep(t)
-            config.postStepCallback = post
+        @CFUNCTYPE(None, c_double)
+        def post(t: float):
+            listener.post(t)
+        config.postStepCallback = post
 
         createListener = lib.ecos_simulation_listener_create
         createListener.argtypes = [ListenerConfig]
         createListener.restype = c_void_p
-        listener = createListener(config)
+        cpp_listener = createListener(config)
 
         simAddListener = lib.ecos_simulation_add_listener
         simAddListener.argtypes = [c_void_p, c_char_p, c_void_p]
-        simAddListener(self.sim, name.encode(), listener)
+        simAddListener(self.sim, name.encode(), cpp_listener)
 
     def add_csv_writer(self, result_file: str, log_config: str = None):
         createCsv = lib.ecos_csv_writer_create

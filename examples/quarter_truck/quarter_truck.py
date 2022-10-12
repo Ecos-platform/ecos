@@ -1,6 +1,14 @@
 
 from ecospy import *
 from ecospy import plotter
+from ecospy.listener import SimulationListener
+
+
+class MyListener(SimulationListener):
+
+    def pre(self, t: float):
+        print(f"pre invoked @ t={t}")
+
 
 if __name__ == "__main__":
 
@@ -12,12 +20,9 @@ if __name__ == "__main__":
     resultFile = f"{__file__}/../results/python/quarter_truck.csv"
 
     sim = EcosSimulation(f"{sspDir}/quarter-truck.ssp", 1.0/100)
+
     sim.add_csv_writer(resultFile, f"{sspDir}/LogConfig.xml")
-
-    def pre(t: float):
-        print(f"pre step at t={t}")
-
-    sim.add_listener("custom_listener", pre)
+    sim.add_listener("custom_listener", MyListener())
 
     sim.init("initialValues")
 

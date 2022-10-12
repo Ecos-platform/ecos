@@ -1,6 +1,5 @@
 from ecospy import *
 from ecospy.plotter import *
-from ecospy.listener import SimulationListener
 
 
 class MyListener(SimulationListener):
@@ -15,9 +14,9 @@ class MyListener(SimulationListener):
 
 
 def main():
-    print_version()
+    print(EcosLib().version())
 
-    set_log_level("debug")
+    EcosLib().set_log_level("debug")
 
     sspDir = f"{__file__}/../../../data/ssp/quarter_truck/"
     resultFile = f"{__file__}/../results/python/quarter_truck.csv"

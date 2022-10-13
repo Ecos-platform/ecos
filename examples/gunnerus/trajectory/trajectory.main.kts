@@ -1,4 +1,4 @@
-@file:DependsOn("info.laht.sspgen:dsl:0.5.1")
+@file:DependsOn("info.laht.sspgen:dsl:0.5.2")
 
 import no.ntnu.ihb.sspgen.dsl.ssp
 import kotlin.math.PI

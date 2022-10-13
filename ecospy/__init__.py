@@ -25,17 +25,14 @@ class EcosSimulation:
         @CFUNCTYPE(None, SimulationInfo)
         def pre(info: SimulationInfo):
             listener.pre(info)
-
         config.preStepCallback = pre
 
         @CFUNCTYPE(None, SimulationInfo)
         def post(info: SimulationInfo):
             listener.post(info)
-
         config.postStepCallback = post
 
         cpp_listener = EcosLib().create_listener(config)
-
         EcosLib().add_listener(self.sim, name.encode(), cpp_listener)
 
     def remove_listener(self, name: str):

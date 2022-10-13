@@ -116,8 +116,8 @@ class _EcosLib:
 
     def version(self):
         version_fun = self._handle.ecos_library_version
-        version_fun.restype = c_void_p
-        return Version.from_address(self._handle.ecos_library_version())
+        version_fun.restype = Version
+        return self._handle.ecos_library_version()
 
     def get_last_error(self):
         err = self._get_last_error_msg()

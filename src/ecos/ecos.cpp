@@ -244,10 +244,10 @@ void ecos_simulation_destroy(ecos_simulation_t* sim)
 }
 
 
-ecos_version* ecos_library_version()
+ecos_version ecos_library_version()
 {
     ecos::version v = ecos::library_version();
-    return new ecos_version{v.major, v.minor, v.patch};
+    return {v.major, v.minor, v.patch};
 }
 
 class my_listener: public ecos::simulation_listener {

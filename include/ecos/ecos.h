@@ -61,7 +61,7 @@ typedef struct ecos_version
     int patch;
 } ecos_version;
 
-ecos_version* ecos_library_version();
+ecos_version ecos_library_version();
 
 
 #ifdef __cplusplus

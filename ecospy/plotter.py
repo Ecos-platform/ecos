@@ -24,8 +24,8 @@ class Plotter:
 
     fig_id = 0
 
-    def __init__(self, csvFile, config):
-        self.csv = pd.read_csv(csvFile, delimiter=r",\s+", engine="python")
+    def __init__(self, csv_file, config):
+        self.csv = pd.read_csv(csv_file, delimiter=r",\s+", engine="python")
 
         if isinstance(config, TimeSeriesConfig):
             self.make_time_series(self.csv, config)
@@ -62,10 +62,10 @@ class Plotter:
         plt.title(xyseries.title)
         plt.xlabel(xyseries.xlabel)
         plt.ylabel(xyseries.ylabel)
-        for series in xyseries.series:
-            name = series[0]
-            x = series[1][0]
-            y = series[1][1]
+        for name in xyseries.series:
+            xy = xyseries.series[name]
+            x = xy[0]
+            y = xy[1]
 
             m1 = csv.columns.str.contains(x)
             data1 = csv.loc[:, m1]

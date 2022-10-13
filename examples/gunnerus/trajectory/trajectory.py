@@ -22,6 +22,7 @@ class MyListener(SimulationListener):
 def main():
 
     sspFile = "gunnerus-trajectory.ssp"
+    resultFile = "results/python/gunnerus_trajectory.csv"
 
     if not path.exists(sspFile):
         raise Exception(f"Missing file: {path.abspath(sspFile)}")
@@ -30,8 +31,6 @@ def main():
     EcosLib().set_log_level("debug")
 
     sim = EcosSimulation(sspFile, 1.0 / 50)
-
-    resultFile = "results/python/gunnerus_trajectory.csv"
     sim.add_csv_writer(resultFile, "LogConfig.xml")
     sim.add_listener("custom_listener", MyListener(sim))
 
@@ -43,7 +42,7 @@ def main():
     sim.destroy()
 
     config = XYSeriesConfig("Quarter-truck", "North[m]", "East[m]",
-                                      [("trajectory", ("vesselModel::cgShipMotion.nedDisplacement.east", "vesselModel::cgShipMotion.nedDisplacement.north"))])
+                            {"trajectory": ("vesselModel::cgShipMotion.nedDisplacement.east", "vesselModel::cgShipMotion.nedDisplacement.north")})
     plotter = Plotter(resultFile, config)
     plotter.show()
 

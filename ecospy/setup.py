@@ -51,6 +51,10 @@ class CMakeBuild(build_ext):
         subprocess.check_call(cmake_args_build)
 
 
+def binary_suffix():
+    return ".exe" if WINDOWS else ""
+
+
 setup(name="ecospy",
     version=version(),
     description="Ecos co-simulation library",
@@ -59,7 +63,8 @@ setup(name="ecospy",
     include_package_data=True,
     packages=['ecospy'],
     package_dir={'ecospy': '.'},
-    package_data={'ecospy': [f"{buildFolder}/bin/*.dll", f"{buildFolder}/bin/*.py"]},
+    package_data={'ecospy': [f"{buildFolder}/bin/*.dll"]},
+    data_files=[("Scripts", [f"{buildFolder}/bin/proxyfmu{binary_suffix()}", f"{buildFolder}/bin/ecos{binary_suffix()}"])],
     ext_modules=[CMakeExtension('ecospy')],
     cmdclass=dict(build_ext=CMakeBuild),
 )

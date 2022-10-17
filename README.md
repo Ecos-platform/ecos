@@ -99,7 +99,7 @@ Options:
 
 ```
 
-### Python interface (currently windows only)
+### Python interface
 
 To use the python interface, simply clone the project and run:
 

@@ -76,6 +76,7 @@ configure_file(
 )
 
 add_library(libecos ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
+set_property(TARGET libecos PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(libecos PUBLIC "cxx_std_17")
 target_include_directories(libecos
         PUBLIC
@@ -97,9 +98,12 @@ if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)
 endif ()
 
-if (MSVC AND ECOS_BUILD_CLIB)
+if (ECOS_BUILD_CLIB)
     add_library(libecosc SHARED "${CMAKE_CURRENT_SOURCE_DIR}/ecos/ecos.cpp")
-    target_link_libraries(libecosc PRIVATE libecos)
+    set_property(TARGET libecosc PROPERTY POSITION_INDEPENDENT_CODE ON)
+    target_link_libraries(libecosc
+            PUBLIC
+            libecos)
 endif()
 
 

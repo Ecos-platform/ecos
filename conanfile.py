@@ -18,7 +18,7 @@ class EcosConan(ConanFile):
         "libzip/1.8.0",
         "spdlog/1.10.0",
         "proxyfmu/0.3.1@ais/testing-proxyfmu_on_path",
-        "simple-ssp-parser/0.2.9@ais/testing",
+        "simple-ssp-parser/0.2.9@ais/testing-fpic",
         # conflict resolution
         "openssl/1.1.1n",
         "zlib/1.2.12"

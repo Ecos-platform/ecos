@@ -1,6 +1,7 @@
+from os import path
 from ecospy import *
 from ecospy.plotter import *
-from os import path
+
 
 class MyListener(SimulationListener):
 

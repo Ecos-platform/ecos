@@ -32,9 +32,9 @@ spdlog::level::level_enum convert(log::level lvl)
 
 struct ecos_logger
 {
-    ecos_logger()
-        : logger_(spdlog::stdout_color_mt("ecos"))
-    { }
+
+    ecos_logger(const ecos_logger&) = delete;
+    void operator=(const ecos_logger&) = delete;
 
     void set_level(log::level lvl)
     {
@@ -54,6 +54,11 @@ struct ecos_logger
 
 private:
     std::shared_ptr<spdlog::logger> logger_;
+
+    ecos_logger()
+        : logger_(spdlog::stdout_color_mt("ecos"))
+    { }
+
 };
 
 void log::set_logging_level(level lvl)

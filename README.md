@@ -114,6 +114,10 @@ To use the python interface, simply clone the project and run:
 * CMake >= 3.15
 * Conan
 
+#### Addditional Linux requirements
+
+`sudo apt install libtbb-dev`
+
 ### Run-time requirements
 * Python3 (required for plotting)
   * matplotlib

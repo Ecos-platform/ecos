@@ -105,6 +105,8 @@ To use the python interface, simply clone the project and run:
 
 `pip install ecospy`
 
+Note: if using an old pip version, append `--use-feature=in-tree-build` if you get an error about `../version.txt`
+
 ---
 
 ### Compile-time requirements
@@ -114,7 +116,7 @@ To use the python interface, simply clone the project and run:
 * CMake >= 3.15
 * Conan
 
-#### Addditional Linux requirements
+#### Additional Linux requirements
 
 `sudo apt install libtbb-dev`
 

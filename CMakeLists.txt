@@ -23,7 +23,6 @@ option(ECOS_BUILD_CLIB "Build C library" ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
@@ -35,9 +34,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif ()
-
-#file(COPY resources/plot/ecos_plotter.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
-
 
 # ==============================================================================
 # Dependencies

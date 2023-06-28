@@ -64,18 +64,6 @@ sim->step_until(10);
 sim->terminate();
 ```
 
-### Installing
-
-The ecos C++ library, `libecos`, is available through the conan remote ais:
-
-`conan remote add ais https://ais.jfrog.io/artifactory/api/conan/ais-conan-local`
-
-Then add a dependency to: </br>
-`libecos/<version>@ais/stable` (stable channel -> releases) </br>
-`libecos/<version>@ais/testing` (development builds -> master) </br>
-`libecos/<version>@ais/testing-<branch>` (development builds -> branches)
-
-
 ### Command line interface
 
 ```

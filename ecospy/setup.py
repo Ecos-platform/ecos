@@ -35,6 +35,7 @@ class CMakeBuild(build_ext):
             '..',
             '-B',
             buildFolder,
+            '-DCMAKE_TOOLCHAIN_FILE=C:/Users/Lars Ivar Hatledal/AppData/Local/vcpkg/scripts/buildsystems/vcpkg.cmake',
             '-DCMAKE_BUILD_TYPE={}'.format(build_type)
         ]
         if WINDOWS:
@@ -64,7 +65,7 @@ setup(name="ecospy",
     packages=['ecospy'],
     package_dir={'ecospy': '.'},
     package_data={'ecospy': [f"{buildFolder}/bin/*.dll"]},
-    data_files=[("Scripts", [f"{buildFolder}/bin/proxyfmu{binary_suffix()}", f"{buildFolder}/bin/ecos{binary_suffix()}"])],
+    data_files=[("Scripts", [f"{buildFolder}/bin/Release/proxyfmu{binary_suffix()}", f"{buildFolder}/bin/Release/ecos{binary_suffix()}"])],
     ext_modules=[CMakeExtension('ecospy')],
     cmdclass=dict(build_ext=CMakeBuild),
 )

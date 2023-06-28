@@ -6,7 +6,7 @@
 
 using namespace ecos;
 
-std::unique_ptr<fmi::fmu> loadFmu(const std::filesystem::path& fmuPath, bool fmiLogging)
+std::unique_ptr<fmi::fmu> fmi::loadFmu(const std::filesystem::path& fmuPath, bool fmiLogging)
 {
     auto ctx = std::make_unique<fmi::fmicontext>(fmiLogging);
 

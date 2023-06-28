@@ -24,7 +24,6 @@ using namespace ::apache::thrift::transport;
 namespace
 {
 
-
 const int port_range_min = 49152;
 const int port_range_max = 65535;
 
@@ -184,8 +183,6 @@ int main(int argc, char** argv)
 
             return run_application(fmu, instanceName);
         }
-
-
 
     } catch (const std::exception& e) {
         std::cerr << "[proxyfmu] Unhandled Exception reached the top of main: " << e.what() << ", application will now exit" << std::endl;

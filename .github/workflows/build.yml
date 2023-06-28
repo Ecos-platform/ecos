@@ -1,14 +1,10 @@
 name: Build
 
-env:
-  CONAN_REVISIONS_ENABLED: 1
-  CONAN_NON_INTERACTIVE: True
-
 on: [ push, workflow_dispatch ]
 
 jobs:
   cmake-on-linux:
-    name: cmake
+
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -17,16 +13,23 @@ jobs:
         build_type: [ Debug, Release ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install prerequisites
         run: |
           sudo apt install libtbb-dev
-          sudo pip3 install --upgrade setuptools pip
-          sudo pip3 install conan
+
+      - name: Restore artifacts, or run vcpkg, build (and cache artifacts as post step)
+        uses: lukka/run-vcpkg@v10
+        id: runvcpkg
+        with:
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+          vcpkgGitCommitId: '12c2a93b4007612b5ffa980c9d2235eb0bcac10f'
+          vcpkgJsonGlob: 'vcpkg.json'
+          appendedCacheKey: vcpkginstall
 
       - name: Configure and build
         run: |
-          cmake . -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          cmake . -B build -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           cmake --build build
 
       - name: Test
@@ -34,14 +37,14 @@ jobs:
           cd build/tests
           ctest --output-on-failure
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: matrix.build_type == 'Release'
         with:
           name: ecos
           path: build/bin/ecos*
 
   cmake-on-windows:
-    name: cmake
+
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -50,15 +53,20 @@ jobs:
         build_type: [ Debug, Release ]
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Install prerequisites
-        run: |
-          pip3 install --upgrade setuptools pip
-          pip3 install conan
+      - uses: actions/checkout@v3
+
+      - name: Restore artifacts, or run vcpkg, build (and cache artifacts as post step)
+        uses: lukka/run-vcpkg@v10
+        id: runvcpkg
+        with:
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+          vcpkgGitCommitId: '12c2a93b4007612b5ffa980c9d2235eb0bcac10f'
+          vcpkgJsonGlob: 'vcpkg.json'
+          appendedCacheKey: vcpkginstall
 
       - name: Configure and build
         run: |
-          cmake . -A x64 -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          cmake . -A x64 -B build -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           cmake --build build --config ${{ matrix.build_type }}
 
       - name: Test

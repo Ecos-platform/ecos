@@ -1,5 +1,5 @@
 include_directories("${CMAKE_SOURCE_DIR}/src")
-link_libraries(libecos Catch2::Catch2)
+link_libraries(libecos $<TARGET_OBJECTS:proxyfmu-service> Catch2::Catch2)
 add_compile_definitions(DATA_FOLDER="${CMAKE_SOURCE_DIR}/data")
 
 add_executable(test_identity test_identity.cpp)

@@ -22,9 +22,11 @@ option(ECOS_BUILD_CLIB "Build C library" ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 set(generatedSourcesDir "${CMAKE_BINARY_DIR}/generated")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -50,29 +52,14 @@ find_package(libzip CONFIG REQUIRED)
 find_package(pugixml CONFIG REQUIRED)
 find_package(Thrift CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
+find_package(unofficial-fmilib CONFIG REQUIRED)
 
 # ==============================================================================
 # Targets
 # ==============================================================================
 
-if (ECOS_BUILD_CLI OR ECOS_BUILD_TESTS)
-    include(FetchContent)
-endif()
-
 add_subdirectory(src)
 add_subdirectory(tool)
-
-if (ECOS_BUILD_CLI)
-
-    FetchContent_Declare(
-            cli11
-            GIT_REPOSITORY https://github.com/CLIUtils/CLI11
-            GIT_TAG        v2.2.0
-    )
-    FetchContent_MakeAvailable(cli11)
-
-    add_subdirectory(cli)
-endif ()
 
 if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
 
@@ -82,6 +69,7 @@ if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
 
     if (ECOS_BUILD_TESTS)
 
+        include(FetchContent)
         FetchContent_Declare(
                 Catch2
                 GIT_REPOSITORY https://github.com/catchorg/Catch2.git

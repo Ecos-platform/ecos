@@ -9,7 +9,7 @@
 namespace ecos::fmi
 {
 
-inline model_description create_model_description(fmi2_import_t* handle);
+model_description create_model_description(fmi2_import_t* handle);
 
 } // namespace fmi
 

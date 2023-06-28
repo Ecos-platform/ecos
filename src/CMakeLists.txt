@@ -127,7 +127,10 @@ target_link_libraries(libecos
         thrift::thrift
         pugixml::pugixml
         libzip::zip
-        spdlog::spdlog)
+        spdlog::spdlog
+        unofficial::fmilib::fmilib
+        $<TARGET_OBJECTS:proxyfmu-service>
+        )
 if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)
 endif ()
@@ -138,7 +141,7 @@ if (ECOS_BUILD_CLIB)
     target_link_libraries(libecosc
             PUBLIC
             libecos)
-endif()
+endif ()
 
 
 # ==============================================================================

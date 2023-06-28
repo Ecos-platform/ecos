@@ -14,7 +14,7 @@ class MyListener(SimulationListener):
 
 
 def main():
-    print(EcosLib().version())
+    print(f"Ecoslib version: {EcosLib().version()}")
 
     EcosLib().set_log_level("debug")
 

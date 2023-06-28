@@ -15,8 +15,7 @@ public:
     fixed_range_random_generator(int min, int max)
         : mt_(std::random_device()())
         , dist_(min, max)
-    {
-    }
+    { }
 
     int next()
     {

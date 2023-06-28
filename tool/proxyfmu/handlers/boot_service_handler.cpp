@@ -35,7 +35,7 @@ int32_t boot_service_handler::loadFromBinaryData(const std::string& fmuName, con
     dirs_.emplace_back(std::move(tmp));
 
     std::unique_lock<std::mutex> lck(mtx);
-    cv.wait(lck, [&port]{return port != -1;});
+    cv.wait(lck, [&port] { return port != -1; });
 
     return port;
 }

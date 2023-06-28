@@ -1,6 +1,8 @@
 set(publicHeaderDir ${CMAKE_SOURCE_DIR}/include)
 set(generatedSourcesDir "${CMAKE_BINARY_DIR}/generated")
 
+add_subdirectory(proxyfmu)
+
 set(publicHeaders
 
         "ecos/connection.hpp"
@@ -25,6 +27,8 @@ set(publicHeaders
 
         "ecos/structure/simulation_structure.hpp"
 
+        "ssp/ssp_parser.hpp"
+
         )
 
 set(publicHeadersFull)
@@ -39,6 +43,20 @@ set(privateHeaders
         "ecos/fmi/fmi_model_sub_resolver.hpp"
         "ecos/fmi/proxy/proxy_model.hpp"
         "ecos/fmi/proxy/proxy_model_sub_resolver.hpp"
+
+        "ecos/fmi/fmu.hpp"
+        "ecos/fmi/fmi1/fmi1_fmu.hpp"
+        "ecos/fmi/fmi1/fmi1_slave.hpp"
+        "ecos/fmi/fmi1/fmi1_model_description.hpp"
+        "ecos/fmi/fmi2/fmi2_fmu.hpp"
+        "ecos/fmi/fmi2/fmi2_slave.hpp"
+        "ecos/fmi/fmi2/fmi2_model_description.hpp"
+
+#        "ecos/proxyfmu/process_helper.hpp"
+#        "ecos/proxyfmu/remote_info.hpp"
+#        "ecos/proxyfmu/client/proxy_slave.hpp"
+
+        "ecos/ssp/ssp.hpp"
 
         "ecos/util/temp_dir.hpp"
         "ecos/util/unzipper.hpp"
@@ -65,6 +83,19 @@ set(sources
         "ecos/util/unzipper.cpp"
         "ecos/util/uuid.cpp"
 
+        "ecos/fmi/fmu.cpp"
+        "ecos/fmi/fmi1/fmi1_fmu.cpp"
+        "ecos/fmi/fmi1/fmi1_slave.cpp"
+        "ecos/fmi/fmi1/fmi1_model_description.cpp"
+        "ecos/fmi/fmi2/fmi2_fmu.cpp"
+        "ecos/fmi/fmi2/fmi2_slave.cpp"
+        "ecos/fmi/fmi2/fmi2_model_description.cpp"
+
+#        "ecos/proxyfmu/client/proxy_fmu.cpp"
+#        "ecos/proxyfmu/client/proxy_slave.cpp"
+
+        "ecos/ssp/ssp.cpp"
+
         )
 
 # Generate sources from .in files
@@ -76,24 +107,24 @@ configure_file(
 )
 
 add_library(libecos ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
-set_property(TARGET libecos PROPERTY POSITION_INDEPENDENT_CODE ON)
+#set_property(TARGET libecos PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(libecos PUBLIC "cxx_std_17")
 target_include_directories(libecos
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         PRIVATE
+        "${SUBPROCESS_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
 target_link_libraries(libecos
         PUBLIC
-        CONAN_PKG::fmt
+        fmt::fmt
         PRIVATE
-        CONAN_PKG::fmilibcpp
-        CONAN_PKG::proxyfmu
-        CONAN_PKG::pugixml
-        CONAN_PKG::libzip
-        CONAN_PKG::spdlog
-        CONAN_PKG::simple-ssp-parser)
+#        thrift::thrift
+        pugixml::pugixml
+        libzip::zip
+        spdlog::spdlog)
 if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)
 endif ()
@@ -113,12 +144,11 @@ endif()
 
 install(
         TARGETS libecos
-        EXPORT "${ECOS_EXPORT_TARGET}"
-        ${ECOS_INSTALL_DESTINATIONS}
+        EXPORT ecos-targets
 )
 install(
         DIRECTORY "${publicHeaderDir}/ecos"
-        DESTINATION "${ECOS_HEADER_INSTALL_DIR}"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/ecos"
 )
 install(
         FILES "${CMAKE_SOURCE_DIR}/resources/plot/ecos_plotter.py"

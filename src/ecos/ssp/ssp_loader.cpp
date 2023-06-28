@@ -1,10 +1,7 @@
 
 #include "ecos/ssp/ssp_loader.hpp"
 
-#include "ssp/ssp.hpp"
-
-#include "ecos/model_resolver.hpp"
-#include "ecos/scalar.hpp"
+#include "ssp.hpp"
 
 using namespace ecos;
 

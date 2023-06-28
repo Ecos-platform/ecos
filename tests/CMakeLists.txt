@@ -1,5 +1,5 @@
 include_directories("${CMAKE_SOURCE_DIR}/src")
-link_libraries(libecos CONAN_PKG::fmilibcpp Catch2::Catch2)
+link_libraries(libecos Catch2::Catch2)
 add_compile_definitions(DATA_FOLDER="${CMAKE_SOURCE_DIR}/data")
 
 add_executable(test_identity test_identity.cpp)
@@ -22,7 +22,7 @@ add_test(NAME test_runner COMMAND test_runner)
 
 add_executable(test_unzipper test_unzipper.cpp)
 add_test(NAME test_unzipper COMMAND test_unzipper)
-target_link_libraries(test_unzipper PRIVATE CONAN_PKG::libzip)
+target_link_libraries(test_unzipper PRIVATE libzip::zip)
 
 if (MSVC AND ECOS_BUILD_CLIB)
     add_executable(test_clib test_clib.cpp)

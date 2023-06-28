@@ -9,5 +9,3 @@ cmake-build-*
 /**/gunnerus/**/*.ssp
 
 /**/results/**/*.csv
-
-proxyfmu*

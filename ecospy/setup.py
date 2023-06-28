@@ -64,7 +64,7 @@ setup(name="ecospy",
     packages=['ecospy'],
     package_dir={'ecospy': '.'},
     package_data={'ecospy': [f"{buildFolder}/bin/*.dll"]},
-    data_files=[("Scripts", [f"{buildFolder}/bin/Release/proxyfmu{binary_suffix()}", f"{buildFolder}/bin/Release/ecos{binary_suffix()}"])],
+    data_files=[("Scripts", [f"{buildFolder}/bin/proxyfmu{binary_suffix()}", f"{buildFolder}/bin/ecos{binary_suffix()}"])],
     ext_modules=[CMakeExtension('ecospy')],
     cmdclass=dict(build_ext=CMakeBuild),
 )

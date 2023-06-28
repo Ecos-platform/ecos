@@ -155,7 +155,7 @@ install(
         DIRECTORY "${publicHeaderDir}/ecos"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/ecos"
 )
-install(
-        FILES "${CMAKE_SOURCE_DIR}/resources/plot/ecos_plotter.py"
-        DESTINATION "${CMAKE_BINARY_DIR}/bin"
-)
+#install(
+#        FILES "${CMAKE_SOURCE_DIR}/resources/plot/ecos_plotter.py"
+#        DESTINATION "${CMAKE_BINARY_DIR}/bin"
+#)

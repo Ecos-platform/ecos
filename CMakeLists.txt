@@ -36,7 +36,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif ()
 
-file(COPY resources/plot/ecos_plotter.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+#file(COPY resources/plot/ecos_plotter.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 
 # ==============================================================================

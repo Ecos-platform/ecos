@@ -1,14 +1,14 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include <fmilibcpp/fmu.hpp>
+#include <ecos/fmi/fmu.hpp>
 
-using namespace fmilibcpp;
+using namespace ecos;
 
 namespace
 {
 
-void test(fmu& fmu)
+void test(fmi::fmu& fmu)
 {
     const auto d = fmu.get_model_description();
     CHECK(d.modelName == "no.viproma.demo.identity");
@@ -21,7 +21,7 @@ void test(fmu& fmu)
     REQUIRE(slave->enter_initialization_mode());
     REQUIRE(slave->exit_initialization_mode());
 
-    std::vector<value_ref> vr{0};
+    std::vector<fmi::value_ref> vr{0};
 
     std::vector<double> realVal{0.0};
     std::vector<int> integerVal{0};
@@ -72,6 +72,6 @@ void test(fmu& fmu)
 TEST_CASE("fmi_test_identity")
 {
     std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/1.0/identity.fmu";
-    auto fmu = loadFmu(fmuPath);
+    auto fmu = fmi::loadFmu(fmuPath);
     test(*fmu);
 }

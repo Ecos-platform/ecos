@@ -1,9 +1,9 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include <fmilibcpp/fmu.hpp>
+#include "ecos/fmi/fmu.hpp"
 
-using namespace fmilibcpp;
+using namespace ecos::fmi;
 
 namespace
 {

@@ -3,15 +3,14 @@
 #include "handlers/boot_service_handler.hpp"
 #include "handlers/fmu_service_handler.hpp"
 
-#include <proxyfmu/lib_info.hpp>
+#include "ecos/lib_info.hpp"
 
 #include <CLI/CLI.hpp>
+#include <functional>
+#include <iostream>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TTransportUtils.h>
-
-#include <functional>
-#include <iostream>
 #include <utility>
 
 using namespace proxyfmu::thrift;
@@ -75,7 +74,7 @@ int run_application(const std::string& fmu, const std::string& instanceName)
     std::shared_ptr<TTransportFactory> transportFactory(new TFramedTransportFactory());
     std::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-    proxyfmu::fixed_range_random_generator rng(port_range_min, port_range_max);
+    fixed_range_random_generator rng(port_range_min, port_range_max);
 
     int port;
     int final_port = -1;
@@ -140,8 +139,7 @@ int printHelp(CLI::App& desc)
 
 std::string version()
 {
-
-    const auto v = proxyfmu::library_version();
+    const auto v = ecos::library_version();
     std::stringstream ss;
     ss << "v" << v.major << "." << v.minor << "." << v.patch;
     return ss.str();
@@ -176,9 +174,9 @@ int main(int argc, char** argv)
 
         } else {
             const auto fmu = app["--fmu"]->as<std::string>();
-            const auto fmuPath = proxyfmu::filesystem::path(fmu);
-            if (!proxyfmu::filesystem::exists(fmuPath)) {
-                std::cerr << "[proxyfmu] No such file: '" << proxyfmu::filesystem::absolute(fmuPath) << "'";
+            const auto fmuPath = std::filesystem::path(fmu);
+            if (!std::filesystem::exists(fmuPath)) {
+                std::cerr << "[proxyfmu] No such file: '" << std::filesystem::absolute(fmuPath) << "'";
                 return COMMANDLINE_ERROR;
             }
 

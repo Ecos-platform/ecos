@@ -1,6 +1,8 @@
 
 #include "fmi2_model_description.hpp"
 
+using namespace ecos;
+
 namespace
 {
 
@@ -54,7 +56,7 @@ std::optional<fmi::scalar_variable> to_scalar_variable(fmi2_import_variable_t* v
 
 } // namespace
 
-namespace fmi
+namespace ecos::fmi
 {
 
 model_description create_model_description(fmi2_import_t* handle)

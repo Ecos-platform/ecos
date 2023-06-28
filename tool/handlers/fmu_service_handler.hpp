@@ -2,9 +2,9 @@
 #ifndef PROXY_FMU_FMUSERVICEHANDLER_HPP
 #define PROXY_FMU_FMUSERVICEHANDLER_HPP
 
-#include <proxyfmu/thrift/FmuService.h>
+#include "proxyfmu/thrift/FmuService.h"
 
-#include <fmilibcpp/fmu.hpp>
+#include "ecos/fmi/fmu.hpp"
 
 #include <functional>
 
@@ -20,7 +20,7 @@ private:
     const std::string& fmuPath_;
     const std::string& instanceName_;
 
-    std::unique_ptr<fmilibcpp::slave> slave_;
+    std::unique_ptr<ecos::fmi::slave> slave_;
 
     std::function<void()> stop_;
 

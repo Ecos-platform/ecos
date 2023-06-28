@@ -1,7 +1,7 @@
 
 #include "handlers/boot_service_handler.hpp"
 
-#include <proxyfmu/process_helper.hpp>
+#include "ecos/fmi/proxy/process_helper.hpp"
 
 #include <chrono>
 #include <cstdio>
@@ -22,7 +22,7 @@ void write_data(std::string const& fileName, std::string const& data)
 
 int32_t boot_service_handler::loadFromBinaryData(const std::string& fmuName, const std::string& instanceName, const std::string& data)
 {
-    auto tmp = std::make_unique<temp_dir>(fmuName);
+    auto tmp = std::make_unique<ecos::temp_dir>(fmuName);
     std::string fmuPath(tmp->path().string() + "/" + fmuName + ".fmu");
 
     write_data(fmuPath, data);
@@ -30,12 +30,12 @@ int32_t boot_service_handler::loadFromBinaryData(const std::string& fmuName, con
     int port = -1;
     std::mutex mtx;
     std::condition_variable cv;
-    auto t = std::make_unique<std::thread>(&start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
+    auto t = std::make_unique<std::thread>(&ecos::proxyfmu::start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
     processes_.emplace_back(std::move(t));
     dirs_.emplace_back(std::move(tmp));
 
     std::unique_lock<std::mutex> lck(mtx);
-    while (port == -1) cv.wait(lck);
+    cv.wait(lck, [&port]{return port != -1;});
 
     return port;
 }

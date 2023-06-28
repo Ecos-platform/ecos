@@ -2,7 +2,7 @@
 #ifndef PROXYFMU_BOOT_SERVICE_HANDLER_HPP
 #define PROXYFMU_BOOT_SERVICE_HANDLER_HPP
 
-#include "temp_dir.hpp"
+#include "ecos/util/temp_dir.hpp"
 
 #include <proxyfmu/thrift/BootService.h>
 
@@ -17,7 +17,7 @@ class boot_service_handler : virtual public thrift::BootServiceIf
 {
 
 private:
-    std::vector<std::unique_ptr<temp_dir>> dirs_;
+    std::vector<std::unique_ptr<ecos::temp_dir>> dirs_;
     std::vector<std::unique_ptr<std::thread>> processes_;
 
 public:

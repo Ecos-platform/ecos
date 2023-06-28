@@ -25,6 +25,8 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+set(generatedSourcesDir "${CMAKE_BINARY_DIR}/generated")
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -47,6 +49,7 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(libzip CONFIG REQUIRED)
 find_package(pugixml CONFIG REQUIRED)
 find_package(Thrift CONFIG REQUIRED)
+find_package(CLI11 CONFIG REQUIRED)
 
 # ==============================================================================
 # Targets
@@ -57,6 +60,7 @@ if (ECOS_BUILD_CLI OR ECOS_BUILD_TESTS)
 endif()
 
 add_subdirectory(src)
+add_subdirectory(tool)
 
 if (ECOS_BUILD_CLI)
 
@@ -65,7 +69,6 @@ if (ECOS_BUILD_CLI)
             GIT_REPOSITORY https://github.com/CLIUtils/CLI11
             GIT_TAG        v2.2.0
     )
-
     FetchContent_MakeAvailable(cli11)
 
     add_subdirectory(cli)
@@ -84,7 +87,6 @@ if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
                 GIT_REPOSITORY https://github.com/catchorg/Catch2.git
                 GIT_TAG v2.13.8
         )
-
         FetchContent_MakeAvailable(Catch2)
 
         enable_testing()

@@ -87,8 +87,8 @@ class EcosSimulation:
         if not EcosLib().set_string(self.sim, identifier.encode(), value.encode()):
             raise Exception(EcosLib().get_last_error())
 
-    def init(self, parameter_set: str = None):
-        return EcosLib().init_simulation(self.sim, 0, None if parameter_set is None else parameter_set.encode())
+    def init(self, start_time: int = 0, parameter_set: str = None):
+        return EcosLib().init_simulation(self.sim, start_time, None if parameter_set is None else parameter_set.encode())
 
     def step(self, num_steps: int = 1):
         EcosLib().step_simulation(self.sim, num_steps)

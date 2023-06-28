@@ -5,18 +5,18 @@ import matplotlib.pyplot as plt
 
 class TimeSeriesConfig:
 
-    def __init__(self, title, ylabel, identifiers):
+    def __init__(self, title: str, y_label: str, identifiers: list[str]):
         self.title = title
-        self.ylabel = ylabel
+        self.y_label = y_label
         self.identifiers = identifiers
 
 
 class XYSeriesConfig:
 
-    def __init__(self, title, xlabel, ylabel, series):
+    def __init__(self, title: str, x_label: str, y_label: str, series):
         self.title = title
-        self.xlabel = xlabel
-        self.ylabel = ylabel
+        self.x_label = x_label
+        self.y_label = y_label
         self.series = series
 
 
@@ -46,7 +46,7 @@ class Plotter:
         Plotter.fig_id += 1
         plt.title(timeseries.title)
         plt.xlabel("time[s]")
-        plt.ylabel(timeseries.ylabel)
+        plt.ylabel(timeseries.y_label)
         for identifier in timeseries.identifiers:
             m = csv.columns.str.contains(identifier)
             data = csv.loc[:, m]
@@ -60,8 +60,8 @@ class Plotter:
         plt.figure("figure_{}".format(Plotter.fig_id))
         Plotter.fig_id += 1
         plt.title(xyseries.title)
-        plt.xlabel(xyseries.xlabel)
-        plt.ylabel(xyseries.ylabel)
+        plt.xlabel(xyseries.x_label)
+        plt.ylabel(xyseries.y_label)
         for name in xyseries.series:
             xy = xyseries.series[name]
             x = xy[0]

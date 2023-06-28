@@ -91,7 +91,7 @@ Options:
 
 To use the python interface, simply clone the project and run:
 
-`pip install ecospy`
+`pip install ./ecospy`
 
 Note: if using an old pip version, append `--use-feature=in-tree-build` if you get an error about `../version.txt`
 

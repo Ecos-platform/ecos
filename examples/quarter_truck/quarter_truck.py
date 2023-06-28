@@ -21,20 +21,22 @@ def main():
     sspDir = f"{__file__}/../../../data/ssp/quarter_truck/"
     resultFile = f"{__file__}/../results/python/quarter_truck.csv"
 
-    sim = EcosSimulation(f"{sspDir}/quarter-truck.ssp", 1.0 / 100)
+    sim = EcosSimulation(ssp_path=f"{sspDir}/quarter-truck.ssp", step_size=1.0 / 100)
 
     sim.add_csv_writer(resultFile, f"{sspDir}/LogConfig.xml")
     sim.add_listener("custom_listener", MyListener(sim))
 
-    sim.init("initialValues")
+    sim.init(parameter_set="initialValues")
 
-    sim.step_until(10)
+    sim.step_until(time_point=10)
 
     sim.terminate()
     sim.destroy()
 
-    config = TimeSeriesConfig("Quarter-truck", "Height[m]",
-                                      ["chassis::zChassis", "wheel::zWheel", "ground::zGround"])
+    config = TimeSeriesConfig(
+        title="Quarter-truck",
+        y_label="Height[m]",
+        identifiers=["chassis::zChassis", "wheel::zWheel", "ground::zGround"])
     plotter = Plotter(resultFile, config)
     plotter.show()
 

@@ -35,7 +35,6 @@ class CMakeBuild(build_ext):
             '..',
             '-B',
             buildFolder,
-            '-DCMAKE_TOOLCHAIN_FILE=C:/Users/Lars Ivar Hatledal/AppData/Local/vcpkg/scripts/buildsystems/vcpkg.cmake',
             '-DCMAKE_BUILD_TYPE={}'.format(build_type)
         ]
         if WINDOWS:

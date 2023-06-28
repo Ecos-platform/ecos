@@ -21,14 +21,3 @@ target_link_libraries(proxyfmu
 if (UNIX)
   target_link_libraries(proxyfmu PRIVATE pthread)
 endif ()
-
-if (ECOS_BUILD_TESTS)
-  # Copy executable to test directory in order for CTest to function
-  add_custom_command(TARGET proxyfmu POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:proxyfmu> ${CMAKE_BINARY_DIR}/tests/$<TARGET_FILE_NAME:proxyfmu>
-          )
-  add_custom_command(TARGET proxyfmu POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E echo
-          Copying $<TARGET_FILE:proxyfmu> into ${CMAKE_BINARY_DIR}/tests/$<TARGET_FILE_NAME:proxyfmu>
-          )
-endif()

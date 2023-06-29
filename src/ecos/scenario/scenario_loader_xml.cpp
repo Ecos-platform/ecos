@@ -1,8 +1,7 @@
 
-#include "ecos/logger.hpp"
+#include "ecos/logger/logger.hpp"
 #include "ecos/scenario/scenario.hpp"
 #include "ecos/scenario/scenario_loader.hpp"
-#include "ecos/variable_identifier.hpp"
 
 #include <pugixml.hpp>
 

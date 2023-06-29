@@ -1,7 +1,7 @@
 
 #include "ecos/listeners/csv_writer.hpp"
 
-#include "ecos/logger.hpp"
+#include "ecos/logger/logger.hpp"
 #include "ecos/simulation.hpp"
 
 #include <pugixml.hpp>
@@ -143,7 +143,6 @@ void csv_writer::post_terminate(simulation& sim)
         log::info("Plotting window(s) closed.");
 
         std::filesystem::remove(plotter);
-
     }
 }
 
@@ -314,5 +313,4 @@ if __name__ == "__main__":
                 pass
     plt.show()
 )";
-
 }

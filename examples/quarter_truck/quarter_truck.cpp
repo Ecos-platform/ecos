@@ -1,8 +1,7 @@
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
-#include "ecos/logger.hpp"
-#include "ecos/scalar.hpp"
+#include "ecos/logger/logger.hpp"
 #include "ecos/structure/simulation_structure.hpp"
 
 using namespace ecos;
@@ -43,6 +42,7 @@ int main()
 
         sim->terminate();
     } catch (const std::exception& ex) {
+
         log::err(ex.what());
     }
 }

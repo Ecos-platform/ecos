@@ -1,5 +1,5 @@
 
-#include "ecos/logger.hpp"
+#include "ecos/logger/logger.hpp"
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>

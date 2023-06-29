@@ -1,10 +1,10 @@
 
 #include "ecos/ecos.h"
 
-#include "ecos/logger.hpp"
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/lib_info.hpp"
 #include "ecos/listeners/csv_writer.hpp"
+#include "ecos/logger/logger.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
@@ -37,7 +37,8 @@ void handle_current_exception()
     }
 }
 
-void set_log_level(const char* level) {
+void set_log_level(const char* level)
+{
     if (std::string("trace") == level) {
         ecos::log::set_logging_level(ecos::log::level::trace);
     } else if (std::string("debug") == level) {
@@ -250,10 +251,12 @@ ecos_version ecos_library_version()
     return {v.major, v.minor, v.patch};
 }
 
-class my_listener: public ecos::simulation_listener {
+class my_listener : public ecos::simulation_listener
+{
 
 public:
-    explicit my_listener(ecos_simulation_listener_config config) {
+    explicit my_listener(ecos_simulation_listener_config config)
+    {
         if (config.preStepCallback) {
             preStepCallback_ = config.preStepCallback;
         }
@@ -276,11 +279,11 @@ private:
     std::optional<std::function<void(ecos_simulation_info)>> preStepCallback_;
     std::optional<std::function<void(ecos_simulation_info)>> postStepCallback_;
 
-    static ecos_simulation_info createInfo(const ecos::simulation& sim) {
+    static ecos_simulation_info createInfo(const ecos::simulation& sim)
+    {
         return ecos_simulation_info{
             sim.time(),
-            sim.iterations()
-        };
+            sim.iterations()};
     }
 };
 

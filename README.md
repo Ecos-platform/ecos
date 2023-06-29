@@ -13,55 +13,73 @@ Ecos provides the following features:
 * Command-line-interface (CLI)
 * Simplified Python and C interface
 
+### Building
+
+Ecos relies on [vcpkg](https://vcpkg.io/en/getting-started.html) to handle dependencies.
+
+Once installed, please add the entry `VCPKG_ROOT` to `PATH` pointing your `/vcpkg` folder.
+Alternatively, call CMake with `-DCMAKE_TOOLCHAIN_FILE=[path to vcpkg]/scripts/buildsystems/vcpkg.cmake`.
+
 ### Example
 
 ```cpp
-simulation_structure ss;
+using namespace ecos;
 
-// add models
-ss.add_model("chassis", "chassis.fmu");
-ss.add_model("ground", "ground.fmu");
-ss.add_model("wheel", "wheel.fmu");
+int main() {
+    
+    simulation_structure ss;
 
-//make connections
-ss.make_connection<double>("chassis::p.e", "wheel.p1::e");
-ss.make_connection<double>("wheel::p1.f", "chassis.p::f");
-ss.make_connection<double>("wheel::p.e", "ground.p::e");
-ss.make_connection<double>("ground::p.f", "wheel.p::f");
+    // add models
+    ss.add_model("chassis", "chassis.fmu");
+    ss.add_model("ground", "ground.fmu");
+    ss.add_model("wheel", "wheel.fmu");
+    
+    //make connections
+    ss.make_connection<double>("chassis::p.e", "wheel.p1::e");
+    ss.make_connection<double>("wheel::p1.f", "chassis.p::f");
+    ss.make_connection<double>("wheel::p.e", "ground.p::e");
+    ss.make_connection<double>("ground::p.f", "wheel.p::f");
+    
+    // setup initialValues
+    std::map<variable_identifier, scalar_value> map;
+    map["chassis::C.mChassis"] = 4000.0;
+    ss.add_parameter_set("initialValues", map);
+    
+    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
+    
+    sim->init();
+    sim->step_until(10);
+    
+    sim->terminate();
+}
 
-// setup initialValues
-std::map<variable_identifier, scalar_value> map;
-map["chassis::C.mChassis"] = 4000.0;
-ss.add_parameter_set("initialValues", map);
-
-auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
-
-sim->init();
-sim->step_until(10);
-
-sim->terminate();
 ```
 
 ### SSP example
 
 ```cpp
-auto ss = load_ssp("quarter-truck.ssp");
+using namespace ecos;
 
-// use a fixed-step algorithm and apply parameterset from SSP file
-auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
+int main() {
+    
+    auto ss = load_ssp("quarter-truck.ssp");
 
-// setup csv logging
-csv_config config;
-config.register_variable("chassis::zChassis"); // logs a single variable
-
-auto csvWriter = std::make_unique<csv_writer>("data.csv", config);
-csvWriter->enable_plotting("ChartConfig.xml"); // enable post-simulation plotting
-sim->add_listener(std::move(csvWriter));
-
-sim->init();
-sim->step_until(10);
-
-sim->terminate();
+    // use a fixed-step algorithm and apply parameterset from SSP file
+    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
+    
+    // setup csv logging
+    csv_config config;
+    config.register_variable("chassis::zChassis"); // logs a single variable
+    
+    auto csvWriter = std::make_unique<csv_writer>("data.csv", config);
+    csvWriter->enable_plotting("ChartConfig.xml"); // enable post-simulation plotting
+    sim->add_listener(std::move(csvWriter));
+    
+    sim->init();
+    sim->step_until(10);
+    
+    sim->terminate();
+}
 ```
 
 ### Command line interface
@@ -93,7 +111,9 @@ To use the python interface, simply clone the project and run:
 
 `pip install ./ecospy`
 
-Note: if using an old pip version, append `--use-feature=in-tree-build` if you get an error about `../version.txt`
+See [here](examples/quarter_truck/quarter_truck.py) for an example.
+
+>Note: if using an old pip version, append `--use-feature=in-tree-build` if you get an error about `../version.txt`
 
 ---
 
@@ -101,8 +121,8 @@ Note: if using an old pip version, append `--use-feature=in-tree-build` if you g
 
 * Windows (10 >=) or Ubuntu (20.04 >=) 
 * C++17 compiler (MSVC >= 16 || gcc9 >=)
-* CMake >= 3.15
-* Conan
+* CMake >= 3.17
+* Vcpgk
 
 #### Additional Linux requirements
 

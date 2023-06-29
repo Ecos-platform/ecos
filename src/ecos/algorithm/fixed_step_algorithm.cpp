@@ -1,6 +1,8 @@
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 
+#include "ecos/logger/logger.hpp"
+
 #include <cmath>
 
 using namespace ecos;
@@ -28,6 +30,7 @@ int calculateDecimationFactor(const model_instance& m, double baseStepSize)
     if (diff >= EPS) {
         log::warn("Actual stepSize for {} will be {} rather than requested value {}", m.instanceName(), actualStepSize, *stepSizeHint);
     }
+
     return decimationFactor;
 }
 

@@ -1,5 +1,5 @@
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 #include "ecos/fmi/fmu.hpp"
 
@@ -25,7 +25,7 @@ void test(fmu& fmu)
     std::vector<double> realRef(1);
 
     slave->get_real(vr, realRef);
-    REQUIRE(realRef[0] == Approx(298));
+    CHECK_THAT(realRef[0], Catch::Matchers::WithinRel(298.));
 
     REQUIRE(slave->step(0.0, 0.1));
 

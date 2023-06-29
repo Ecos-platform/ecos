@@ -3,7 +3,7 @@
 
 #include "ecos/fmi/fmi_model_sub_resolver.hpp"
 #include "ecos/fmi/proxy/proxy_model_sub_resolver.hpp"
-#include "ecos/logger.hpp"
+#include "ecos/logger/logger.hpp"
 
 using namespace ecos;
 

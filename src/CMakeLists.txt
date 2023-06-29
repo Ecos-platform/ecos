@@ -6,7 +6,6 @@ set(publicHeaders
 
         "ecos/connection.hpp"
         "ecos/lib_info.hpp"
-        "ecos/logger.hpp"
         "ecos/model.hpp"
         "ecos/model_instance.hpp"
         "ecos/model_resolver.hpp"
@@ -23,6 +22,8 @@ set(publicHeaders
 
         "ecos/listeners/simulation_listener.hpp"
         "ecos/listeners/csv_writer.hpp"
+
+        "ecos/logger/logger.hpp"
 
         "ecos/structure/simulation_structure.hpp"
 

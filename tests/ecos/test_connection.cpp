@@ -1,5 +1,5 @@
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 #include <ecos/connection.hpp>
 
@@ -19,8 +19,8 @@ TEST_CASE("test_real_connection")
     c.transferData();
     sink.applySet();
 
-    REQUIRE(sourceValue == Approx(1));
-    REQUIRE(sourceValue == sinkValue);
+    CHECK_THAT(sourceValue, Catch::Matchers::WithinRel(1.));
+    CHECK_THAT(sourceValue, Catch::Matchers::WithinRel(sinkValue));
 }
 
 TEST_CASE("test_int_connection")
@@ -37,8 +37,8 @@ TEST_CASE("test_int_connection")
     c.transferData();
     sink.applySet();
 
-    REQUIRE(sourceValue == 1);
-    REQUIRE(sourceValue == sinkValue);
+    CHECK(sourceValue == 1);
+    CHECK(sourceValue == sinkValue);
 }
 
 TEST_CASE("test_bool_connection")
@@ -58,8 +58,8 @@ TEST_CASE("test_bool_connection")
     c.transferData();
     sink.applySet();
 
-    REQUIRE(sourceValue == true);
-    REQUIRE(sourceValue == sinkValue);
+    CHECK(sourceValue == true);
+    CHECK(sourceValue == sinkValue);
 }
 
 TEST_CASE("test_string_connection")
@@ -79,8 +79,8 @@ TEST_CASE("test_string_connection")
     c.transferData();
     sink.applySet();
 
-    REQUIRE(sourceValue == "1");
-    REQUIRE(sourceValue == sinkValue);
+    CHECK(sourceValue == "1");
+    CHECK(sourceValue == sinkValue);
 }
 
 TEST_CASE("test_double_string_connection")
@@ -99,6 +99,6 @@ TEST_CASE("test_double_string_connection")
     c.transferData();
     sink.applySet();
 
-    REQUIRE(sourceValue == Approx(1));
-    REQUIRE(std::stoi(sinkValue) == 1);
+    CHECK_THAT(sourceValue, Catch::Matchers::WithinRel(1.));
+    CHECK_THAT(std::stoi(sinkValue), Catch::Matchers::WithinRel(1.));
 }

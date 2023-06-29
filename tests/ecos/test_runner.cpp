@@ -1,11 +1,11 @@
 
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/model_resolver.hpp"
 #include "ecos/simulation_runner.hpp"
-#include "ecos/logger.hpp"
+#include "ecos/logger/logger.hpp"
 
 using namespace ecos;
 
@@ -32,7 +32,7 @@ TEST_CASE("test simulation runner")
 
     log::debug("Simulated {:.3f}s in {:.4f}s, RTF={:.3f}", sim.time(), runner.wall_clock(), runner.real_time_factor());
 
-    REQUIRE(runner.real_time_factor() == Approx(runner.target_real_time_factor()).epsilon(0.1));
+    CHECK_THAT(runner.real_time_factor(), Catch::Matchers::WithinAbs(runner.target_real_time_factor(), 0.1));
 
     sim.terminate();
 }

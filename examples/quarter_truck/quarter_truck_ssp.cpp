@@ -1,6 +1,7 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
+#include "ecos/logger/logger.hpp"
 
 #include <spdlog/stopwatch.h>
 
@@ -29,6 +30,7 @@ int main()
 
         sim->terminate();
     } catch (const std::exception& ex) {
+
         log::err(ex.what());
     }
 }

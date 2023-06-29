@@ -1,31 +1,13 @@
-include_directories("${CMAKE_SOURCE_DIR}/src")
-link_libraries(libecos CONAN_PKG::fmilibcpp Catch2::Catch2)
-add_compile_definitions(DATA_FOLDER="${CMAKE_SOURCE_DIR}/data")
 
-add_executable(test_identity test_identity.cpp)
-add_test(NAME test_identity COMMAND test_identity)
+function(add_test_executable name)
+    add_executable(${name} ${name}.cpp)
+    target_link_libraries(${name} PRIVATE libecos Catch2::Catch2WithMain)
+    target_include_directories(${name} PRIVATE "${PROJECT_SOURCE_DIR}/src")
+    target_compile_definitions(${name} PRIVATE DATA_FOLDER="${PROJECT_SOURCE_DIR}/data")
+    add_test(NAME ${name} COMMAND ${name})
+endfunction()
 
-add_executable(test_controlled_temp test_controlled_temp.cpp)
-add_test(NAME test_controlled_temp COMMAND test_controlled_temp)
 
-add_executable(test_variable_identifier test_variable_identifier.cpp)
-add_test(NAME test_variable_identifier COMMAND test_variable_identifier)
-
-add_executable(test_connection test_connection.cpp)
-add_test(NAME test_connection COMMAND test_connection)
-
-add_executable(test_property test_property.cpp)
-add_test(NAME test_property COMMAND test_property)
-
-add_executable(test_runner test_runner.cpp)
-add_test(NAME test_runner COMMAND test_runner)
-
-add_executable(test_unzipper test_unzipper.cpp)
-add_test(NAME test_unzipper COMMAND test_unzipper)
-target_link_libraries(test_unzipper PRIVATE CONAN_PKG::libzip)
-
-if (MSVC AND ECOS_BUILD_CLIB)
-    add_executable(test_clib test_clib.cpp)
-    add_test(NAME test_clib COMMAND test_clib)
-    target_link_libraries(test_clib PUBLIC libecosc)
-endif()
+add_subdirectory(ecos)
+add_subdirectory(proxyfmu)
+add_subdirectory(fmilibcpp)

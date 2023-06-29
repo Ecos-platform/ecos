@@ -1,8 +1,7 @@
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
-#include "ecos/logger.hpp"
-#include "ecos/scalar.hpp"
+#include "ecos/logger/logger.hpp"
 #include "ecos/structure/simulation_structure.hpp"
 
 using namespace ecos;
@@ -34,7 +33,7 @@ int main()
         auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck_with_config.csv");
         csv_config& config = csvWriter->config();
         config.load("../../data/ssp/quarter_truck/LogConfig.xml");
-        config.enable_plotting("../../data/ssp/quarter_truck/ChartConfig.xml");
+        config.enable_plotting(std::string(DATA_FOLDER) + "/ssp/quarter_truck/ChartConfig.xml");
         sim->add_listener("csv_writer", std::move(csvWriter));
 
         sim->init("initialValues");
@@ -43,6 +42,7 @@ int main()
 
         sim->terminate();
     } catch (const std::exception& ex) {
+
         log::err(ex.what());
     }
 }

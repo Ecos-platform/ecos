@@ -1,7 +1,7 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
-#include "ecos/logger.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
+#include "ecos/logger/logger.hpp"
 
 #include <spdlog/stopwatch.h>
 
@@ -20,7 +20,7 @@ int main()
         config.register_variable("chassis::zChassis");
         config.register_variable("wheel::zWheel");
         config.register_variable("ground::zGround");
-        config.enable_plotting("../../data/ssp/quarter_truck/ChartConfig.xml");
+        config.enable_plotting(std::string(DATA_FOLDER) + "/ssp/quarter_truck/ChartConfig.xml");
         sim->add_listener("csv_writer", std::move(csvWriter));
 
         spdlog::stopwatch sw;
@@ -30,6 +30,7 @@ int main()
 
         sim->terminate();
     } catch (const std::exception& ex) {
+
         log::err(ex.what());
     }
 }

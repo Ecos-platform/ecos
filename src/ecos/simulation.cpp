@@ -2,7 +2,7 @@
 #include "ecos/simulation.hpp"
 
 #include "ecos/listeners/simulation_listener.hpp"
-#include "ecos/logger.hpp"
+#include "ecos/logger/logger.hpp"
 
 #include <execution>
 

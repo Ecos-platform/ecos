@@ -3,7 +3,7 @@
 #define ECOS_FMI_MODEL_HPP
 
 #include "fmi_model_instance.hpp"
-#include "fmilibcpp/fmu.hpp"
+#include "fmu.hpp"
 
 #include "ecos/model.hpp"
 
@@ -17,10 +17,10 @@ class fmi_model : public model
 
 public:
     explicit fmi_model(const std::filesystem::path& fmuPath)
-        : fmu_(fmilibcpp::loadFmu(fmuPath))
+        : fmu_(fmi::loadFmu(fmuPath))
     { }
 
-    [[nodiscard]] fmilibcpp::model_description get_model_description() const
+    [[nodiscard]] fmi::model_description get_model_description() const
     {
         return fmu_->get_model_description();
     }
@@ -31,7 +31,7 @@ public:
     }
 
 private:
-    std::unique_ptr<fmilibcpp::fmu> fmu_;
+    std::unique_ptr<fmi::fmu> fmu_;
 };
 
 } // namespace ecos

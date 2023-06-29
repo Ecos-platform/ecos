@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.17)
+set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 file(STRINGS "${CMAKE_SOURCE_DIR}/version.txt" projectVersion)
 project("libecos" VERSION ${projectVersion})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
@@ -22,8 +23,11 @@ option(ECOS_BUILD_CLIB "Build C library" ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
-list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
+set(generatedSourcesDir "${CMAKE_BINARY_DIR}/generated")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2")
@@ -31,71 +35,28 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif ()
 
-# Prepare for export and installation.
-set(ECOS_HEADER_INSTALL_DIR "${CMAKE_INSTALL_INCLUDEDIR}")
-set(ECOS_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-
-set(ECOS_INSTALL_DESTINATIONS
-        ARCHIVE DESTINATION "lib"
-        LIBRARY DESTINATION "lib"
-        RUNTIME DESTINATION "bin"
-        INCLUDES DESTINATION "${ECOS_HEADER_INSTALL_DIR}")
-set(ECOS_EXPORT_TARGET "${PROJECT_NAME}-targets")
-
-file(COPY resources/plot/ecos_plotter.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
-
-
 # ==============================================================================
 # Dependencies
 # ==============================================================================
 
-if (CONAN_EXPORTED) # in conan local cache
-    # standard conan installation, deps will be defined in conanfile.py
-    # and not necessary to call conan again, conan is already running
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup(TARGETS)
-else ()
+set(SUBPROCESS_INCLUDE_DIR ${CMAKE_BINARY_DIR}/thirdparty)
+file(DOWNLOAD https://raw.githubusercontent.com/Ecos-platform/subprocess.h/master/subprocess.h
+        ${SUBPROCESS_INCLUDE_DIR}/subprocess/subprocess.h)
 
-    include(cmake/conan.cmake)
-    conan_check(REQUIRED)
-
-    conan_cmake_autodetect(settings)
-
-    # Force add remotes
-    conan_add_remote(NAME ais URL https://ais.jfrog.io/artifactory/api/conan/ais-conan-local)
-
-    conan_cmake_install(PATH_OR_REFERENCE ${CMAKE_SOURCE_DIR}
-            BUILD missing
-            SETTINGS ${settings})
-
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup(TARGETS)
-
-endif ()
-
+find_package(fmt CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+find_package(libzip CONFIG REQUIRED)
+find_package(pugixml CONFIG REQUIRED)
+find_package(Thrift CONFIG REQUIRED)
+find_package(CLI11 CONFIG REQUIRED)
+find_package(unofficial-fmilib CONFIG REQUIRED)
 
 # ==============================================================================
 # Targets
 # ==============================================================================
 
-if (ECOS_BUILD_CLI OR ECOS_BUILD_TESTS)
-    include(FetchContent)
-endif()
-
 add_subdirectory(src)
-
-if (ECOS_BUILD_CLI)
-
-    FetchContent_Declare(
-            cli11
-            GIT_REPOSITORY https://github.com/CLIUtils/CLI11
-            GIT_TAG        v2.2.0
-    )
-
-    FetchContent_MakeAvailable(cli11)
-
-    add_subdirectory(cli)
-endif ()
+add_subdirectory(tool)
 
 if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
 
@@ -105,12 +66,12 @@ if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
 
     if (ECOS_BUILD_TESTS)
 
+        include(FetchContent)
         FetchContent_Declare(
                 Catch2
                 GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-                GIT_TAG v2.13.8
+                GIT_TAG v3.3.2
         )
-
         FetchContent_MakeAvailable(Catch2)
 
         enable_testing()
@@ -118,3 +79,26 @@ if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
     endif ()
 
 endif ()
+
+
+configure_package_config_file(cmake/config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/ecos-config.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/ecos
+        NO_SET_AND_CHECK_MACRO)
+write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/ecos-config-version.cmake
+        VERSION ${CMAKE_PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion)
+install(
+        FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/ecos-config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/ecos-config-version.cmake
+        DESTINATION
+        ${CMAKE_INSTALL_DATADIR}/ecos)
+
+install(TARGETS ecos EXPORT ecos-targets)
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(EXPORT ecos-targets
+        NAMESPACE ecos::
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/ecos)
+

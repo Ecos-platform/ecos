@@ -3,7 +3,7 @@
 
 #include "uuid.hpp"
 
-#include "ecos/logger.hpp"
+#include "ecos/logger/logger.hpp"
 
 using namespace ecos;
 

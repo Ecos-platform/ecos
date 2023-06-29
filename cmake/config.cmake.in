@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+include ("@PACKAGE_targetsFile@")
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(fmt CONFIG REQUIRED)
+find_dependency(spdlog CONFIG REQUIRED)
+find_dependency(libzip CONFIG REQUIRED)
+find_dependency(pugixml CONFIG REQUIRED)
+find_dependency(Thrift CONFIG REQUIRED)
+

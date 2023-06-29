@@ -1,7 +1,7 @@
 
 #include "ecos/scenario/scenario.hpp"
 
-#include "ecos/logger.hpp"
+#include "ecos/logger/logger.hpp"
 
 using namespace ecos;
 

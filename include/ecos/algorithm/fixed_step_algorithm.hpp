@@ -4,8 +4,6 @@
 
 #include "algorithm.hpp"
 
-#include "ecos/logger.hpp"
-
 #include <algorithm>
 #include <execution>
 

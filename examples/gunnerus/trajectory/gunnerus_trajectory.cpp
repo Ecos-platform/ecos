@@ -1,6 +1,6 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
-#include "ecos/logger.hpp"
+#include "ecos/logger/logger.hpp"
 #include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 

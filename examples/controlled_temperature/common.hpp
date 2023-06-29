@@ -3,9 +3,10 @@
 #define LIBECOS_COMMON_HPP
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
+#include "ecos/logger/logger.hpp"
 #include "ecos/model_resolver.hpp"
 #include "ecos/simulation.hpp"
-#include "ecos/logger.hpp"
+
 
 using namespace ecos;
 
@@ -32,6 +33,7 @@ void run(const std::string& fmuPath)
 
         sim.terminate();
     } catch (const std::exception& ex) {
+
         log::err(ex.what());
     }
 }

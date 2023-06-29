@@ -9,3 +9,5 @@ endfunction()
 
 
 add_subdirectory(ecos)
+add_subdirectory(proxyfmu)
+add_subdirectory(fmilibcpp)

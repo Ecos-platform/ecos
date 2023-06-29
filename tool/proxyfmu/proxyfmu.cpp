@@ -1,7 +1,7 @@
 
-#include "fixed_range_random_generator.hpp"
 #include "handlers/boot_service_handler.hpp"
 #include "handlers/fmu_service_handler.hpp"
+#include "rng.hpp"
 
 #include "ecos/lib_info.hpp"
 
@@ -73,7 +73,7 @@ int run_application(const std::string& fmu, const std::string& instanceName)
     std::shared_ptr<TTransportFactory> transportFactory(new TFramedTransportFactory());
     std::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-    fixed_range_random_generator rng(port_range_min, port_range_max);
+    rng rng(port_range_min, port_range_max);
 
     int port;
     int final_port = -1;

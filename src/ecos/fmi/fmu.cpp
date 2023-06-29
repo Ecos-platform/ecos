@@ -2,12 +2,20 @@
 #include "fmi1/fmi1_fmu.hpp"
 #include "fmi2/fmi2_fmu.hpp"
 
+#include "ecos/logger/logger.hpp"
+
 #include <fmilib.h>
 
 using namespace ecos;
 
 std::unique_ptr<fmi::fmu> fmi::loadFmu(const std::filesystem::path& fmuPath, bool fmiLogging)
 {
+
+    if (!std::filesystem::exists(fmuPath)) {
+        log::err("No such file: {}", std::filesystem::absolute(fmuPath).string());
+        return nullptr;
+    }
+
     auto ctx = std::make_unique<fmi::fmicontext>(fmiLogging);
 
     const std::string fmuName = std::filesystem::path(fmuPath).stem().string();

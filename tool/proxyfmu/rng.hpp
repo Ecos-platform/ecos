@@ -4,7 +4,7 @@
 
 #include <random>
 
-class fixed_range_random_generator
+class rng
 {
 
 private:
@@ -12,7 +12,7 @@ private:
     std::uniform_int_distribution<int> dist_;
 
 public:
-    fixed_range_random_generator(int min, int max)
+    rng(int min, int max)
         : mt_(std::random_device()())
         , dist_(min, max)
     { }

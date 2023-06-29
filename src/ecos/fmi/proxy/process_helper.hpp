@@ -67,7 +67,7 @@ void start_process(
 #endif
 
     std::cout << "[proxyfmu] Checking if proxyfmu is available.." << std::endl;
-    int statusCode = system((execStr + " -v").c_str());
+    int statusCode = system(("\"" + execStr + "\" -v").c_str());
     if (statusCode != 0) {
         std::cerr << "ERROR - unable to invoke proxyfmu!" << std::endl;
 

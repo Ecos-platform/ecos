@@ -1,6 +1,5 @@
 
-add_test_executable(test_identity)
-add_test_executable(test_controlled_temp)
+
 add_test_executable(test_variable_identifier)
 add_test_executable(test_connection)
 add_test_executable(test_property)

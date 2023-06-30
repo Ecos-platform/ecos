@@ -26,7 +26,7 @@ set(publicHeaders
 
         "ecos/structure/simulation_structure.hpp"
 
-        "ssp/ssp_parser.hpp"
+        "ssp/ssp_loader.hpp"
 
         )
 
@@ -63,7 +63,6 @@ set(privateHeaders
 
 set(sources
 
-        "ecos/logger.cpp"
         "ecos/model_resolver.cpp"
         "ecos/simulation.cpp"
         "ecos/simulation_runner.cpp"
@@ -88,6 +87,8 @@ set(sources
 
         "ecos/listeners/csv_writer.cpp"
         "ecos/listeners/simulation_listener.cpp"
+
+        "ecos/logger/logger.cpp"
 
         "ecos/ssp/ssp.cpp"
         "ecos/ssp/ssp_loader.cpp"

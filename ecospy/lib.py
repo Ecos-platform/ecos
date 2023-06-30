@@ -40,7 +40,11 @@ class _EcosLib:
             else:
                 return ".so"
 
-        self._handle = CDLL(f"{__file__}/../build/bin/libecosc{suffix()}")
+        binFolder = f"{__file__}\\..\\build\\bin"
+        os.environ['PATH'] = binFolder + os.pathsep + os.environ['PATH']
+        os.add_dll_directory(binFolder)
+
+        self._handle = CDLL(f"libecosc{suffix()}")
 
         self._set_log_level = self._handle.set_log_level
         self._set_log_level.argtypes = [c_char_p]

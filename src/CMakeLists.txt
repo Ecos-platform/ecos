@@ -109,7 +109,7 @@ configure_file(
         @ONLY
 )
 
-add_library(libecos ${publicHeadersFull} ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles} "$<TARGET_OBJECTS:proxyfmu-service>")
+add_library(libecos ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
 set_property(TARGET libecos PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(libecos PUBLIC "cxx_std_17")
 target_include_directories(libecos
@@ -130,6 +130,7 @@ target_link_libraries(libecos
         thrift::thrift
         pugixml::pugixml
         unofficial::fmilib::fmilib
+        "$<TARGET_OBJECTS:proxyfmu-service>"
         )
 if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)

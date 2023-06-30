@@ -21,7 +21,7 @@ def main():
     sspDir = f"{__file__}/../../../data/ssp/quarter_truck/"
     resultFile = f"{__file__}/../results/python/quarter_truck.csv"
 
-    sim = EcosSimulation(ssp_path=f"{sspDir}/quarter-truck.ssp", step_size=1.0 / 100)
+    sim = EcosSimulation(ssp_path=f"{sspDir}", step_size=1.0 / 100)
 
     sim.add_csv_writer(resultFile, f"{sspDir}/LogConfig.xml")
     sim.add_listener("custom_listener", MyListener(sim))

@@ -7,7 +7,7 @@ set(sources
         "${generatedSourcesDir}/ecos/lib_info.cpp"
         )
 
-add_executable(proxyfmu ${sources} "$<TARGET_OBJECTS:proxyfmu-service>")
+add_executable(proxyfmu ${sources})
 target_include_directories(proxyfmu
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -20,6 +20,7 @@ target_link_libraries(proxyfmu
         libecos
         CLI11::CLI11
         thrift::thrift
+        "$<TARGET_OBJECTS:proxyfmu-service>"
         )
 if (UNIX)
   target_link_libraries(proxyfmu PRIVATE pthread)

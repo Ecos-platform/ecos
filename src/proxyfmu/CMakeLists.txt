@@ -35,7 +35,7 @@ set(thriftGenerated
         "${thriftCppSourcesDir}/BootService.cpp"
         )
 
-add_library(proxyfmu-service ${thriftGenerated})
+add_library(proxyfmu-service OBJECT ${thriftGenerated})
 target_link_libraries(proxyfmu-service PUBLIC thrift::thrift)
 set_target_properties(proxyfmu-service PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
@@ -49,9 +49,4 @@ install(
         "${CMAKE_CURRENT_SOURCE_DIR}/defs.thrift"
         "${CMAKE_CURRENT_SOURCE_DIR}/service.thrift"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/thrift/definitions"
-)
-
-install(
-        DIRECTORY "${thriftCppSourcesDir}/"
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/thrift/cpp"
 )

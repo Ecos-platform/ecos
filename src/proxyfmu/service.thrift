@@ -1,5 +1,4 @@
 namespace cpp proxyfmu.thrift
-namespace java com.opensimulationplatform.proxyfmu.thrift
 
 include "defs.thrift"
 

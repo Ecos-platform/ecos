@@ -1,10 +1,8 @@
 
 set(thriftCppSourcesDir "${generatedSourcesDir}/proxyfmu/thrift")
-set(thriftJavaSourcesDir "${generatedSourcesDir}/java")
 
 file(MAKE_DIRECTORY "${generatedSourcesDir}")
 file(MAKE_DIRECTORY "${thriftCppSourcesDir}")
-file(MAKE_DIRECTORY "${thriftJavaSourcesDir}")
 
 find_program(THRIFT_EXECUTABLE NAMES thrift)
 
@@ -24,13 +22,6 @@ foreach (def ${thriftServiceDefinitions})
             COMMAND "${THRIFT_EXECUTABLE}"
             "--gen" "cpp:no_skeleton"
             "-out" "${thriftCppSourcesDir}"
-            "${def}"
-    )
-    # Java
-    execute_process(
-            COMMAND "${THRIFT_EXECUTABLE}"
-            "--gen" "java:private-members,fullcamel"
-            "-out" "${thriftJavaSourcesDir}"
             "${def}"
     )
 endforeach ()
@@ -61,11 +52,6 @@ install(
 )
 
 install(
-        DIRECTORY "${CMAKE_BINARY_DIR}/generated/java"
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/thrift"
-)
-
-install(
-        DIRECTORY "${CMAKE_BINARY_DIR}/generated/proxyfmu/thrift/"
+        DIRECTORY "${thriftCppSourcesDir}/"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/thrift/cpp"
 )

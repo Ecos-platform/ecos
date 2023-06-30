@@ -101,7 +101,7 @@ install(
         ${CMAKE_INSTALL_DATADIR}/ecos)
 
 install(
-        TARGETS libecos ecos proxyfmu
+        TARGETS libecos libecosc ecos proxyfmu
         EXPORT ecos-targets
 )
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

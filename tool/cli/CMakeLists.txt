@@ -5,8 +5,3 @@ target_link_libraries(ecos
         libecos
         CLI11::CLI11
         )
-
-install(
-        TARGETS ecos
-        DESTINATION ecos-targets}
-)

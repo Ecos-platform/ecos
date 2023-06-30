@@ -1,13 +1,13 @@
 
 #include "handlers/boot_service_handler.hpp"
 #include "handlers/fmu_service_handler.hpp"
-#include "rng.hpp"
 
 #include "ecos/lib_info.hpp"
 
 #include <CLI/CLI.hpp>
 #include <functional>
 #include <iostream>
+#include <random>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TTransportUtils.h>
@@ -33,6 +33,26 @@ const int SUCCESS = 0;
 const int COMMANDLINE_ERROR = 1;
 const int UNHANDLED_ERROR = 2;
 
+
+class rng
+{
+
+public:
+    rng(int min, int max)
+        : mt_(std::random_device()())
+        , dist_(min, max)
+    { }
+
+    int next()
+    {
+        return dist_(mt_);
+    }
+
+private:
+    std::mt19937 mt_;
+    std::uniform_int_distribution<int> dist_;
+
+};
 
 class ServerReadyEventHandler : public TServerEventHandler
 {

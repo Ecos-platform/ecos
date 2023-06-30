@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
+set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 file(STRINGS "${CMAKE_SOURCE_DIR}/version.txt" projectVersion)
 project("libecos" VERSION ${projectVersion})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
@@ -39,9 +39,9 @@ endif ()
 # Dependencies
 # ==============================================================================
 
-set(SUBPROCESS_INCLUDE_DIR ${CMAKE_BINARY_DIR}/thirdparty)
+set(SUBPROCESS_INCLUDE_DIR "${CMAKE_BINARY_DIR}/thirdparty")
 file(DOWNLOAD https://raw.githubusercontent.com/Ecos-platform/subprocess.h/master/subprocess.h
-        ${SUBPROCESS_INCLUDE_DIR}/subprocess/subprocess.h)
+        "${SUBPROCESS_INCLUDE_DIR}/subprocess/subprocess.h")
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
@@ -81,6 +81,10 @@ if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
 endif ()
 
 
+# ==============================================================================
+# Exports and remaining installation
+# ==============================================================================
+
 configure_package_config_file(cmake/config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/ecos-config.cmake
         INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/ecos
@@ -96,9 +100,11 @@ install(
         DESTINATION
         ${CMAKE_INSTALL_DATADIR}/ecos)
 
-install(TARGETS ecos EXPORT ecos-targets)
+install(
+        TARGETS libecos ecos proxyfmu
+        EXPORT ecos-targets
+)
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(EXPORT ecos-targets
         NAMESPACE ecos::
         DESTINATION ${CMAKE_INSTALL_DATADIR}/ecos)
-

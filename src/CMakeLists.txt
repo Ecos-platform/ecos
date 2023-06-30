@@ -1,4 +1,3 @@
-set(publicHeaderDir ${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(proxyfmu)
 
@@ -33,7 +32,7 @@ set(publicHeaders
 
 set(publicHeadersFull)
 foreach (header IN LISTS commonPublicHeaders)
-    list(APPEND commonPublicHeadersFull "${publicHeaderDir}/${header}")
+    list(APPEND commonPublicHeadersFull "${PROJECT_SOURCE_DIR}/include/${header}")
 endforeach ()
 
 set(privateHeaders
@@ -125,10 +124,10 @@ target_link_libraries(libecos
         PUBLIC
         fmt::fmt
         PRIVATE
-        thrift::thrift
-        pugixml::pugixml
         libzip::zip
         spdlog::spdlog
+        thrift::thrift
+        pugixml::pugixml
         unofficial::fmilib::fmilib
         )
 if (UNIX)
@@ -143,16 +142,5 @@ if (ECOS_BUILD_CLIB)
             libecos)
 endif ()
 
-
-# ==============================================================================
-# Installation rules
-# ==============================================================================
-
-install(
-        TARGETS libecos
-        EXPORT ecos-targets
-)
-install(
-        DIRECTORY "${publicHeaderDir}/ecos"
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/ecos"
-)
+# Make sure executable is up to date
+#add_dependencies(libecos proxyfmu)

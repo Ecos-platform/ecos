@@ -1,10 +1,13 @@
 
-add_executable(proxyfmu
-        proxyfmu.cpp
+set(sources
+        "proxyfmu.cpp"
         "handlers/fmu_service_handler.cpp"
         "handlers/boot_service_handler.cpp"
-        "$<TARGET_OBJECTS:proxyfmu-service>"
-        "${generatedSourcesDir}/ecos/lib_info.cpp")
+
+        "${generatedSourcesDir}/ecos/lib_info.cpp"
+        )
+
+add_executable(proxyfmu ${sources} "$<TARGET_OBJECTS:proxyfmu-service>")
 target_include_directories(proxyfmu
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}"

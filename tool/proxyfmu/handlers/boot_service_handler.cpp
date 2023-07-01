@@ -4,7 +4,7 @@
 #include "proxyfmu/process_helper.hpp"
 
 #include <chrono>
-#include <cstdio>
+#include <fstream>
 
 using namespace proxyfmu::server;
 
@@ -13,9 +13,17 @@ namespace
 
 void write_data(std::string const& fileName, std::string const& data)
 {
-    FILE* file = fopen(fileName.c_str(), "wb");
-    [[maybe_unused]] size_t bytes_written = fwrite(data.c_str(), sizeof(unsigned char), data.size(), file);
-    fclose(file);
+    std::ofstream outFile(fileName, std::ios::binary);
+
+    if (!outFile) {
+        throw std::runtime_error("Unable to open file: " + fileName);
+    }
+
+    outFile.write(data.c_str(), data.size());
+
+    if (!outFile) {
+        throw std::runtime_error("Error during write to file: " + fileName);
+    }
 }
 
 } // namespace

@@ -20,6 +20,23 @@ Ecos relies on [vcpkg](https://vcpkg.io/en/getting-started.html) to handle depen
 Once installed, please add the entry `VCPKG_ROOT` to `PATH` pointing your `/vcpkg` folder.
 Alternatively, call CMake with `-DCMAKE_TOOLCHAIN_FILE=[path to vcpkg]/scripts/buildsystems/vcpkg.cmake`.
 
+Example:
+
+```
+//windows
+cmake . -A x64 -B build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+
+//linux
+cmake . -B build -DCMAKE_TOOLCHAIN_FILE="/home/user/vcpkg/scripts/buildsystems/vcpkg.cmake" -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+
+#### Notes on static linking (windows)
+
+In order to produce executables with do DLL dependencies on windows, 
+you need to call CMake with `-DVCPKG_TARGET_TRIPLET=x64-windows-static-md`
+
 ### Example
 
 ```cpp

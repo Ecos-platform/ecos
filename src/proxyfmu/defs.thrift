@@ -93,23 +93,3 @@ struct ModelDescription {
     9: optional DefaultExperiment default_experiment,
     10: ModelVariables model_variables,
 }
-
-exception NoSuchFileException {
-    1: string message
-}
-
-exception NoSuchFmuException {
-    1: string message
-}
-
-exception NoSuchInstanceException {
-    1: string message
-}
-
-exception NoSuchVariableException {
-    1: string message
-}
-
-exception UnsupportedOperationException {
-    1: string message
-}

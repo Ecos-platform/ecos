@@ -3,7 +3,6 @@
 
 #include "proxyfmu/process_helper.hpp"
 
-#include <chrono>
 #include <fstream>
 
 using namespace proxyfmu::server;

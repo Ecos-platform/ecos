@@ -26,7 +26,7 @@ set(publicHeaders
 
         "ecos/structure/simulation_structure.hpp"
 
-        "ssp/ssp_loader.hpp"
+        "ecos/ssp/ssp_loader.hpp"
 
         )
 
@@ -45,13 +45,20 @@ set(privateHeaders
         "ecos/fmi/proxy/proxy_model.hpp"
         "ecos/fmi/proxy/proxy_model_sub_resolver.hpp"
 
-        "ecos/fmi/fmu.hpp"
-        "ecos/fmi/fmi1/fmi1_fmu.hpp"
-        "ecos/fmi/fmi1/fmi1_slave.hpp"
-        "ecos/fmi/fmi1/fmi1_model_description.hpp"
-        "ecos/fmi/fmi2/fmi2_fmu.hpp"
-        "ecos/fmi/fmi2/fmi2_slave.hpp"
-        "ecos/fmi/fmi2/fmi2_model_description.hpp"
+        "fmilibcpp/buffered_slave.hpp"
+        "fmilibcpp/fmicontext.hpp"
+        "fmilibcpp/fmu.hpp"
+        "fmilibcpp/model_description.hpp"
+        "fmilibcpp/scalar_variable.hpp"
+        "fmilibcpp/slave.hpp"
+
+        "fmilibcpp/fmi1/fmi1_fmu.hpp"
+        "fmilibcpp/fmi1/fmi1_slave.hpp"
+        "fmilibcpp/fmi1/fmi1_model_description.hpp"
+
+        "fmilibcpp/fmi2/fmi2_fmu.hpp"
+        "fmilibcpp/fmi2/fmi2_slave.hpp"
+        "fmilibcpp/fmi2/fmi2_model_description.hpp"
 
         "ecos/ssp/ssp.hpp"
 
@@ -72,13 +79,6 @@ set(sources
 
         "ecos/algorithm/fixed_step_algorithm.cpp"
 
-        "ecos/fmi/fmu.cpp"
-        "ecos/fmi/fmi1/fmi1_fmu.cpp"
-        "ecos/fmi/fmi1/fmi1_slave.cpp"
-        "ecos/fmi/fmi1/fmi1_model_description.cpp"
-        "ecos/fmi/fmi2/fmi2_fmu.cpp"
-        "ecos/fmi/fmi2/fmi2_slave.cpp"
-        "ecos/fmi/fmi2/fmi2_model_description.cpp"
         "ecos/fmi/fmi_model_sub_resolver.cpp"
 
         "ecos/fmi/proxy/proxy_model_sub_resolver.cpp"
@@ -99,7 +99,15 @@ set(sources
         "ecos/util/unzipper.cpp"
         "ecos/util/uuid.cpp"
 
-        )
+        "fmilibcpp/fmu.cpp"
+        "fmilibcpp/fmi1/fmi1_fmu.cpp"
+        "fmilibcpp/fmi1/fmi1_slave.cpp"
+        "fmilibcpp/fmi1/fmi1_model_description.cpp"
+        "fmilibcpp/fmi2/fmi2_fmu.cpp"
+        "fmilibcpp/fmi2/fmi2_slave.cpp"
+        "fmilibcpp/fmi2/fmi2_model_description.cpp"
+
+)
 
 # Generate sources from .in files
 set(generatedFiles "${generatedSourcesDir}/ecos/lib_info.cpp")

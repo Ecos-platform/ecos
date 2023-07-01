@@ -1,6 +1,6 @@
-#include "ecos/fmi/buffered_slave.hpp"
-#include "ecos/fmi/fmu.hpp"
 
+#include "fmilibcpp/buffered_slave.hpp"
+#include "fmilibcpp/fmu.hpp"
 #include <catch2/catch_test_macros.hpp>
 
 using namespace fmilibcpp;

@@ -1,11 +1,11 @@
 
-#ifndef ECOS_FMI_FMI2_SLAVE_HPP
-#define ECOS_FMI_FMI2_SLAVE_HPP
+#ifndef ECOS_FMI_FMI1_SLAVE_HPP
+#define ECOS_FMI_FMI1_SLAVE_HPP
 
-#include "fmi2_model_description.hpp"
+#include "fmi1_model_description.hpp"
+#include "fmilibcpp/fmicontext.hpp"
+#include "fmilibcpp/slave.hpp"
 
-#include "ecos/fmi/fmicontext.hpp"
-#include "ecos/fmi/slave.hpp"
 #include "ecos/util/temp_dir.hpp"
 
 #include <fmilib.h>
@@ -14,17 +14,20 @@
 namespace fmilibcpp
 {
 
-class fmi2_slave : public slave
+class fmi1_slave : public slave
 {
 private:
     bool freed_{false};
-    fmi2_import_t* handle_;
+    fmi1_import_t* handle_;
     const model_description md_;
     std::shared_ptr<fmicontext> ctx_;
     std::shared_ptr<ecos::temp_dir> tmpDir_;
 
+    double start_time_{};
+    double stop_time_{};
+
 public:
-    fmi2_slave(
+    fmi1_slave(
         const std::shared_ptr<fmicontext>& ctx,
         const std::string& instanceName,
         model_description md,
@@ -32,8 +35,7 @@ public:
         bool fmiLogging);
 
     [[nodiscard]] const model_description& get_model_description() const override;
-    bool setup_experiment(double start_time, double stop_time, double tolerance) override;
-
+    bool setup_experiment(double start_time, double stop_time, double /*tolerance*/) override;
     bool enter_initialization_mode() override;
     bool exit_initialization_mode() override;
     bool step(double current_time, double step_size) override;
@@ -52,9 +54,9 @@ public:
     bool set_string(const std::vector<value_ref>& vr, const std::vector<std::string>& values) override;
     bool set_boolean(const std::vector<value_ref>& vr, const std::vector<bool>& values) override;
 
-    ~fmi2_slave() override;
+    ~fmi1_slave() override;
 };
 
-} // namespace fmi
+} // namespace fmilibcpp
 
-#endif // ECOS_FMI_FMI2_SLAVE_HPP
+#endif // ECOS_FMI_FMI1_SLAVE_HPP

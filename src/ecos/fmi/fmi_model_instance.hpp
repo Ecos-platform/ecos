@@ -4,7 +4,7 @@
 
 #include "ecos/model_instance.hpp"
 
-#include "buffered_slave.hpp"
+#include "fmilibcpp/buffered_slave.hpp"
 
 namespace ecos
 {

@@ -5,7 +5,7 @@
 #include "proxyfmu/thrift/FmuService.h"
 #include "remote_info.hpp"
 
-#include "ecos/fmi/slave.hpp"
+#include "fmilibcpp/slave.hpp"
 
 #include <filesystem>
 #include <optional>

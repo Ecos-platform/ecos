@@ -2,7 +2,7 @@
 #ifndef ECOS_FMI_FMI1_MODEL_DESCRIPTION_HPP
 #define ECOS_FMI_FMI1_MODEL_DESCRIPTION_HPP
 
-#include "ecos/fmi/model_description.hpp"
+#include "fmilibcpp/model_description.hpp"
 
 #include <fmilib.h>
 

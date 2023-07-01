@@ -2,8 +2,9 @@
 #ifndef ECOS_FMI_FMI2_FMU_HPP
 #define ECOS_FMI_FMI2_FMU_HPP
 
-#include "ecos/fmi/fmicontext.hpp"
-#include "ecos/fmi/fmu.hpp"
+#include "fmilibcpp/fmicontext.hpp"
+#include "fmilibcpp/fmu.hpp"
+
 #include "ecos/util/temp_dir.hpp"
 
 #include <fmilib.h>
@@ -33,6 +34,6 @@ public:
     ~fmi2_fmu() override;
 };
 
-} // namespace ecos::fmi
+} // namespace fmilibcpp
 
 #endif // ECOS_FMI_FMI2_FMU_HPP

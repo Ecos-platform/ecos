@@ -3,7 +3,7 @@
 
 #include "proxy_slave.hpp"
 
-#include "ecos/fmi/fmu.hpp"
+#include "fmilibcpp/fmu.hpp"
 
 #include <memory>
 #include <utility>

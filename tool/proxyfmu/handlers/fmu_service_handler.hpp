@@ -2,9 +2,8 @@
 #ifndef PROXY_FMU_FMUSERVICEHANDLER_HPP
 #define PROXY_FMU_FMUSERVICEHANDLER_HPP
 
+#include "fmilibcpp/fmu.hpp"
 #include "proxyfmu/thrift/FmuService.h"
-
-#include "ecos/fmi/fmu.hpp"
 
 #include <functional>
 

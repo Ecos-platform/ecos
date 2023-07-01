@@ -4,9 +4,9 @@
 
 #include "remote_info.hpp"
 
-#include "ecos/fmi/fmu.hpp"
-#include "ecos/fmi/model_description.hpp"
-#include "ecos/fmi/slave.hpp"
+#include "fmilibcpp/fmu.hpp"
+#include "fmilibcpp/model_description.hpp"
+#include "fmilibcpp/slave.hpp"
 
 #include <optional>
 

@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <cstdio>
+#include <fstream>
 #include <proxyfmu/thrift/BootService.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/transport/TSocket.h>
@@ -21,18 +22,21 @@ using namespace proxyfmu::thrift;
 namespace
 {
 
-void read_data(std::string const& fileName, std::string& data)
+std::string read_data(std::string const& fileName)
 {
-    FILE* file = fopen(fileName.c_str(), "rb");
-    if (file == nullptr) return;
-    fseek(file, 0, SEEK_END);
-    long int size = ftell(file);
-    fclose(file);
-    file = fopen(fileName.c_str(), "rb");
+    std::ifstream file(fileName, std::ios::binary | std::ios::ate);
+    if (!file) {
+        throw std::runtime_error("Failed to open file: " + fileName);
+    }
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
 
-    data.resize(size);
-    [[maybe_unused]] size_t bytes_read = fread(data.data(), sizeof(unsigned char), size, file);
-    fclose(file);
+    std::vector<char> buffer(size);
+    if (!file.read(buffer.data(), size)) {
+        throw std::runtime_error("Failed to read file: " + fileName);
+    }
+
+    return {buffer.begin(), buffer.end()};
 }
 
 } // namespace
@@ -67,8 +71,7 @@ proxy_slave::proxy_slave(
         auto client = std::make_shared<BootServiceClient>(protocol);
         transport->open();
 
-        std::string data;
-        read_data(fmuPath.string(), data);
+        std::string data = read_data(fmuPath.string());
 
         const std::string fmuName = std::filesystem::path(fmuPath).stem().string();
         port = client->loadFromBinaryData(fmuName, instanceName, data);

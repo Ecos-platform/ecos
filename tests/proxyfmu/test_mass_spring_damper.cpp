@@ -1,11 +1,11 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ecos/fmi/proxy/proxy_fmu.hpp"
+#include "proxyfmu/proxy_fmu.hpp"
 
 #include <unordered_map>
 
 using namespace fmilibcpp;
-using namespace ecos::proxyfmu;
+using namespace proxyfmu;
 
 namespace
 {

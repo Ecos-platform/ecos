@@ -40,10 +40,14 @@ set(privateHeaders
         "ecos/fmi/fmi_model.hpp"
         "ecos/fmi/fmi_model_instance.hpp"
         "ecos/fmi/fmi_model_sub_resolver.hpp"
-        "ecos/fmi/proxy/proxy_fmu.hpp"
-        "ecos/fmi/proxy/proxy_slave.hpp"
         "ecos/fmi/proxy/proxy_model.hpp"
         "ecos/fmi/proxy/proxy_model_sub_resolver.hpp"
+
+        "ecos/ssp/ssp.hpp"
+
+        "ecos/util/temp_dir.hpp"
+        "ecos/util/unzipper.hpp"
+        "ecos/util/uuid.hpp"
 
         "fmilibcpp/buffered_slave.hpp"
         "fmilibcpp/fmicontext.hpp"
@@ -60,13 +64,12 @@ set(privateHeaders
         "fmilibcpp/fmi2/fmi2_slave.hpp"
         "fmilibcpp/fmi2/fmi2_model_description.hpp"
 
-        "ecos/ssp/ssp.hpp"
+        "proxyfmu/process_helper.hpp"
+        "proxyfmu/proxy_fmu.hpp"
+        "proxyfmu/proxy_slave.hpp"
+        "proxyfmu/remote_info.hpp"
 
-        "ecos/util/temp_dir.hpp"
-        "ecos/util/unzipper.hpp"
-        "ecos/util/uuid.hpp"
-
-        )
+)
 
 set(sources
 
@@ -80,10 +83,7 @@ set(sources
         "ecos/algorithm/fixed_step_algorithm.cpp"
 
         "ecos/fmi/fmi_model_sub_resolver.cpp"
-
         "ecos/fmi/proxy/proxy_model_sub_resolver.cpp"
-        "ecos/fmi/proxy/proxy_fmu.cpp"
-        "ecos/fmi/proxy/proxy_slave.cpp"
 
         "ecos/listeners/csv_writer.cpp"
         "ecos/listeners/simulation_listener.cpp"
@@ -106,6 +106,9 @@ set(sources
         "fmilibcpp/fmi2/fmi2_fmu.cpp"
         "fmilibcpp/fmi2/fmi2_slave.cpp"
         "fmilibcpp/fmi2/fmi2_model_description.cpp"
+
+        "proxyfmu/proxy_fmu.cpp"
+        "proxyfmu/proxy_slave.cpp"
 
 )
 

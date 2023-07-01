@@ -42,7 +42,7 @@ std::string read_data(std::string const& fileName)
 } // namespace
 
 
-namespace ecos::proxyfmu
+namespace proxyfmu
 {
 
 proxy_slave::proxy_slave(
@@ -226,4 +226,4 @@ proxy_slave::~proxy_slave()
     proxy_slave::freeInstance();
 }
 
-} // namespace ecos::proxyfmu
+} // namespace proxyfmu

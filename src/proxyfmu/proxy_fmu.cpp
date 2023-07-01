@@ -9,7 +9,7 @@
 #include <utility>
 
 
-namespace ecos::proxyfmu
+namespace proxyfmu
 {
 
 proxy_fmu::proxy_fmu(const std::filesystem::path& fmuPath, std::optional<remote_info> remote)
@@ -32,4 +32,4 @@ std::unique_ptr<fmilibcpp::slave> proxy_fmu::new_instance(const std::string& ins
     return std::make_unique<proxy_slave>(fmuPath_, instanceName, modelDescription_, remote_);
 }
 
-} // namespace ecos::proxyfmu
+} // namespace proxyfmu

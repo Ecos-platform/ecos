@@ -10,7 +10,7 @@
 
 #include <optional>
 
-namespace ecos::proxyfmu
+namespace proxyfmu
 {
 
 class proxy_fmu : public fmilibcpp::fmu

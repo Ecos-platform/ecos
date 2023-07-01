@@ -2,7 +2,7 @@
 #ifndef ECOS_PROXY_MODEL_HPP
 #define ECOS_PROXY_MODEL_HPP
 
-#include "proxy_fmu.hpp"
+#include "proxyfmu/proxy_fmu.hpp"
 
 #include "ecos/fmi/fmi_model_instance.hpp"
 #include "ecos/model.hpp"

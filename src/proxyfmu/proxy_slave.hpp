@@ -15,7 +15,7 @@ using namespace proxyfmu::thrift;
 using namespace apache::thrift;
 using namespace apache::thrift::transport;
 
-namespace ecos::proxyfmu
+namespace proxyfmu
 {
 
 class proxy_slave : public fmilibcpp::slave
@@ -61,6 +61,6 @@ public:
     ~proxy_slave() override;
 };
 
-} // namespace ecos::proxyfmu
+} // namespace proxyfmu
 
 #endif // PROXY_FMU_PROXY_SLAVE_HPP

@@ -1,7 +1,7 @@
 
 #include "handlers/boot_service_handler.hpp"
 
-#include "ecos/fmi/proxy/process_helper.hpp"
+#include "proxyfmu/process_helper.hpp"
 
 #include <chrono>
 #include <cstdio>
@@ -30,7 +30,7 @@ int32_t boot_service_handler::loadFromBinaryData(const std::string& fmuName, con
     int port = -1;
     std::mutex mtx;
     std::condition_variable cv;
-    auto t = std::make_unique<std::thread>(&ecos::proxyfmu::start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
+    auto t = std::make_unique<std::thread>(&proxyfmu::start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
     processes_.emplace_back(std::move(t));
     dirs_.emplace_back(std::move(tmp));
 

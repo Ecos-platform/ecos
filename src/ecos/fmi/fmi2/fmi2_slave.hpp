@@ -11,7 +11,7 @@
 #include <fmilib.h>
 #include <memory>
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 class fmi2_slave : public slave
@@ -21,14 +21,14 @@ private:
     fmi2_import_t* handle_;
     const model_description md_;
     std::shared_ptr<fmicontext> ctx_;
-    std::shared_ptr<temp_dir> tmpDir_;
+    std::shared_ptr<ecos::temp_dir> tmpDir_;
 
 public:
     fmi2_slave(
         const std::shared_ptr<fmicontext>& ctx,
         const std::string& instanceName,
         model_description md,
-        std::shared_ptr<temp_dir> tmpDir,
+        std::shared_ptr<ecos::temp_dir> tmpDir,
         bool fmiLogging);
 
     [[nodiscard]] const model_description& get_model_description() const override;

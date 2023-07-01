@@ -48,7 +48,7 @@ std::unique_ptr<jm_callbacks> make_callbacks(bool logging)
 
 } // namespace
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 class fmicontext

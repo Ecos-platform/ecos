@@ -4,7 +4,7 @@
 
 #include <unordered_map>
 
-using namespace ecos::fmi;
+using namespace fmilibcpp;
 using namespace ecos::proxyfmu;
 
 namespace

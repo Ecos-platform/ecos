@@ -8,7 +8,7 @@
 #include <memory>
 #include <filesystem>
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 class fmu

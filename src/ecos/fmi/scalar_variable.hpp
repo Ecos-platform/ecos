@@ -8,7 +8,7 @@
 #include <variant>
 #include <vector>
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 struct real_attributes

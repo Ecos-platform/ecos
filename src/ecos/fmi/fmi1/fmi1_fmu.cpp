@@ -6,10 +6,10 @@
 #include <fmilib.h>
 
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
-fmi1_fmu::fmi1_fmu(std::unique_ptr<fmicontext> ctx, std::shared_ptr<temp_dir> tmpDir, bool fmiLogging)
+fmi1_fmu::fmi1_fmu(std::unique_ptr<fmicontext> ctx, std::shared_ptr<ecos::temp_dir> tmpDir, bool fmiLogging)
     : ctx_(std::move(ctx))
     , handle_(fmi1_import_parse_xml(ctx->ctx_, tmpDir->path().string().c_str()))
     , tmpDir_(std::move(tmpDir))

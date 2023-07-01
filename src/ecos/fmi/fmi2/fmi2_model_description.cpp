@@ -1,19 +1,17 @@
 
 #include "fmi2_model_description.hpp"
 
-using namespace ecos;
-
 namespace
 {
 
-std::optional<fmi::scalar_variable> to_scalar_variable(fmi2_import_variable_t* v)
+std::optional<fmilibcpp::scalar_variable> to_scalar_variable(fmi2_import_variable_t* v)
 {
     const auto type = fmi2_import_get_variable_base_type(v);
     if (type == fmi2_base_type_enum) {
         return std::nullopt;
     }
 
-    fmi::scalar_variable var;
+    fmilibcpp::scalar_variable var;
     var.vr = fmi2_import_get_variable_vr(v);
     var.name = fmi2_import_get_variable_name(v);
     //    var.description = fmi2_import_get_variable_description(v);
@@ -22,28 +20,28 @@ std::optional<fmi::scalar_variable> to_scalar_variable(fmi2_import_variable_t* v
 
     switch (type) {
         case fmi2_base_type_real: {
-            fmi::real_attributes r{};
+            fmilibcpp::real_attributes r{};
             if (fmi2_import_get_variable_has_start(v)) {
                 r.start = fmi2_import_get_real_variable_start(fmi2_import_get_variable_as_real(v));
             }
             var.typeAttributes = r;
         } break;
         case fmi2_base_type_int: {
-            fmi::integer_attributes i{};
+            fmilibcpp::integer_attributes i{};
             if (fmi2_import_get_variable_has_start(v)) {
                 i.start = fmi2_import_get_integer_variable_start(fmi2_import_get_variable_as_integer(v));
             }
             var.typeAttributes = i;
         } break;
         case fmi2_base_type_bool: {
-            fmi::boolean_attributes b{};
+            fmilibcpp::boolean_attributes b{};
             if (fmi2_import_get_variable_has_start(v)) {
                 b.start = fmi2_import_get_boolean_variable_start(fmi2_import_get_variable_as_boolean(v));
             }
             var.typeAttributes = b;
         } break;
         case fmi2_base_type_str: {
-            fmi::string_attributes s{};
+            fmilibcpp::string_attributes s{};
             if (fmi2_import_get_variable_has_start(v)) {
                 s.start = fmi2_import_get_string_variable_start(fmi2_import_get_variable_as_string(v));
             }
@@ -56,7 +54,7 @@ std::optional<fmi::scalar_variable> to_scalar_variable(fmi2_import_variable_t* v
 
 } // namespace
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 model_description create_model_description(fmi2_import_t* handle)

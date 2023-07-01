@@ -8,7 +8,7 @@
 #include <optional>
 #include <vector>
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 struct default_experiment

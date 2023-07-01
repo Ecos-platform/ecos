@@ -8,10 +8,10 @@
 #include <fmilib.h>
 #include <iostream>
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
-fmi2_fmu::fmi2_fmu(std::shared_ptr<fmicontext> ctx, std::shared_ptr<temp_dir> tmpDir, bool fmiLogging)
+fmi2_fmu::fmi2_fmu(std::shared_ptr<fmicontext> ctx, std::shared_ptr<ecos::temp_dir> tmpDir, bool fmiLogging)
     : ctx_(std::move(ctx))
     , handle_(fmi2_import_parse_xml(ctx->ctx_, tmpDir->path().string().c_str(), nullptr))
     , md_(create_model_description(handle_))

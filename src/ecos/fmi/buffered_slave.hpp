@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <utility>
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 class buffered_slave : public slave

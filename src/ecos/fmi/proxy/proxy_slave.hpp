@@ -18,11 +18,11 @@ using namespace apache::thrift::transport;
 namespace ecos::proxyfmu
 {
 
-class proxy_slave : public fmi::slave
+class proxy_slave : public fmilibcpp::slave
 {
 
 private:
-    const fmi::model_description modelDescription_;
+    const fmilibcpp::model_description modelDescription_;
     std::shared_ptr<FmuServiceClient> client_;
     std::shared_ptr<TTransport> transport_;
     std::unique_ptr<std::thread> thread_;
@@ -33,10 +33,10 @@ public:
     proxy_slave(
         const std::filesystem::path& fmuPath,
         const std::string& instanceName,
-        fmi::model_description modelDescription,
+        fmilibcpp::model_description modelDescription,
         const std::optional<remote_info>& remote);
 
-    [[nodiscard]] const fmi::model_description& get_model_description() const override;
+    [[nodiscard]] const fmilibcpp::model_description& get_model_description() const override;
 
     bool setup_experiment(double start_time, double stop_time, double tolerance) override;
     bool enter_initialization_mode() override;
@@ -48,15 +48,15 @@ public:
     bool terminate() override;
     void freeInstance() override;
 
-    bool get_integer(const std::vector<fmi::value_ref>& vr, std::vector<int>& values) override;
-    bool get_real(const std::vector<fmi::value_ref>& vr, std::vector<double>& values) override;
-    bool get_string(const std::vector<fmi::value_ref>& vr, std::vector<std::string>& values) override;
-    bool get_boolean(const std::vector<fmi::value_ref>& vr, std::vector<bool>& values) override;
+    bool get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::vector<int>& values) override;
+    bool get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vector<double>& values) override;
+    bool get_string(const std::vector<fmilibcpp::value_ref>& vr, std::vector<std::string>& values) override;
+    bool get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::vector<bool>& values) override;
 
-    bool set_integer(const std::vector<fmi::value_ref>& vr, const std::vector<int>& values) override;
-    bool set_real(const std::vector<fmi::value_ref>& vr, const std::vector<double>& values) override;
-    bool set_string(const std::vector<fmi::value_ref>& vr, const std::vector<std::string>& values) override;
-    bool set_boolean(const std::vector<fmi::value_ref>& vr, const std::vector<bool>& values) override;
+    bool set_integer(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<int>& values) override;
+    bool set_real(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<double>& values) override;
+    bool set_string(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<std::string>& values) override;
+    bool set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<bool>& values) override;
 
     ~proxy_slave() override;
 };

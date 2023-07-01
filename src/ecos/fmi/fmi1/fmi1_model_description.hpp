@@ -6,7 +6,7 @@
 
 #include <fmilib.h>
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 model_description create_model_description(fmi1_import_t* handle);

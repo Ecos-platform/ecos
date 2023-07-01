@@ -2,12 +2,10 @@
 
 #include <ecos/fmi/fmu.hpp>
 
-using namespace ecos;
-
 namespace
 {
 
-void test(fmi::fmu& fmu)
+void test(fmilibcpp::fmu& fmu)
 {
     const auto d = fmu.get_model_description();
     CHECK(d.modelName == "no.viproma.demo.identity");
@@ -20,7 +18,7 @@ void test(fmi::fmu& fmu)
     REQUIRE(slave->enter_initialization_mode());
     REQUIRE(slave->exit_initialization_mode());
 
-    std::vector<fmi::value_ref> vr{0};
+    std::vector<fmilibcpp::value_ref> vr{0};
 
     std::vector<double> realVal{0.0};
     std::vector<int> integerVal{0};
@@ -71,6 +69,6 @@ void test(fmi::fmu& fmu)
 TEST_CASE("fmi_test_identity")
 {
     std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/1.0/identity.fmu";
-    auto fmu = fmi::loadFmu(fmuPath);
+    auto fmu = fmilibcpp::loadFmu(fmuPath);
     test(*fmu);
 }

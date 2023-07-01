@@ -17,10 +17,10 @@ class fmi_model : public model
 
 public:
     explicit fmi_model(const std::filesystem::path& fmuPath)
-        : fmu_(fmi::loadFmu(fmuPath))
+        : fmu_(fmilibcpp::loadFmu(fmuPath))
     { }
 
-    [[nodiscard]] fmi::model_description get_model_description() const
+    [[nodiscard]] fmilibcpp::model_description get_model_description() const
     {
         return fmu_->get_model_description();
     }
@@ -31,7 +31,7 @@ public:
     }
 
 private:
-    std::unique_ptr<fmi::fmu> fmu_;
+    std::unique_ptr<fmilibcpp::fmu> fmu_;
 };
 
 } // namespace ecos

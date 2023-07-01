@@ -3,7 +3,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-using namespace ecos::fmi;
+using namespace fmilibcpp;
 
 namespace
 {

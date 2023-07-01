@@ -20,7 +20,7 @@ private:
     const std::string& fmuPath_;
     const std::string& instanceName_;
 
-    std::unique_ptr<ecos::fmi::slave> slave_;
+    std::unique_ptr<fmilibcpp::slave> slave_;
 
     std::function<void()> stop_;
 

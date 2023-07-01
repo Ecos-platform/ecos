@@ -22,14 +22,14 @@ void noopfmilogger(fmi1_component_t, fmi1_string_t, fmi1_status_t, fmi1_string_t
 } // namespace
 
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 fmi1_slave::fmi1_slave(
     const std::shared_ptr<fmicontext>& ctx,
     const std::string& instanceName,
     model_description md,
-    std::shared_ptr<temp_dir> tmpDir,
+    std::shared_ptr<ecos::temp_dir> tmpDir,
     bool fmiLogging)
     : slave(instanceName)
     , ctx_(ctx)

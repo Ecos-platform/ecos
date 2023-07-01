@@ -8,7 +8,7 @@
 
 #include <fmilib.h>
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 class fmi1_fmu : public fmu
@@ -20,10 +20,10 @@ private:
 
     const bool fmiLogging_;
     const model_description md_;
-    std::shared_ptr<temp_dir> tmpDir_;
+    std::shared_ptr<ecos::temp_dir> tmpDir_;
 
 public:
-    fmi1_fmu(std::unique_ptr<fmicontext> ctx, std::shared_ptr<temp_dir> tmpDir, bool fmiLogging = true);
+    fmi1_fmu(std::unique_ptr<fmicontext> ctx, std::shared_ptr<ecos::temp_dir> tmpDir, bool fmiLogging = true);
 
     [[nodiscard]] const model_description& get_model_description() const override;
 

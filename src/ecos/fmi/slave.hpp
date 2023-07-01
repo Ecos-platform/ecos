@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-namespace ecos::fmi
+namespace fmilibcpp
 {
 
 using value_ref = unsigned int;

@@ -3,7 +3,7 @@
 
 #include "ecos/fmi/fmu.hpp"
 
-using namespace ecos::fmi;
+using namespace fmilibcpp;
 
 namespace
 {

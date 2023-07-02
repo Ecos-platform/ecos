@@ -15,8 +15,15 @@ def version():
 
 class CMakeExtension(Extension):
 
-    def __init__(self, name):
-        super().__init__(name, sources=[])
+    def __init__(self):
+        super().__init__(
+            name="ecospy",
+            sources=[
+                "lib.py",
+                "plotter.py"
+            ],
+            library_dirs=["build/bin"],
+            libraries=["libecosc"])
 
 
 class CMakeBuild(build_ext):
@@ -35,10 +42,10 @@ class CMakeBuild(build_ext):
             '..',
             '-B',
             buildFolder,
-            '-DCMAKE_BUILD_TYPE={}'.format(build_type)
+            '-DCMAKE_BUILD_TYPE={}'.format(build_type),
         ]
         if WINDOWS:
-            cmake_args.extend(['-G', 'Visual Studio 16 2019', '-A', 'x64'])
+            cmake_args.extend(['-A', 'x64', '-DVCPKG_TARGET_TRIPLET=x64-windows-static-md'])
 
         subprocess.check_call(cmake_args)
         cmake_args_build = [
@@ -56,15 +63,16 @@ def binary_suffix():
 
 
 setup(name="ecospy",
-    version=version(),
-    description="Ecos co-simulation library",
-    url="https://github.com/Ecos-platform/ecos",
-    license="MIT",
-    include_package_data=True,
-    packages=['ecospy'],
-    package_dir={'ecospy': '.'},
-    package_data={'ecospy': [f"{buildFolder}/bin/*.dll"]},
-    data_files=[("Scripts", [f"{buildFolder}/bin/proxyfmu{binary_suffix()}", f"{buildFolder}/bin/ecos{binary_suffix()}"])],
-    ext_modules=[CMakeExtension('ecospy')],
-    cmdclass=dict(build_ext=CMakeBuild),
-)
+      version=version(),
+      description="Ecos co-simulation library",
+      url="https://github.com/Ecos-platform/ecos",
+      author="Lars Ivar Hatledal",
+      license="MIT",
+      include_package_data=True,
+      packages=['ecospy'],
+      package_dir={'ecospy': '.'},
+      data_files=[
+          ("Scripts", [f"{buildFolder}/bin/proxyfmu{binary_suffix()}", f"{buildFolder}/bin/ecos{binary_suffix()}"])],
+      ext_modules=[CMakeExtension()],
+      cmdclass=dict(build_ext=CMakeBuild),
+      )

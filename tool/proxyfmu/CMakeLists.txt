@@ -17,9 +17,15 @@ target_include_directories(proxyfmu
         "${generatedSourcesDir}")
 target_link_libraries(proxyfmu
         PRIVATE
-        libecos
+        fmt::fmt
+        libzip::zip
         CLI11::CLI11
+        spdlog::spdlog
         thrift::thrift
+        unofficial::fmilib::fmilib
+        "$<TARGET_OBJECTS:util>"
+        "$<TARGET_OBJECTS:logger>"
+        "$<TARGET_OBJECTS:fmilibcpp>"
         "$<TARGET_OBJECTS:proxyfmu-service>"
         )
 if (UNIX)

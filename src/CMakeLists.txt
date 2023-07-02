@@ -88,24 +88,10 @@ set(sources
         "ecos/listeners/csv_writer.cpp"
         "ecos/listeners/simulation_listener.cpp"
 
-        "ecos/logger/logger.cpp"
-
         "ecos/ssp/ssp.cpp"
         "ecos/ssp/ssp_loader.cpp"
 
         "ecos/structure/simulation_structure.cpp"
-
-        "ecos/util/temp_dir.cpp"
-        "ecos/util/unzipper.cpp"
-        "ecos/util/uuid.cpp"
-
-        "fmilibcpp/fmu.cpp"
-        "fmilibcpp/fmi1/fmi1_fmu.cpp"
-        "fmilibcpp/fmi1/fmi1_slave.cpp"
-        "fmilibcpp/fmi1/fmi1_model_description.cpp"
-        "fmilibcpp/fmi2/fmi2_fmu.cpp"
-        "fmilibcpp/fmi2/fmi2_slave.cpp"
-        "fmilibcpp/fmi2/fmi2_model_description.cpp"
 
         "proxyfmu/proxy_fmu.cpp"
         "proxyfmu/proxy_slave.cpp"
@@ -120,8 +106,46 @@ configure_file(
         @ONLY
 )
 
+add_library(logger OBJECT "ecos/logger/logger.cpp")
+set_target_properties(logger PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(logger PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_link_libraries(logger
+        PUBLIC
+        fmt::fmt
+        PRIVATE
+        spdlog::spdlog
+)
+
+add_library(util OBJECT
+        "ecos/util/temp_dir.cpp"
+        "ecos/util/unzipper.cpp"
+        "ecos/util/uuid.cpp"
+)
+set_target_properties(util PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(util PRIVATE libzip::zip)
+target_include_directories(util
+        PRIVATE
+        "${PROJECT_SOURCE_DIR}/include"
+        "${PROJECT_SOURCE_DIR}/src")
+
+add_library(fmilibcpp OBJECT
+        "fmilibcpp/fmu.cpp"
+        "fmilibcpp/fmi1/fmi1_fmu.cpp"
+        "fmilibcpp/fmi1/fmi1_slave.cpp"
+        "fmilibcpp/fmi1/fmi1_model_description.cpp"
+        "fmilibcpp/fmi2/fmi2_fmu.cpp"
+        "fmilibcpp/fmi2/fmi2_slave.cpp"
+        "fmilibcpp/fmi2/fmi2_model_description.cpp"
+)
+set_target_properties(fmilibcpp PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(fmilibcpp PRIVATE unofficial::fmilib::fmilib)
+target_include_directories(fmilibcpp
+        PRIVATE
+        "${PROJECT_SOURCE_DIR}/include"
+        "${PROJECT_SOURCE_DIR}/src")
+
 add_library(libecos ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
-set_property(TARGET libecos PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(libecos PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_compile_features(libecos PUBLIC "cxx_std_17")
 target_include_directories(libecos
         PUBLIC
@@ -141,6 +165,9 @@ target_link_libraries(libecos
         thrift::thrift
         pugixml::pugixml
         unofficial::fmilib::fmilib
+        "$<TARGET_OBJECTS:util>"
+        "$<TARGET_OBJECTS:logger>"
+        "$<TARGET_OBJECTS:fmilibcpp>"
         "$<TARGET_OBJECTS:proxyfmu-service>"
         )
 if (UNIX)

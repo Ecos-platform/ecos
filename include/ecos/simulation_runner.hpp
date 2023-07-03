@@ -20,25 +20,19 @@ class simulation_runner
 public:
     explicit simulation_runner(simulation& sim);
 
-    double real_time_factor() const;
+    [[nodiscard]] double real_time_factor() const;
 
-    double target_real_time_factor() const
-    {
-        return targetRtf_;
-    }
+    [[nodiscard]] double target_real_time_factor() const;
 
-    double wall_clock() const;
+    [[nodiscard]] double wall_clock() const;
 
     simulation_runner& set_real_time_factor(double target);
 
     simulation_runner& set_callback(const std::optional<std::function<void()>>& callback);
 
-    void start()
-    {
-        run_while([] { return true; });
-    }
-
     std::future<void> run_while(std::function<bool()> predicate);
+
+    void start();
 
     void stop();
 

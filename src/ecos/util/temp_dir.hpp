@@ -15,9 +15,13 @@ private:
 public:
     explicit temp_dir(const std::string& name);
 
+    temp_dir(temp_dir&&) = delete;
     temp_dir(const temp_dir&) = delete;
+    temp_dir& operator=(temp_dir&&) = delete;
+    temp_dir& operator=(const temp_dir&) = delete;
 
-    [[nodiscard]] std::filesystem::path path()
+
+    [[nodiscard]] std::filesystem::path path() const noexcept
     {
         return path_;
     }

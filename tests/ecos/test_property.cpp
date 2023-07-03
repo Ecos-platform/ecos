@@ -7,7 +7,7 @@ using namespace ecos;
 
 TEST_CASE("test_property")
 {
-    {
+    SECTION("test int"){
         int value = -100;
         property_t<int> p(
             {"::intValue"},
@@ -23,7 +23,7 @@ TEST_CASE("test_property")
         CHECK(p.id.variableName == "intValue");
     }
 
-    {
+    SECTION("test double"){
         double value = -100;
         property_t<double> p(
             {"::doubleValue"},

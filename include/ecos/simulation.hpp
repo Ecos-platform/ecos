@@ -25,7 +25,9 @@ public:
     explicit simulation(std::unique_ptr<algorithm> algorithm);
 
     simulation(const simulation&) = delete;
-    simulation(const simulation&&) = delete;
+    simulation(simulation&&) = delete;
+    simulation& operator=(simulation&&) = delete;
+    simulation& operator=(const simulation&) = delete;
 
     [[nodiscard]] double time() const
     {

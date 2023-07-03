@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <tuple>
 
 namespace ecos
 {
@@ -35,31 +36,26 @@ struct variable_identifier
         return instanceName == other.instanceName && variableName == other.variableName;
     }
 
-    bool operator!=(const variable_identifier& other) const
-    {
-        return !(*this == other);
-    }
-
     bool operator<(const variable_identifier& other) const
     {
-        return instanceName < other.instanceName || (instanceName == other.instanceName && variableName < other.variableName);
+        return std::tie(instanceName, variableName) < std::tie(other.instanceName, other.variableName);
     }
 
-    std::ostream& operator<<(std::ostream& os) const
+    friend std::ostream& operator<<(std::ostream& os, const variable_identifier& v)
     {
-        os << str();
+        os << v.str();
         return os;
     }
 
 private:
     static variable_identifier parse(const std::string& identifier)
     {
-        auto result = identifier.find("::");
-        if (result == std::string::npos) {
+        auto pos = identifier.find("::");
+        if (pos == std::string::npos) {
             throw std::runtime_error("Error parsing variable identifier. A '::' must be present!");
         }
 
-        return {identifier.substr(0, result), identifier.substr(result + 2)};
+        return {identifier.substr(0, pos), identifier.substr(pos + 2)};
     }
 };
 

@@ -15,6 +15,11 @@ double simulation_runner::real_time_factor() const
     return rtf_;
 }
 
+double simulation_runner::target_real_time_factor() const
+{
+    return targetRtf_;
+}
+
 double simulation_runner::wall_clock() const
 {
     return wallClock_;
@@ -78,6 +83,11 @@ void simulation_runner::run()
             rtf_ = t / wallClock_;
         }
     });
+}
+
+void simulation_runner::start()
+{
+    run_while([] { return true; });
 }
 
 void simulation_runner::stop()

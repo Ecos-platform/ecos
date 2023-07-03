@@ -145,6 +145,7 @@ target_include_directories(fmilibcpp
         "${PROJECT_SOURCE_DIR}/src")
 
 add_library(libecos ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
+set_target_properties(libecos PROPERTIES PREFIX "")
 set_target_properties(libecos PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_compile_features(libecos PUBLIC "cxx_std_17")
 target_include_directories(libecos
@@ -176,6 +177,7 @@ endif ()
 
 if (ECOS_BUILD_CLIB)
     add_library(libecosc SHARED "${CMAKE_CURRENT_SOURCE_DIR}/ecos/ecos.cpp")
+    set_target_properties(libecosc PROPERTIES PREFIX "")
     set_property(TARGET libecosc PROPERTY POSITION_INDEPENDENT_CODE ON)
     target_link_libraries(libecosc
             PUBLIC

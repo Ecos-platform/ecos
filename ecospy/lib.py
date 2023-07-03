@@ -37,13 +37,10 @@ class _EcosLib:
         def suffix() -> str:
             return ".dll" if os.name == "nt" else ".so"
 
-        def prefix() -> str:
-            return "" if os.name == "nt" else "lib"
-
         binFolder = f"{__file__}\\..\\build\\bin"
         os.add_dll_directory(binFolder)
 
-        self._handle = CDLL(f"{prefix()}libecosc{suffix()}")
+        self._handle = CDLL(f"libecosc{suffix()}")
 
         self._set_log_level = self._handle.set_log_level
         self._set_log_level.argtypes = [c_char_p]

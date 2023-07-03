@@ -183,4 +183,4 @@ if (ECOS_BUILD_CLIB)
 endif ()
 
 # Make sure executable is up to date
-#add_dependencies(libecos proxyfmu)
+add_dependencies(libecos proxyfmu)

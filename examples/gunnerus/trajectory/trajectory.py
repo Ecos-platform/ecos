@@ -35,7 +35,7 @@ def main():
     sim.add_csv_writer(resultFile, "LogConfig.xml")
     sim.add_listener("custom_listener", MyListener(sim))
 
-    sim.init("initialValues")
+    sim.init(parameter_set="initialValues")
 
     sim.step_until(250)
 

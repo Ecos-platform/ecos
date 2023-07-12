@@ -32,9 +32,9 @@ cmake . -B build -DCMAKE_TOOLCHAIN_FILE="/home/user/vcpkg/scripts/buildsystems/v
 cmake --build build
 ```
 
-#### Notes on static linking (windows)
+#### Notes on static linking and vcpkg (windows)
 
-In order to produce executables with do DLL dependencies on windows, 
+In order to produce executables with no DLL dependencies on windows, 
 you need to call CMake with `-DVCPKG_TARGET_TRIPLET=x64-windows-static-md`
 
 ### Example

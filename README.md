@@ -139,7 +139,7 @@ See [here](examples/quarter_truck/quarter_truck.py) for an example.
 * Windows (10 >=) or Ubuntu (20.04 >=) 
 * C++17 compiler (MSVC >= 16 || gcc9 >=)
 * CMake >= 3.17
-* Vcpgk
+* Vcpkg
 
 #### Additional Linux requirements
 

@@ -5,8 +5,8 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
-#include <utility>
 #include <tuple>
+#include <utility>
 
 namespace ecos
 {

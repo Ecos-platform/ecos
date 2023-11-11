@@ -72,7 +72,6 @@ private:
     std::vector<unbound_connection> connections_;
     std::unordered_map<std::string, std::map<variable_identifier, scalar_value>> parameterSets;
     std::unordered_map<std::string, std::pair<std::shared_ptr<model>, std::optional<double>>> models_;
-
 };
 
 } // namespace ecos

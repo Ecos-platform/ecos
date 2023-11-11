@@ -48,7 +48,8 @@ class csv_writer : public simulation_listener
 public:
     explicit csv_writer(const std::filesystem::path& path);
 
-    csv_config& config() {
+    csv_config& config()
+    {
         return config_;
     }
 
@@ -64,7 +65,6 @@ private:
     csv_config config_;
     std::ofstream outFile_;
     std::filesystem::path path_;
-
 };
 
 } // namespace ecos

@@ -44,7 +44,8 @@ public:
         return initialized_;
     }
 
-    [[nodiscard]] bool terminated() const {
+    [[nodiscard]] bool terminated() const
+    {
         return terminated_;
     }
 

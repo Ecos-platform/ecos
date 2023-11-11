@@ -71,6 +71,6 @@ struct model_description
     }
 };
 
-} // namespace fmi
+} // namespace fmilibcpp
 
 #endif // ECOS_FMI_MODEL_DESCRIPTION_HPP

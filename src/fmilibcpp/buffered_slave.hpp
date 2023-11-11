@@ -312,6 +312,6 @@ private:
     bool initialized{false};
 };
 
-} // namespace fmi
+} // namespace fmilibcpp
 
 #endif // ECOS_FMI_BUFFERED_SLAVE_HPP

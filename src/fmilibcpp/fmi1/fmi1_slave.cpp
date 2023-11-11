@@ -188,4 +188,4 @@ fmi1_slave::~fmi1_slave()
     fmi1_slave::freeInstance();
 }
 
-} // namespace ecos::fmi
+} // namespace fmilibcpp

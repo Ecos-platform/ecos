@@ -6,10 +6,10 @@
 
 #include <condition_variable>
 #include <exception>
+#include <filesystem>
 #include <iostream>
 #include <mutex>
 #include <string>
-#include <filesystem>
 
 #ifdef WIN32
 #    define WIN32_LEAN_AND_MEAN
@@ -53,7 +53,7 @@ void start_process(
 
     if (!std::filesystem::exists(executable)) {
         const std::string loc = getLoc();
-        auto alt_executable = std::filesystem::path(loc).parent_path().string() / executable;
+        const auto alt_executable = std::filesystem::path(loc).parent_path().string() / executable;
         if (std::filesystem::exists(alt_executable)) {
             executable = alt_executable;
         }
@@ -82,9 +82,7 @@ void start_process(
     const std::string fmuPathStr = fmuPath.string();
     std::vector<const char*> cmd = {execStr.c_str(), "--fmu", fmuPathStr.c_str(), "--instanceName", instanceName.c_str(), nullptr};
 
-    // clang-format off
-    struct subprocess_s process{};
-    // clang-format on
+    subprocess_s process{};
     int result = subprocess_create(cmd.data(), subprocess_option_inherit_environment | subprocess_option_no_window, &process);
 
     bool bound = false;

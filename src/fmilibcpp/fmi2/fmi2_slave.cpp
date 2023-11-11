@@ -189,4 +189,4 @@ fmi2_slave::~fmi2_slave()
     fmi2_slave::freeInstance();
 }
 
-} // namespace fmi
+} // namespace fmilibcpp

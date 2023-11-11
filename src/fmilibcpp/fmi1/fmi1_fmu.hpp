@@ -2,10 +2,10 @@
 #ifndef ECOS_FMI_FMI1_FMU_HPP
 #define ECOS_FMI_FMI1_FMU_HPP
 
+#include "ecos/util/temp_dir.hpp"
+
 #include "fmilibcpp/fmicontext.hpp"
 #include "fmilibcpp/fmu.hpp"
-
-#include "ecos/util/temp_dir.hpp"
 
 #include <fmilib.h>
 

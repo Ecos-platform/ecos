@@ -78,6 +78,6 @@ public:
     virtual ~slave() = default;
 };
 
-} // namespace fmi
+} // namespace fmilibcpp
 
 #endif // ECOS_FMI_SLAVE_HPP

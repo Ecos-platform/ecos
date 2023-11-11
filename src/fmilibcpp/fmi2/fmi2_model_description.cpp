@@ -89,4 +89,4 @@ model_description create_model_description(fmi2_import_t* handle)
     return md;
 }
 
-} // namespace fmi
+} // namespace fmilibcpp

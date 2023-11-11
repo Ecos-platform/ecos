@@ -58,7 +58,6 @@ private:
     ecos_logger()
         : logger_(spdlog::stdout_color_mt("ecos"))
     { }
-
 };
 
 void log::set_logging_level(level lvl)

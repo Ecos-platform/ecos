@@ -5,8 +5,8 @@
 #include "model_description.hpp"
 #include "slave.hpp"
 
-#include <memory>
 #include <filesystem>
+#include <memory>
 
 namespace fmilibcpp
 {
@@ -25,6 +25,6 @@ public:
 
 std::unique_ptr<fmu> loadFmu(const std::filesystem::path& fmuPath, bool fmiLogging = true);
 
-} // namespace fmi
+} // namespace fmilibcpp
 
 #endif // ECOS_FMI_FMU_FMU_HPP

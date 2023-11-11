@@ -90,4 +90,4 @@ model_description create_model_description(fmi1_import_t* handle)
     return md;
 }
 
-} // namespace ecos::fmi
+} // namespace fmilibcpp

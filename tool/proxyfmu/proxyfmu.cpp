@@ -5,12 +5,13 @@
 #include "ecos/lib_info.hpp"
 
 #include <CLI/CLI.hpp>
-#include <functional>
-#include <iostream>
-#include <random>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TTransportUtils.h>
+
+#include <functional>
+#include <iostream>
+#include <random>
 #include <utility>
 
 using namespace proxyfmu::thrift;
@@ -51,7 +52,6 @@ public:
 private:
     std::mt19937 mt_;
     std::uniform_int_distribution<int> dist_;
-
 };
 
 class ServerReadyEventHandler : public TServerEventHandler
@@ -85,13 +85,13 @@ int run_application(const std::string& fmu, const std::string& instanceName)
 {
     std::unique_ptr<TSimpleServer> server;
     auto stop = [&]() {
-        server->stop();
+        if (server) server->stop();
     };
-    std::shared_ptr<fmu_service_handler> handler(new fmu_service_handler(fmu, instanceName, stop));
-    std::shared_ptr<TProcessor> processor(new FmuServiceProcessor(handler));
+    auto handler = std::make_shared<fmu_service_handler>(fmu, instanceName, stop);
+    auto processor = std::make_shared<FmuServiceProcessor>(handler);
 
-    std::shared_ptr<TTransportFactory> transportFactory(new TFramedTransportFactory());
-    std::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+    auto transportFactory = std::make_shared<TFramedTransportFactory>();
+    auto protocolFactory = std::make_shared<TBinaryProtocolFactory>();
 
     rng rng(port_range_min, port_range_max);
 
@@ -100,7 +100,7 @@ int run_application(const std::string& fmu, const std::string& instanceName)
     for (auto i = 0; i < max_port_retries; i++) {
         port = rng.next();
 
-        std::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+        auto serverTransport = std::make_shared<TServerSocket>(port);
         server = std::make_unique<TSimpleServer>(processor, serverTransport, transportFactory, protocolFactory);
         server->setServerEventHandler(std::make_shared<ServerReadyEventHandler>([port, &final_port] {
             final_port = port;
@@ -130,15 +130,15 @@ int run_application(const std::string& fmu, const std::string& instanceName)
 
 int run_boot_application(const int port)
 {
-    std::unique_ptr<TSimpleServer> server;
-    std::shared_ptr<boot_service_handler> handler(new boot_service_handler());
-    std::shared_ptr<TProcessor> processor(new BootServiceProcessor(handler));
 
-    std::shared_ptr<TTransportFactory> transportFactory(new TFramedTransportFactory());
-    std::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+    auto handler = std::make_shared<boot_service_handler>();
+    auto processor = std::make_shared<BootServiceProcessor>(handler);
 
-    std::shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-    server = std::make_unique<TSimpleServer>(processor, serverTransport, transportFactory, protocolFactory);
+    auto transportFactory = std::make_shared<TFramedTransportFactory>();
+    auto protocolFactory = std::make_shared<TBinaryProtocolFactory>();
+
+    auto serverTransport = std::make_shared<TServerSocket>(port);
+    auto server = std::make_unique<TSimpleServer>(processor, serverTransport, transportFactory, protocolFactory);
 
     std::thread t([&server] { server->serve(); });
 

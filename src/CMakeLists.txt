@@ -28,7 +28,7 @@ set(publicHeaders
 
         "ecos/ssp/ssp_loader.hpp"
 
-        )
+)
 
 set(publicHeadersFull)
 foreach (header IN LISTS commonPublicHeaders)
@@ -156,7 +156,7 @@ target_include_directories(libecos
         "${generatedSourcesDir}"
         "${SUBPROCESS_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
-        )
+)
 target_link_libraries(libecos
         PUBLIC
         fmt::fmt
@@ -170,7 +170,7 @@ target_link_libraries(libecos
         "$<TARGET_OBJECTS:logger>"
         "$<TARGET_OBJECTS:fmilibcpp>"
         "$<TARGET_OBJECTS:proxyfmu-service>"
-        )
+)
 if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)
 endif ()

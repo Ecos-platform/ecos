@@ -11,6 +11,6 @@ namespace fmilibcpp
 
 model_description create_model_description(fmi1_import_t* handle);
 
-} // namespace ecos::fmi
+} // namespace fmilibcpp
 
 #endif // ECOS_FMI_FMI1_MODEL_DESCRIPTION_HPP

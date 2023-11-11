@@ -3,9 +3,10 @@
 #define ECOS_FMI_MODEL_HPP
 
 #include "fmi_model_instance.hpp"
-#include "fmilibcpp/fmu.hpp"
 
 #include "ecos/model.hpp"
+
+#include "fmilibcpp/fmu.hpp"
 
 #include <filesystem>
 

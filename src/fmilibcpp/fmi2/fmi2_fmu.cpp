@@ -40,4 +40,4 @@ fmi2_fmu::~fmi2_fmu()
 }
 
 
-} // namespace fmi
+} // namespace fmilibcpp

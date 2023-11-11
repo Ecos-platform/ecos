@@ -3,10 +3,11 @@
 #define ECOS_FMI_FMI1_SLAVE_HPP
 
 #include "fmi1_model_description.hpp"
-#include "fmilibcpp/fmicontext.hpp"
-#include "fmilibcpp/slave.hpp"
 
 #include "ecos/util/temp_dir.hpp"
+
+#include "fmilibcpp/fmicontext.hpp"
+#include "fmilibcpp/slave.hpp"
 
 #include <fmilib.h>
 #include <memory>

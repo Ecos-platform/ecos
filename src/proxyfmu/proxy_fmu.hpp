@@ -32,7 +32,7 @@ public:
     ~proxy_fmu() override = default;
 };
 
-} // namespace proxyfmu::client
+} // namespace proxyfmu
 
 
 #endif // PROXY_PROXY_FMU_FMU_HPP

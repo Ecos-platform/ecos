@@ -38,4 +38,4 @@ fmi1_fmu::~fmi1_fmu()
 }
 
 
-} // namespace fmi
+} // namespace fmilibcpp

@@ -5,7 +5,7 @@ set(sources
         "handlers/boot_service_handler.cpp"
 
         "${generatedSourcesDir}/ecos/lib_info.cpp"
-        )
+)
 
 add_executable(proxyfmu ${sources})
 target_include_directories(proxyfmu
@@ -27,7 +27,7 @@ target_link_libraries(proxyfmu
         "$<TARGET_OBJECTS:logger>"
         "$<TARGET_OBJECTS:fmilibcpp>"
         "$<TARGET_OBJECTS:proxyfmu-service>"
-        )
+)
 if (UNIX)
-  target_link_libraries(proxyfmu PRIVATE pthread)
+    target_link_libraries(proxyfmu PRIVATE pthread)
 endif ()

@@ -76,6 +76,6 @@ struct scalar_variable
 
 using model_variables = std::vector<scalar_variable>;
 
-} // namespace ecos::fmi
+} // namespace fmilibcpp
 
 #endif // ECOS_FMI_SCALAR_VARIABLE_HPP

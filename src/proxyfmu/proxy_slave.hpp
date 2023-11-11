@@ -2,10 +2,10 @@
 #ifndef PROXY_FMU_PROXY_SLAVE_HPP
 #define PROXY_FMU_PROXY_SLAVE_HPP
 
-#include "proxyfmu/thrift/FmuService.h"
 #include "remote_info.hpp"
 
 #include "fmilibcpp/slave.hpp"
+#include "proxyfmu/thrift/FmuService.h"
 
 #include <filesystem>
 #include <optional>

@@ -8,6 +8,7 @@
 #include "ecos/ssp/ssp_loader.hpp"
 
 #include <CLI/CLI.hpp>
+
 #include <iostream>
 
 using namespace ecos;
@@ -16,15 +17,15 @@ namespace
 {
 
 std::unordered_map<std::string, log::level> map{
-    {"trace",  log::level::trace},
-    {"debug",  log::level::debug},
-    {"info",  log::level::info},
-    {"warn",  log::level::warn},
-    {"err",  log::level::err},
-    {"off",  log::level::off},
+    {"trace", log::level::trace},
+    {"debug", log::level::debug},
+    {"info", log::level::info},
+    {"warn", log::level::warn},
+    {"err", log::level::err},
+    {"off", log::level::off},
 };
 
-log::level lvl =  log::level::info;
+log::level lvl = log::level::info;
 
 int print_help(const CLI::App& desc)
 {

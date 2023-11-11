@@ -33,7 +33,7 @@ set(thriftGenerated
         "${thriftCppSourcesDir}/FmuService.cpp"
         "${thriftCppSourcesDir}/BootService.h"
         "${thriftCppSourcesDir}/BootService.cpp"
-        )
+)
 
 add_library(proxyfmu-service OBJECT ${thriftGenerated})
 target_link_libraries(proxyfmu-service PUBLIC thrift::thrift)

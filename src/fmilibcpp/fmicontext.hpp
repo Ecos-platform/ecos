@@ -70,6 +70,6 @@ public:
     }
 };
 
-} // namespace fmi
+} // namespace fmilibcpp
 
 #endif // ECOS_FMI_FMICONTEXT_HPP

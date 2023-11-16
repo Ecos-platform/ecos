@@ -10,4 +10,6 @@ cmake-build-*
 
 /**/results/**/*.csv
 
+/**/quarter_truck/quarter_truck_sspgen.ssp
+
 LicenseError.txt

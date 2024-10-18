@@ -35,6 +35,10 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif ()
 
+if(MSVC)
+    add_compile_options(/utf-8)
+endif()
+
 # ==============================================================================
 # Dependencies
 # ==============================================================================

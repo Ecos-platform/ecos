@@ -8,6 +8,7 @@
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
+#include <cstring>
 #include <memory>
 
 std::string g_last_error_msg;
@@ -40,17 +41,17 @@ void handle_current_exception()
 void set_log_level(const char* level)
 {
     if (std::string("trace") == level) {
-        ecos::log::set_logging_level(ecos::log::level::trace);
+        set_logging_level(ecos::log::level::trace);
     } else if (std::string("debug") == level) {
-        ecos::log::set_logging_level(ecos::log::level::debug);
+        set_logging_level(ecos::log::level::debug);
     } else if (std::string("info") == level) {
-        ecos::log::set_logging_level(ecos::log::level::info);
+        set_logging_level(ecos::log::level::info);
     } else if (std::string("warn") == level) {
-        ecos::log::set_logging_level(ecos::log::level::warn);
+        set_logging_level(ecos::log::level::warn);
     } else if (std::string("err") == level) {
-        ecos::log::set_logging_level(ecos::log::level::err);
+        set_logging_level(ecos::log::level::err);
     } else if (std::string("off") == level) {
-        ecos::log::set_logging_level(ecos::log::level::off);
+        set_logging_level(ecos::log::level::off);
     }
 }
 
@@ -58,7 +59,7 @@ void set_log_level(const char* level)
 ecos_simulation_t* ecos_simulation_create(const char* sspPath, double stepSize)
 {
     try {
-        auto ss = ecos::load_ssp(sspPath);
+        const auto ss = ecos::load_ssp(sspPath);
 
         auto algorithm = std::make_unique<ecos::fixed_step_algorithm>(stepSize);
         auto sim = std::make_unique<ecos_simulation_t>();
@@ -98,7 +99,7 @@ void ecos_simulation_step_until(ecos_simulation_t* sim, double timePoint)
 bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier, int* value)
 {
     try {
-        auto prop = sim->cpp_sim->get_int_property(identifier);
+        const auto prop = sim->cpp_sim->get_int_property(identifier);
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -110,7 +111,7 @@ bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier,
 bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, double* value)
 {
     try {
-        auto prop = sim->cpp_sim->get_real_property(identifier);
+        const auto prop = sim->cpp_sim->get_real_property(identifier);
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -122,7 +123,7 @@ bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, do
 bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bool* value)
 {
     try {
-        auto prop = sim->cpp_sim->get_bool_property(identifier);
+        const auto prop = sim->cpp_sim->get_bool_property(identifier);
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -131,11 +132,20 @@ bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bo
     }
 }
 
-bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, const char* value)
+bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value, size_t value_size)
 {
     try {
-        auto prop = sim->cpp_sim->get_string_property(identifier);
-        value = prop->get_value().c_str();
+        const auto prop = sim->cpp_sim->get_string_property(identifier)->get_value();
+        // Ensure we don't exceed the buffer size
+        if (prop.size() >= value_size) {
+            // If the string is too large, copy only up to the available size - 1
+            std::strncpy(value, prop.c_str(), value_size - 1);
+            value[value_size - 1] = '\0';  // Null-terminate the string
+        } else {
+            // Safe to copy the entire string
+            std::strcpy(value, prop.c_str());
+        }
+
         return true;
     } catch (...) {
         handle_current_exception();
@@ -146,7 +156,7 @@ bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, 
 bool ecos_simulation_set_integer(ecos_simulation_t* sim, const char* identifier, int value)
 {
     try {
-        auto prop = sim->cpp_sim->get_int_property(identifier);
+        const auto prop = sim->cpp_sim->get_int_property(identifier);
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -158,7 +168,7 @@ bool ecos_simulation_set_integer(ecos_simulation_t* sim, const char* identifier,
 bool ecos_simulation_set_real(ecos_simulation_t* sim, const char* identifier, double value)
 {
     try {
-        auto prop = sim->cpp_sim->get_real_property(identifier);
+        const auto prop = sim->cpp_sim->get_real_property(identifier);
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -170,7 +180,7 @@ bool ecos_simulation_set_real(ecos_simulation_t* sim, const char* identifier, do
 bool ecos_simulation_set_bool(ecos_simulation_t* sim, const char* identifier, bool value)
 {
     try {
-        auto prop = sim->cpp_sim->get_bool_property(identifier);
+        const auto prop = sim->cpp_sim->get_bool_property(identifier);
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -182,7 +192,7 @@ bool ecos_simulation_set_bool(ecos_simulation_t* sim, const char* identifier, bo
 bool ecos_simulation_set_string(ecos_simulation_t* sim, const char* identifier, const char* value)
 {
     try {
-        auto prop = sim->cpp_sim->get_string_property(identifier);
+        const auto prop = sim->cpp_sim->get_string_property(identifier);
         prop->set_value(value);
         return true;
     } catch (...) {

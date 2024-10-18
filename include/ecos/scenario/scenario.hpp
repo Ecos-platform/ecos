@@ -89,7 +89,7 @@ public:
 
 
 private:
-    bool active_;
+    bool active_{false};
     std::vector<std::function<void()>> initActions;
     std::vector<timed_action> timedActions;
     std::vector<predicate_action> predicateActions;

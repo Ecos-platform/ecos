@@ -24,7 +24,7 @@
 namespace proxyfmu
 {
 
-std::string getLoc()
+inline std::string getLoc()
 {
 #ifdef __linux__
     char result[PATH_MAX];
@@ -36,7 +36,7 @@ std::string getLoc()
 #endif
 }
 
-void start_process(
+inline void start_process(
     const std::filesystem::path& fmuPath,
     const std::string& instanceName,
     int& port,
@@ -51,10 +51,10 @@ void start_process(
     executable = "proxyfmu.exe";
 #endif
 
-    if (!std::filesystem::exists(executable)) {
+    if (!exists(executable)) {
         const std::string loc = getLoc();
         const auto alt_executable = std::filesystem::path(loc).parent_path().string() / executable;
-        if (std::filesystem::exists(alt_executable)) {
+        if (exists(alt_executable)) {
             executable = alt_executable;
         }
     }
@@ -67,11 +67,11 @@ void start_process(
 #endif
 
     std::cout << "[proxyfmu] Checking if proxyfmu is available.." << std::endl;
-    int statusCode = system(("\"" + execStr + "\" -v").c_str());
+    const int statusCode = system(("\"" + execStr + "\" -v").c_str());
     if (statusCode != 0) {
         std::cerr << "ERROR - unable to invoke proxyfmu!" << std::endl;
 
-        std::lock_guard<std::mutex> lck(mtx);
+        std::lock_guard lck(mtx);
         port = -999;
         cv.notify_one();
         return;
@@ -93,7 +93,7 @@ void start_process(
             std::string line(buffer);
             if (!bound && line.substr(0, 16) == "[proxyfmu] port=") {
                 {
-                    std::lock_guard<std::mutex> lck(mtx);
+                    std::lock_guard lck(mtx);
                     port = std::stoi(line.substr(16));
                     std::cout << "[proxyfmu] FMU instance '" << instanceName << "' instantiated using port " << port << std::endl;
                 }
@@ -111,13 +111,12 @@ void start_process(
 
         if (result == 0 && status == 0 && bound) {
             return;
-        } else {
-            std::cerr << "[proxyfmu] External proxy process for instance '"
-                      << instanceName << "' returned with status "
-                      << std::to_string(status) << ". Unable to bind.." << std::endl;
         }
+        std::cerr << "[proxyfmu] External proxy process for instance '"
+                  << instanceName << "' returned with status "
+                  << std::to_string(status) << ". Unable to bind.." << std::endl;
     }
-    std::lock_guard<std::mutex> lck(mtx);
+    std::lock_guard lck(mtx);
     port = -999;
 
     cv.notify_one();

@@ -23,7 +23,7 @@ std::shared_ptr<model> model_resolver::resolve(const std::filesystem::path& base
         return cache_.at(key);
     }
     for (auto& resolver : subResolvers_) {
-        std::shared_ptr<model> model = resolver->resolve(base, uri);
+        std::shared_ptr model = resolver->resolve(base, uri);
         if (model) {
             cache_[key] = model;
             return model;

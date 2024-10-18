@@ -21,12 +21,12 @@ int calculateDecimationFactor(const model_instance& m, double baseStepSize)
 
     static double EPS = 1e-3;
 
-    auto stepSizeHint = m.stepSizeHint();
+    const auto& stepSizeHint = m.stepSizeHint();
     if (!stepSizeHint) return 1;
 
-    int decimationFactor = std::max(1, static_cast<int>(std::ceil(*stepSizeHint / baseStepSize)));
-    double actualStepSize = baseStepSize * decimationFactor;
-    double diff = std::fabs(actualStepSize - *stepSizeHint);
+    const int decimationFactor = std::max(1, static_cast<int>(std::ceil(*stepSizeHint / baseStepSize)));
+    const double actualStepSize = baseStepSize * decimationFactor;
+    const double diff = std::fabs(actualStepSize - *stepSizeHint);
     if (diff >= EPS) {
         log::warn("Actual stepSize for {} will be {} rather than requested value {}", m.instanceName(), actualStepSize, *stepSizeHint);
     }
@@ -41,14 +41,14 @@ class fixed_step_algorithm::impl
 
 public:
     impl(double stepSize, bool parallel)
-        : stepSize_(stepSize)
-        , parallel_(parallel)
+        : parallel_(parallel)
+        , stepSize_(stepSize)
         , stepNumber_(0)
     { }
 
     void model_instance_added(model_instance* instance)
     {
-        int decimationFactor = calculateDecimationFactor(*instance, stepSize_);
+        const int decimationFactor = calculateDecimationFactor(*instance, stepSize_);
         instances_.emplace_back(instance_wrapper{decimationFactor, instance});
     }
 
@@ -92,7 +92,7 @@ void fixed_step_algorithm::model_instance_added(model_instance* instance)
     pimpl_->model_instance_added(instance);
 }
 
-double ecos::fixed_step_algorithm::step(double currentTime)
+double fixed_step_algorithm::step(double currentTime)
 {
     return pimpl_->step(currentTime);
 }

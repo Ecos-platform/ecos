@@ -14,10 +14,10 @@ namespace proxyfmu
 
 proxy_fmu::proxy_fmu(const std::filesystem::path& fmuPath, std::optional<remote_info> remote)
     : fmuPath_(fmuPath)
-    , remote_(std::move(remote))
     , modelDescription_(fmilibcpp::loadFmu(fmuPath)->get_model_description())
+    , remote_(std::move(remote))
 {
-    if (!std::filesystem::exists(fmuPath)) {
+    if (!exists(fmuPath)) {
         throw std::runtime_error("No such file: " + std::filesystem::absolute(fmuPath).string() + "!");
     }
 }

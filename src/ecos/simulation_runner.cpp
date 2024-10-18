@@ -76,7 +76,7 @@ void simulation_runner::run()
                     std::this_thread::sleep_for(std::chrono::nanoseconds(1));
                 }
             }
-            double elapsed = sw.elapsed().count();
+            const double elapsed = sw.elapsed().count();
 
             const double t = sim_.time();
             wallClock_ += elapsed;

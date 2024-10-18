@@ -83,7 +83,7 @@ double simulation::step(unsigned int numStep)
         throw std::runtime_error("init() has not been invoked!");
     }
 
-    double newT;
+    double newT{};
     for (unsigned i = 0; i < numStep; ++i) {
 
         for (auto& [_, listener] : listeners_) {
@@ -127,7 +127,7 @@ void simulation::step_until(double t)
 
 void simulation::step_for(double t)
 {
-    double newT = currentTime_ + t;
+    const double newT = currentTime_ + t;
     step_until(newT);
 }
 
@@ -168,7 +168,6 @@ void simulation::add_listener(const std::string& name, std::shared_ptr<simulatio
 {
     if (listeners_.count(name)) {
         log::warn("A listener named {} already exists..");
-        return;
     } else {
         listeners_[name] = std::move(listener);
     }
@@ -201,9 +200,9 @@ void simulation::add_slave(std::unique_ptr<model_instance> instance)
 
 real_connection* simulation::make_real_connection(const variable_identifier& source, const variable_identifier& sink)
 {
-    auto p1 = get_real_property(source);
+    const auto p1 = get_real_property(source);
     if (!p1) throw std::runtime_error("No such real property: " + source.str());
-    auto p2 = get_real_property(sink);
+    const auto p2 = get_real_property(sink);
     if (!p2) throw std::runtime_error("No such real property: " + sink.str());
 
     connections_.emplace_back(std::make_unique<real_connection>(p1, p2));
@@ -212,9 +211,9 @@ real_connection* simulation::make_real_connection(const variable_identifier& sou
 
 int_connection* simulation::make_int_connection(const variable_identifier& source, const variable_identifier& sink)
 {
-    auto p1 = get_int_property(source);
+    const auto p1 = get_int_property(source);
     if (!p1) throw std::runtime_error("No such int property: " + source.str());
-    auto p2 = get_int_property(sink);
+    const auto p2 = get_int_property(sink);
     if (!p2) throw std::runtime_error("No such int property: " + sink.str());
 
     connections_.emplace_back(std::make_unique<int_connection>(p1, p2));
@@ -223,9 +222,9 @@ int_connection* simulation::make_int_connection(const variable_identifier& sourc
 
 bool_connection* simulation::make_bool_connection(const variable_identifier& source, const variable_identifier& sink)
 {
-    auto p1 = get_bool_property(source);
+    const auto p1 = get_bool_property(source);
     if (!p1) throw std::runtime_error("No such bool property: " + source.str());
-    auto p2 = get_bool_property(sink);
+    const auto p2 = get_bool_property(sink);
     if (!p2) throw std::runtime_error("No such bool property: " + sink.str());
 
     connections_.emplace_back(std::make_unique<bool_connection>(p1, p2));
@@ -234,9 +233,9 @@ bool_connection* simulation::make_bool_connection(const variable_identifier& sou
 
 string_connection* simulation::make_string_connection(const variable_identifier& source, const variable_identifier& sink)
 {
-    auto p1 = get_string_property(source);
+    const auto p1 = get_string_property(source);
     if (!p1) throw std::runtime_error("No such string property: " + source.str());
-    auto p2 = get_string_property(sink);
+    const auto p2 = get_string_property(sink);
     if (!p2) throw std::runtime_error("No such string property: " + sink.str());
 
     connections_.emplace_back(std::make_unique<string_connection>(p1, p2));

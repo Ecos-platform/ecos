@@ -1,26 +1,24 @@
 
 #include "handlers/boot_service_handler.hpp"
-#include "handlers/fmu_service_handler.hpp"
 
 #include "ecos/lib_info.hpp"
 
+#include "fmilibcpp/fmu.hpp"
+#include "fmilibcpp/slave.hpp"
+#include "proxyfmu/functors.hpp"
+#include "simple_socket/TCPSocket.hpp"
+#include "simple_socket/util/byte_conversion.hpp"
+#include "simple_socket/util/port_query.hpp"
 #include <CLI/CLI.hpp>
-#include <thrift/server/TSimpleServer.h>
-#include <thrift/transport/TServerSocket.h>
-#include <thrift/transport/TTransportUtils.h>
+#include <msgpack.hpp>
 
 #include <functional>
 #include <iostream>
 #include <random>
 #include <utility>
 
-using namespace proxyfmu::thrift;
 using namespace proxyfmu::server;
 
-using namespace ::apache::thrift;
-using namespace ::apache::thrift::server;
-using namespace ::apache::thrift::protocol;
-using namespace ::apache::thrift::transport;
 
 namespace
 {
@@ -28,48 +26,10 @@ namespace
 const int port_range_min = 49152;
 const int port_range_max = 65535;
 
-const int max_port_retries = 10;
-
 const int SUCCESS = 0;
 const int COMMANDLINE_ERROR = 1;
 const int UNHANDLED_ERROR = 2;
 
-
-class rng
-{
-
-public:
-    rng(int min, int max)
-        : mt_(std::random_device()())
-        , dist_(min, max)
-    { }
-
-    int next()
-    {
-        return dist_(mt_);
-    }
-
-private:
-    std::mt19937 mt_;
-    std::uniform_int_distribution<int> dist_;
-};
-
-class ServerReadyEventHandler : public TServerEventHandler
-{
-
-private:
-    std::function<void()> callback_;
-
-public:
-    explicit ServerReadyEventHandler(std::function<void()> callback)
-        : callback_(std::move(callback))
-    { }
-
-    void preServe() override
-    {
-        callback_();
-    }
-};
 
 void wait_for_input()
 {
@@ -81,71 +41,195 @@ void wait_for_input()
     std::cout << "Done." << std::endl;
 }
 
+void sendStatus(simple_socket::SimpleConnection& conn, bool status)
+{
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, status);
+    conn.write(sbuf.data(), sbuf.size());
+}
+
+template <typename T>
+void sendStatusAndValues(simple_socket::SimpleConnection& conn, bool status, const std::vector<T>& values)
+{
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, status);
+    msgpack::pack(sbuf, values);
+    conn.write(sbuf.data(), sbuf.size());
+}
+
+void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, fmilibcpp::slave* slave)
+{
+
+    std::vector<uint8_t> buffer(1024*64);
+    while (true) {
+        const int read = conn->read(buffer.data(), buffer.size());
+
+    int func;
+    std::size_t offset = 0;
+    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+    oh.get().convert(func);
+
+    const auto f = ecos::int_to_enum(func);
+    switch (f) {
+        case ecos::functors::setup_experiment: {
+
+            double startTime;
+            double endTime;
+            double tolerance;
+            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+            oh.get().convert(startTime);
+            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+            oh.get().convert(endTime);
+            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+            oh.get().convert(tolerance);
+            const auto status = slave->setup_experiment(startTime, endTime, tolerance);
+            sendStatus(*conn, status);
+
+        }
+        break;
+        case ecos::functors::enter_initialization_mode: {
+            const auto status = slave->enter_initialization_mode();
+            sendStatus(*conn, status);
+        }
+        break;
+        case ecos::functors::exit_initialization_mode: {
+            const auto status = slave->exit_initialization_mode();
+            sendStatus(*conn, status);
+        }
+        break;
+        case ecos::functors::step: {
+            double currentTime;
+            double stepSize;
+            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+            oh.get().convert(currentTime);
+            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+            oh.get().convert(stepSize);
+            const auto status = slave->step(currentTime, stepSize);
+            sendStatus(*conn, status);
+        }
+        break;
+        case ecos::functors::terminate: {
+            const auto status = slave->terminate();
+            sendStatus(*conn, status);
+        }
+        break;
+        case ecos::functors::freeInstance: {
+            slave->freeInstance();
+            return;
+        }
+        break;
+        case ecos::functors::read_int: {
+            std::vector<fmilibcpp::value_ref> vr;
+
+            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+            oh.get().convert(vr);
+
+            std::vector<int> values(vr.size());
+            const auto status = slave->get_integer(vr, values);
+
+           sendStatusAndValues(*conn, status, values);
+        }
+        break;
+        case ecos::functors::read_real: {
+            std::vector<fmilibcpp::value_ref> vr;
+
+            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+            oh.get().convert(vr);
+
+            std::vector<double> values(vr.size());
+            const auto status = slave->get_real(vr, values);
+
+            sendStatusAndValues(*conn, status, values);
+        }
+        break;
+        case ecos::functors::read_string: {
+            std::vector<fmilibcpp::value_ref> vr;
+
+            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+            oh.get().convert(vr);
+
+            std::vector<std::string> values(vr.size());
+            const auto status = slave->get_string(vr, values);
+
+            sendStatusAndValues(*conn, status, values);
+        }
+        break;
+        case ecos::functors::read_bool: {
+            std::vector<fmilibcpp::value_ref> vr;
+
+            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+            oh.get().convert(vr);
+
+            std::vector<bool> values(vr.size());
+            const auto status = slave->get_boolean(vr, values);
+
+            sendStatusAndValues(*conn, status, values);
+        }
+        break;
+    }
+    }
+
+}
+
 int run_application(const std::string& fmu, const std::string& instanceName)
 {
-    std::unique_ptr<TSimpleServer> server;
-    auto stop = [&]() {
-        if (server) server->stop();
-    };
-    auto handler = std::make_shared<fmu_service_handler>(fmu, instanceName, stop);
-    auto processor = std::make_shared<FmuServiceProcessor>(handler);
 
-    auto transportFactory = std::make_shared<TFramedTransportFactory>();
-    auto protocolFactory = std::make_shared<TBinaryProtocolFactory>();
-
-    rng rng(port_range_min, port_range_max);
-
-    int port;
-    int final_port = -1;
-    for (auto i = 0; i < max_port_retries; i++) {
-        port = rng.next();
-
-        auto serverTransport = std::make_shared<TServerSocket>(port);
-        server = std::make_unique<TSimpleServer>(processor, serverTransport, transportFactory, protocolFactory);
-        server->setServerEventHandler(std::make_shared<ServerReadyEventHandler>([port, &final_port] {
-            final_port = port;
-            std::cout << "[proxyfmu] port=" << std::to_string(final_port) << std::endl;
-        }));
-
-        try {
-
-            server->serve();
-            break;
-
-        } catch (const TTransportException& ex) {
-            std::cout << "[proxyfmu] " << ex.what()
-                      << ". Failed to bind to port " << std::to_string(port)
-                      << ". Retrying with another one. Attempt " << std::to_string(i + 1)
-                      << " of " << std::to_string(max_port_retries) << ".." << std::endl;
-        }
-    }
-
-    if (final_port != -1) {
-        return SUCCESS;
-    } else {
-        std::cerr << "[proxyfmu] Unable to bind after max number of retries.." << std::endl;
+    const auto port = simple_socket::getAvailablePort(port_range_min, port_range_max);
+    if (!port) {
+        std::cerr << "[proxyfmu] Unable to locate free port number.." << std::endl;
         return UNHANDLED_ERROR;
     }
+
+    auto model = fmilibcpp::loadFmu(fmu);
+    auto instance = model->new_instance(instanceName);
+
+    simple_socket::TCPServer server(*port);
+    auto con = server.accept();
+    client_handler(std::move(con), instance.get());
+
+    return SUCCESS;
 }
 
 int run_boot_application(const int port)
 {
 
-    auto handler = std::make_shared<boot_service_handler>();
-    auto processor = std::make_shared<BootServiceProcessor>(handler);
+    boot_service_handler handler;
+    simple_socket::TCPServer server(port);
 
-    auto transportFactory = std::make_shared<TFramedTransportFactory>();
-    auto protocolFactory = std::make_shared<TBinaryProtocolFactory>();
+    std::thread server_thread([&] {
+        auto conn = server.accept();
 
-    auto serverTransport = std::make_shared<TServerSocket>(port);
-    auto server = std::make_unique<TSimpleServer>(processor, serverTransport, transportFactory, protocolFactory);
+        std::vector<uint8_t> buffer(4);
+        conn->readExact(buffer);
 
-    std::thread t([&server] { server->serve(); });
+        const auto msgSize = simple_socket::decode_uint32(buffer);
+        buffer.clear();
+        buffer.resize(msgSize);
+        conn->readExact(buffer);
+
+        std::string fmuName;
+        std::string instanceName;
+        std::string data;
+
+        std::size_t offset = 0;
+        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
+        oh.get().convert(fmuName);
+        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
+        oh.get().convert(instanceName);
+        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
+        oh.get().convert(data);
+
+        int16_t instance_port = handler.loadFromBinaryData(fmuName, instanceName, data);
+        msgpack::sbuffer sbuf;
+        msgpack::pack(sbuf, instance_port);
+        conn->write(sbuf.data(), sbuf.size());
+
+    });
 
     wait_for_input();
 
-    server->stop();
-    t.join();
+    server.close();
+    server_thread.join();
 
     return SUCCESS;
 }
@@ -194,7 +278,7 @@ int main(int argc, char** argv)
         } else {
             const auto fmu = app["--fmu"]->as<std::string>();
             const auto fmuPath = std::filesystem::path(fmu);
-            if (!std::filesystem::exists(fmuPath)) {
+            if (!exists(fmuPath)) {
                 std::cerr << "[proxyfmu] No such file: '" << std::filesystem::absolute(fmuPath) << "'";
                 return COMMANDLINE_ERROR;
             }

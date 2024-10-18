@@ -27,7 +27,7 @@ void write_data(std::string const& fileName, std::string const& data)
 
 } // namespace
 
-int32_t boot_service_handler::loadFromBinaryData(const std::string& fmuName, const std::string& instanceName, const std::string& data)
+int16_t boot_service_handler::loadFromBinaryData(const std::string& fmuName, const std::string& instanceName, const std::string& data)
 {
     auto tmp = std::make_unique<ecos::temp_dir>(fmuName);
     std::string fmuPath(tmp->path().string() + "/" + fmuName + ".fmu");
@@ -37,11 +37,11 @@ int32_t boot_service_handler::loadFromBinaryData(const std::string& fmuName, con
     int port = -1;
     std::mutex mtx;
     std::condition_variable cv;
-    auto t = std::make_unique<std::thread>(&proxyfmu::start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
+    std::thread t(&start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
     processes_.emplace_back(std::move(t));
     dirs_.emplace_back(std::move(tmp));
 
-    std::unique_lock<std::mutex> lck(mtx);
+    std::unique_lock lck(mtx);
     cv.wait(lck, [&port] { return port != -1; });
 
     return port;
@@ -50,6 +50,6 @@ int32_t boot_service_handler::loadFromBinaryData(const std::string& fmuName, con
 boot_service_handler::~boot_service_handler()
 {
     for (auto& t : processes_) {
-        if (t->joinable()) t->join();
+        if (t.joinable()) t.join();
     }
 }

@@ -5,15 +5,11 @@
 #include "remote_info.hpp"
 
 #include "fmilibcpp/slave.hpp"
-#include "proxyfmu/thrift/FmuService.h"
 
 #include <filesystem>
 #include <optional>
+#include <simple_socket/TCPSocket.hpp>
 #include <thread>
-
-using namespace proxyfmu::thrift;
-using namespace apache::thrift;
-using namespace apache::thrift::transport;
 
 namespace proxyfmu
 {
@@ -22,10 +18,11 @@ class proxy_slave : public fmilibcpp::slave
 {
 
 private:
-    const fmilibcpp::model_description modelDescription_;
-    std::shared_ptr<FmuServiceClient> client_;
-    std::shared_ptr<TTransport> transport_;
-    std::unique_ptr<std::thread> thread_;
+    fmilibcpp::model_description modelDescription_;
+
+    simple_socket::TCPClientContext ctx_;
+    std::unique_ptr<simple_socket::SimpleConnection> client_;
+    std::thread thread_;
 
     bool freed = false;
 

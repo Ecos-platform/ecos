@@ -4,8 +4,6 @@
 
 #include "ecos/util/temp_dir.hpp"
 
-#include <proxyfmu/thrift/BootService.h>
-
 #include <memory>
 #include <thread>
 #include <vector>
@@ -13,17 +11,17 @@
 namespace proxyfmu::server
 {
 
-class boot_service_handler : virtual public thrift::BootServiceIf
+class boot_service_handler
 {
 
 private:
     std::vector<std::unique_ptr<ecos::temp_dir>> dirs_;
-    std::vector<std::unique_ptr<std::thread>> processes_;
+    std::vector<std::thread> processes_;
 
 public:
-    int32_t loadFromBinaryData(const std::string& fmuName, const std::string& instanceName, const std::string& data) override;
+    int16_t loadFromBinaryData(const std::string& fmuName, const std::string& instanceName, const std::string& data);
 
-    ~boot_service_handler() override;
+    ~boot_service_handler();
 };
 
 } // namespace proxyfmu::server

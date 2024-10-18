@@ -1,7 +1,6 @@
 
 set(sources
         "proxyfmu.cpp"
-        "handlers/fmu_service_handler.cpp"
         "handlers/boot_service_handler.cpp"
 
         "${generatedSourcesDir}/ecos/lib_info.cpp"
@@ -21,12 +20,12 @@ target_link_libraries(proxyfmu
         libzip::zip
         CLI11::CLI11
         spdlog::spdlog
-        thrift::thrift
+        msgpack-cxx
+        simple_socket
         unofficial::fmilib::fmilib
         "$<TARGET_OBJECTS:util>"
         "$<TARGET_OBJECTS:logger>"
         "$<TARGET_OBJECTS:fmilibcpp>"
-        "$<TARGET_OBJECTS:proxyfmu-service>"
 )
 if (UNIX)
     target_link_libraries(proxyfmu PRIVATE pthread)

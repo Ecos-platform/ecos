@@ -3,22 +3,16 @@
 
 #include "process_helper.hpp"
 
-#include <proxyfmu/thrift/BootService.h>
-#include <thrift/protocol/TBinaryProtocol.h>
-#include <thrift/transport/TSocket.h>
-#include <thrift/transport/TTransportUtils.h>
+#include <msgpack.hpp>
 
 #include <chrono>
-#include <cstdio>
 #include <fstream>
 #include <utility>
 #include <vector>
 
-using namespace ::apache::thrift;
-using namespace ::apache::thrift::protocol;
-using namespace ::apache::thrift::transport;
+#include "proxyfmu/functors.hpp"
 
-using namespace proxyfmu::thrift;
+using namespace simple_socket;
 
 namespace
 {
@@ -51,7 +45,7 @@ proxy_slave::proxy_slave(
     const std::string& instanceName,
     fmilibcpp::model_description modelDescription,
     const std::optional<remote_info>& remote)
-    : fmilibcpp::slave(instanceName)
+    : slave(instanceName)
     , modelDescription_(std::move(modelDescription))
 {
     int port = -1;
@@ -61,36 +55,44 @@ proxy_slave::proxy_slave(
         host = "localhost";
         std::mutex mtx;
         std::condition_variable cv;
-        thread_ = std::make_unique<std::thread>(&start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
-        std::unique_lock<std::mutex> lck(mtx);
+        thread_ = std::thread(&start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
+        std::unique_lock lck(mtx);
         while (port == -1) cv.wait(lck);
     } else {
         host = remote->host();
-        std::shared_ptr<TTransport> socket(new TSocket(host, remote->port()));
-        auto transport = std::make_shared<TFramedTransport>(socket);
-        std::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
-        auto client = std::make_shared<BootServiceClient>(protocol);
-        transport->open();
+
+        TCPClientContext ctx;
+        auto client = ctx.connect(host, remote->port());
 
         std::string data = read_data(fmuPath.string());
 
         const std::string fmuName = std::filesystem::path(fmuPath).stem().string();
-        port = client->loadFromBinaryData(fmuName, instanceName, data);
-        transport->close();
+
+        msgpack::sbuffer sbuf;
+        msgpack::pack(sbuf, fmuName);
+        msgpack::pack(sbuf, instanceName);
+        msgpack::pack(sbuf, data);
+        sbuf.write(data.c_str(), data.size());
+
+        client->write(sbuf.data(), sbuf.size());
+
+        std::vector<uint8_t> buffer(64);
+        const int read = client->read(buffer.data(), buffer.size());
+
+        const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+        oh.get().convert(port);
     }
 
     if (port == -999) {
-        if (thread_) thread_->join();
+        if (thread_.joinable()) thread_.join();
         throw std::runtime_error("[proxyfmu] Unable to bind to external proxy process!");
     }
 
-    std::shared_ptr<TTransport> socket(new TSocket(host, port));
-    transport_ = std::make_shared<TFramedTransport>(socket);
-    std::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport_));
-    client_ = std::make_shared<FmuServiceClient>(protocol);
-    transport_->open();
+    client_ = ctx_.connect(host, port);
 
-    client_->instantiate();
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::instantiate));
+    client_->write(sbuf.data(), sbuf.size());
 }
 
 const fmilibcpp::model_description& proxy_slave::get_model_description() const
@@ -100,125 +102,333 @@ const fmilibcpp::model_description& proxy_slave::get_model_description() const
 
 bool proxy_slave::setup_experiment(double start_time, double stop_time, double tolerance)
 {
-    auto status = client_->setup_experiment(start_time, stop_time, tolerance);
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::setup_experiment));
+    msgpack::pack(sbuf, start_time);
+    msgpack::pack(sbuf, stop_time);
+    msgpack::pack(sbuf, tolerance);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 bool proxy_slave::enter_initialization_mode()
 {
-    auto status = client_->enter_initialization_mode();
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::enter_initialization_mode));
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 bool proxy_slave::exit_initialization_mode()
 {
-    auto status = client_->exit_initialization_mode();
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::exit_initialization_mode));
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 bool proxy_slave::step(double current_time, double step_size)
 {
-    auto status = client_->step(current_time, step_size);
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::step));
+    msgpack::pack(sbuf, current_time);
+    msgpack::pack(sbuf, step_size);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 bool proxy_slave::terminate()
 {
-    auto status = client_->terminate();
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::terminate));
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 bool proxy_slave::reset()
 {
-    auto status = client_->reset();
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::reset));
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::vector<int>& values)
 {
-    IntegerRead read;
-    const ValueReferences _vr = std::vector<int64_t>(vr.begin(), vr.end());
-    client_->read_integer(read, _vr);
-    for (auto i = 0; i < vr.size(); i++) {
-        values[i] = read.value[i];
+    assert(values.size() == vr.size());
+
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::read_int));
+    msgpack::pack(sbuf, vr);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    if (read <= 0) {
+        std::cerr << "Failed to read data from client" << std::endl;
+        return false;
     }
-    return read.status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+
+    bool status;
+    std::size_t offset = 0;
+
+    try {
+        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+        oh.get().convert(status);
+
+        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+        oh.get().convert(values);
+    } catch (const std::exception& e) {
+        std::cerr << "Error during unpacking: " << e.what() << std::endl;
+        return false;
+    }
+
+    return status;
 }
 
 bool proxy_slave::get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vector<double>& values)
 {
     assert(values.size() == vr.size());
-    RealRead read;
-    const ValueReferences _vr = std::vector<int64_t>(vr.begin(), vr.end());
-    client_->read_real(read, _vr);
-    for (auto i = 0; i < vr.size(); i++) {
-        values[i] = read.value[i];
+
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::read_int));
+    msgpack::pack(sbuf, vr);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    if (read <= 0) {
+        std::cerr << "Failed to read data from client" << std::endl;
+        return false;
     }
-    return read.status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+
+    bool status;
+    std::size_t offset = 0;
+
+    try {
+        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+        oh.get().convert(status);
+
+        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+        oh.get().convert(values);
+    } catch (const std::exception& e) {
+        std::cerr << "Error during unpacking: " << e.what() << std::endl;
+        return false;
+    }
+
+    return status;
 }
 
 bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::vector<std::string>& values)
 {
     assert(values.size() == vr.size());
-    StringRead read;
-    const ValueReferences _vr = std::vector<int64_t>(vr.begin(), vr.end());
-    client_->read_string(read, _vr);
-    for (auto i = 0; i < vr.size(); i++) {
-        values[i] = read.value[i];
+
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::read_int));
+    msgpack::pack(sbuf, vr);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    if (read <= 0) {
+        std::cerr << "Failed to read data from client" << std::endl;
+        return false;
     }
-    return read.status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+
+    bool status;
+    std::size_t offset = 0;
+
+    try {
+        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+        oh.get().convert(status);
+
+        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+        oh.get().convert(values);
+    } catch (const std::exception& e) {
+        std::cerr << "Error during unpacking: " << e.what() << std::endl;
+        return false;
+    }
+
+    return status;
 }
 
 bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::vector<bool>& values)
 {
     assert(values.size() == vr.size());
-    BooleanRead read;
-    const ValueReferences _vr = std::vector<int64_t>(vr.begin(), vr.end());
-    client_->read_boolean(read, _vr);
-    for (auto i = 0; i < vr.size(); i++) {
-        values[i] = read.value[i];
+
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::read_int));
+    msgpack::pack(sbuf, vr);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    if (read <= 0) {
+        std::cerr << "Failed to read data from client" << std::endl;
+        return false;
     }
-    return read.status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+
+    bool status;
+    std::size_t offset = 0;
+
+    try {
+        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+        oh.get().convert(status);
+
+        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+        oh.get().convert(values);
+    } catch (const std::exception& e) {
+        std::cerr << "Error during unpacking: " << e.what() << std::endl;
+        return false;
+    }
+
+    return status;
 }
 
 bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<int>& values)
 {
     assert(values.size() == vr.size());
-    const ValueReferences _vr = std::vector<int64_t>(vr.begin(), vr.end());
-    auto status = client_->write_integer(_vr, values);
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::write_int));
+    msgpack::pack(sbuf, vr);
+    msgpack::pack(sbuf, values);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    if (read <= 0) {
+        std::cerr << "Failed to read data from client" << std::endl;
+        return false;
+    }
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 bool proxy_slave::set_real(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<double>& values)
 {
     assert(values.size() == vr.size());
-    const ValueReferences _vr = std::vector<int64_t>(vr.begin(), vr.end());
-    auto status = client_->write_real(_vr, values);
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::write_real));
+    msgpack::pack(sbuf, vr);
+    msgpack::pack(sbuf, values);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    if (read <= 0) {
+        std::cerr << "Failed to read data from client" << std::endl;
+        return false;
+    }
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 bool proxy_slave::set_string(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<std::string>& values)
 {
     assert(values.size() == vr.size());
-    const ValueReferences _vr = std::vector<int64_t>(vr.begin(), vr.end());
-    auto status = client_->write_string(_vr, values);
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::write_string));
+    msgpack::pack(sbuf, vr);
+    msgpack::pack(sbuf, values);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    if (read <= 0) {
+        std::cerr << "Failed to read data from client" << std::endl;
+        return false;
+    }
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 bool proxy_slave::set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<bool>& values)
 {
     assert(values.size() == vr.size());
-    const ValueReferences _vr = std::vector<int64_t>(vr.begin(), vr.end());
-    auto status = client_->write_boolean(_vr, values);
-    return status == ::proxyfmu::thrift::Status::type::OK_STATUS;
+
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, enum_to_int(ecos::functors::write_bool));
+    msgpack::pack(sbuf, vr);
+    msgpack::pack(sbuf, values);
+    client_->write(sbuf.data(), sbuf.size());
+
+    std::vector<uint8_t> buffer(32);
+    const int read = client_->read(buffer.data(),  buffer.size());
+
+    if (read <= 0) {
+        std::cerr << "Failed to read data from client" << std::endl;
+        return false;
+    }
+
+    bool status;
+    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
+    return oh.get().convert(status);
 }
 
 void proxy_slave::freeInstance()
 {
     if (!freed) {
         freed = true;
-        if (client_) client_->freeInstance();
-        if (thread_ && thread_->joinable()) thread_->join();
+        if (client_) {
+            msgpack::sbuffer sbuf;
+            msgpack::pack(sbuf, enum_to_int(ecos::functors::freeInstance));
+            client_->write(sbuf.data(), sbuf.size());
+        }
+        if (thread_.joinable()) {
+            thread_.join();
+        }
     }
 }
 

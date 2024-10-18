@@ -4,7 +4,7 @@
     "libzip",
     "spdlog",
     "cli11",
-    "thrift",
+    "msgpack",
     "pugixml",
     "fmilib"
   ]

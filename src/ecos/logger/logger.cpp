@@ -41,7 +41,7 @@ struct ecos_logger
         logger_->set_level(convert(lvl));
     }
 
-    void log(log::level lvl, const std::string& msg)
+    void log(log::level lvl, std::string_view msg)
     {
         logger_->log(convert(lvl), msg);
     }
@@ -65,7 +65,7 @@ void log::set_logging_level(level lvl)
     ecos_logger::get_instance().set_level(lvl);
 }
 
-void log::log(log::level lvl, const std::string& msg)
+void log::log(log::level lvl, std::string_view msg)
 {
     ecos_logger::get_instance().log(lvl, msg);
 }

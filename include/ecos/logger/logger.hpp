@@ -19,7 +19,7 @@ enum class level : int
 
 void set_logging_level(level lvl);
 
-void log(level lvl, const std::string& msg);
+void log(level lvl, std::string_view msg);
 
 template<typename... Args>
 void trace(fmt::format_string<Args...> fmt, Args&&... args)
@@ -49,6 +49,31 @@ template<typename... Args>
 void err(fmt::format_string<Args...> fmt, Args&&... args)
 {
     log(level::err, fmt::format(fmt, std::forward<Args>(args)...));
+}
+
+inline void trace(std::string_view msg)
+{
+    log(level::trace, msg);
+}
+
+inline void debug(std::string_view msg)
+{
+    log(level::debug, msg);
+}
+
+inline void info(std::string_view msg)
+{
+    log(level::info, msg);
+}
+
+inline void warn(std::string_view msg)
+{
+    log(level::warn, msg);
+}
+
+inline void err(std::string_view msg)
+{
+    log(level::err, msg);
 }
 
 } // namespace ecos::log

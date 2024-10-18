@@ -57,116 +57,186 @@ void sendStatusAndValues(simple_socket::SimpleConnection& conn, bool status, con
     conn.write(sbuf.data(), sbuf.size());
 }
 
-void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, fmilibcpp::slave* slave)
+void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const std::string& fmu, const std::string& instanceName)
 {
 
-    std::vector<uint8_t> buffer(1024*64);
+    std::unique_ptr<fmilibcpp::slave> slave;
+    std::vector<uint8_t> buffer(1024*32);
     while (true) {
-        const int read = conn->read(buffer.data(), buffer.size());
+        const int read = conn->read(buffer);
 
-    int func;
-    std::size_t offset = 0;
-    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-    oh.get().convert(func);
+        int func = -1;
+        std::size_t offset = 0;
+       try {
+           auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+           oh.get().convert(func);
+       } catch (std::exception& e) {
+           std::cout << e.what() << std::endl;
+       }
 
-    const auto f = ecos::int_to_enum(func);
-    switch (f) {
-        case ecos::functors::setup_experiment: {
-
-            double startTime;
-            double endTime;
-            double tolerance;
-            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-            oh.get().convert(startTime);
-            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-            oh.get().convert(endTime);
-            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-            oh.get().convert(tolerance);
-            const auto status = slave->setup_experiment(startTime, endTime, tolerance);
-            sendStatus(*conn, status);
-
+        if (func == -1) {
+            sendStatus(*conn, false);
         }
-        break;
-        case ecos::functors::enter_initialization_mode: {
-            const auto status = slave->enter_initialization_mode();
-            sendStatus(*conn, status);
+
+        const auto f = ecos::int_to_enum(func);
+        switch (f) {
+            case ecos::functors::instantiate: {
+                 auto model = fmilibcpp::loadFmu(fmu);
+                 slave = model->new_instance(instanceName);
+            }
+            break;
+            case ecos::functors::setup_experiment: {
+
+                double startTime;
+                double endTime;
+                double tolerance;
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(startTime);
+                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(endTime);
+                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(tolerance);
+
+                const auto status = slave->setup_experiment(startTime, endTime, tolerance);
+                sendStatus(*conn, status);
+
+            }
+            break;
+            case ecos::functors::enter_initialization_mode: {
+                const auto status = slave->enter_initialization_mode();
+                sendStatus(*conn, status);
+            }
+            break;
+            case ecos::functors::exit_initialization_mode: {
+                const auto status = slave->exit_initialization_mode();
+                sendStatus(*conn, status);
+            }
+            break;
+            case ecos::functors::step: {
+                double currentTime;
+                double stepSize;
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(currentTime);
+                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(stepSize);
+                const auto status = slave->step(currentTime, stepSize);
+                sendStatus(*conn, status);
+            }
+            break;
+            case ecos::functors::terminate: {
+                const auto status = slave->terminate();
+                sendStatus(*conn, status);
+            }
+            break;
+            case ecos::functors::freeInstance: {
+                slave->freeInstance();
+                return;
+            }
+            case ecos::functors::read_int: {
+                std::vector<fmilibcpp::value_ref> vr;
+
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(vr);
+
+                std::vector<int> values(vr.size());
+                const auto status = slave->get_integer(vr, values);
+
+               sendStatusAndValues(*conn, status, values);
+            }
+            break;
+            case ecos::functors::read_real: {
+                std::vector<fmilibcpp::value_ref> vr;
+
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(vr);
+
+                std::vector<double> values(vr.size());
+                const auto status = slave->get_real(vr, values);
+
+                sendStatusAndValues(*conn, status, values);
+            }
+            break;
+            case ecos::functors::read_string: {
+                std::vector<fmilibcpp::value_ref> vr;
+
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(vr);
+
+                std::vector<std::string> values(vr.size());
+                const auto status = slave->get_string(vr, values);
+
+                sendStatusAndValues(*conn, status, values);
+            }
+            break;
+            case ecos::functors::read_bool: {
+                std::vector<fmilibcpp::value_ref> vr;
+
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(vr);
+
+                std::vector<bool> values(vr.size());
+                const auto status = slave->get_boolean(vr, values);
+
+                sendStatusAndValues(*conn, status, values);
+            }
+            break;
+            case ecos::functors::write_int: {
+                std::vector<fmilibcpp::value_ref> vr;
+                std::vector<int> values;
+
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(vr);
+                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(values);
+
+                const auto status = slave->set_integer(vr, values);
+                sendStatus(*conn, status);
+            }
+            break;
+            case ecos::functors::write_real: {
+                std::vector<fmilibcpp::value_ref> vr;
+                std::vector<double> values;
+
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(vr);
+                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(values);
+
+                const auto status = slave->set_real(vr, values);
+                sendStatus(*conn, status);
+            }
+            break;
+            case ecos::functors::write_string: {
+                std::vector<fmilibcpp::value_ref> vr;
+                std::vector<std::string> values;
+
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(vr);
+                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(values);
+
+                const auto status = slave->set_string(vr, values);
+                sendStatus(*conn, status);
+            }
+            break;
+            case ecos::functors::write_bool: {
+                std::vector<fmilibcpp::value_ref> vr;
+                std::vector<bool> values;
+
+                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(vr);
+                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
+                oh.get().convert(values);
+
+                const auto status = slave->set_boolean(vr, values);
+                sendStatus(*conn, status);
+            }
+            break;
+            default: {
+                std::cerr << "[proxyfmu] Unknown command: " << func << std::endl;
+            }
+            break;
         }
-        break;
-        case ecos::functors::exit_initialization_mode: {
-            const auto status = slave->exit_initialization_mode();
-            sendStatus(*conn, status);
-        }
-        break;
-        case ecos::functors::step: {
-            double currentTime;
-            double stepSize;
-            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-            oh.get().convert(currentTime);
-            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-            oh.get().convert(stepSize);
-            const auto status = slave->step(currentTime, stepSize);
-            sendStatus(*conn, status);
-        }
-        break;
-        case ecos::functors::terminate: {
-            const auto status = slave->terminate();
-            sendStatus(*conn, status);
-        }
-        break;
-        case ecos::functors::freeInstance: {
-            slave->freeInstance();
-            return;
-        }
-        break;
-        case ecos::functors::read_int: {
-            std::vector<fmilibcpp::value_ref> vr;
-
-            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-            oh.get().convert(vr);
-
-            std::vector<int> values(vr.size());
-            const auto status = slave->get_integer(vr, values);
-
-           sendStatusAndValues(*conn, status, values);
-        }
-        break;
-        case ecos::functors::read_real: {
-            std::vector<fmilibcpp::value_ref> vr;
-
-            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-            oh.get().convert(vr);
-
-            std::vector<double> values(vr.size());
-            const auto status = slave->get_real(vr, values);
-
-            sendStatusAndValues(*conn, status, values);
-        }
-        break;
-        case ecos::functors::read_string: {
-            std::vector<fmilibcpp::value_ref> vr;
-
-            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-            oh.get().convert(vr);
-
-            std::vector<std::string> values(vr.size());
-            const auto status = slave->get_string(vr, values);
-
-            sendStatusAndValues(*conn, status, values);
-        }
-        break;
-        case ecos::functors::read_bool: {
-            std::vector<fmilibcpp::value_ref> vr;
-
-            oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-            oh.get().convert(vr);
-
-            std::vector<bool> values(vr.size());
-            const auto status = slave->get_boolean(vr, values);
-
-            sendStatusAndValues(*conn, status, values);
-        }
-        break;
-    }
     }
 
 }
@@ -180,12 +250,12 @@ int run_application(const std::string& fmu, const std::string& instanceName)
         return UNHANDLED_ERROR;
     }
 
-    auto model = fmilibcpp::loadFmu(fmu);
-    auto instance = model->new_instance(instanceName);
-
     simple_socket::TCPServer server(*port);
+    std::cout << "[proxyfmu] port=" << std::to_string(*port) << std::endl;
+
     auto con = server.accept();
-    client_handler(std::move(con), instance.get());
+    std::cout << "[proxyfmu] Client connected" << std::endl;
+    client_handler(std::move(con), fmu, instanceName);
 
     return SUCCESS;
 }
@@ -279,7 +349,7 @@ int main(int argc, char** argv)
             const auto fmu = app["--fmu"]->as<std::string>();
             const auto fmuPath = std::filesystem::path(fmu);
             if (!exists(fmuPath)) {
-                std::cerr << "[proxyfmu] No such file: '" << std::filesystem::absolute(fmuPath) << "'";
+                std::cerr << "[proxyfmu] No such file: '" << absolute(fmuPath) << "'";
                 return COMMANDLINE_ERROR;
             }
 

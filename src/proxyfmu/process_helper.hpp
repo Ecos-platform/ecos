@@ -89,16 +89,16 @@ inline void start_process(
     bool bound = false;
     if (result == 0) {
         FILE* p_stdout = subprocess_stdout(&process);
-        std::array<char, 256> buffer;
-        while (fgets(buffer.data(), 256, p_stdout)) {
-            std::string line(buffer.data());
+        char buffer[256];
+        while (fgets(buffer, 256, p_stdout)) {
+            std::string line(buffer);
             if (!bound && line.substr(0, 16) == "[proxyfmu] port=") {
                 {
                     std::lock_guard lck(mtx);
                     port = std::stoi(line.substr(16));
                     std::cout << "[proxyfmu] FMU instance '" << instanceName << "' instantiated using port " << port << std::endl;
                 }
-                cv.notify_one();
+                cv.notify_all();
                 bound = true;
             } else if (line.substr(0, 16) == "[proxyfmu] freed") {
                 break;

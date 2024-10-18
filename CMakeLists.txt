@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.17)
-set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+cmake_minimum_required(VERSION 3.19)
+if (NOT DEFINED CMAKE_TOOLCHAIN_FILE AND DEFINED $ENV{VCPKG_ROOT})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+endif ()
 file(STRINGS "${CMAKE_SOURCE_DIR}/version.txt" projectVersion)
 project("libecos" VERSION ${projectVersion})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
@@ -52,7 +54,7 @@ set(SIMPLE_SOCKET_BUILD_TESTS OFF)
 FetchContent_Declare(
         SimpleSocket
         GIT_REPOSITORY https://github.com/markaren/SimpleSocket.git
-        GIT_TAG 13996f0f65d9294849e5044916ddc2a69edc5232
+        GIT_TAG c456f9966ff61480ee164b224d5becb69dfceef6
 )
 FetchContent_MakeAvailable(SimpleSocket)
 
@@ -83,7 +85,7 @@ if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
         FetchContent_Declare(
                 Catch2
                 GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-                GIT_TAG v3.3.2
+                GIT_TAG v3.4.0
         )
         FetchContent_MakeAvailable(Catch2)
 

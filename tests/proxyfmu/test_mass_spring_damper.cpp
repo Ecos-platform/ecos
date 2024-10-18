@@ -29,8 +29,9 @@ void test(fmu* damper, fmu* mass, fmu* spring)
 
     int i = 0;
     for (auto fmu : {damper, mass, spring}) {
-        const auto name = names[i++];
+        const auto& name = names[i++];
         auto instance = fmu->new_instance(name);
+        REQUIRE(instance);
         const auto& mv = fmu->get_model_description().modelVariables;
 
         if (name == "spring") {

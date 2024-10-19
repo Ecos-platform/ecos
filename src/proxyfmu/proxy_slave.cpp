@@ -3,7 +3,7 @@
 
 #include "process_helper.hpp"
 
-#include "proxyfmu/functors.hpp"
+#include "proxyfmu/opcodes.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
 #include <msgpack.hpp>
 
@@ -37,7 +37,7 @@ std::string read_data(std::string const& fileName)
 } // namespace
 
 
-namespace proxyfmu
+namespace ecos::proxy
 {
 
 proxy_slave::proxy_slave(
@@ -94,7 +94,7 @@ proxy_slave::proxy_slave(
     if (!client_) throw std::runtime_error("[proxyfmu] Unable to connect to external proxy process!");
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::instantiate));
+    msgpack::pack(sbuf, enum_to_int(opcodes::instantiate));
     client_->write(sbuf.data(), sbuf.size());
 }
 
@@ -106,7 +106,7 @@ const fmilibcpp::model_description& proxy_slave::get_model_description() const
 bool proxy_slave::setup_experiment(double start_time, double stop_time, double tolerance)
 {
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::setup_experiment));
+    msgpack::pack(sbuf, enum_to_int(opcodes::setup_experiment));
     msgpack::pack(sbuf, start_time);
     msgpack::pack(sbuf, stop_time);
     msgpack::pack(sbuf, tolerance);
@@ -124,7 +124,7 @@ bool proxy_slave::setup_experiment(double start_time, double stop_time, double t
 bool proxy_slave::enter_initialization_mode()
 {
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::enter_initialization_mode));
+    msgpack::pack(sbuf, enum_to_int(opcodes::enter_initialization_mode));
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
@@ -139,7 +139,7 @@ bool proxy_slave::enter_initialization_mode()
 bool proxy_slave::exit_initialization_mode()
 {
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::exit_initialization_mode));
+    msgpack::pack(sbuf, enum_to_int(opcodes::exit_initialization_mode));
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
@@ -154,7 +154,7 @@ bool proxy_slave::exit_initialization_mode()
 bool proxy_slave::step(double current_time, double step_size)
 {
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::step));
+    msgpack::pack(sbuf, enum_to_int(opcodes::step));
     msgpack::pack(sbuf, current_time);
     msgpack::pack(sbuf, step_size);
     client_->write(sbuf.data(), sbuf.size());
@@ -171,7 +171,7 @@ bool proxy_slave::step(double current_time, double step_size)
 bool proxy_slave::terminate()
 {
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::terminate));
+    msgpack::pack(sbuf, enum_to_int(opcodes::terminate));
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
@@ -185,7 +185,7 @@ bool proxy_slave::terminate()
 bool proxy_slave::reset()
 {
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::reset));
+    msgpack::pack(sbuf, enum_to_int(opcodes::reset));
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
@@ -201,7 +201,7 @@ bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::
     assert(values.size() == vr.size());
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::read_int));
+    msgpack::pack(sbuf, enum_to_int(opcodes::read_int));
     msgpack::pack(sbuf, vr);
     client_->write(sbuf.data(), sbuf.size());
 
@@ -235,7 +235,7 @@ bool proxy_slave::get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vec
     assert(values.size() == vr.size());
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::read_real));
+    msgpack::pack(sbuf, enum_to_int(opcodes::read_real));
     msgpack::pack(sbuf, vr);
     client_->write(sbuf.data(), sbuf.size());
 
@@ -269,7 +269,7 @@ bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::v
     assert(values.size() == vr.size());
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::read_string));
+    msgpack::pack(sbuf, enum_to_int(opcodes::read_string));
     msgpack::pack(sbuf, vr);
     client_->write(sbuf.data(), sbuf.size());
 
@@ -303,7 +303,7 @@ bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::
     assert(values.size() == vr.size());
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::read_bool));
+    msgpack::pack(sbuf, enum_to_int(opcodes::read_bool));
     msgpack::pack(sbuf, vr);
     client_->write(sbuf.data(), sbuf.size());
 
@@ -337,7 +337,7 @@ bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const
     assert(values.size() == vr.size());
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::write_int));
+    msgpack::pack(sbuf, enum_to_int(opcodes::write_int));
     msgpack::pack(sbuf, vr);
     msgpack::pack(sbuf, values);
     client_->write(sbuf.data(), sbuf.size());
@@ -360,7 +360,7 @@ bool proxy_slave::set_real(const std::vector<fmilibcpp::value_ref>& vr, const st
     assert(values.size() == vr.size());
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::write_real));
+    msgpack::pack(sbuf, enum_to_int(opcodes::write_real));
     msgpack::pack(sbuf, vr);
     msgpack::pack(sbuf, values);
     client_->write(sbuf.data(), sbuf.size());
@@ -383,7 +383,7 @@ bool proxy_slave::set_string(const std::vector<fmilibcpp::value_ref>& vr, const 
     assert(values.size() == vr.size());
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::write_string));
+    msgpack::pack(sbuf, enum_to_int(opcodes::write_string));
     msgpack::pack(sbuf, vr);
     msgpack::pack(sbuf, values);
     client_->write(sbuf.data(), sbuf.size());
@@ -406,7 +406,7 @@ bool proxy_slave::set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const
     assert(values.size() == vr.size());
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::functors::write_bool));
+    msgpack::pack(sbuf, enum_to_int(opcodes::write_bool));
     msgpack::pack(sbuf, vr);
     msgpack::pack(sbuf, values);
     client_->write(sbuf.data(), sbuf.size());
@@ -431,7 +431,7 @@ void proxy_slave::freeInstance()
         std::cout << "[proxyfmu] Shutting down proxy for '" << modelDescription_.modelName << "::" << instanceName << "'";
         if (client_) {
             msgpack::sbuffer sbuf;
-            msgpack::pack(sbuf, enum_to_int(ecos::functors::freeInstance));
+            msgpack::pack(sbuf, enum_to_int(opcodes::freeInstance));
             client_->write(sbuf.data(), sbuf.size());
         }
         if (thread_.joinable()) {

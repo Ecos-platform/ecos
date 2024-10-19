@@ -26,7 +26,7 @@ public:
     }
 
 private:
-    proxyfmu::proxy_fmu fmu_;
+    proxy::proxy_fmu fmu_;
 };
 
 } // namespace ecos

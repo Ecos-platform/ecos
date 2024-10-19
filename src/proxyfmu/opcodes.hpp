@@ -2,10 +2,10 @@
 #ifndef FUNCTORS_HPP
 #define FUNCTORS_HPP
 
-namespace ecos
+namespace ecos::proxy
 {
 
-enum class functors
+enum class opcodes
 {
 
     instantiate,
@@ -30,14 +30,14 @@ enum class functors
 
 };
 
-inline uint8_t enum_to_int(functors f)
+inline uint8_t enum_to_int(opcodes op)
 {
-    return static_cast<uint8_t>(f);
+    return static_cast<uint8_t>(op);
 }
 
-inline functors int_to_enum(uint8_t i)
+inline opcodes int_to_enum(uint8_t i)
 {
-    return static_cast<functors>(i);
+    return static_cast<opcodes>(i);
 }
 
 } // namespace ecos

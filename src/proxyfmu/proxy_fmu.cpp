@@ -9,7 +9,7 @@
 #include <utility>
 
 
-namespace proxyfmu
+namespace ecos::proxy
 {
 
 proxy_fmu::proxy_fmu(const std::filesystem::path& fmuPath, std::optional<remote_info> remote)

@@ -5,7 +5,7 @@
 #include <string>
 #include <utility>
 
-namespace proxyfmu
+namespace ecos::proxy
 {
 
 class remote_info

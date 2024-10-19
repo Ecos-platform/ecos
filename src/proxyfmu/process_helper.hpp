@@ -20,7 +20,7 @@
 #    include <unistd.h>
 #endif
 
-namespace proxyfmu
+namespace ecos::proxy
 {
 
 inline std::string getLoc()

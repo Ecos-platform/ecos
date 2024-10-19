@@ -11,7 +11,7 @@
 #include <simple_socket/TCPSocket.hpp>
 #include <thread>
 
-namespace proxyfmu
+namespace ecos::proxy
 {
 
 class proxy_slave : public fmilibcpp::slave

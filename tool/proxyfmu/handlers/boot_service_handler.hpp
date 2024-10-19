@@ -8,7 +8,7 @@
 #include <thread>
 #include <vector>
 
-namespace proxyfmu::server
+namespace ecos::proxy
 {
 
 class boot_service_handler

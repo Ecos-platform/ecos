@@ -80,6 +80,6 @@ TEST_CASE("fmi_test_identity")
 TEST_CASE("proxy_test_identity")
 {
     std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/1.0/identity.fmu";
-    auto fmu = proxyfmu::proxy_fmu(fmuPath);
+    auto fmu = ecos::proxy::proxy_fmu(fmuPath);
     test(fmu);
 }

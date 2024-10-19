@@ -5,7 +5,7 @@
 
 #include <fstream>
 
-using namespace proxyfmu::server;
+using namespace ecos::proxy;
 
 namespace
 {

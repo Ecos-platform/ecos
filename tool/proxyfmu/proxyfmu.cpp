@@ -5,7 +5,7 @@
 
 #include "fmilibcpp/fmu.hpp"
 #include "fmilibcpp/slave.hpp"
-#include "proxyfmu/functors.hpp"
+#include "proxyfmu/opcodes.hpp"
 #include "simple_socket/TCPSocket.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
 #include "simple_socket/util/port_query.hpp"
@@ -17,7 +17,8 @@
 #include <random>
 #include <utility>
 
-using namespace proxyfmu::server;
+using namespace ecos;
+using namespace ecos::proxy;
 
 
 namespace
@@ -76,14 +77,14 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
            return;
        }
 
-        const auto f = ecos::int_to_enum(func);
-        switch (f) {
-            case ecos::functors::instantiate: {
+        const auto op = int_to_enum(func);
+        switch (op) {
+            case opcodes::instantiate: {
                  auto model = fmilibcpp::loadFmu(fmu);
                  slave = model->new_instance(instanceName);
             }
             break;
-            case ecos::functors::setup_experiment: {
+            case opcodes::setup_experiment: {
 
                 double startTime;
                 double endTime;
@@ -100,17 +101,17 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
 
             }
             break;
-            case ecos::functors::enter_initialization_mode: {
+            case opcodes::enter_initialization_mode: {
                 const auto status = slave->enter_initialization_mode();
                 sendStatus(*conn, status);
             }
             break;
-            case ecos::functors::exit_initialization_mode: {
+            case opcodes::exit_initialization_mode: {
                 const auto status = slave->exit_initialization_mode();
                 sendStatus(*conn, status);
             }
             break;
-            case ecos::functors::step: {
+            case opcodes::step: {
                 double currentTime;
                 double stepSize;
                 auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
@@ -121,16 +122,16 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
                 sendStatus(*conn, status);
             }
             break;
-            case ecos::functors::terminate: {
+            case opcodes::terminate: {
                 const auto status = slave->terminate();
                 sendStatus(*conn, status);
             }
             break;
-            case ecos::functors::freeInstance: {
+            case opcodes::freeInstance: {
                 slave->freeInstance();
                 return;
             }
-            case ecos::functors::read_int: {
+            case opcodes::read_int: {
                 std::vector<fmilibcpp::value_ref> vr;
 
                 auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
@@ -142,7 +143,7 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
                sendStatusAndValues(*conn, status, values);
             }
             break;
-            case ecos::functors::read_real: {
+            case opcodes::read_real: {
                 std::vector<fmilibcpp::value_ref> vr;
 
                 auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
@@ -154,7 +155,7 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
                 sendStatusAndValues(*conn, status, values);
             }
             break;
-            case ecos::functors::read_string: {
+            case opcodes::read_string: {
                 std::vector<fmilibcpp::value_ref> vr;
 
                 auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
@@ -166,7 +167,7 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
                 sendStatusAndValues(*conn, status, values);
             }
             break;
-            case ecos::functors::read_bool: {
+            case opcodes::read_bool: {
                 std::vector<fmilibcpp::value_ref> vr;
 
                 auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
@@ -178,7 +179,7 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
                 sendStatusAndValues(*conn, status, values);
             }
             break;
-            case ecos::functors::write_int: {
+            case opcodes::write_int: {
                 std::vector<fmilibcpp::value_ref> vr;
                 std::vector<int> values;
 
@@ -191,7 +192,7 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
                 sendStatus(*conn, status);
             }
             break;
-            case ecos::functors::write_real: {
+            case opcodes::write_real: {
                 std::vector<fmilibcpp::value_ref> vr;
                 std::vector<double> values;
 
@@ -204,7 +205,7 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
                 sendStatus(*conn, status);
             }
             break;
-            case ecos::functors::write_string: {
+            case opcodes::write_string: {
                 std::vector<fmilibcpp::value_ref> vr;
                 std::vector<std::string> values;
 
@@ -217,7 +218,7 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
                 sendStatus(*conn, status);
             }
             break;
-            case ecos::functors::write_bool: {
+            case opcodes::write_bool: {
                 std::vector<fmilibcpp::value_ref> vr;
                 std::vector<bool> values;
 
@@ -308,7 +309,7 @@ int printHelp(CLI::App& desc)
     return SUCCESS;
 }
 
-std::string version()
+std::string versionString()
 {
     const auto v = ecos::library_version();
     std::stringstream ss;
@@ -323,7 +324,7 @@ int main(int argc, char** argv)
 
     CLI::App app{"proxyfmu"};
 
-    app.set_version_flag("-v,--version", version());
+    app.set_version_flag("-v,--version", versionString());
     app.add_option("--fmu", "Location of the fmu to load.");
     app.add_option("--instanceName", "Name of the slave instance.");
 

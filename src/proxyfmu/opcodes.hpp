@@ -28,7 +28,9 @@ enum class opcodes
     write_int,
     write_real,
     write_string,
-    write_bool
+    write_bool,
+
+    NONE
 
 };
 

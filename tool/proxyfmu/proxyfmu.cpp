@@ -1,16 +1,16 @@
 
 #include "boot_service_handler.hpp"
+#include "client_handler.hpp"
 
 #include "ecos/lib_info.hpp"
 
-#include "fmilibcpp/fmu.hpp"
-#include "fmilibcpp/slave.hpp"
-#include "proxyfmu/opcodes.hpp"
 #include "simple_socket/TCPSocket.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
 #include "simple_socket/util/port_query.hpp"
 #include <CLI/CLI.hpp>
 #include <msgpack.hpp>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
 #include <functional>
 #include <iostream>
@@ -24,8 +24,8 @@ using namespace ecos::proxy;
 namespace
 {
 
-const int port_range_min = 49152;
-const int port_range_max = 65535;
+const int port_range_min = 7000;
+const int port_range_max = 9999;
 
 const int SUCCESS = 0;
 const int COMMANDLINE_ERROR = 1;
@@ -42,220 +42,28 @@ void wait_for_input()
     std::cout << "Done." << std::endl;
 }
 
-void sendStatus(simple_socket::SimpleConnection& conn, bool status)
-{
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, status);
-    conn.write(sbuf.data(), sbuf.size());
-}
-
-template <typename T>
-void sendStatusAndValues(simple_socket::SimpleConnection& conn, bool status, const std::vector<T>& values)
-{
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, status);
-    msgpack::pack(sbuf, values);
-    conn.write(sbuf.data(), sbuf.size());
-}
-
-void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const std::string& fmu, const std::string& instanceName)
-{
-
-    std::unique_ptr<fmilibcpp::slave> slave;
-    std::vector<uint8_t> buffer(1024*32);
-    while (true) {
-        const int read = conn->read(buffer);
-
-        uint8_t func;
-        std::size_t offset = 0;
-       try {
-           auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-           oh.get().convert(func);
-       } catch (const std::exception& e) {
-           std::cout << e.what() << std::endl;
-           sendStatus(*conn, false);
-           return;
-       }
-
-        const auto op = int_to_enum(func);
-        switch (op) {
-            case opcodes::instantiate: {
-                 auto model = fmilibcpp::loadFmu(fmu);
-                 slave = model->new_instance(instanceName);
-            }
-            break;
-            case opcodes::setup_experiment: {
-
-                double startTime;
-                double endTime;
-                double tolerance;
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(startTime);
-                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(endTime);
-                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(tolerance);
-
-                const auto status = slave->setup_experiment(startTime, endTime, tolerance);
-                sendStatus(*conn, status);
-
-            }
-            break;
-            case opcodes::enter_initialization_mode: {
-                const auto status = slave->enter_initialization_mode();
-                sendStatus(*conn, status);
-            }
-            break;
-            case opcodes::exit_initialization_mode: {
-                const auto status = slave->exit_initialization_mode();
-                sendStatus(*conn, status);
-            }
-            break;
-            case opcodes::step: {
-                double currentTime;
-                double stepSize;
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(currentTime);
-                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(stepSize);
-                const auto status = slave->step(currentTime, stepSize);
-                sendStatus(*conn, status);
-            }
-            break;
-            case opcodes::terminate: {
-                const auto status = slave->terminate();
-                sendStatus(*conn, status);
-            }
-            break;
-            case opcodes::freeInstance: {
-                slave->freeInstance();
-                return;
-            }
-            case opcodes::read_int: {
-                std::vector<fmilibcpp::value_ref> vr;
-
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(vr);
-
-                std::vector<int> values(vr.size());
-                const auto status = slave->get_integer(vr, values);
-
-               sendStatusAndValues(*conn, status, values);
-            }
-            break;
-            case opcodes::read_real: {
-                std::vector<fmilibcpp::value_ref> vr;
-
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(vr);
-
-                std::vector<double> values(vr.size());
-                const auto status = slave->get_real(vr, values);
-
-                sendStatusAndValues(*conn, status, values);
-            }
-            break;
-            case opcodes::read_string: {
-                std::vector<fmilibcpp::value_ref> vr;
-
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(vr);
-
-                std::vector<std::string> values(vr.size());
-                const auto status = slave->get_string(vr, values);
-
-                sendStatusAndValues(*conn, status, values);
-            }
-            break;
-            case opcodes::read_bool: {
-                std::vector<fmilibcpp::value_ref> vr;
-
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(vr);
-
-                std::vector<bool> values(vr.size());
-                const auto status = slave->get_boolean(vr, values);
-
-                sendStatusAndValues(*conn, status, values);
-            }
-            break;
-            case opcodes::write_int: {
-                std::vector<fmilibcpp::value_ref> vr;
-                std::vector<int> values;
-
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(vr);
-                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(values);
-
-                const auto status = slave->set_integer(vr, values);
-                sendStatus(*conn, status);
-            }
-            break;
-            case opcodes::write_real: {
-                std::vector<fmilibcpp::value_ref> vr;
-                std::vector<double> values;
-
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(vr);
-                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(values);
-
-                const auto status = slave->set_real(vr, values);
-                sendStatus(*conn, status);
-            }
-            break;
-            case opcodes::write_string: {
-                std::vector<fmilibcpp::value_ref> vr;
-                std::vector<std::string> values;
-
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(vr);
-                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(values);
-
-                const auto status = slave->set_string(vr, values);
-                sendStatus(*conn, status);
-            }
-            break;
-            case opcodes::write_bool: {
-                std::vector<fmilibcpp::value_ref> vr;
-                std::vector<bool> values;
-
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(vr);
-                oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(values);
-
-                const auto status = slave->set_boolean(vr, values);
-                sendStatus(*conn, status);
-            }
-            break;
-            default: {
-                std::cerr << "[proxyfmu] Unknown command: " << func << std::endl;
-                sendStatus(*conn, false);
-            }
-            break;
-        }
-    }
-
-}
-
 int run_application(const std::string& fmu, const std::string& instanceName)
 {
 
     const auto port = simple_socket::getAvailablePort(port_range_min, port_range_max);
     if (!port) {
-        std::cerr << "[proxyfmu] Unable to locate free port number.." << std::endl;
+        spdlog::error("Unable to locate free port number..");
         return UNHANDLED_ERROR;
     }
 
-    simple_socket::TCPServer server(*port);
-    std::cout << "[proxyfmu] port=" << std::to_string(*port) << std::endl;
+    try {
+        simple_socket::TCPServer server(*port);
+        spdlog::info("Serving proxy '{}' on port {}", instanceName, *port);
+        // communication with parent process
+        std::cout << "[proxyfmu] port=" << std::to_string(*port) << std::endl;
 
-    auto con = server.accept();
-    std::cout << "[proxyfmu] Client connected" << std::endl;
-    client_handler(std::move(con), fmu, instanceName);
+        auto con = server.accept();
+        spdlog::info("Client connected");
+        client_handler(std::move(con), fmu, instanceName);
+    } catch (const std::exception& ex) {
+        spdlog::error("Exception occurred: {}", ex.what());
+        return UNHANDLED_ERROR;
+    }
 
     return SUCCESS;
 }
@@ -344,21 +152,33 @@ int main(int argc, char** argv)
             const auto port = sub->get_option("--port")->as<int>();
             return run_boot_application(port);
 
-        } else {
-            const auto fmu = app["--fmu"]->as<std::string>();
-            const auto fmuPath = std::filesystem::path(fmu);
-            if (!exists(fmuPath)) {
-                std::cerr << "[proxyfmu] No such file: '" << absolute(fmuPath) << "'";
-                return COMMANDLINE_ERROR;
-            }
-
-            const auto instanceName = app["--instanceName"]->as<std::string>();
-
-            return run_application(fmu, instanceName);
         }
 
+        const auto instanceName = app["--instanceName"]->as<std::string>();
+
+        std::string logFile{"logs/" + instanceName + ".txt"};
+        std::ofstream ofs(logFile, std::ofstream::out | std::ofstream::trunc);
+        ofs.close();
+
+        auto file_logger = spdlog::basic_logger_mt("proxyfmu", logFile);
+        file_logger->set_level(spdlog::level::debug);
+        file_logger->flush_on(spdlog::level::n_levels);
+        set_default_logger(file_logger);
+
+        const auto fmu = app["--fmu"]->as<std::string>();
+        const auto fmuPath = std::filesystem::path(fmu);
+        if (!exists(fmuPath)) {
+            spdlog::error("No such file: '{}'",absolute(fmuPath).string());
+            return COMMANDLINE_ERROR;
+        }
+
+        spdlog::info("Got commandline arguments: --fmu '{}', --instanceName '{}'", fmu, instanceName);
+
+        return run_application(fmu, instanceName);
+
+
     } catch (const std::exception& e) {
-        std::cerr << "[proxyfmu] Unhandled Exception reached the top of main: " << e.what() << ", application will now exit" << std::endl;
+        spdlog::error("Unhandled Exception reached the top of main: {}, application will now exit", e.what());
         return UNHANDLED_ERROR;
     }
 }

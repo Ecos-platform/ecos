@@ -2,12 +2,14 @@
 #ifndef ECOS_PROXYFMU_PROCESS_HELPER_HPP
 #define ECOS_PROXYFMU_PROCESS_HELPER_HPP
 
+#include <spdlog/spdlog.h>
 #include <subprocess/subprocess.h>
 
 #include <filesystem>
 #include <future>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #ifdef WIN32
 #    define WIN32_LEAN_AND_MEAN
@@ -62,16 +64,16 @@ inline void start_process(
     }
 #endif
 
-    std::cout << "[proxyfmu] Checking if proxyfmu is available.." << std::endl;
+    spdlog::debug("Checking if proxyfmu is available..");
     const int statusCode = system(("\"" + execStr + "\" -v").c_str());
     if (statusCode != 0) {
-        std::cerr << "ERROR - unable to invoke proxyfmu!" << std::endl;
+        spdlog::error("Unable to invoke proxyfmu!");
 
         port.set_value(-1);
         return;
     }
-    std::cout << std::endl;
-    std::cout << "[proxyfmu] Booting FMU instance '" << instanceName << "'.." << std::endl;
+
+    spdlog::info("Booting FMU instance '{}'", instanceName);
 
     const std::string fmuPathStr = fmuPath.string();
     std::vector<const char*> cmd = {execStr.c_str(), "--fmu", fmuPathStr.c_str(), "--instanceName", instanceName.c_str(), nullptr};
@@ -89,13 +91,13 @@ inline void start_process(
                 {
                     const auto parsedPort = std::stoi(line.substr(16));
                     port.set_value(parsedPort);
-                    std::cout << "[proxyfmu] FMU instance '" << instanceName << "' instantiated using port " << parsedPort << std::endl;
+                    spdlog::info("FMU proxy instance '{}' instantiated using port {}", instanceName, parsedPort);
                 }
                 bound = true;
             } else if (line.substr(0, 16) == "[proxyfmu] freed") {
                 break;
             } else {
-                std::cerr << line;
+                std::cerr << "Got: " << line;
             }
         }
 
@@ -105,13 +107,11 @@ inline void start_process(
         if (result == 0 && status == 0 && bound) {
             return;
         }
-        std::cerr << "[proxyfmu] External proxy process for instance '"
-                  << instanceName << "' returned with status "
-                  << std::to_string(status) << ". Unable to bind.." << std::endl;
+        spdlog::error("External proxy process for instance '{}' returned with status {}. Unable to bind..", instanceName, std::to_string(status));
     }
     port.set_value(-1);
 }
 
-} // namespace proxyfmu
+} // namespace ecos::proxy
 
 #endif // ECOS_PROXYFMU_PROCESS_HELPER_HPP

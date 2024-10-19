@@ -3,6 +3,8 @@
 
 #include "process_helper.hpp"
 
+#include <ecos/logger/logger.hpp>
+
 #include "proxyfmu/opcodes.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
 #include <msgpack.hpp>
@@ -208,7 +210,7 @@ bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "[proxyfmu] [get_integer] Failed to read data from client" << std::endl;
+        log::err("[get_integer] Failed to read data from client");
         return false;
     }
 
@@ -222,7 +224,7 @@ bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::
         oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
         oh.get().convert(values);
     } catch (const std::exception& e) {
-        std::cerr << "[proxyfmu] [get_integer] Error during unpacking: " << e.what() << std::endl;
+        log::err("[get_integer] Error during unpacking: {}", e.what());
         return false;
     }
 
@@ -242,7 +244,7 @@ bool proxy_slave::get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vec
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "[proxyfmu] [get_real] Failed to read data from client" << std::endl;
+        log::err("[get_real] Failed to read data from client");
         return false;
     }
 
@@ -256,7 +258,7 @@ bool proxy_slave::get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vec
         oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
         oh.get().convert(values);
     } catch (const std::exception& e) {
-        std::cerr << "[proxyfmu] [get_real] Error during unpacking: " << e.what() << std::endl;
+        log::err("[get_real] Error during unpacking: {}", e.what());
         return false;
     }
 
@@ -276,7 +278,7 @@ bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::v
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "[proxyfmu] [get_string] Failed to read data from client" << std::endl;
+        log::err("[get_string] Failed to read data from client");
         return false;
     }
 
@@ -290,7 +292,7 @@ bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::v
         oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
         oh.get().convert(values);
     } catch (const std::exception& e) {
-        std::cerr << "[proxyfmu] [get_string] Error during unpacking: " << e.what() << std::endl;
+        log::err("[get_string] Error during unpacking: {}",  e.what());
         return false;
     }
 
@@ -310,7 +312,7 @@ bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "[proxyfmu] [get_boolean] Failed to read data from client" << std::endl;
+        log::err("[get_boolean] Failed to read data from client");
         return false;
     }
 
@@ -324,7 +326,7 @@ bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::
         oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
         oh.get().convert(values);
     } catch (const std::exception& e) {
-        std::cerr << "[proxyfmu] [get_boolean] Error during unpacking: " << e.what() << std::endl;
+        log::err("[get_boolean] Error during unpacking: {}", e.what());
         return false;
     }
 
@@ -345,7 +347,7 @@ bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "[proxyfmu] [set_integer] Failed to read data from client" << std::endl;
+        log::err("[set_integer] Failed to read data from client");
         return false;
     }
 
@@ -368,7 +370,7 @@ bool proxy_slave::set_real(const std::vector<fmilibcpp::value_ref>& vr, const st
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "[proxyfmu] [set_real] Failed to read data from client" << std::endl;
+        log::err("[set_real] Failed to read data from client");
         return false;
     }
 
@@ -391,7 +393,7 @@ bool proxy_slave::set_string(const std::vector<fmilibcpp::value_ref>& vr, const 
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "[proxyfmu] [set_string] Failed to read data from client" << std::endl;
+        log::err("[set_string] Failed to read data from client");
         return false;
     }
 
@@ -414,7 +416,7 @@ bool proxy_slave::set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "[proxyfmu] [set_boolean] Failed to read data from client" << std::endl;
+        log::err("[set_boolean] Failed to read data from client");
         return false;
     }
 
@@ -427,7 +429,7 @@ void proxy_slave::freeInstance()
 {
     if (!freed) {
         freed = true;
-        std::cout << "[proxyfmu] Shutting down proxy for '" << modelDescription_.modelName << "::" << instanceName << "'";
+        log::debug("Shutting down proxy for '{}::{}'", modelDescription_.modelName, instanceName);
         if (client_) {
             msgpack::sbuffer sbuf;
             msgpack::pack(sbuf, enum_to_int(opcodes::freeInstance));
@@ -436,7 +438,8 @@ void proxy_slave::freeInstance()
         if (thread_.joinable()) {
             thread_.join();
         }
-        std::cout << " done.." << std::endl;
+        log::debug("done..");
+        // communication with parent process
         std::cout << "[proxyfmu] freed";
     }
 }

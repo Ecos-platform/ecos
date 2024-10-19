@@ -4,10 +4,12 @@
 int main()
 {
 
+    log::set_logging_level(log::level::trace);
+
     simulation_structure ss;
-    ss.add_model("mass", "proxyfmu://localhost?file=" + std::string(DATA_FOLDER) + "/fmus/1.0/Mass.fmu");
-    ss.add_model("spring", "proxyfmu://localhost?file=" + std::string(DATA_FOLDER) + "/fmus/1.0/Spring.fmu");
-    ss.add_model("damper", "proxyfmu://localhost?file=" + std::string(DATA_FOLDER) + "/fmus/1.0/Damper.fmu");
+    ss.add_model("mass", "proxyfmu://127.0.0.1?file=" + std::string(DATA_FOLDER) + "/fmus/1.0/Mass.fmu");
+    ss.add_model("spring", "proxyfmu://127.0.0.1?file=" + std::string(DATA_FOLDER) + "/fmus/1.0/Spring.fmu");
+    ss.add_model("damper", "proxyfmu://127.0.0.1?file=" + std::string(DATA_FOLDER) + "/fmus/1.0/Damper.fmu");
 
     ss.make_connection<double>("spring::for_xx", "mass::in_l_u");
     ss.make_connection<double>("spring::for_yx", "mass::in_l_w");

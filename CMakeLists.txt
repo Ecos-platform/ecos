@@ -54,7 +54,7 @@ set(SIMPLE_SOCKET_BUILD_TESTS OFF)
 FetchContent_Declare(
         SimpleSocket
         GIT_REPOSITORY https://github.com/markaren/SimpleSocket.git
-        GIT_TAG c456f9966ff61480ee164b224d5becb69dfceef6
+        GIT_TAG 9de41de6784247bd3e77880cdc4c6b347dd76110
 )
 FetchContent_MakeAvailable(SimpleSocket)
 
@@ -85,7 +85,7 @@ if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
         FetchContent_Declare(
                 Catch2
                 GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-                GIT_TAG v3.4.0
+                GIT_TAG v3.3.2
         )
         FetchContent_MakeAvailable(Catch2)
 

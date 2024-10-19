@@ -20,7 +20,7 @@ class boot_service_handler
 public:
     int16_t loadFromBinaryData(const std::string& fmuName, const std::string& instanceName, const std::string& data)
     {
-        auto tmp = std::make_unique<ecos::temp_dir>(fmuName);
+        auto tmp = std::make_unique<temp_dir>(fmuName);
         std::string fmuPath(tmp->path().string() + "/" + fmuName + ".fmu");
 
         write_data(fmuPath, data);

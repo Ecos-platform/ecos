@@ -23,7 +23,7 @@ jobs:
         id: runvcpkg
         with:
           vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-          vcpkgGitCommitId: '0bcc935733c0cb81f6a8add2758028253e94eae8'
+          vcpkgGitCommitId: 'd567b667adba0e72c5c3931ddbe745b66aa34b73'
           vcpkgJsonGlob: 'vcpkg.json'
           appendedCacheKey: vcpkginstall
 
@@ -60,7 +60,7 @@ jobs:
         id: runvcpkg
         with:
           vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-          vcpkgGitCommitId: '0bcc935733c0cb81f6a8add2758028253e94eae8'
+          vcpkgGitCommitId: 'd567b667adba0e72c5c3931ddbe745b66aa34b73'
           vcpkgJsonGlob: 'vcpkg.json'
           appendedCacheKey: vcpkginstall
 

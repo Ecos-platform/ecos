@@ -30,12 +30,12 @@ enum class functors
 
 };
 
-inline int enum_to_int(functors f)
+inline uint8_t enum_to_int(functors f)
 {
-    return static_cast<int>(f);
+    return static_cast<uint8_t>(f);
 }
 
-inline functors int_to_enum(int i)
+inline functors int_to_enum(uint8_t i)
 {
     return static_cast<functors>(i);
 }

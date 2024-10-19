@@ -65,18 +65,16 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
     while (true) {
         const int read = conn->read(buffer);
 
-        int func = -1;
+        uint8_t func;
         std::size_t offset = 0;
        try {
            auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
            oh.get().convert(func);
-       } catch (std::exception& e) {
+       } catch (const std::exception& e) {
            std::cout << e.what() << std::endl;
+           sendStatus(*conn, false);
+           return;
        }
-
-        if (func == -1) {
-            sendStatus(*conn, false);
-        }
 
         const auto f = ecos::int_to_enum(func);
         switch (f) {
@@ -234,6 +232,7 @@ void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const
             break;
             default: {
                 std::cerr << "[proxyfmu] Unknown command: " << func << std::endl;
+                sendStatus(*conn, false);
             }
             break;
         }
@@ -273,7 +272,6 @@ int run_boot_application(const int port)
         conn->readExact(buffer);
 
         const auto msgSize = simple_socket::decode_uint32(buffer);
-        buffer.clear();
         buffer.resize(msgSize);
         conn->readExact(buffer);
 

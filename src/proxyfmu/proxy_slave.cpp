@@ -3,14 +3,14 @@
 
 #include "process_helper.hpp"
 
+#include "proxyfmu/functors.hpp"
+#include "simple_socket/util/byte_conversion.hpp"
 #include <msgpack.hpp>
 
 #include <chrono>
 #include <fstream>
 #include <utility>
 #include <vector>
-
-#include "proxyfmu/functors.hpp"
 
 using namespace simple_socket;
 
@@ -74,9 +74,11 @@ proxy_slave::proxy_slave(
         msgpack::pack(sbuf, data);
         sbuf.write(data.c_str(), data.size());
 
+        const auto msgLen = sbuf.size();
+        client->write(encode_uint32(msgLen));
         client->write(sbuf.data(), sbuf.size());
 
-        std::vector<uint8_t> buffer(64);
+        std::vector<uint8_t> buffer(32);
         const int read = client->read(buffer.data(), buffer.size());
 
         const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
@@ -111,7 +113,7 @@ bool proxy_slave::setup_experiment(double start_time, double stop_time, double t
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     bool status;
     std::size_t offset = 0;
@@ -126,7 +128,7 @@ bool proxy_slave::enter_initialization_mode()
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     bool status;
     std::size_t offset = 0;
@@ -141,7 +143,7 @@ bool proxy_slave::exit_initialization_mode()
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     bool status;
     std::size_t offset = 0;
@@ -158,7 +160,7 @@ bool proxy_slave::step(double current_time, double step_size)
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     bool status;
     std::size_t offset = 0;
@@ -173,7 +175,7 @@ bool proxy_slave::terminate()
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     bool status;
     const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
@@ -187,7 +189,7 @@ bool proxy_slave::reset()
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(32);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     bool status;
     const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
@@ -204,17 +206,17 @@ bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(512);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "Failed to read data from client" << std::endl;
+        std::cerr << "[proxyfmu] [get_integer] Failed to read data from client" << std::endl;
         return false;
     }
 
     bool status;
-    std::size_t offset = 0;
 
     try {
+        std::size_t offset = 0;
         auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
         oh.get().convert(status);
 
@@ -238,17 +240,17 @@ bool proxy_slave::get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vec
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(512);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "Failed to read data from client" << std::endl;
+        std::cerr << "[proxyfmu] [get_real] Failed to read data from client" << std::endl;
         return false;
     }
 
     bool status;
-    std::size_t offset = 0;
 
     try {
+        std::size_t offset = 0;
         auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
         oh.get().convert(status);
 
@@ -272,10 +274,10 @@ bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::v
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(512);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "Failed to read data from client" << std::endl;
+        std::cerr << "[proxyfmu] [get_string] Failed to read data from client" << std::endl;
         return false;
     }
 
@@ -306,10 +308,10 @@ bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::
     client_->write(sbuf.data(), sbuf.size());
 
     std::vector<uint8_t> buffer(512);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "Failed to read data from client" << std::endl;
+        std::cerr << "[proxyfmu] [get_boolean] Failed to read data from client" << std::endl;
         return false;
     }
 
@@ -340,11 +342,11 @@ bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const
     msgpack::pack(sbuf, values);
     client_->write(sbuf.data(), sbuf.size());
 
-    std::vector<uint8_t> buffer(512);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    static std::vector<uint8_t> buffer(512*2);
+    const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "Failed to read data from client" << std::endl;
+        std::cerr << "[proxyfmu] [set_integer] Failed to read data from client" << std::endl;
         return false;
     }
 
@@ -363,11 +365,11 @@ bool proxy_slave::set_real(const std::vector<fmilibcpp::value_ref>& vr, const st
     msgpack::pack(sbuf, values);
     client_->write(sbuf.data(), sbuf.size());
 
-    std::vector<uint8_t> buffer(512);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    static std::vector<uint8_t> buffer(512*2);
+    const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "Failed to read data from client" << std::endl;
+        std::cerr << "[proxyfmu] [set_real] Failed to read data from client" << std::endl;
         return false;
     }
 
@@ -386,11 +388,11 @@ bool proxy_slave::set_string(const std::vector<fmilibcpp::value_ref>& vr, const 
     msgpack::pack(sbuf, values);
     client_->write(sbuf.data(), sbuf.size());
 
-    std::vector<uint8_t> buffer(512);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    static std::vector<uint8_t> buffer(512*2);
+    const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "Failed to read data from client" << std::endl;
+        std::cerr << "[proxyfmu] [set_string] Failed to read data from client" << std::endl;
         return false;
     }
 
@@ -409,11 +411,11 @@ bool proxy_slave::set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const
     msgpack::pack(sbuf, values);
     client_->write(sbuf.data(), sbuf.size());
 
-    std::vector<uint8_t> buffer(512);
-    const int read = client_->read(buffer.data(),  buffer.size());
+    static std::vector<uint8_t> buffer(512*2);
+    const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        std::cerr << "Failed to read data from client" << std::endl;
+        std::cerr << "[proxyfmu] [set_boolean] Failed to read data from client" << std::endl;
         return false;
     }
 

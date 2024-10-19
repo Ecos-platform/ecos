@@ -81,5 +81,6 @@ std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm
                        }},
             connection);
     }
+
     return sim;
 }

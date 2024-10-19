@@ -21,9 +21,7 @@ void writeData(std::ofstream& out, const simulation& sim, const csv_config& conf
 
     for (auto& instance : sim.get_instances()) {
 
-        bool logInstance = config.shouldLogInstance(instance->instanceName());
-
-        if (logInstance) {
+        if (config.shouldLogInstance(instance->instanceName())) {
             auto& properties = instance->get_properties();
 
             for (auto& [name, p] : properties.get_reals()) {
@@ -52,7 +50,7 @@ void writeData(std::ofstream& out, const simulation& sim, const csv_config& conf
 std::string plotScript();
 
 csv_writer::csv_writer(const std::filesystem::path& path)
-    : path_(std::filesystem::absolute(path))
+    : path_(absolute(path))
     , config_(csv_config{})
 {
     if (path.extension().string() != ".csv") {
@@ -60,8 +58,8 @@ csv_writer::csv_writer(const std::filesystem::path& path)
     }
 
     const auto parentPath = path_.parent_path();
-    if (!std::filesystem::exists(parentPath)) {
-        if (!std::filesystem::create_directories(parentPath)) {
+    if (!exists(parentPath)) {
+        if (!create_directories(parentPath)) {
             throw std::runtime_error("Unable to create missing directories for path: " + path_.string());
         }
     }
@@ -78,9 +76,8 @@ void csv_writer::pre_init(simulation& sim)
     for (auto& instance : sim.get_instances()) {
 
         const auto instanceName = instance->instanceName();
-        bool logInstance = config_.shouldLogInstance(instanceName);
 
-        if (logInstance) {
+        if (config_.shouldLogInstance(instanceName)) {
             auto& properties = instance->get_properties();
             for (auto& [variableName, p] : properties.get_reals()) {
                 bool logVar = config_.shouldLogVariable(variableName);
@@ -121,11 +118,10 @@ void csv_writer::post_terminate(simulation& sim)
     outFile_.close();
     log::info("Wrote CSV data to file: '{}'", path_.string());
 
-    auto plotConfig = config_.plotConfig_;
-    if (plotConfig) {
+    if (auto plotConfig = config_.plotConfig_) {
 
         std::filesystem::path plotter("ecos_plotter.py");
-        if (!std::filesystem::exists(plotter)) {
+        if (!exists(plotter)) {
             std::ofstream out(plotter, std::ios::trunc);
             out << plotScript();
         }
@@ -133,8 +129,7 @@ void csv_writer::post_terminate(simulation& sim)
         std::stringstream ss;
         ss << "python ecos_plotter.py \"" << path_.string() << "\" \"" << plotConfig->string() << "\"";
         auto t = std::thread([&ss] {
-            int status = system(ss.str().c_str());
-            if (status) {
+            if (int status = system(ss.str().c_str())) {
                 log::warn("Command {} returned with status: {}", ss.str(), status);
             }
         });
@@ -226,11 +221,11 @@ void csv_config::load(const std::filesystem::path& configPath)
 
 void csv_config::enable_plotting(const std::filesystem::path& plotConfig)
 {
-    if (!std::filesystem::exists(plotConfig)) {
-        log::warn("No such file: '{}'", std::filesystem::absolute(plotConfig).string());
+    if (!exists(plotConfig)) {
+        log::warn("No such file: '{}'", absolute(plotConfig).string());
         return;
     }
-    plotConfig_ = std::filesystem::absolute(plotConfig);
+    plotConfig_ = absolute(plotConfig);
 }
 
 std::string plotScript()

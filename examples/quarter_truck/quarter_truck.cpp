@@ -8,7 +8,7 @@ using namespace ecos;
 
 int main()
 {
-    log::set_logging_level(ecos::log::level::debug);
+    set_logging_level(ecos::log::level::debug);
 
     simulation_structure ss;
     const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/fmus/2.0/quarter-truck";
@@ -28,7 +28,6 @@ int main()
         ss.add_parameter_set("initialValues", map);
 
         auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
-        auto p = sim->get_real_property("chassis::zChassis");
 
         auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck_with_config.csv");
         csv_config& config = csvWriter->config();
@@ -38,7 +37,6 @@ int main()
 
         sim->init("initialValues");
         sim->step_until(5);
-        log::info("value={}", p->get_value());
 
         sim->terminate();
     } catch (const std::exception& ex) {

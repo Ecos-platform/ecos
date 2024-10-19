@@ -1,5 +1,5 @@
 
-#include "handlers/boot_service_handler.hpp"
+#include "boot_service_handler.hpp"
 
 #include "ecos/lib_info.hpp"
 

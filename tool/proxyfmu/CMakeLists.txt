@@ -1,8 +1,6 @@
 
 set(sources
         "proxyfmu.cpp"
-        "handlers/boot_service_handler.cpp"
-
         "${generatedSourcesDir}/ecos/lib_info.cpp"
 )
 

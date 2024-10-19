@@ -62,7 +62,7 @@ set(privateHeaders
         "fmilibcpp/fmi2/fmi2_slave.hpp"
         "fmilibcpp/fmi2/fmi2_model_description.hpp"
 
-        "proxyfmu/functors.hpp"
+        "proxyfmu/opcodes.hpp"
         "proxyfmu/process_helper.hpp"
         "proxyfmu/proxy_fmu.hpp"
         "proxyfmu/proxy_slave.hpp"

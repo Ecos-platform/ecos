@@ -4,9 +4,7 @@
 
 #include <subprocess/subprocess.h>
 
-#include <array>
 #include <condition_variable>
-#include <exception>
 #include <filesystem>
 #include <iostream>
 #include <mutex>
@@ -98,7 +96,7 @@ inline void start_process(
                     port = std::stoi(line.substr(16));
                     std::cout << "[proxyfmu] FMU instance '" << instanceName << "' instantiated using port " << port << std::endl;
                 }
-                cv.notify_all();
+                cv.notify_one();
                 bound = true;
             } else if (line.substr(0, 16) == "[proxyfmu] freed") {
                 break;

@@ -4,10 +4,10 @@
 
 #include <subprocess/subprocess.h>
 
-#include <condition_variable>
+#include <exception>
 #include <filesystem>
+#include <future>
 #include <iostream>
-#include <mutex>
 #include <string>
 
 #ifdef WIN32
@@ -38,9 +38,7 @@ inline std::string getLoc()
 inline void start_process(
     const std::filesystem::path& fmuPath,
     const std::string& instanceName,
-    int& port,
-    std::mutex& mtx,
-    std::condition_variable& cv)
+    std::promise<int>& port)
 {
 
     std::filesystem::path executable;
@@ -70,9 +68,7 @@ inline void start_process(
     if (statusCode != 0) {
         std::cerr << "ERROR - unable to invoke proxyfmu!" << std::endl;
 
-        std::lock_guard lck(mtx);
-        port = -999;
-        cv.notify_one();
+        port.set_value(-1);
         return;
     }
     std::cout << std::endl;
@@ -92,11 +88,10 @@ inline void start_process(
             std::string line(buffer);
             if (!bound && line.substr(0, 16) == "[proxyfmu] port=") {
                 {
-                    std::lock_guard lck(mtx);
-                    port = std::stoi(line.substr(16));
-                    std::cout << "[proxyfmu] FMU instance '" << instanceName << "' instantiated using port " << port << std::endl;
+                    const auto parsedPort = std::stoi(line.substr(16));
+                    port.set_value(parsedPort);
+                    std::cout << "[proxyfmu] FMU instance '" << instanceName << "' instantiated using port " << parsedPort << std::endl;
                 }
-                cv.notify_one();
                 bound = true;
             } else if (line.substr(0, 16) == "[proxyfmu] freed") {
                 break;
@@ -115,10 +110,7 @@ inline void start_process(
                   << instanceName << "' returned with status "
                   << std::to_string(status) << ". Unable to bind.." << std::endl;
     }
-    std::lock_guard lck(mtx);
-    port = -999;
-
-    cv.notify_one();
+    port.set_value(-1);
 }
 
 } // namespace proxyfmu

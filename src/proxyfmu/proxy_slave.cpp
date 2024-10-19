@@ -53,11 +53,10 @@ proxy_slave::proxy_slave(
 
     if (!remote) {
         host = "127.0.0.1";
-        std::mutex mtx;
-        std::condition_variable cv;
-        thread_ = std::thread(&start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
-        std::unique_lock lck(mtx);
-        while (port == -1) cv.wait(lck);
+        std::promise<int> port_promise;
+        thread_ = std::thread(&start_process, fmuPath, instanceName, std::ref(port_promise));
+
+        port = port_promise.get_future().get();
     } else {
         host = remote->host();
 
@@ -85,7 +84,7 @@ proxy_slave::proxy_slave(
         oh.get().convert(port);
     }
 
-    if (port == -999) {
+    if (port == -1) {
         if (thread_.joinable()) thread_.join();
         throw std::runtime_error("[proxyfmu] Unable to bind to external proxy process!");
     }

@@ -5,6 +5,7 @@ on: [ push, workflow_dispatch ]
 jobs:
   cmake-on-linux:
 
+    timeout-minutes: 20
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -45,6 +46,7 @@ jobs:
 
   cmake-on-windows:
 
+    timeout-minutes: 20
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

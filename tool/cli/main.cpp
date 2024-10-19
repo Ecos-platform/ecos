@@ -33,7 +33,7 @@ int print_help(const CLI::App& desc)
     return 0;
 }
 
-std::string version()
+std::string versionString()
 {
     const auto v = library_version();
     std::stringstream ss;
@@ -43,7 +43,7 @@ std::string version()
 
 void create_options(CLI::App& app)
 {
-    app.set_version_flag("-v,--version", version());
+    app.set_version_flag("-v,--version", versionString());
 
     app.add_flag("-i,--interactive", "Make execution interactive.")->configurable(false);
     app.add_flag("--noLog", "Disable CSV logging.")->configurable(false);
@@ -62,14 +62,14 @@ void create_options(CLI::App& app)
 
 std::unique_ptr<simulation_structure> create_structure(const std::filesystem::path& path, std::string& csvName)
 {
-    if (!std::filesystem::exists(path)) {
+    if (!exists(path)) {
         throw std::runtime_error("No such file: " + std::filesystem::absolute(path).string());
     }
 
     std::unique_ptr<simulation_structure> ss;
-    if (path.extension() == ".ssp" || std::filesystem::is_directory(path)) {
-        if (std::filesystem::is_directory(path)) {
-            bool ssdFound;
+    if (path.extension() == ".ssp" || is_directory(path)) {
+        if (is_directory(path)) {
+            bool ssdFound{false};
             for (const auto& entry : std::filesystem::directory_iterator(path)) {
                 if (entry.path().filename() == "SystemStructure.ssd") {
                     ssdFound = true;

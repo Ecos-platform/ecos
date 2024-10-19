@@ -4,7 +4,6 @@
 
 #include <subprocess/subprocess.h>
 
-#include <exception>
 #include <filesystem>
 #include <future>
 #include <iostream>

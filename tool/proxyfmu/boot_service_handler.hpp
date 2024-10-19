@@ -10,7 +10,6 @@
 #include <thread>
 #include <vector>
 #include <fstream>
-#include <mutex>
 
 namespace ecos::proxy
 {
@@ -26,17 +25,12 @@ public:
 
         write_data(fmuPath, data);
 
-        int port = -1;
-        std::mutex mtx;
-        std::condition_variable cv;
-        std::thread t(&start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
+        std::promise<int> portPromise;
+        std::thread t(&start_process, fmuPath, instanceName, std::ref(portPromise));
         processes_.emplace_back(std::move(t));
         dirs_.emplace_back(std::move(tmp));
 
-        std::unique_lock lck(mtx);
-        cv.wait(lck, [&port] { return port != -1; });
-
-        return port;
+        return static_cast<int16_t>(portPromise.get_future().get());
     }
 
     ~boot_service_handler()

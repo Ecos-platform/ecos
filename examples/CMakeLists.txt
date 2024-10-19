@@ -8,6 +8,9 @@ endfunction()
 add_example_executable(controlled_temperature controlled_temperature/controlled_temperature.cpp)
 add_example_executable(controlled_temperature_proxy controlled_temperature/controlled_temperature_proxy.cpp)
 
+add_example_executable(spring_mass_damper spring_mass_damper/spring_mass_damper.cpp)
+add_example_executable(spring_mass_damper_proxy spring_mass_damper/spring_mass_damper_proxy.cpp)
+
 if (WIN32)
     add_example_executable(quarter_truck quarter_truck/quarter_truck.cpp)
     add_example_executable(quarter_truck_ssp quarter_truck/quarter_truck_ssp.cpp)

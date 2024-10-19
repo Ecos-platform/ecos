@@ -1,6 +1,6 @@
 
-#ifndef LIBECOS_COMMON_HPP
-#define LIBECOS_COMMON_HPP
+#ifndef LIBECOS_CT_COMMON_HPP
+#define LIBECOS_CT_COMMON_HPP
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/logger/logger.hpp"
@@ -10,7 +10,7 @@
 
 using namespace ecos;
 
-void run(const std::string& fmuPath)
+inline void run(const std::string& fmuPath)
 {
     set_logging_level(log::level::debug);
 
@@ -38,4 +38,4 @@ void run(const std::string& fmuPath)
     }
 }
 
-#endif // LIBECOS_COMMON_HPP
+#endif // LIBECOS_CT_COMMON_HPP

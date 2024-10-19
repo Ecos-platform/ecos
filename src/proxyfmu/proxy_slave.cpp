@@ -59,11 +59,10 @@ proxy_slave::proxy_slave(
 
     if (!remote) {
         host = "localhost";
-        std::mutex mtx;
-        std::condition_variable cv;
-        thread_ = std::make_unique<std::thread>(&start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
-        std::unique_lock<std::mutex> lck(mtx);
-        while (port == -1) cv.wait(lck);
+        std::promise<int> port_promise;
+        thread_ = std::make_unique<std::thread>(&start_process, fmuPath, instanceName, std::ref(port_promise));
+
+        port = port_promise.get_future().get();
     } else {
         host = remote->host();
         std::shared_ptr<TTransport> socket(new TSocket(host, remote->port()));
@@ -79,7 +78,7 @@ proxy_slave::proxy_slave(
         transport->close();
     }
 
-    if (port == -999) {
+    if (port == -1) {
         if (thread_) thread_->join();
         throw std::runtime_error("[proxyfmu] Unable to bind to external proxy process!");
     }

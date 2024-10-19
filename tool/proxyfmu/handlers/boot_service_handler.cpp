@@ -34,17 +34,12 @@ int32_t boot_service_handler::loadFromBinaryData(const std::string& fmuName, con
 
     write_data(fmuPath, data);
 
-    int port = -1;
-    std::mutex mtx;
-    std::condition_variable cv;
-    auto t = std::make_unique<std::thread>(&proxyfmu::start_process, fmuPath, instanceName, std::ref(port), std::ref(mtx), std::ref(cv));
+    std::promise<int> portPromise;
+    auto t = std::make_unique<std::thread>(&proxyfmu::start_process, fmuPath, instanceName, std::ref(portPromise));
     processes_.emplace_back(std::move(t));
     dirs_.emplace_back(std::move(tmp));
 
-    std::unique_lock<std::mutex> lck(mtx);
-    cv.wait(lck, [&port] { return port != -1; });
-
-    return port;
+    return portPromise.get_future().get();
 }
 
 boot_service_handler::~boot_service_handler()

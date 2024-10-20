@@ -1,6 +1,7 @@
 
 #include "proxy_slave.hpp"
 
+#include "../../cmake-build-debug-wsl/_deps/simplesocket-src/include/simple_socket/UnixDomainSocket.hpp"
 #include "process_helper.hpp"
 
 #include <ecos/logger/logger.hpp>
@@ -50,23 +51,29 @@ proxy_slave::proxy_slave(
     : slave(instanceName)
     , modelDescription_(std::move(modelDescription))
 {
-    int port = -1;
-    std::string host;
 
     if (!remote) {
-        host = "127.0.0.1";
-        std::promise<int> port_promise;
-        thread_ = std::thread(&start_process, fmuPath, instanceName, std::ref(port_promise));
 
-        port = port_promise.get_future().get();
+        std::promise<std::string> bind_promise;
+        thread_ = std::thread(&start_process, fmuPath, instanceName, std::ref(bind_promise), true);
+
+        const auto bind = bind_promise.get_future().get();
+        if (bind.empty()) throw std::runtime_error("Unable to bind");
+        ctx_ = std::make_unique<UnixDomainClientContext>();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        client_ = ctx_->connect(bind);
+
     } else {
-        host = remote->host();
 
-        auto client = ctx_.connect(host, remote->port());
-        if (!client) throw std::runtime_error("Failed to connect to " + host);
+        std::string address = remote->host() + ":" + std::to_string(remote->port());
 
-        std::string data = read_data(fmuPath.string());
+        ctx_ = std::make_unique<TCPClientContext>();
+        auto bootClient = ctx_->connect(address);
+        if (!bootClient) {
+            throw std::runtime_error("Failed to connect to: " + address);
+        }
 
+        const std::string data = read_data(fmuPath.string());
         const std::string fmuName = std::filesystem::path(fmuPath).stem().string();
 
         msgpack::sbuffer sbuf;
@@ -76,27 +83,25 @@ proxy_slave::proxy_slave(
         sbuf.write(data.c_str(), data.size());
 
         const auto msgLen = sbuf.size();
-        client->write(encode_uint32(msgLen));
-        client->write(sbuf.data(), sbuf.size());
+        bootClient->write(encode_uint32(msgLen));
+        bootClient->write(sbuf.data(), sbuf.size());
 
         std::vector<uint8_t> buffer(32);
-        const int read = client->read(buffer.data(), buffer.size());
+        const int read = bootClient->read(buffer.data(), buffer.size());
 
+        uint16_t port;
         const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
         oh.get().convert(port);
-    }
 
-    if (port == -1) {
-        if (thread_.joinable()) thread_.join();
-        throw std::runtime_error("[proxyfmu] Unable to bind to external proxy process!");
+        client_ = ctx_->connect(remote->host() + ":" + std::to_string(port));
     }
-
-    client_ = ctx_.connect(host, port);
-    if (!client_) throw std::runtime_error("[proxyfmu] Unable to connect to external proxy process!");
 
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::instantiate));
     client_->write(sbuf.data(), sbuf.size());
+
+    uint8_t token;
+    client_->readExact(&token, 1);
 }
 
 const fmilibcpp::model_description& proxy_slave::get_model_description() const
@@ -111,22 +116,28 @@ bool proxy_slave::setup_experiment(double start_time, double stop_time, double t
     msgpack::pack(sbuf, start_time);
     msgpack::pack(sbuf, stop_time);
     msgpack::pack(sbuf, tolerance);
-    client_->write(sbuf.data(), sbuf.size());
-
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
 
     bool status;
     std::size_t offset = 0;
     const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-    return oh.get().convert(status);
+    oh.get().convert(status);
+
+    spdlog::info("Status={}", status);
+    return status;
 }
 
 bool proxy_slave::enter_initialization_mode()
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::enter_initialization_mode));
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -141,7 +152,9 @@ bool proxy_slave::exit_initialization_mode()
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::exit_initialization_mode));
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -158,7 +171,9 @@ bool proxy_slave::step(double current_time, double step_size)
     msgpack::pack(sbuf, enum_to_int(opcodes::step));
     msgpack::pack(sbuf, current_time);
     msgpack::pack(sbuf, step_size);
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -173,7 +188,9 @@ bool proxy_slave::terminate()
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::terminate));
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -187,7 +204,9 @@ bool proxy_slave::reset()
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::reset));
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -204,7 +223,9 @@ bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::read_int));
     msgpack::pack(sbuf, vr);
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     std::vector<uint8_t> buffer(512);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -238,7 +259,9 @@ bool proxy_slave::get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vec
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::read_real));
     msgpack::pack(sbuf, vr);
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     std::vector<uint8_t> buffer(512);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -272,7 +295,9 @@ bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::v
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::read_string));
     msgpack::pack(sbuf, vr);
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     std::vector<uint8_t> buffer(512);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -306,7 +331,9 @@ bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::read_bool));
     msgpack::pack(sbuf, vr);
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     std::vector<uint8_t> buffer(512);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -341,7 +368,9 @@ bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const
     msgpack::pack(sbuf, enum_to_int(opcodes::write_int));
     msgpack::pack(sbuf, vr);
     msgpack::pack(sbuf, values);
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     static std::vector<uint8_t> buffer(512*2);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -364,7 +393,9 @@ bool proxy_slave::set_real(const std::vector<fmilibcpp::value_ref>& vr, const st
     msgpack::pack(sbuf, enum_to_int(opcodes::write_real));
     msgpack::pack(sbuf, vr);
     msgpack::pack(sbuf, values);
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     static std::vector<uint8_t> buffer(512*2);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -387,7 +418,9 @@ bool proxy_slave::set_string(const std::vector<fmilibcpp::value_ref>& vr, const 
     msgpack::pack(sbuf, enum_to_int(opcodes::write_string));
     msgpack::pack(sbuf, vr);
     msgpack::pack(sbuf, values);
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     static std::vector<uint8_t> buffer(512*2);
     const int read = client_->read(buffer.data(), buffer.size());
@@ -410,7 +443,9 @@ bool proxy_slave::set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const
     msgpack::pack(sbuf, enum_to_int(opcodes::write_bool));
     msgpack::pack(sbuf, vr);
     msgpack::pack(sbuf, values);
-    client_->write(sbuf.data(), sbuf.size());
+    if (!client_->write(sbuf.data(), sbuf.size())) {
+        return false;
+    }
 
     static std::vector<uint8_t> buffer(512*2);
     const int read = client_->read(buffer.data(), buffer.size());

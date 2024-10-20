@@ -53,6 +53,8 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
                 case ecos::proxy::opcodes::instantiate: {
                     auto model = fmilibcpp::loadFmu(fmu);
                     slave = model->new_instance(instanceName);
+                    uint8_t token;
+                    conn->write(&token, 1);
                 } break;
                 case ecos::proxy::opcodes::setup_experiment: {
 

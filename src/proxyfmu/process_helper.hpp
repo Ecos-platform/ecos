@@ -36,10 +36,16 @@ inline std::string getLoc()
 #endif
 }
 
+inline std::string toString(bool value)
+{
+    return value ? "true" : "false";
+}
+
 inline void start_process(
     const std::filesystem::path& fmuPath,
     const std::string& instanceName,
-    std::promise<int>& port)
+    std::promise<std::string>& bind,
+    bool local)
 {
 
     std::filesystem::path executable;
@@ -69,14 +75,20 @@ inline void start_process(
     if (statusCode != 0) {
         spdlog::error("Unable to invoke proxyfmu!");
 
-        port.set_value(-1);
+        bind.set_value("-");
         return;
     }
 
     spdlog::info("Booting FMU instance '{}'", instanceName);
 
     const std::string fmuPathStr = fmuPath.string();
-    std::vector<const char*> cmd = {execStr.c_str(), "--fmu", fmuPathStr.c_str(), "--instanceName", instanceName.c_str(), nullptr};
+    const std::string localStr = toString(local);
+    std::vector<const char*> cmd = {
+        execStr.c_str(),
+        "--fmu", fmuPathStr.c_str(),
+        "--instanceName", instanceName.c_str(),
+        "--local", localStr.c_str(),
+        nullptr};
 
     subprocess_s process{};
     int result = subprocess_create(cmd.data(), subprocess_option_inherit_environment | subprocess_option_no_window, &process);
@@ -87,11 +99,20 @@ inline void start_process(
         char buffer[256];
         while (fgets(buffer, 256, p_stdout)) {
             std::string line(buffer);
-            if (!bound && line.substr(0, 16) == "[proxyfmu] port=") {
+            if (!bound && line.substr(0, 16) == "[proxyfmu] bind=") {
                 {
-                    const auto parsedPort = std::stoi(line.substr(16));
-                    port.set_value(parsedPort);
-                    spdlog::info("FMU proxy instance '{}' instantiated using port {}", instanceName, parsedPort);
+                    auto bindVal = line.substr(16);
+
+                    while (bindVal.back() == '\r' || bindVal.back() == '\n') {
+                        bindVal.pop_back();
+                    }
+                    bind.set_value(bindVal);
+
+                    if (!local) {
+                        spdlog::info("FMU proxy instance '{}' instantiated using port {}", instanceName, bindVal);
+                    } else {
+                        spdlog::info("FMU proxy instance '{}' instantiated using file '{}'", instanceName, bindVal);
+                    }
                 }
                 bound = true;
             } else if (line.substr(0, 16) == "[proxyfmu] freed") {
@@ -109,7 +130,8 @@ inline void start_process(
         }
         spdlog::error("External proxy process for instance '{}' returned with status {}. Unable to bind..", instanceName, std::to_string(status));
     }
-    port.set_value(-1);
+
+    bind.set_value("");
 }
 
 } // namespace ecos::proxy

@@ -1,10 +1,12 @@
 
 #include "boot_service_handler.hpp"
 #include "client_handler.hpp"
+#include "uuid.hpp"
 
 #include "ecos/lib_info.hpp"
 
 #include "simple_socket/TCPSocket.hpp"
+#include "simple_socket/UnixDomainSocket.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
 #include "simple_socket/util/port_query.hpp"
 #include <CLI/CLI.hpp>
@@ -12,7 +14,6 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
-#include <functional>
 #include <iostream>
 #include <random>
 #include <utility>
@@ -42,27 +43,47 @@ void wait_for_input()
     std::cout << "Done." << std::endl;
 }
 
-int run_application(const std::string& fmu, const std::string& instanceName)
+int run_application(const std::string& fmu, const std::string& instanceName, bool local)
 {
 
-    const auto port = simple_socket::getAvailablePort(port_range_min, port_range_max);
-    if (!port) {
-        spdlog::error("Unable to locate free port number..");
-        return UNHANDLED_ERROR;
-    }
+    if (!local) {
+        const auto port = simple_socket::getAvailablePort(port_range_min, port_range_max);
+        if (!port) {
+            spdlog::error("Unable to locate free port number..");
+            return UNHANDLED_ERROR;
+        }
 
-    try {
-        simple_socket::TCPServer server(*port);
-        spdlog::info("Serving proxy '{}' on port {}", instanceName, *port);
-        // communication with parent process
-        std::cout << "[proxyfmu] port=" << std::to_string(*port) << std::endl;
+        try {
+            simple_socket::TCPServer server(*port);
+            spdlog::info("Serving proxy '{}' on port {}", instanceName, *port);
+            // communication with parent process
+            std::cout << "[proxyfmu] bind=" << std::to_string(*port) << std::endl;
 
-        auto con = server.accept();
-        spdlog::info("Client connected");
-        client_handler(std::move(con), fmu, instanceName);
-    } catch (const std::exception& ex) {
-        spdlog::error("Exception occurred: {}", ex.what());
-        return UNHANDLED_ERROR;
+            auto con = server.accept();
+            spdlog::info("TCP Client connected");
+            client_handler(std::move(con), fmu, instanceName);
+        } catch (const std::exception& ex) {
+            spdlog::error("Exception occurred: {}", ex.what());
+            return UNHANDLED_ERROR;
+        }
+    } else {
+
+        const auto fileHandle = instanceName + "_" + generate_uuid();
+
+        try {
+            simple_socket::UnixDomainServer server(fileHandle);
+            spdlog::info("Serving proxy '{}' using file '{}'", instanceName, fileHandle);
+
+            // communication with parent process
+            std::cout << "[proxyfmu] bind=" << fileHandle << std::endl;
+
+            auto con = server.accept();
+            spdlog::info("Unix Domain Client connected");
+            client_handler(std::move(con), fmu, instanceName);
+        } catch (const std::exception& ex) {
+            spdlog::error("Exception occurred: {}", ex.what());
+            return UNHANDLED_ERROR;
+        }
     }
 
     return SUCCESS;
@@ -135,6 +156,7 @@ int main(int argc, char** argv)
     app.set_version_flag("-v,--version", versionString());
     app.add_option("--fmu", "Location of the fmu to load.");
     app.add_option("--instanceName", "Name of the slave instance.");
+    app.add_option("--local", "Running locally?")->required();
 
     CLI::App* sub = app.add_subcommand("boot");
     sub->add_option("--port", "Specify the network port to be used.")->required();
@@ -154,6 +176,7 @@ int main(int argc, char** argv)
 
         }
 
+        const auto local = app["--local"]->as<bool>();
         const auto instanceName = app["--instanceName"]->as<std::string>();
 
         std::string logFile{"logs/" + instanceName + ".txt"};
@@ -162,8 +185,9 @@ int main(int argc, char** argv)
 
         auto file_logger = spdlog::basic_logger_mt("proxyfmu", logFile);
         file_logger->set_level(spdlog::level::debug);
-        file_logger->flush_on(spdlog::level::n_levels);
+        file_logger->flush_on(spdlog::level::info);
         set_default_logger(file_logger);
+        spdlog::flush_every(std::chrono::seconds(1));  // Flush every 1 second
 
         const auto fmu = app["--fmu"]->as<std::string>();
         const auto fmuPath = std::filesystem::path(fmu);
@@ -172,10 +196,12 @@ int main(int argc, char** argv)
             return COMMANDLINE_ERROR;
         }
 
-        spdlog::info("Got commandline arguments: --fmu '{}', --instanceName '{}'", fmu, instanceName);
+        spdlog::info("Got commandline arguments: --fmu '{}', --instanceName '{}', --local {}", fmu, instanceName, local);
 
-        return run_application(fmu, instanceName);
+        const auto status = run_application(fmu, instanceName, local);
+        spdlog::shutdown();
 
+        return status;
 
     } catch (const std::exception& e) {
         spdlog::error("Unhandled Exception reached the top of main: {}, application will now exit", e.what());

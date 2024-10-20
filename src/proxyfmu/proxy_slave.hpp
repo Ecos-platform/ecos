@@ -20,7 +20,7 @@ class proxy_slave : public fmilibcpp::slave
 private:
     fmilibcpp::model_description modelDescription_;
 
-    simple_socket::TCPClientContext ctx_;
+    std::unique_ptr<simple_socket::SocketContext> ctx_;
     std::unique_ptr<simple_socket::SimpleConnection> client_;
     std::thread thread_;
 

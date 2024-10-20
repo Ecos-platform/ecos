@@ -25,12 +25,15 @@ public:
 
         write_data(fmuPath, data);
 
-        std::promise<int> portPromise;
-        std::thread t(&start_process, fmuPath, instanceName, std::ref(portPromise));
+        std::promise<std::string> portPromise;
+        std::thread t(&start_process, fmuPath, instanceName, std::ref(portPromise), false);
         processes_.emplace_back(std::move(t));
         dirs_.emplace_back(std::move(tmp));
 
-        return static_cast<int16_t>(portPromise.get_future().get());
+        std::string portStr = portPromise.get_future().get();
+        const auto port = static_cast<int16_t>(std::stoi(portStr));
+
+        return port;
     }
 
     ~boot_service_handler()

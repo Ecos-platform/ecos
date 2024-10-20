@@ -1,13 +1,14 @@
 
 #include "proxy_slave.hpp"
 
-#include "../../cmake-build-debug-wsl/_deps/simplesocket-src/include/simple_socket/UnixDomainSocket.hpp"
 #include "process_helper.hpp"
 
 #include <ecos/logger/logger.hpp>
 
 #include "proxyfmu/opcodes.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
+#include "simple_socket/UnixDomainSocket.hpp"
+#include "simple_socket/TCPSocket.hpp"
 #include <msgpack.hpp>
 
 #include <chrono>

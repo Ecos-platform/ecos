@@ -5,10 +5,11 @@
 #include "remote_info.hpp"
 
 #include "fmilibcpp/slave.hpp"
+#include <simple_socket/SimpleConnection.hpp>
+#include <simple_socket/SocketContext.hpp>
 
 #include <filesystem>
 #include <optional>
-#include <simple_socket/TCPSocket.hpp>
 #include <thread>
 
 namespace ecos::proxy
@@ -58,6 +59,6 @@ public:
     ~proxy_slave() override;
 };
 
-} // namespace proxyfmu
+} // namespace ecos::proxy
 
 #endif // PROXY_FMU_PROXY_SLAVE_HPP

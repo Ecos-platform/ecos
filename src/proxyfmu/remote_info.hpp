@@ -4,6 +4,7 @@
 
 #include <string>
 #include <utility>
+#include <cstdint>
 
 namespace ecos::proxy
 {
@@ -11,7 +12,7 @@ namespace ecos::proxy
 class remote_info
 {
 public:
-    remote_info(std::string host, int port)
+    remote_info(std::string host, uint16_t port)
         : host_(std::move(host))
         , port_(port)
     { }
@@ -21,14 +22,14 @@ public:
         return host_;
     }
 
-    [[nodiscard]] int port() const
+    [[nodiscard]] uint16_t port() const
     {
         return port_;
     }
 
 private:
     std::string host_;
-    int port_;
+    uint16_t port_;
 };
 
 } // namespace proxyfmu

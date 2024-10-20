@@ -54,7 +54,7 @@ set(SIMPLE_SOCKET_BUILD_TESTS OFF)
 FetchContent_Declare(
         SimpleSocket
         GIT_REPOSITORY https://github.com/markaren/SimpleSocket.git
-        GIT_TAG 9a1c323d98a980a2ab5fefa304ac4c6e22d88014
+        GIT_TAG 4e87ddc36b1ab0631fd12fc99ddb98bc0d7fd0a5
 )
 FetchContent_MakeAvailable(SimpleSocket)
 

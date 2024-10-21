@@ -12,6 +12,7 @@
 #include <CLI/CLI.hpp>
 #include <msgpack.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
 #include <iostream>
@@ -92,35 +93,48 @@ int run_application(const std::string& fmu, const std::string& instanceName, boo
 int run_boot_application(const int port)
 {
 
+    spdlog::info("Boot application serving on port {}", port);
+
     boot_service_handler handler;
     simple_socket::TCPServer server(port);
 
     std::thread server_thread([&] {
-        auto conn = server.accept();
+        try {
+            while (true) {
+                const auto conn = server.accept();
 
-        std::vector<uint8_t> buffer(4);
-        conn->readExact(buffer);
+                try {
+                    std::vector<uint8_t> buffer(4);
+                    conn->readExact(buffer);
 
-        const auto msgSize = simple_socket::decode_uint32(buffer);
-        buffer.resize(msgSize);
-        conn->readExact(buffer);
+                    const auto msgSize = simple_socket::decode_uint32(buffer);
+                    buffer.resize(msgSize);
+                    conn->readExact(buffer);
 
-        std::string fmuName;
-        std::string instanceName;
-        std::string data;
+                    std::string fmuName;
+                    std::string instanceName;
+                    std::string data;
 
-        std::size_t offset = 0;
-        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
-        oh.get().convert(fmuName);
-        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
-        oh.get().convert(instanceName);
-        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
-        oh.get().convert(data);
+                    std::size_t offset = 0;
+                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
+                    oh.get().convert(fmuName);
+                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
+                    oh.get().convert(instanceName);
+                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
+                    oh.get().convert(data);
 
-        int16_t instance_port = handler.loadFromBinaryData(fmuName, instanceName, data);
-        msgpack::sbuffer sbuf;
-        msgpack::pack(sbuf, instance_port);
-        conn->write(sbuf.data(), sbuf.size());
+                    spdlog::info("Booting: {}::{}, file size={}", fmuName, instanceName, data.size());
+
+                    int16_t instance_port = handler.loadFromBinaryData(fmuName, instanceName, data);
+                    msgpack::sbuffer sbuf;
+                    msgpack::pack(sbuf, instance_port);
+                    conn->write(sbuf.data(), sbuf.size());
+
+                    } catch (const std::exception& ex) {
+                        spdlog::error("Exception occurred: {}", ex.what());
+                    }
+                }
+            } catch (std::exception&) {}
 
     });
 
@@ -156,7 +170,7 @@ int main(int argc, char** argv)
     app.set_version_flag("-v,--version", versionString());
     app.add_option("--fmu", "Location of the fmu to load.");
     app.add_option("--instanceName", "Name of the slave instance.");
-    app.add_option("--local", "Running locally?")->required();
+    app.add_option("--local", "Running locally?");
 
     CLI::App* sub = app.add_subcommand("boot");
     sub->add_option("--port", "Specify the network port to be used.")->required();
@@ -171,8 +185,14 @@ int main(int argc, char** argv)
 
         if (*sub) {
 
+            auto logger = spdlog::stdout_color_mt("proxyfmu");
+            set_default_logger(logger);
+            logger->set_level(spdlog::level::debug);
+
             const auto port = sub->get_option("--port")->as<int>();
-            return run_boot_application(port);
+            const auto status = run_boot_application(port);
+            spdlog::shutdown();
+            return status;
 
         }
 

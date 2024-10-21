@@ -1,6 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "fmilibcpp/fmu.hpp"
+#include "proxyfmu/proxy_fmu.hpp"
+#include "proxyfmu/proxy_slave.hpp"
 
 namespace
 {
@@ -14,6 +16,7 @@ void test(fmilibcpp::fmu& fmu)
     CHECK(d.author == "Lars Tandle Kyllingstad");
 
     auto slave = fmu.new_instance("instance");
+    REQUIRE(slave);
     REQUIRE(slave->setup_experiment());
     REQUIRE(slave->enter_initialization_mode());
     REQUIRE(slave->exit_initialization_mode());
@@ -62,6 +65,7 @@ void test(fmilibcpp::fmu& fmu)
     }
 
     REQUIRE(slave->terminate());
+    slave->freeInstance();
 }
 
 } // namespace
@@ -71,4 +75,11 @@ TEST_CASE("fmi_test_identity")
     std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/1.0/identity.fmu";
     auto fmu = fmilibcpp::loadFmu(fmuPath);
     test(*fmu);
+}
+
+TEST_CASE("proxy_test_identity")
+{
+    std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/1.0/identity.fmu";
+    auto fmu = ecos::proxy::proxy_fmu(fmuPath);
+    test(fmu);
 }

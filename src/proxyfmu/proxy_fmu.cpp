@@ -9,7 +9,7 @@
 #include <utility>
 
 
-namespace proxyfmu
+namespace ecos::proxy
 {
 
 proxy_fmu::proxy_fmu(const std::filesystem::path& fmuPath, std::optional<remote_info> remote)
@@ -18,7 +18,7 @@ proxy_fmu::proxy_fmu(const std::filesystem::path& fmuPath, std::optional<remote_
     , remote_(std::move(remote))
 {
     if (!exists(fmuPath)) {
-        throw std::runtime_error("No such file: " + std::filesystem::absolute(fmuPath).string() + "!");
+        throw std::runtime_error("No such file: " + absolute(fmuPath).string() + "!");
     }
 }
 

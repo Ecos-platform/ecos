@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 using namespace fmilibcpp;
-using namespace proxyfmu;
+using namespace ecos;
 
 namespace
 {
@@ -29,8 +29,9 @@ void test(fmu* damper, fmu* mass, fmu* spring)
 
     int i = 0;
     for (auto fmu : {damper, mass, spring}) {
-        const auto name = names[i++];
+        const auto& name = names[i++];
         auto instance = fmu->new_instance(name);
+        REQUIRE(instance);
         const auto& mv = fmu->get_model_description().modelVariables;
 
         if (name == "spring") {
@@ -158,8 +159,8 @@ TEST_CASE("fmi_test_mass-spring-damper")
 
 TEST_CASE("client_test_mass-spring-damper")
 {
-    auto damper = proxy_fmu(std::string(DATA_FOLDER) + "/fmus/1.0/Damper.fmu");
-    auto mass = proxy_fmu(std::string(DATA_FOLDER) + "/fmus/1.0/Mass.fmu");
-    auto spring = proxy_fmu(std::string(DATA_FOLDER) + "/fmus/1.0/Spring.fmu");
+    auto damper = proxy::proxy_fmu(std::string(DATA_FOLDER) + "/fmus/1.0/Damper.fmu");
+    auto mass = proxy::proxy_fmu(std::string(DATA_FOLDER) + "/fmus/1.0/Mass.fmu");
+    auto spring = proxy::proxy_fmu(std::string(DATA_FOLDER) + "/fmus/1.0/Spring.fmu");
     test(&damper, &mass, &spring);
 }

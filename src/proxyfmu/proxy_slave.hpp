@@ -5,27 +5,25 @@
 #include "remote_info.hpp"
 
 #include "fmilibcpp/slave.hpp"
-#include "proxyfmu/thrift/FmuService.h"
+#include <simple_socket/SimpleConnection.hpp>
+#include <simple_socket/SocketContext.hpp>
 
 #include <filesystem>
 #include <optional>
 #include <thread>
 
-using namespace proxyfmu::thrift;
-using namespace apache::thrift;
-using namespace apache::thrift::transport;
-
-namespace proxyfmu
+namespace ecos::proxy
 {
 
 class proxy_slave : public fmilibcpp::slave
 {
 
 private:
-    const fmilibcpp::model_description modelDescription_;
-    std::shared_ptr<FmuServiceClient> client_;
-    std::shared_ptr<TTransport> transport_;
-    std::unique_ptr<std::thread> thread_;
+    fmilibcpp::model_description modelDescription_;
+
+    std::unique_ptr<simple_socket::SocketContext> ctx_;
+    std::unique_ptr<simple_socket::SimpleConnection> client_;
+    std::thread thread_;
 
     bool freed = false;
 
@@ -61,6 +59,6 @@ public:
     ~proxy_slave() override;
 };
 
-} // namespace proxyfmu
+} // namespace ecos::proxy
 
 #endif // PROXY_FMU_PROXY_SLAVE_HPP

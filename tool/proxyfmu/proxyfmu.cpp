@@ -1,75 +1,38 @@
 
-#include "handlers/boot_service_handler.hpp"
-#include "handlers/fmu_service_handler.hpp"
+#include "boot_service_handler.hpp"
+#include "client_handler.hpp"
+#include "uuid.hpp"
 
 #include "ecos/lib_info.hpp"
 
+#include "simple_socket/TCPSocket.hpp"
+#include "simple_socket/UnixDomainSocket.hpp"
+#include "simple_socket/util/byte_conversion.hpp"
+#include "simple_socket/util/port_query.hpp"
 #include <CLI/CLI.hpp>
-#include <thrift/server/TSimpleServer.h>
-#include <thrift/transport/TServerSocket.h>
-#include <thrift/transport/TTransportUtils.h>
+#include <msgpack.hpp>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
-#include <functional>
 #include <iostream>
 #include <random>
 #include <utility>
 
-using namespace proxyfmu::thrift;
-using namespace proxyfmu::server;
+using namespace ecos;
+using namespace ecos::proxy;
 
-using namespace ::apache::thrift;
-using namespace ::apache::thrift::server;
-using namespace ::apache::thrift::protocol;
-using namespace ::apache::thrift::transport;
 
 namespace
 {
 
-const int port_range_min = 49152;
-const int port_range_max = 65535;
-
-const int max_port_retries = 10;
+const int port_range_min = 7000;
+const int port_range_max = 9999;
 
 const int SUCCESS = 0;
 const int COMMANDLINE_ERROR = 1;
 const int UNHANDLED_ERROR = 2;
 
-
-class rng
-{
-
-public:
-    rng(int min, int max)
-        : mt_(std::random_device()())
-        , dist_(min, max)
-    { }
-
-    int next()
-    {
-        return dist_(mt_);
-    }
-
-private:
-    std::mt19937 mt_;
-    std::uniform_int_distribution<int> dist_;
-};
-
-class ServerReadyEventHandler : public TServerEventHandler
-{
-
-private:
-    std::function<void()> callback_;
-
-public:
-    explicit ServerReadyEventHandler(std::function<void()> callback)
-        : callback_(std::move(callback))
-    { }
-
-    void preServe() override
-    {
-        callback_();
-    }
-};
 
 void wait_for_input()
 {
@@ -81,71 +44,104 @@ void wait_for_input()
     std::cout << "Done." << std::endl;
 }
 
-int run_application(const std::string& fmu, const std::string& instanceName)
+int run_application(const std::string& fmu, const std::string& instanceName, bool local)
 {
-    std::unique_ptr<TSimpleServer> server;
-    auto stop = [&]() {
-        if (server) server->stop();
-    };
-    auto handler = std::make_shared<fmu_service_handler>(fmu, instanceName, stop);
-    auto processor = std::make_shared<FmuServiceProcessor>(handler);
 
-    auto transportFactory = std::make_shared<TFramedTransportFactory>();
-    auto protocolFactory = std::make_shared<TBinaryProtocolFactory>();
-
-    rng rng(port_range_min, port_range_max);
-
-    int port;
-    int final_port = -1;
-    for (auto i = 0; i < max_port_retries; i++) {
-        port = rng.next();
-
-        auto serverTransport = std::make_shared<TServerSocket>(port);
-        server = std::make_unique<TSimpleServer>(processor, serverTransport, transportFactory, protocolFactory);
-        server->setServerEventHandler(std::make_shared<ServerReadyEventHandler>([port, &final_port] {
-            final_port = port;
-            std::cout << "[proxyfmu] port=" << std::to_string(final_port) << std::endl;
-        }));
+    if (!local) {
+        const auto port = simple_socket::getAvailablePort(port_range_min, port_range_max);
+        if (!port) {
+            spdlog::error("Unable to locate free port number..");
+            return UNHANDLED_ERROR;
+        }
 
         try {
+            simple_socket::TCPServer server(*port);
+            spdlog::info("Serving proxy '{}' on port {}", instanceName, *port);
+            // communication with parent process
+            std::cout << "[proxyfmu] bind=" << std::to_string(*port) << std::endl;
 
-            server->serve();
-            break;
+            auto con = server.accept();
+            spdlog::info("TCP Client connected");
+            client_handler(std::move(con), fmu, instanceName);
+        } catch (const std::exception& ex) {
+            spdlog::error("Exception occurred: {}", ex.what());
+            return UNHANDLED_ERROR;
+        }
+    } else {
 
-        } catch (const TTransportException& ex) {
-            std::cout << "[proxyfmu] " << ex.what()
-                      << ". Failed to bind to port " << std::to_string(port)
-                      << ". Retrying with another one. Attempt " << std::to_string(i + 1)
-                      << " of " << std::to_string(max_port_retries) << ".." << std::endl;
+        const auto fileHandle = instanceName + "_" + generate_uuid();
+
+        try {
+            simple_socket::UnixDomainServer server(fileHandle);
+            spdlog::info("Serving proxy '{}' using file '{}'", instanceName, fileHandle);
+
+            // communication with parent process
+            std::cout << "[proxyfmu] bind=" << fileHandle << std::endl;
+
+            auto con = server.accept();
+            spdlog::info("Unix Domain Client connected");
+            client_handler(std::move(con), fmu, instanceName);
+        } catch (const std::exception& ex) {
+            spdlog::error("Exception occurred: {}", ex.what());
+            return UNHANDLED_ERROR;
         }
     }
 
-    if (final_port != -1) {
-        return SUCCESS;
-    } else {
-        std::cerr << "[proxyfmu] Unable to bind after max number of retries.." << std::endl;
-        return UNHANDLED_ERROR;
-    }
+    return SUCCESS;
 }
 
 int run_boot_application(const int port)
 {
 
-    auto handler = std::make_shared<boot_service_handler>();
-    auto processor = std::make_shared<BootServiceProcessor>(handler);
+    spdlog::info("Boot application serving on port {}", port);
 
-    auto transportFactory = std::make_shared<TFramedTransportFactory>();
-    auto protocolFactory = std::make_shared<TBinaryProtocolFactory>();
+    boot_service_handler handler;
+    simple_socket::TCPServer server(port);
 
-    auto serverTransport = std::make_shared<TServerSocket>(port);
-    auto server = std::make_unique<TSimpleServer>(processor, serverTransport, transportFactory, protocolFactory);
+    std::thread server_thread([&] {
+        try {
+            while (true) {
+                const auto conn = server.accept();
 
-    std::thread t([&server] { server->serve(); });
+                try {
+                    std::vector<uint8_t> buffer(4);
+                    conn->readExact(buffer);
+
+                    const auto msgSize = simple_socket::decode_uint32(buffer);
+                    buffer.resize(msgSize);
+                    conn->readExact(buffer);
+
+                    std::string fmuName;
+                    std::string instanceName;
+                    std::string data;
+
+                    std::size_t offset = 0;
+                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
+                    oh.get().convert(fmuName);
+                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
+                    oh.get().convert(instanceName);
+                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
+                    oh.get().convert(data);
+
+                    spdlog::info("Booting: {}::{}, file size={}", fmuName, instanceName, data.size());
+
+                    int16_t instance_port = handler.loadFromBinaryData(fmuName, instanceName, data);
+                    msgpack::sbuffer sbuf;
+                    msgpack::pack(sbuf, instance_port);
+                    conn->write(sbuf.data(), sbuf.size());
+
+                    } catch (const std::exception& ex) {
+                        spdlog::error("Exception occurred: {}", ex.what());
+                    }
+                }
+            } catch (std::exception&) {}
+
+    });
 
     wait_for_input();
 
-    server->stop();
-    t.join();
+    server.close();
+    server_thread.join();
 
     return SUCCESS;
 }
@@ -156,7 +152,7 @@ int printHelp(CLI::App& desc)
     return SUCCESS;
 }
 
-std::string version()
+std::string versionString()
 {
     const auto v = ecos::library_version();
     std::stringstream ss;
@@ -171,9 +167,10 @@ int main(int argc, char** argv)
 
     CLI::App app{"proxyfmu"};
 
-    app.set_version_flag("-v,--version", version());
+    app.set_version_flag("-v,--version", versionString());
     app.add_option("--fmu", "Location of the fmu to load.");
     app.add_option("--instanceName", "Name of the slave instance.");
+    app.add_option("--local", "Running locally?");
 
     CLI::App* sub = app.add_subcommand("boot");
     sub->add_option("--port", "Specify the network port to be used.")->required();
@@ -188,24 +185,46 @@ int main(int argc, char** argv)
 
         if (*sub) {
 
+            auto logger = spdlog::stdout_color_mt("proxyfmu");
+            set_default_logger(logger);
+            logger->set_level(spdlog::level::debug);
+
             const auto port = sub->get_option("--port")->as<int>();
-            return run_boot_application(port);
+            const auto status = run_boot_application(port);
+            spdlog::shutdown();
+            return status;
 
-        } else {
-            const auto fmu = app["--fmu"]->as<std::string>();
-            const auto fmuPath = std::filesystem::path(fmu);
-            if (!std::filesystem::exists(fmuPath)) {
-                std::cerr << "[proxyfmu] No such file: '" << std::filesystem::absolute(fmuPath) << "'";
-                return COMMANDLINE_ERROR;
-            }
-
-            const auto instanceName = app["--instanceName"]->as<std::string>();
-
-            return run_application(fmu, instanceName);
         }
 
+        const auto local = app["--local"]->as<bool>();
+        const auto instanceName = app["--instanceName"]->as<std::string>();
+
+        std::string logFile{"logs/" + instanceName + ".txt"};
+        std::ofstream ofs(logFile, std::ofstream::out | std::ofstream::trunc);
+        ofs.close();
+
+        auto file_logger = spdlog::basic_logger_mt("proxyfmu", logFile);
+        file_logger->set_level(spdlog::level::debug);
+        file_logger->flush_on(spdlog::level::info);
+        set_default_logger(file_logger);
+        spdlog::flush_every(std::chrono::seconds(1));  // Flush every 1 second
+
+        const auto fmu = app["--fmu"]->as<std::string>();
+        const auto fmuPath = std::filesystem::path(fmu);
+        if (!exists(fmuPath)) {
+            spdlog::error("No such file: '{}'",absolute(fmuPath).string());
+            return COMMANDLINE_ERROR;
+        }
+
+        spdlog::info("Got commandline arguments: --fmu '{}', --instanceName '{}', --local {}", fmu, instanceName, local);
+
+        const auto status = run_application(fmu, instanceName, local);
+        spdlog::shutdown();
+
+        return status;
+
     } catch (const std::exception& e) {
-        std::cerr << "[proxyfmu] Unhandled Exception reached the top of main: " << e.what() << ", application will now exit" << std::endl;
+        spdlog::error("Unhandled Exception reached the top of main: {}, application will now exit", e.what());
         return UNHANDLED_ERROR;
     }
 }

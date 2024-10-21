@@ -8,6 +8,7 @@
 #include "proxyfmu/proxy_fmu.hpp"
 
 #include <filesystem>
+#include <utility>
 
 namespace ecos
 {
@@ -15,8 +16,8 @@ namespace ecos
 class proxy_model : public model
 {
 public:
-    explicit proxy_model(const std::filesystem::path& fmuPath)
-        : fmu_(fmuPath)
+    explicit proxy_model(const std::filesystem::path& fmuPath, std::optional<proxy::remote_info> remote = std::nullopt)
+        : fmu_(fmuPath, std::move(remote))
     {
     }
 
@@ -26,7 +27,7 @@ public:
     }
 
 private:
-    proxyfmu::proxy_fmu fmu_;
+    proxy::proxy_fmu fmu_;
 };
 
 } // namespace ecos

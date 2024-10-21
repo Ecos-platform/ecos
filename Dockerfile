@@ -13,8 +13,6 @@ RUN apt-get update \
     tar \
     pkg-config \
     libtbb-dev \
-    flex \
-    bison \
   && apt-get clean
 
 WORKDIR /home

@@ -4,6 +4,8 @@
 int main()
 {
 
+    log::set_logging_level(log::level::trace);
+
     simulation_structure ss;
     ss.add_model("mass", "proxyfmu://localhost?file=" + std::string(DATA_FOLDER) + "/fmus/1.0/Mass.fmu");
     ss.add_model("spring", "proxyfmu://localhost?file=" + std::string(DATA_FOLDER) + "/fmus/1.0/Spring.fmu");

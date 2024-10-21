@@ -1,6 +1,4 @@
 
-add_subdirectory(proxyfmu)
-
 set(publicHeaders
 
         "ecos/connection.hpp"
@@ -64,6 +62,7 @@ set(privateHeaders
         "fmilibcpp/fmi2/fmi2_slave.hpp"
         "fmilibcpp/fmi2/fmi2_model_description.hpp"
 
+        "proxyfmu/opcodes.hpp"
         "proxyfmu/process_helper.hpp"
         "proxyfmu/proxy_fmu.hpp"
         "proxyfmu/proxy_slave.hpp"
@@ -161,15 +160,15 @@ target_link_libraries(libecos
         PUBLIC
         fmt::fmt
         PRIVATE
+        simple_socket
+        msgpack-cxx
         libzip::zip
         spdlog::spdlog
-        thrift::thrift
         pugixml::pugixml
         unofficial::fmilib::fmilib
         "$<TARGET_OBJECTS:util>"
         "$<TARGET_OBJECTS:logger>"
         "$<TARGET_OBJECTS:fmilibcpp>"
-        "$<TARGET_OBJECTS:proxyfmu-service>"
 )
 if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)

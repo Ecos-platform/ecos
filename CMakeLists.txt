@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.17)
-set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+cmake_minimum_required(VERSION 3.19)
+if (NOT DEFINED CMAKE_TOOLCHAIN_FILE AND DEFINED $ENV{VCPKG_ROOT})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+endif ()
 file(STRINGS "${CMAKE_SOURCE_DIR}/version.txt" projectVersion)
 project("libecos" VERSION ${projectVersion})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
@@ -47,12 +49,21 @@ set(SUBPROCESS_INCLUDE_DIR "${CMAKE_BINARY_DIR}/thirdparty")
 file(DOWNLOAD https://raw.githubusercontent.com/Ecos-platform/subprocess.h/master/subprocess.h
         "${SUBPROCESS_INCLUDE_DIR}/subprocess/subprocess.h")
 
+include(FetchContent)
+set(SIMPLE_SOCKET_BUILD_TESTS OFF)
+FetchContent_Declare(
+        SimpleSocket
+        GIT_REPOSITORY https://github.com/markaren/SimpleSocket.git
+        GIT_TAG e0e989bdd52137d743a4599e25167d5681a0de00
+)
+FetchContent_MakeAvailable(SimpleSocket)
+
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(libzip CONFIG REQUIRED)
 find_package(pugixml CONFIG REQUIRED)
-find_package(Thrift CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
+find_package(msgpack-cxx CONFIG REQUIRED)
 find_package(unofficial-fmilib CONFIG REQUIRED)
 
 # ==============================================================================
@@ -74,7 +85,7 @@ if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
         FetchContent_Declare(
                 Catch2
                 GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-                GIT_TAG v3.3.2
+                GIT_TAG v3.7.1
         )
         FetchContent_MakeAvailable(Catch2)
 

@@ -4,6 +4,8 @@ thrift.*
 build
 cmake-build-*
 
+ecospy/dist
+
 *.egg-info
 
 /**/gunnerus/**/*.ssp

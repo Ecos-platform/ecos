@@ -128,6 +128,8 @@ To use the python interface, simply clone the project and run:
 
 `pip install ./ecospy`
 
+> Note: You will need `cmake` and `wheel`
+
 See [here](examples/quarter_truck/quarter_truck.py) for an example.
 
 >Note: if using an old pip version, append `--use-feature=in-tree-build` if you get an error about `../version.txt`

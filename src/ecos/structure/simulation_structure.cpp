@@ -3,6 +3,7 @@
 
 #include "ecos/variable_identifier.hpp"
 
+#include <ranges>
 #include <utility>
 
 using namespace ecos;
@@ -15,8 +16,6 @@ struct overloaded : Ts...
 {
     using Ts::operator()...;
 };
-template<class... Ts>
-overloaded(Ts...) -> overloaded<Ts...>;
 
 } // namespace
 
@@ -33,12 +32,12 @@ void simulation_structure::add_model(const std::string& instanceName, const std:
 
 void simulation_structure::add_model(const std::string& instanceName, const std::filesystem::path& path, std::optional<double> stepSizeHint)
 {
-    add_model(instanceName, std::filesystem::relative(path).string(), stepSizeHint);
+    add_model(instanceName, relative(path).string(), stepSizeHint);
 }
 
 void simulation_structure::add_model(const std::string& instanceName, std::shared_ptr<model> model, std::optional<double> stepSizeHint)
 {
-    if (models_.count(instanceName)) {
+    if (models_.contains(instanceName)) {
         throw std::runtime_error("A model named " + instanceName + " has already been added!");
     }
     models_[instanceName] = {std::move(model), stepSizeHint};
@@ -58,7 +57,7 @@ std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm
     }
 
     auto sim = std::make_unique<simulation>(std::move(algorithm));
-    for (auto& [name, instance] : instances) {
+    for (auto& instance : instances | std::views::values) {
         sim->add_slave(std::move(instance));
     }
 

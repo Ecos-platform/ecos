@@ -2,8 +2,6 @@
 #ifndef ECOS_FMI_FMI2_SLAVE_HPP
 #define ECOS_FMI_FMI2_SLAVE_HPP
 
-#include "fmi2_model_description.hpp"
-
 #include "ecos/util/temp_dir.hpp"
 
 #include "fmilibcpp/fmicontext.hpp"
@@ -17,12 +15,6 @@ namespace fmilibcpp
 
 class fmi2_slave : public slave
 {
-private:
-    bool freed_{false};
-    fmi2_import_t* handle_;
-    const model_description md_;
-    std::shared_ptr<fmicontext> ctx_;
-    std::shared_ptr<ecos::temp_dir> tmpDir_;
 
 public:
     fmi2_slave(
@@ -54,6 +46,13 @@ public:
     bool set_boolean(const std::vector<value_ref>& vr, const std::vector<bool>& values) override;
 
     ~fmi2_slave() override;
+
+private:
+    bool freed_{false};
+    fmi2_import_t* handle_;
+    const model_description md_;
+    std::shared_ptr<fmicontext> ctx_;
+    std::shared_ptr<ecos::temp_dir> tmpDir_;
 };
 
 } // namespace fmilibcpp

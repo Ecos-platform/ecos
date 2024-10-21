@@ -9,8 +9,6 @@ namespace ecos
 
 class temp_dir
 {
-private:
-    const std::filesystem::path path_;
 
 public:
     explicit temp_dir(const std::string& name);
@@ -27,6 +25,9 @@ public:
     }
 
     ~temp_dir();
+
+private:
+    const std::filesystem::path path_;
 };
 
 } // namespace ecos

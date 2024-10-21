@@ -72,7 +72,7 @@ public:
 
     void remove_listener(const std::string& name);
 
-    model_instance* get_instance(const std::string& name);
+    model_instance* get_instance(const std::string& name) const;
 
     real_connection* make_real_connection(const variable_identifier& source, const variable_identifier& sink);
 
@@ -82,65 +82,17 @@ public:
 
     string_connection* make_string_connection(const variable_identifier& source, const variable_identifier& sink);
 
-    property_t<double>* get_real_property(const variable_identifier& identifier)
-    {
-        for (auto& instance : instances_) {
-            if (instance->instanceName() == identifier.instanceName) {
-                auto p = instance->get_properties().get_real_property(identifier.variableName);
-                if (p) return p;
-            }
-        }
-        return nullptr;
-    }
+    property_t<double>* get_real_property(const variable_identifier& identifier) const;
 
-    property_t<int>* get_int_property(const variable_identifier& identifier)
-    {
-        for (auto& instance : instances_) {
-            if (instance->instanceName() == identifier.instanceName) {
-                auto p = instance->get_properties().get_int_property(identifier.variableName);
-                if (p) return p;
-            }
-        }
-        return nullptr;
-    }
+    property_t<int>* get_int_property(const variable_identifier& identifier) const;
 
-    property_t<std::string>* get_string_property(const variable_identifier& identifier)
-    {
-        for (auto& instance : instances_) {
-            if (instance->instanceName() == identifier.instanceName) {
-                auto p = instance->get_properties().get_string_property(identifier.variableName);
-                if (p) return p;
-            }
-        }
-        return nullptr;
-    }
+    property_t<std::string>* get_string_property(const variable_identifier& identifier) const;
 
-    property_t<bool>* get_bool_property(const variable_identifier& identifier)
-    {
-        for (auto& instance : instances_) {
-            if (instance->instanceName() == identifier.instanceName) {
-                auto p = instance->get_properties().get_bool_property(identifier.variableName);
-                if (p) return p;
-            }
-        }
-        return nullptr;
-    }
+    property_t<bool>* get_bool_property(const variable_identifier& identifier) const;
 
-    [[nodiscard]] const std::vector<std::unique_ptr<model_instance>>& get_instances() const
-    {
-        return instances_;
-    }
+    [[nodiscard]] const std::vector<std::unique_ptr<model_instance>>& get_instances() const;
 
-    [[nodiscard]] std::vector<variable_identifier> identifiers() const
-    {
-        std::vector<variable_identifier> ids;
-        for (auto& instance : instances_) {
-            for (auto& p : instance->get_properties().get_property_names()) {
-                ids.emplace_back(instance->instanceName(), p);
-            }
-        }
-        return ids;
-    }
+    [[nodiscard]] std::vector<variable_identifier> identifiers() const;
 
     void on_init(const std::function<void()>& f)
     {

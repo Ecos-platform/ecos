@@ -78,8 +78,7 @@ model_description create_model_description(fmi2_import_t* handle)
     const auto varCount = fmi2_import_get_variable_list_size(varList);
     for (auto i = 0; i < varCount; i++) {
         const auto var = fmi2_import_get_variable(varList, i);
-        const auto scalar = to_scalar_variable(var);
-        if (scalar) {
+        if (const auto scalar = to_scalar_variable(var)) {
             md.modelVariables.push_back(scalar.value());
         }
     }

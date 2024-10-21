@@ -166,7 +166,7 @@ void simulation::reset()
 
 void simulation::add_listener(const std::string& name, std::shared_ptr<simulation_listener> listener)
 {
-    if (listeners_.count(name)) {
+    if (listeners_.contains(name)) {
         log::warn("A listener named {} already exists..", name);
     } else {
         listeners_[name] = std::move(listener);
@@ -179,7 +179,7 @@ void simulation::remove_listener(const std::string& name)
     listeners_.erase(name);
 }
 
-model_instance* simulation::get_instance(const std::string& name)
+model_instance* simulation::get_instance(const std::string& name) const
 {
     for (auto& instance : instances_) {
         if (instance->instanceName() == name) {
@@ -191,8 +191,7 @@ model_instance* simulation::get_instance(const std::string& name)
 
 void simulation::add_slave(std::unique_ptr<model_instance> instance)
 {
-    const auto name = instance->instanceName();
-    if (get_instance(name)) {
+    if (const auto name = instance->instanceName(); get_instance(name)) {
         throw std::runtime_error("A model instance named '" + name + "' has already been added!");
     }
 
@@ -241,4 +240,64 @@ string_connection* simulation::make_string_connection(const variable_identifier&
 
     connections_.emplace_back(std::make_unique<string_connection>(p1, p2));
     return dynamic_cast<string_connection*>(connections_.back().get());
+}
+
+property_t<double>* simulation::get_real_property(const variable_identifier& identifier) const
+{
+    for (auto& instance : instances_) {
+        if (instance->instanceName() == identifier.instanceName) {
+            auto p = instance->get_properties().get_real_property(identifier.variableName);
+            if (p) return p;
+        }
+    }
+    return nullptr;
+}
+
+property_t<int>* simulation::get_int_property(const variable_identifier& identifier) const
+{
+    for (auto& instance : instances_) {
+        if (instance->instanceName() == identifier.instanceName) {
+            auto p = instance->get_properties().get_int_property(identifier.variableName);
+            if (p) return p;
+        }
+    }
+    return nullptr;
+}
+
+property_t<std::string>* simulation::get_string_property(const variable_identifier& identifier) const
+{
+    for (auto& instance : instances_) {
+        if (instance->instanceName() == identifier.instanceName) {
+            auto p = instance->get_properties().get_string_property(identifier.variableName);
+            if (p) return p;
+        }
+    }
+    return nullptr;
+}
+
+property_t<bool>* simulation::get_bool_property(const variable_identifier& identifier) const
+{
+    for (auto& instance : instances_) {
+        if (instance->instanceName() == identifier.instanceName) {
+            auto p = instance->get_properties().get_bool_property(identifier.variableName);
+            if (p) return p;
+        }
+    }
+    return nullptr;
+}
+
+const std::vector<std::unique_ptr<model_instance>>& simulation::get_instances() const
+{
+    return instances_;
+}
+
+std::vector<variable_identifier> simulation::identifiers() const
+{
+    std::vector<variable_identifier> ids;
+    for (auto& instance : instances_) {
+        for (auto& p : instance->get_properties().get_property_names()) {
+            ids.emplace_back(instance->instanceName(), p);
+        }
+    }
+    return ids;
 }

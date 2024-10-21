@@ -227,14 +227,14 @@ int main(int argc, char** argv)
 
         const auto stepSize = app["--stepSize"]->as<double>();
         const bool parallel = !app["--noParallel"]->as<bool>();
-        auto sim = ss->load(std::make_unique<fixed_step_algorithm>(stepSize, parallel));
+        const auto sim = ss->load(std::make_unique<fixed_step_algorithm>(stepSize, parallel));
         setup_logging(app, *sim, csvName);
         setup_scenario(app, *sim);
 
         run_simulation(app, *sim);
 
     } catch (std::exception& e) {
-        std::cerr << "[ecos] Unhandled Exception reached the top of main: '" << e.what() << "', application will now exit" << std::endl;
+        log::err("Unhandled Exception reached the top of main: '{}', application will now exit", e.what());
         return 1;
     }
 }

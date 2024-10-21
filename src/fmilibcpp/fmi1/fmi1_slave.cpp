@@ -32,10 +32,10 @@ fmi1_slave::fmi1_slave(
     std::shared_ptr<ecos::temp_dir> tmpDir,
     bool fmiLogging)
     : slave(instanceName)
-    , ctx_(ctx)
-    , md_(std::move(md))
-    , tmpDir_(std::move(tmpDir))
     , handle_(fmi1_import_parse_xml(ctx->ctx_, tmpDir->path().string().c_str()))
+    , md_(std::move(md))
+    , ctx_(ctx)
+    , tmpDir_(std::move(tmpDir))
 {
     fmi1_callback_functions_t callbackFunctions;
     callbackFunctions.allocateMemory = std::calloc;
@@ -87,44 +87,44 @@ bool fmi1_slave::enter_initialization_mode()
 bool fmi1_slave::exit_initialization_mode()
 {
     fmi1_boolean_t stop_defined = (stop_time_ > 0) ? fmi1_true : fmi1_false;
-    auto status = fmi1_import_initialize_slave(handle_, start_time_, stop_defined, stop_time_);
+    const auto status = fmi1_import_initialize_slave(handle_, start_time_, stop_defined, stop_time_);
     return status == fmi1_status_ok;
 }
 
 bool fmi1_slave::step(double current_time, double step_size)
 {
-    auto status = fmi1_import_do_step(handle_, current_time, step_size, fmi1_true);
+    const auto status = fmi1_import_do_step(handle_, current_time, step_size, fmi1_true);
     return status == fmi1_status_ok;
 }
 
 bool fmi1_slave::terminate()
 {
-    auto status = fmi1_import_terminate_slave(handle_);
+    const auto status = fmi1_import_terminate_slave(handle_);
     return status == fmi1_status_ok;
 }
 
 bool fmi1_slave::reset()
 {
-    auto status = fmi1_import_reset_slave(handle_);
+    const auto status = fmi1_import_reset_slave(handle_);
     return status == fmi1_status_ok;
 }
 
 bool fmi1_slave::get_integer(const std::vector<value_ref>& vr, std::vector<int>& values)
 {
-    auto status = fmi1_import_get_integer(handle_, vr.data(), vr.size(), values.data());
+    const auto status = fmi1_import_get_integer(handle_, vr.data(), vr.size(), values.data());
     return status == fmi1_status_ok;
 }
 
 bool fmi1_slave::get_real(const std::vector<value_ref>& vr, std::vector<double>& values)
 {
-    auto status = fmi1_import_get_real(handle_, vr.data(), vr.size(), values.data());
+    const auto status = fmi1_import_get_real(handle_, vr.data(), vr.size(), values.data());
     return status == fmi1_status_ok;
 }
 
 bool fmi1_slave::get_string(const std::vector<value_ref>& vr, std::vector<std::string>& values)
 {
     auto tmp = std::vector<fmi1_string_t>(vr.size());
-    auto status = fmi1_import_get_string(handle_, vr.data(), vr.size(), tmp.data());
+    const auto status = fmi1_import_get_string(handle_, vr.data(), vr.size(), tmp.data());
     for (auto i = 0; i < tmp.size(); i++) {
         values[i] = tmp[i];
     }
@@ -134,7 +134,7 @@ bool fmi1_slave::get_string(const std::vector<value_ref>& vr, std::vector<std::s
 bool fmi1_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>& values)
 {
     auto tmp = std::vector<fmi1_boolean_t>(vr.size());
-    auto status = fmi1_import_get_boolean(handle_, vr.data(), vr.size(), tmp.data());
+    const auto status = fmi1_import_get_boolean(handle_, vr.data(), vr.size(), tmp.data());
     for (auto i = 0; i < tmp.size(); i++) {
         values[i] = tmp[i] != 0;
     }
@@ -143,13 +143,13 @@ bool fmi1_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>
 
 bool fmi1_slave::set_integer(const std::vector<value_ref>& vr, const std::vector<int>& values)
 {
-    auto status = fmi1_import_set_integer(handle_, vr.data(), vr.size(), values.data());
+    const auto status = fmi1_import_set_integer(handle_, vr.data(), vr.size(), values.data());
     return status == fmi1_status_ok;
 }
 
 bool fmi1_slave::set_real(const std::vector<value_ref>& vr, const std::vector<double>& values)
 {
-    auto status = fmi1_import_set_real(handle_, vr.data(), vr.size(), values.data());
+    const auto status = fmi1_import_set_real(handle_, vr.data(), vr.size(), values.data());
     return status == fmi1_status_ok;
 }
 
@@ -159,7 +159,7 @@ bool fmi1_slave::set_string(const std::vector<value_ref>& vr, const std::vector<
     for (auto i = 0; i < vr.size(); i++) {
         _values[i] = values[i].c_str();
     }
-    auto status = fmi1_import_set_string(handle_, vr.data(), vr.size(), _values.data());
+    const auto status = fmi1_import_set_string(handle_, vr.data(), vr.size(), _values.data());
     return status == fmi1_status_ok;
 }
 
@@ -169,7 +169,7 @@ bool fmi1_slave::set_boolean(const std::vector<value_ref>& vr, const std::vector
     for (auto i = 0; i < vr.size(); i++) {
         _values[i] = values[i] ? fmi1_true : fmi1_false;
     }
-    auto status = fmi1_import_set_boolean(handle_, vr.data(), vr.size(), _values.data());
+    const auto status = fmi1_import_set_boolean(handle_, vr.data(), vr.size(), _values.data());
     return status == fmi1_status_ok;
 }
 

@@ -10,21 +10,17 @@ using namespace ecos;
 void ecos::load_scenario(simulation& sim, const std::filesystem::path& config)
 {
 
-    if (!std::filesystem::exists(config)) {
-        throw std::runtime_error("No such file: " + std::filesystem::absolute(config).string());
+    if (!exists(config)) {
+        throw std::runtime_error("No such file: " + absolute(config).string());
     }
 
-    const auto ext = config.extension().string();
-    if (ext != ".xml") {
+    if (const auto ext = config.extension().string(); ext != ".xml") {
         throw std::runtime_error("Wrong config extension. Was " + ext + ", expected " + ".xml");
     }
 
     pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_file(config.c_str());
-    if (!result) {
-        throw std::runtime_error("Unable to parse '" +
-            std::filesystem::absolute(config).string() +
-            "': " + result.description());
+    if (pugi::xml_parse_result result = doc.load_file(config.c_str()); !result) {
+        throw std::runtime_error("Unable to parse '" + absolute(config).string() + "': " + result.description());
     }
 
     const auto root = doc.child("ecos:Scenario");

@@ -4,7 +4,6 @@
 
 #include "ecos/model.hpp"
 #include "ecos/model_resolver.hpp"
-#include "ecos/property.hpp"
 #include "ecos/scalar.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/variable_identifier.hpp"

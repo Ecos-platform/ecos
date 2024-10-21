@@ -18,15 +18,6 @@ namespace ecos::proxy
 class proxy_slave : public fmilibcpp::slave
 {
 
-private:
-    fmilibcpp::model_description modelDescription_;
-
-    std::unique_ptr<simple_socket::SocketContext> ctx_;
-    std::unique_ptr<simple_socket::SimpleConnection> client_;
-    std::thread thread_;
-
-    bool freed = false;
-
 public:
     proxy_slave(
         const std::filesystem::path& fmuPath,
@@ -57,6 +48,16 @@ public:
     bool set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<bool>& values) override;
 
     ~proxy_slave() override;
+
+
+private:
+    fmilibcpp::model_description modelDescription_;
+
+    std::unique_ptr<simple_socket::SocketContext> ctx_;
+    std::unique_ptr<simple_socket::SimpleConnection> client_;
+    std::thread thread_;
+
+    bool freed = false;
 };
 
 } // namespace ecos::proxy

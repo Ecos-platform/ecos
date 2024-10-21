@@ -3,8 +3,7 @@
 #ifndef ECOS_CSV_WRITER_HPP
 #define ECOS_CSV_WRITER_HPP
 
-#include "simulation_listener.hpp"
-
+#include "ecos/listeners/simulation_listener.hpp"
 #include "ecos/variable_identifier.hpp"
 
 #include <filesystem>

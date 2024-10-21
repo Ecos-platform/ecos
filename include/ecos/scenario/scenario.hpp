@@ -3,7 +3,6 @@
 #define LIBECOS_SCENARIO_HPP
 
 #include <algorithm>
-#include <filesystem>
 #include <functional>
 #include <optional>
 #include <utility>
@@ -40,9 +39,9 @@ class timed_action
 
 public:
     timed_action(double timePoint, std::function<void()> f, const std::optional<double>& eps = std::nullopt)
-        : f_(std::move(f))
-        , eps_(eps.value_or(0))
+        : eps_(eps.value_or(0))
         , timePoint_(timePoint)
+        , f_(std::move(f))
     { }
 
     [[nodiscard]] double eps() const

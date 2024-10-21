@@ -12,7 +12,7 @@ using namespace ecos;
 TEST_CASE("test simulation runner")
 {
 
-    log::set_logging_level(ecos::log::level::debug);
+    set_logging_level(ecos::log::level::debug);
 
     std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/2.0/20sim/ControlledTemperature.fmu";
     auto resolver = default_model_resolver();

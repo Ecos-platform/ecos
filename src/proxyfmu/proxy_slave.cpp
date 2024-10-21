@@ -27,7 +27,7 @@ std::string read_data(std::string const& fileName)
     if (!file) {
         throw std::runtime_error("Failed to open file: " + fileName);
     }
-    std::streamsize size = file.tellg();
+    const std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
 
     std::vector<char> buffer(size);

@@ -2,7 +2,7 @@
 #ifndef ECOS_MODEL_HPP
 #define ECOS_MODEL_HPP
 
-#include "model_instance.hpp"
+#include "ecos/model_instance.hpp"
 
 #include <memory>
 #include <optional>

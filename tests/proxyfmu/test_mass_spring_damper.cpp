@@ -16,7 +16,7 @@ const double dt = 0.01;
 
 unsigned int getRealValueRef(const model_variables& mv, const std::string& name)
 {
-    return std::find_if(mv.begin(), mv.end(), [name](const scalar_variable& v) {
+    return std::ranges::find_if(mv, [name](const scalar_variable& v) {
         return v.name == name;
     })->vr;
 }

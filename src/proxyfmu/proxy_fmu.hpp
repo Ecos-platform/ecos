@@ -16,12 +16,6 @@ namespace ecos::proxy
 class proxy_fmu : public fmilibcpp::fmu
 {
 
-private:
-    const std::filesystem::path fmuPath_;
-    const fmilibcpp::model_description modelDescription_;
-
-    const std::optional<remote_info> remote_;
-
 public:
     explicit proxy_fmu(const std::filesystem::path& fmuPath, std::optional<remote_info> remote = std::nullopt);
 
@@ -30,9 +24,16 @@ public:
     std::unique_ptr<fmilibcpp::slave> new_instance(const std::string& instanceName) override;
 
     ~proxy_fmu() override = default;
+
+
+private:
+    const std::filesystem::path fmuPath_;
+    const fmilibcpp::model_description modelDescription_;
+
+    const std::optional<remote_info> remote_;
 };
 
-} // namespace proxyfmu
+} // namespace ecos::proxy
 
 
 #endif // PROXY_PROXY_FMU_FMU_HPP

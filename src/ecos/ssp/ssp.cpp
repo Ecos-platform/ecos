@@ -4,7 +4,7 @@
 #include "ecos/util/temp_dir.hpp"
 #include "ecos/util/unzipper.hpp"
 
-#include <pugixml.hpp>
+#include <ranges>
 
 
 namespace ecos::ssp
@@ -19,17 +19,17 @@ Connection parse_connection(
     const std::string endElement = node.attribute("endElement").as_string();
     const std::string endConnector = node.attribute("endConnector").as_string();
 
-    if (components.count(startElement)) {
+    if (components.contains(startElement)) {
         const Component& c = components.at(startElement);
-        if (!c.connectors.count(startConnector)) {
+        if (!c.connectors.contains(startConnector)) {
             throw std::runtime_error("No connector named: '" + startConnector + "' defined for element: '" + startElement + "'!");
         }
     } else {
         throw std::runtime_error("No element named: " + startElement);
     }
-    if (components.count(endElement)) {
+    if (components.contains(endElement)) {
         const Component& c = components.at(startElement);
-        if (!c.connectors.count(startConnector)) {
+        if (!c.connectors.contains(startConnector)) {
             throw std::runtime_error("No connector named: '" + endConnector + "' defined for element: '" + endElement + "'!");
         }
     } else {
@@ -37,8 +37,7 @@ Connection parse_connection(
     }
 
     Connection c = {startElement, startConnector, endElement, endConnector};
-    const auto transformationNode = node.child("ssc:LinearTransformation");
-    if (transformationNode) {
+    if (const auto transformationNode = node.child("ssc:LinearTransformation")) {
         const double factor = transformationNode.attribute("factor").as_double();
         const double offset = transformationNode.attribute("offset").as_double();
         c.linearTransformation = {factor, offset};
@@ -108,8 +107,7 @@ Parameter parse_parameter(const pugi::xml_node& node)
     } else {
         throw std::runtime_error("Unknown XML node in ssv:Parameter encountered!");
     }
-    const auto unit = typeNode.attribute("unit");
-    if (!unit.empty()) {
+    if (const auto unit = typeNode.attribute("unit"); !unit.empty()) {
         parameter.type.unit = unit.as_string();
     }
     return parameter;
@@ -122,16 +120,14 @@ parse_parameter_bindings(const std::filesystem::path& dir, const pugi::xml_node&
     for (const auto parameterBindingNode : node) {
         pugi::xml_node parameterSetNode;
         std::unique_ptr<pugi::xml_document> doc;
-        const auto parameterValues = parameterBindingNode.child("ssd:ParameterValues");
-        if (parameterValues) {
+        if (const auto parameterValues = parameterBindingNode.child("ssd:ParameterValues")) {
             parameterSetNode = parameterValues.child("ssv:ParameterSet");
         } else {
             const auto source = parameterBindingNode.attribute("source").as_string();
             doc = std::make_unique<pugi::xml_document>();
-            pugi::xml_parse_result result = doc->load_file(std::filesystem::path(dir / source).c_str());
-            if (!result) {
+            if (pugi::xml_parse_result result = doc->load_file(std::filesystem::path(dir / source).c_str()); !result) {
                 throw std::runtime_error(
-                    "Unable to parse '" + std::filesystem::absolute(std::filesystem::path(dir / source)).string() + "': " + result.description());
+                    "Unable to parse '" + absolute(std::filesystem::path(dir / source)).string() + "': " + result.description());
             }
             parameterSetNode = doc->child("ssv:ParameterSet");
         }
@@ -174,7 +170,7 @@ Elements parse_elements(const std::filesystem::path& dir, const pugi::xml_node& 
     elements.components = parse_components(dir, node);
 
     // collect parameterSets by name
-    for (const auto& [componentName, component] : elements.components) {
+    for (const auto& component : elements.components | std::views::values) {
         for (const auto& [parameterSetName, parameterSet] : component.parameterSets) {
             auto& list = elements.parameterSets[parameterSetName][component];
             list.insert(list.end(), parameterSet.parameters.begin(), parameterSet.parameters.end());
@@ -205,8 +201,7 @@ DefaultExperiment parse_default_experiment(const pugi::xml_node& node)
     if (stop) {
         ex.stop = stop.as_double();
     }
-    const auto annotationsNode = node.child("ssd:Annotations");
-    if (annotationsNode) {
+    if (const auto annotationsNode = node.child("ssd:Annotations")) {
         ex.annotations = parse_annotations(annotationsNode);
     }
     return ex;
@@ -243,11 +238,11 @@ struct SystemStructureDescription::Impl
     explicit Impl(const std::filesystem::path& path)
     {
 
-        if (!std::filesystem::exists(path)) {
+        if (!exists(path)) {
             throw std::runtime_error("No such file: " + absolute(path).string());
         }
 
-        if (std::filesystem::is_directory(path)) {
+        if (is_directory(path)) {
             dir_ = path;
         } else {
             tmp_ = std::make_unique<temp_dir>("ssp");
@@ -260,7 +255,7 @@ struct SystemStructureDescription::Impl
         pugi::xml_parse_result result = doc_.load_file(std::filesystem::path(dir_ / "SystemStructure.ssd").c_str());
         if (!result) {
             throw std::runtime_error(
-                "Unable to parse '" + std::filesystem::absolute(std::filesystem::path(dir_ / "SystemStructure.ssd")).string() + "': " +
+                "Unable to parse '" + absolute(std::filesystem::path(dir_ / "SystemStructure.ssd")).string() + "': " +
                 result.description());
         }
 
@@ -276,8 +271,7 @@ struct SystemStructureDescription::Impl
         const auto systemNode = root.child("ssd:System");
         system = parse_system(dir_, systemNode);
 
-        const auto defaultNode = root.child("ssd:DefaultExperiment");
-        if (defaultNode) {
+        if (const auto defaultNode = root.child("ssd:DefaultExperiment")) {
             defaultExperiment = parse_default_experiment(defaultNode);
         }
     }
@@ -291,24 +285,24 @@ struct SystemStructureDescription::Impl
 };
 
 SystemStructureDescription::SystemStructureDescription(const std::filesystem::path& path)
-    : pimpl_(new Impl(path))
+    : pimpl_(std::make_unique<Impl>(path))
     , name(pimpl_->name)
     , version(pimpl_->version)
     , system(pimpl_->system)
     , defaultExperiment(pimpl_->defaultExperiment)
 { }
 
-std::filesystem::path ssp::SystemStructureDescription::file(const std::filesystem::path& source) const
+std::filesystem::path SystemStructureDescription::file(const std::filesystem::path& source) const
 {
     return pimpl_->file(source);
 }
 
-std::filesystem::path ssp::SystemStructureDescription::dir() const
+std::filesystem::path SystemStructureDescription::dir() const
 {
     return pimpl_->dir_;
 }
 
-std::shared_ptr<temp_dir> ssp::SystemStructureDescription::get_temp_dir() const
+std::shared_ptr<temp_dir> SystemStructureDescription::get_temp_dir() const
 {
     return pimpl_->tmp_;
 }

@@ -18,13 +18,12 @@ std::unique_ptr<model_resolver> ecos::default_model_resolver()
 std::shared_ptr<model> model_resolver::resolve(const std::filesystem::path& base, const std::string& uri)
 {
     std::string key = base.string() + "::" + uri;
-    if (cache_.count(key)) {
+    if (cache_.contains(key)) {
         log::debug("Resolver cache hit for key {}", key);
         return cache_.at(key);
     }
     for (auto& resolver : subResolvers_) {
-        std::shared_ptr model = resolver->resolve(base, uri);
-        if (model) {
+        if (std::shared_ptr model = resolver->resolve(base, uri)) {
             cache_[key] = model;
             return model;
         }

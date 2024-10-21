@@ -4,10 +4,6 @@
 
 #include "ecos/model_instance.hpp"
 
-#include <functional>
-#include <memory>
-#include <vector>
-
 namespace ecos
 {
 

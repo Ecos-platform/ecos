@@ -63,7 +63,7 @@ public:
         };
 
         if (!parallel_) {
-            std::for_each(instances_.begin(), instances_.end(), f);
+            std::ranges::for_each(instances_, f);
         } else {
             std::for_each(std::execution::par, instances_.begin(), instances_.end(), f);
         }

@@ -20,20 +20,18 @@ bool ecos::unzip(const std::filesystem::path& zip_file, const std::filesystem::p
     struct zip_stat sb{};
     // clang-format on
 
-    const int bufferSize = 1000;
+    constexpr int bufferSize = 1000;
     std::vector<char> contents(bufferSize);
-    zip_int64_t sum;
-    zip_int64_t len;
     for (int i = 0; i < zip_get_num_entries(za, 0); i++) {
         if (zip_stat_index(za, i, 0, &sb) == 0) {
 
             const std::filesystem::path newFile = tmp_path / sb.name;
 
             if (sb.size == 0) {
-                std::filesystem::create_directories(newFile);
+                create_directories(newFile);
             } else {
                 const auto containingDirectory = newFile.parent_path();
-                if (!std::filesystem::exists(containingDirectory) && !std::filesystem::create_directories(containingDirectory)) {
+                if (!exists(containingDirectory) && !create_directories(containingDirectory)) {
                     return false;
                 }
                 zf = zip_fopen_index(za, i, 0);
@@ -41,9 +39,9 @@ bool ecos::unzip(const std::filesystem::path& zip_file, const std::filesystem::p
                 std::ofstream file;
                 file.open(newFile, std::ios::out | std::ios::binary);
 
-                sum = 0;
+                zip_int64_t sum = 0;
                 while (sum != sb.size) {
-                    len = zip_fread(zf, contents.data(), bufferSize);
+                    zip_int64_t len = zip_fread(zf, contents.data(), bufferSize);
                     file.write(contents.data(), len);
                     sum += len;
                 }

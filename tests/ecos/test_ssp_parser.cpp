@@ -20,9 +20,9 @@ void checkSystemStructure(const ssp::SystemStructureDescription& ssd)
     const auto components = system.elements.components;
     CHECK(components.size() == 3);
 
-    REQUIRE(components.count("chassis"));
-    REQUIRE(components.count("wheel"));
-    REQUIRE(components.count("ground"));
+    REQUIRE(components.contains("chassis"));
+    REQUIRE(components.contains("wheel"));
+    REQUIRE(components.contains("ground"));
 
     const ssp::Component& chassis = components.at("chassis");
     CHECK(chassis.source == "resources/chassis.fmu");
@@ -57,12 +57,12 @@ void checkSystemStructure(const ssp::SystemStructureDescription& ssd)
     REQUIRE(groundParameters.empty());
 
     REQUIRE(system.elements.parameterSets.size() == 1);
-    REQUIRE(system.elements.parameterSets.count("initialValues"));
+    REQUIRE(system.elements.parameterSets.contains("initialValues"));
     const auto& initialValues = system.elements.parameterSets.at("initialValues");
     REQUIRE(initialValues.size() == 2);
-    REQUIRE(initialValues.count(chassis));
+    REQUIRE(initialValues.contains(chassis));
     REQUIRE(initialValues.at(chassis).size() == 3);
-    REQUIRE(initialValues.count(wheel));
+    REQUIRE(initialValues.contains(wheel));
     REQUIRE(initialValues.at(wheel).size() == 3);
 }
 

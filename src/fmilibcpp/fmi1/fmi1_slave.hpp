@@ -2,8 +2,6 @@
 #ifndef ECOS_FMI_FMI1_SLAVE_HPP
 #define ECOS_FMI_FMI1_SLAVE_HPP
 
-#include "fmi1_model_description.hpp"
-
 #include "ecos/util/temp_dir.hpp"
 
 #include "fmilibcpp/fmicontext.hpp"
@@ -17,15 +15,6 @@ namespace fmilibcpp
 
 class fmi1_slave : public slave
 {
-private:
-    bool freed_{false};
-    fmi1_import_t* handle_;
-    const model_description md_;
-    std::shared_ptr<fmicontext> ctx_;
-    std::shared_ptr<ecos::temp_dir> tmpDir_;
-
-    double start_time_{};
-    double stop_time_{};
 
 public:
     fmi1_slave(
@@ -56,6 +45,16 @@ public:
     bool set_boolean(const std::vector<value_ref>& vr, const std::vector<bool>& values) override;
 
     ~fmi1_slave() override;
+
+private:
+    bool freed_{false};
+    fmi1_import_t* handle_;
+    const model_description md_;
+    std::shared_ptr<fmicontext> ctx_;
+    std::shared_ptr<ecos::temp_dir> tmpDir_;
+
+    double start_time_{};
+    double stop_time_{};
 };
 
 } // namespace fmilibcpp

@@ -78,8 +78,8 @@ private:
 
 std::unique_ptr<simulation_structure> ecos::load_ssp(const std::filesystem::path& path)
 {
-    if (!std::filesystem::exists(path)) {
-        throw std::runtime_error("No such file: '" + std::filesystem::absolute(path).string() + "'");
+    if (!exists(path)) {
+        throw std::runtime_error("No such file: '" + absolute(path).string() + "'");
     }
 
     return std::make_unique<ssp_based_simulation_structure>(path);

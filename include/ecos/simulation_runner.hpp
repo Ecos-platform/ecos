@@ -2,13 +2,13 @@
 #ifndef LIBECOS_SIMULATION_RUNNER_HPP
 #define LIBECOS_SIMULATION_RUNNER_HPP
 
-#include "simulation.hpp"
+#include "ecos/simulation.hpp"
 
 #include <atomic>
-#include <chrono>
 #include <functional>
 #include <future>
 #include <limits>
+#include <optional>
 #include <thread>
 
 namespace ecos

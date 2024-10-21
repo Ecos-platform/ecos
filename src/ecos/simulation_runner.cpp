@@ -44,7 +44,7 @@ std::future<void> simulation_runner::run_while(std::function<bool()> predicate)
     return std::async(std::launch::async, [this] {
         run();
 
-        std::lock_guard<std::mutex> lck(m_);
+        std::lock_guard lck(m_);
         if (t_.joinable()) {
             t_.join();
         }
@@ -93,7 +93,7 @@ void simulation_runner::start()
 void simulation_runner::stop()
 {
     stop_ = true;
-    std::lock_guard<std::mutex> lck(m_);
+    std::lock_guard lck(m_);
     if (t_.joinable()) {
         t_.join();
     }

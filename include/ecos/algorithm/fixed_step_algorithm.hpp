@@ -10,7 +10,7 @@
 namespace ecos
 {
 
-struct fixed_step_algorithm : public algorithm
+class fixed_step_algorithm : public algorithm
 {
 
 public:

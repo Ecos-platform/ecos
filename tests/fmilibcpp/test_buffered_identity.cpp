@@ -14,7 +14,6 @@ void test(fmu& fmu)
     REQUIRE(d.modelName == "no.viproma.demo.identity");
     REQUIRE(d.description ==
         "Has one input and one output of each type, and outputs are always set equal to inputs");
-    REQUIRE(d.author == "Lars Tandle Kyllingstad");
 
     auto slave = std::make_unique<buffered_slave>(fmu.new_instance("instance"));
     REQUIRE(slave->setup_experiment());

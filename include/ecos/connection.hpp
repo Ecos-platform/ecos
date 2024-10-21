@@ -2,7 +2,7 @@
 #ifndef ECOS_CONNECTION_HPP
 #define ECOS_CONNECTION_HPP
 
-#include "property.hpp"
+#include "ecos/property.hpp"
 
 #include <functional>
 #include <stdexcept>

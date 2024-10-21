@@ -2,8 +2,8 @@
 #ifndef ECOS_COMPONENT_HPP
 #define ECOS_COMPONENT_HPP
 
-#include "property.hpp"
-#include "scalar.hpp"
+#include "ecos/property.hpp"
+#include "ecos/scalar.hpp"
 
 #include <stdexcept>
 #include <unordered_map>

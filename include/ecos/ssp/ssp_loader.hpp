@@ -10,7 +10,7 @@
 namespace ecos
 {
 
-std::unique_ptr<simulation_structure> load_ssp(const std::filesystem::path& path);
+[[nodiscard]] std::unique_ptr<simulation_structure> load_ssp(const std::filesystem::path& path);
 
 } // namespace ecos
 

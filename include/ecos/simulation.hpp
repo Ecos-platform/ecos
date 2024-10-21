@@ -136,7 +136,7 @@ public:
         std::vector<variable_identifier> ids;
         for (auto& instance : instances_) {
             for (auto& p : instance->get_properties().get_property_names()) {
-                ids.emplace_back(variable_identifier{instance->instanceName(), p});
+                ids.emplace_back(instance->instanceName(), p);
             }
         }
         return ids;

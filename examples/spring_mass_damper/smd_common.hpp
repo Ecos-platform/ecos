@@ -11,6 +11,29 @@
 
 using namespace ecos;
 
+inline void addConnections(simulation_structure& ss)
+{
+    ss.make_connection<double>("spring::for_xx", "mass::in_l_u");
+    ss.make_connection<double>("spring::for_yx", "mass::in_l_w");
+    ss.make_connection<double>("mass::out_l_u", "spring::dis_xx");
+    ss.make_connection<double>("mass::out_l_w", "spring::dis_yx");
+    ss.make_connection<double>("damper::df_0", "mass::in_f_u");
+    ss.make_connection<double>("damper::df_1", "mass::in_f_w");
+    ss.make_connection<double>("mass::out_f_u", "damper::lv_0");
+    ss.make_connection<double>("mass::out_f_w", "damper::lv_1");
+}
+
+inline void addParmeterSets(simulation_structure& ss)
+{
+    std::map<variable_identifier, scalar_value> map;
+    map["spring::springStiffness"] = 5.;
+    map["spring::zeroForceLength"] = 5.;
+    map["damper::dampingCoefficient"] = 2.;
+    map["mass::initialPositionX"] = 6.;
+    map["mass::mediumDensity"] = 1.;
+    ss.add_parameter_set("initialValues", map);
+}
+
 inline void run(simulation_structure& ss)
 {
     set_logging_level(log::level::debug);
@@ -30,4 +53,4 @@ inline void run(simulation_structure& ss)
     }
 }
 
-#endif //SMD_COMMON_HPP
+#endif // SMD_COMMON_HPP

@@ -6,9 +6,9 @@
 #include <ecos/logger/logger.hpp>
 
 #include "proxyfmu/opcodes.hpp"
-#include "simple_socket/util/byte_conversion.hpp"
-#include "simple_socket/UnixDomainSocket.hpp"
 #include "simple_socket/TCPSocket.hpp"
+#include "simple_socket/UnixDomainSocket.hpp"
+#include "simple_socket/util/byte_conversion.hpp"
 #include <msgpack.hpp>
 
 #include <chrono>
@@ -128,7 +128,6 @@ bool proxy_slave::setup_experiment(double start_time, double stop_time, double t
     const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
     oh.get().convert(status);
 
-    spdlog::info("Status={}", status);
     return status;
 }
 
@@ -318,7 +317,7 @@ bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::v
         oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
         oh.get().convert(values);
     } catch (const std::exception& e) {
-        log::err("[get_string] Error during unpacking: {}",  e.what());
+        log::err("[get_string] Error during unpacking: {}", e.what());
         return false;
     }
 
@@ -373,7 +372,7 @@ bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const
         return false;
     }
 
-    static std::vector<uint8_t> buffer(512*2);
+    static std::vector<uint8_t> buffer(512 * 2);
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
@@ -398,7 +397,7 @@ bool proxy_slave::set_real(const std::vector<fmilibcpp::value_ref>& vr, const st
         return false;
     }
 
-    static std::vector<uint8_t> buffer(512*2);
+    static std::vector<uint8_t> buffer(512 * 2);
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
@@ -423,7 +422,7 @@ bool proxy_slave::set_string(const std::vector<fmilibcpp::value_ref>& vr, const 
         return false;
     }
 
-    static std::vector<uint8_t> buffer(512*2);
+    static std::vector<uint8_t> buffer(512 * 2);
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
@@ -448,7 +447,7 @@ bool proxy_slave::set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const
         return false;
     }
 
-    static std::vector<uint8_t> buffer(512*2);
+    static std::vector<uint8_t> buffer(512 * 2);
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
@@ -482,4 +481,4 @@ proxy_slave::~proxy_slave()
     proxy_slave::freeInstance();
 }
 
-} // namespace proxyfmu
+} // namespace ecos::proxy

@@ -29,5 +29,4 @@ int main()
     ss.add_parameter_set("initialValues", map);
 
     run(ss);
-
 }

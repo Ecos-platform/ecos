@@ -19,7 +19,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
         initialized_ = true;
         log::debug("Initializing simulation..");
 
-        for (auto& [_, listener] : listeners_) {
+        for (auto l = listeners_; auto& [_, listener] : l) {
             listener->pre_init(*this);
         }
 
@@ -69,7 +69,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
             algorithm_->model_instance_added(instance.get());
         }
 
-        for (auto& [_, listener] : listeners_) {
+        for (auto l = listeners_; auto& [_, listener] : listeners_) {
             listener->post_init(*this);
         }
 
@@ -86,7 +86,7 @@ double simulation::step(unsigned int numStep)
     double newT{};
     for (unsigned i = 0; i < numStep; ++i) {
 
-        for (auto& [_, listener] : listeners_) {
+        for (auto l = listeners_; auto& [_, listener] : l) {
             listener->pre_step(*this);
         }
 
@@ -106,7 +106,7 @@ double simulation::step(unsigned int numStep)
         currentTime_ = newT;
         ++num_iterations_;
 
-        for (auto& [_, listener] : listeners_) {
+        for (auto l = listeners_; auto& [_, listener] : l) {
             listener->post_step(*this);
         }
     }
@@ -144,7 +144,7 @@ void simulation::terminate()
             algorithm_->model_instance_removed(instance.get());
         }
 
-        for (auto& [_, listener] : listeners_) {
+        for (auto l = listeners_; auto& [_, listener] : l) {
             listener->post_terminate(*this);
         }
 
@@ -167,7 +167,7 @@ void simulation::reset()
 void simulation::add_listener(const std::string& name, std::shared_ptr<simulation_listener> listener)
 {
     if (listeners_.count(name)) {
-        log::warn("A listener named {} already exists..");
+        log::warn("A listener named {} already exists..", name);
     } else {
         listeners_[name] = std::move(listener);
     }
@@ -175,6 +175,7 @@ void simulation::add_listener(const std::string& name, std::shared_ptr<simulatio
 
 void simulation::remove_listener(const std::string& name)
 {
+    log::debug("Removing listener named {}", name);
     listeners_.erase(name);
 }
 

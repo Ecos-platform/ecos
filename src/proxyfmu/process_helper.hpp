@@ -115,8 +115,6 @@ inline void start_process(
                     }
                 }
                 bound = true;
-            } else if (line.substr(0, 16) == "[proxyfmu] freed") {
-                break;
             } else {
                 std::cerr << "Got: " << line;
             }
@@ -126,6 +124,7 @@ inline void start_process(
         result = subprocess_join(&process, &status);
 
         if (result == 0 && status == 0 && bound) {
+            spdlog::info("FMU proxy process for instance '{}' returned with status {}", instanceName, status);
             return;
         }
         spdlog::error("External proxy process for instance '{}' returned with status {}. Unable to bind..", instanceName, std::to_string(status));

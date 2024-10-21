@@ -474,9 +474,6 @@ void proxy_slave::freeInstance()
         if (thread_.joinable()) {
             thread_.join();
         }
-        log::debug("done..");
-        // communication with parent process
-        std::cout << "[proxyfmu] freed";
     }
 }
 

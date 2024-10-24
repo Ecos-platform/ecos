@@ -26,7 +26,7 @@ simulation_structure::simulation_structure()
 
 void simulation_structure::add_model(const std::string& instanceName, const std::string& uri, std::optional<double> stepSizeHint)
 {
-    auto model = resolver_->resolve(uri);
+    const auto model = resolver_->resolve(uri);
     add_model(instanceName, model, stepSizeHint);
 }
 
@@ -46,12 +46,12 @@ void simulation_structure::add_model(const std::string& instanceName, std::share
 std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm> algorithm)
 {
     std::unordered_map<std::string, std::unique_ptr<model_instance>> instances;
-    for (auto& [name, model] : models_) {
+    for (const auto& [name, model] : models_) {
         instances.emplace(name, model.first->instantiate(name, model.second));
     }
 
-    for (auto& [parameterSetName, map] : parameterSets) {
-        for (auto& [v, value] : map) {
+    for (const auto& [parameterSetName, map] : parameterSets) {
+        for (const auto& [v, value] : map) {
             instances[v.instanceName]->add_parameterset_entry(parameterSetName, v.variableName, value);
         }
     }
@@ -67,7 +67,7 @@ std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm
                            sim->make_int_connection(arg.source, arg.sink);
                        },
                        [&sim](unbound_real_connection& arg) {
-                           auto c = sim->make_real_connection(arg.source, arg.sink);
+                           const auto c = sim->make_real_connection(arg.source, arg.sink);
                            if (arg.modifier) c->modifier = [arg](double value) {
                                return (*arg.modifier)(value);
                            };

@@ -82,13 +82,13 @@ public:
 
     string_connection* make_string_connection(const variable_identifier& source, const variable_identifier& sink);
 
-    property_t<double>* get_real_property(const variable_identifier& identifier) const;
+    [[nodiscard]] property_t<double>* get_real_property(const variable_identifier& identifier) const;
 
-    property_t<int>* get_int_property(const variable_identifier& identifier) const;
+    [[nodiscard]] property_t<int>* get_int_property(const variable_identifier& identifier) const;
 
-    property_t<std::string>* get_string_property(const variable_identifier& identifier) const;
+    [[nodiscard]] property_t<std::string>* get_string_property(const variable_identifier& identifier) const;
 
-    property_t<bool>* get_bool_property(const variable_identifier& identifier) const;
+    [[nodiscard]] property_t<bool>* get_bool_property(const variable_identifier& identifier) const;
 
     [[nodiscard]] const std::vector<std::unique_ptr<model_instance>>& get_instances() const;
 

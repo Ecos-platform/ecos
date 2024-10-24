@@ -35,21 +35,21 @@ struct model_description
 
     [[nodiscard]] std::optional<scalar_variable> get_by_name(const std::string& name) const
     {
-        auto result = std::find_if(modelVariables.begin(), modelVariables.end(), [&name](const scalar_variable& s) {
+        const auto result = std::ranges::find_if(modelVariables, [&name](const scalar_variable& s) {
             return s.name == name;
         });
 
         if (result != modelVariables.end()) {
             return *result;
-        } else {
-            return std::nullopt;
         }
+
+        return std::nullopt;
     }
 
     template<class T>
     [[nodiscard]] std::optional<scalar_variable> get_by_vr(value_ref vr) const
     {
-        auto result = std::find_if(modelVariables.begin(), modelVariables.end(), [&vr](const scalar_variable& s) {
+        const auto result = std::ranges::find_if(modelVariables, [&vr](const scalar_variable& s) {
             if (std::is_same<T, int>() && s.is_integer()) {
                 return s.vr == vr;
             } else if (std::is_same<T, double>() && s.is_real()) {
@@ -65,9 +65,9 @@ struct model_description
 
         if (result != modelVariables.end()) {
             return *result;
-        } else {
-            return std::nullopt;
         }
+
+        return std::nullopt;
     }
 };
 

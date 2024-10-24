@@ -5,6 +5,7 @@
 #include "ecos/logger/logger.hpp"
 
 #include <execution>
+#include <ranges>
 
 using namespace ecos;
 
@@ -19,7 +20,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
         initialized_ = true;
         log::debug("Initializing simulation..");
 
-        for (auto l = listeners_; auto& [_, listener] : l) {
+        for (auto l = listeners_; const auto& listener : l | std::views::values) {
             listener->pre_init(*this);
         }
 
@@ -44,32 +45,32 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
         scenario_.runInitActions();
 
         for (unsigned i = 0; i < instances_.size(); ++i) {
-            for (auto& instance : instances_) {
+            for (const auto& instance : instances_) {
                 instance->get_properties().apply_sets();
                 instance->get_properties().apply_gets();
             }
-            for (auto& c : connections_) {
+            for (const auto& c : connections_) {
                 c->transferData();
             }
         }
 
-        for (auto& instance : instances_) {
+        for (const auto& instance : instances_) {
             instance->exit_initialization_mode();
             instance->get_properties().apply_gets();
         }
 
-        for (auto& c : connections_) {
+        for (const auto& c : connections_) {
             c->transferData();
         }
 
-        for (auto& instance : instances_) {
+        for (const auto& instance : instances_) {
             instance->get_properties().apply_sets();
             instance->get_properties().apply_gets();
 
             algorithm_->model_instance_added(instance.get());
         }
 
-        for (auto l = listeners_; auto& [_, listener] : listeners_) {
+        for (auto l = listeners_; const auto& listener : listeners_ | std::views::values) {
             listener->post_init(*this);
         }
 
@@ -86,7 +87,7 @@ double simulation::step(unsigned int numStep)
     double newT{};
     for (unsigned i = 0; i < numStep; ++i) {
 
-        for (auto l = listeners_; auto& [_, listener] : l) {
+        for (auto l = listeners_; const auto& listener : l | std::views::values) {
             listener->pre_step(*this);
         }
 
@@ -94,7 +95,7 @@ double simulation::step(unsigned int numStep)
 
         newT = algorithm_->step(currentTime_);
 
-        for (auto& c : connections_) {
+        for (const auto& c : connections_) {
             c->transferData();
         }
 
@@ -106,7 +107,7 @@ double simulation::step(unsigned int numStep)
         currentTime_ = newT;
         ++num_iterations_;
 
-        for (auto l = listeners_; auto& [_, listener] : l) {
+        for (auto l = listeners_; const auto& listener : l | std::views::values) {
             listener->post_step(*this);
         }
     }
@@ -144,7 +145,7 @@ void simulation::terminate()
             algorithm_->model_instance_removed(instance.get());
         }
 
-        for (auto l = listeners_; auto& [_, listener] : l) {
+        for (auto l = listeners_; const auto& listener : l | std::views::values) {
             listener->post_terminate(*this);
         }
 
@@ -155,7 +156,7 @@ void simulation::terminate()
 void simulation::reset()
 {
     log::debug("Resetting simulation at t={}", time());
-    for (auto& instance : instances_) {
+    for (const auto& instance : instances_) {
         instance->reset();
     }
     scenario_.reset();
@@ -246,7 +247,7 @@ property_t<double>* simulation::get_real_property(const variable_identifier& ide
 {
     for (auto& instance : instances_) {
         if (instance->instanceName() == identifier.instanceName) {
-            auto p = instance->get_properties().get_real_property(identifier.variableName);
+            const auto p = instance->get_properties().get_real_property(identifier.variableName);
             if (p) return p;
         }
     }
@@ -257,7 +258,7 @@ property_t<int>* simulation::get_int_property(const variable_identifier& identif
 {
     for (auto& instance : instances_) {
         if (instance->instanceName() == identifier.instanceName) {
-            auto p = instance->get_properties().get_int_property(identifier.variableName);
+            const auto p = instance->get_properties().get_int_property(identifier.variableName);
             if (p) return p;
         }
     }
@@ -279,7 +280,7 @@ property_t<bool>* simulation::get_bool_property(const variable_identifier& ident
 {
     for (auto& instance : instances_) {
         if (instance->instanceName() == identifier.instanceName) {
-            auto p = instance->get_properties().get_bool_property(identifier.variableName);
+            const auto p = instance->get_properties().get_bool_property(identifier.variableName);
             if (p) return p;
         }
     }
@@ -294,8 +295,8 @@ const std::vector<std::unique_ptr<model_instance>>& simulation::get_instances() 
 std::vector<variable_identifier> simulation::identifiers() const
 {
     std::vector<variable_identifier> ids;
-    for (auto& instance : instances_) {
-        for (auto& p : instance->get_properties().get_property_names()) {
+    for (const auto& instance : instances_) {
+        for (const auto& p : instance->get_properties().get_property_names()) {
             ids.emplace_back(instance->instanceName(), p);
         }
     }

@@ -74,7 +74,7 @@ public:
     {
         for (unsigned i = 0; i < vrs.size(); i++) {
             const value_ref vr = vrs[i];
-            if (std::find(integersToFetch_.begin(), integersToFetch_.end(), vr) == integersToFetch_.end()) {
+            if (std::ranges::find(integersToFetch_, vr) == integersToFetch_.end()) {
                 mark_for_reading(get_model_description().get_by_vr<int>(vr)->name);
             }
             values[i] = integerGetCache_.at(vr);
@@ -86,7 +86,7 @@ public:
     {
         for (unsigned i = 0; i < vrs.size(); i++) {
             const value_ref vr = vrs[i];
-            if (std::find(realsToFetch_.begin(), realsToFetch_.end(), vr) == realsToFetch_.end()) {
+            if (std::ranges::find(realsToFetch_, vr) == realsToFetch_.end()) {
                 mark_for_reading(get_model_description().get_by_vr<double>(vr)->name);
             }
             values[i] = realGetCache_.at(vr);
@@ -98,7 +98,7 @@ public:
     {
         for (unsigned i = 0; i < vrs.size(); i++) {
             const value_ref vr = vrs[i];
-            if (std::find(stringsToFetch_.begin(), stringsToFetch_.end(), vr) == stringsToFetch_.end()) {
+            if (std::ranges::find(stringsToFetch_, vr) == stringsToFetch_.end()) {
                 mark_for_reading(get_model_description().get_by_vr<std::string>(vr)->name);
             }
             values[i] = stringGetCache_.at(vr);
@@ -110,7 +110,7 @@ public:
     {
         for (unsigned i = 0; i < vrs.size(); i++) {
             const value_ref vr = vrs[i];
-            if (std::find(booleansToFetch_.begin(), booleansToFetch_.end(), vr) == booleansToFetch_.end()) {
+            if (std::ranges::find(booleansToFetch_, vr) == booleansToFetch_.end()) {
                 mark_for_reading(get_model_description().get_by_vr<bool>(vr)->name);
             }
             values[i] = booleanGetCache_.at(vr);
@@ -245,7 +245,7 @@ public:
     void mark_for_reading(const std::string& variableName)
     {
 
-        if (marked_variables.find(variableName) != marked_variables.end()) return;
+        if (marked_variables.contains(variableName)) return;
 
         const auto& md = slave_->get_model_description();
 

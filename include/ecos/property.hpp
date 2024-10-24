@@ -9,6 +9,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -116,35 +117,35 @@ public:
 
     void apply_sets()
     {
-        for (auto& [name, p] : realProperties_) {
+        for (const auto& p : realProperties_ | std::views::values) {
             p->applySet();
         }
-        for (auto& [name, p] : intProperties_) {
+        for (const auto& p : intProperties_ | std::views::values) {
             p->applySet();
         }
-        for (auto& [name, p] : stringProperties_) {
+        for (const auto& p : stringProperties_ | std::views::values) {
             p->applySet();
         }
-        for (auto& [name, p] : boolProperties_) {
+        for (const auto& p : boolProperties_ | std::views::values) {
             p->applySet();
         }
 
-        for (auto& l : listeners_) {
+        for (const auto& l : listeners_) {
             l->post_sets();
         }
     }
 
     void apply_gets()
     {
-        for (auto& l : listeners_) {
+        for (const auto& l : listeners_) {
             l->pre_gets();
         }
     }
 
     property_t<double>* get_real_property(const std::string& name)
     {
-        if (realProperties_.count(name)) {
-            auto& property = realProperties_[name];
+        if (realProperties_.contains(name)) {
+            const auto& property = realProperties_[name];
             return property.get();
         }
         return nullptr;
@@ -152,8 +153,8 @@ public:
 
     property_t<int>* get_int_property(const std::string& name)
     {
-        if (intProperties_.count(name)) {
-            auto& property = intProperties_[name];
+        if (intProperties_.contains(name)) {
+            const auto& property = intProperties_[name];
             return property.get();
         }
         return nullptr;
@@ -161,8 +162,8 @@ public:
 
     property_t<std::string>* get_string_property(const std::string& name)
     {
-        if (stringProperties_.count(name)) {
-            auto& property = stringProperties_[name];
+        if (stringProperties_.contains(name)) {
+            const auto& property = stringProperties_[name];
             return property.get();
         }
         return nullptr;
@@ -170,8 +171,8 @@ public:
 
     property_t<bool>* get_bool_property(const std::string& name)
     {
-        if (boolProperties_.count(name)) {
-            auto& property = boolProperties_[name];
+        if (boolProperties_.contains(name)) {
+            const auto& property = boolProperties_[name];
             return property.get();
         }
         return nullptr;
@@ -220,7 +221,7 @@ public:
     [[nodiscard]] bool hasProperty(const std::string& name) const
     {
         const auto& names = get_property_names();
-        return std::find_if(names.begin(), names.end(), [name](const auto& n) {
+        return std::ranges::find_if(names, [name](const auto& n) {
             return n == name;
         }) != std::end(names);
     }
@@ -228,16 +229,16 @@ public:
     [[nodiscard]] std::vector<std::string> get_property_names() const
     {
         std::vector<std::string> names;
-        std::transform(intProperties_.begin(), intProperties_.end(), std::back_inserter(names), [](auto& pair) {
+        std::ranges::transform(intProperties_, std::back_inserter(names), [](auto& pair) {
             return pair.first;
         });
-        std::transform(realProperties_.begin(), realProperties_.end(), std::back_inserter(names), [](auto& pair) {
+        std::ranges::transform(realProperties_, std::back_inserter(names), [](auto& pair) {
             return pair.first;
         });
-        std::transform(boolProperties_.begin(), boolProperties_.end(), std::back_inserter(names), [](auto& pair) {
+        std::ranges::transform(boolProperties_, std::back_inserter(names), [](auto& pair) {
             return pair.first;
         });
-        std::transform(stringProperties_.begin(), stringProperties_.end(), std::back_inserter(names), [](auto& pair) {
+        std::ranges::transform(stringProperties_, std::back_inserter(names), [](auto& pair) {
             return pair.first;
         });
         return names;

@@ -22,7 +22,7 @@ option(ECOS_BUILD_CLIB "Build C library" ON)
 # Global internal configuration
 # ==============================================================================
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 include(CMakePackageConfigHelpers)

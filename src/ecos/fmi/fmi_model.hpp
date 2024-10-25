@@ -17,8 +17,8 @@ class fmi_model : public model
 {
 
 public:
-    explicit fmi_model(const std::filesystem::path& fmuPath)
-        : fmu_(fmilibcpp::loadFmu(fmuPath))
+    explicit fmi_model(const std::filesystem::path& fmuPath, bool fmiLogging = false)
+        : fmu_(fmilibcpp::loadFmu(fmuPath, fmiLogging))
     { }
 
     [[nodiscard]] fmilibcpp::model_description get_model_description() const

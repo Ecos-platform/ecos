@@ -65,7 +65,7 @@ void log::set_logging_level(level lvl)
     ecos_logger::get_instance().set_level(lvl);
 }
 
-void log::log(log::level lvl, std::string_view msg)
+void log::log(level lvl, std::string_view msg)
 {
     ecos_logger::get_instance().log(lvl, msg);
 }

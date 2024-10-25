@@ -30,7 +30,7 @@ struct csv_config
 
     [[nodiscard]] bool shouldLogVariable(const std::string& variableName) const;
 
-    void verify(const std::vector<variable_identifier>& ids);
+    void verify(const std::vector<variable_identifier>& ids) const;
 
 private:
     std::optional<std::filesystem::path> plotConfig_;

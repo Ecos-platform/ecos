@@ -19,26 +19,30 @@ void writeData(std::ofstream& out, const simulation& sim, const csv_config& conf
 {
     out << sim.iterations() << separator << sim.time();
 
-    for (auto& instance : sim.get_instances()) {
+    for (const auto& instance : sim.get_instances()) {
 
         if (config.shouldLogInstance(instance->instanceName())) {
-            auto& properties = instance->get_properties();
+            const auto& properties = instance->get_properties();
 
             for (auto& [name, p] : properties.get_reals()) {
-                bool logVar = config.shouldLogVariable(name);
-                if (logVar) out << separator << std::to_string(p->get_value());
+                if (config.shouldLogVariable(name)) {
+                    out << separator << std::to_string(p->get_value());
+                }
             }
             for (auto& [name, p] : properties.get_integers()) {
-                bool logVar = config.shouldLogVariable(name);
-                if (logVar) out << separator << std::to_string(p->get_value());
+                if (config.shouldLogVariable(name)) {
+                    out << separator << std::to_string(p->get_value());
+                }
             }
             for (auto& [name, p] : properties.get_booleans()) {
-                bool logVar = config.shouldLogVariable(name);
-                if (logVar) out << separator << std::noboolalpha << p->get_value();
+                if (config.shouldLogVariable(name)) {
+                    out << separator << std::noboolalpha << p->get_value();
+                }
             }
             for (auto& [name, p] : properties.get_strings()) {
-                bool logVar = config.shouldLogVariable(name);
-                if (logVar) out << separator << p->get_value();
+                if (config.shouldLogVariable(name)) {
+                    out << separator << p->get_value();
+                }
             }
         }
     }
@@ -50,8 +54,8 @@ void writeData(std::ofstream& out, const simulation& sim, const csv_config& conf
 std::string plotScript();
 
 csv_writer::csv_writer(const std::filesystem::path& path)
-    : path_(absolute(path))
-    , config_(csv_config{})
+    : config_(csv_config{})
+    , path_(absolute(path))
 {
     if (path.extension().string() != ".csv") {
         throw std::runtime_error("File extension must be .csv, was: " + path.extension().string());
@@ -73,27 +77,32 @@ void csv_writer::pre_init(simulation& sim)
 
     config_.verify(sim.identifiers());
 
-    for (auto& instance : sim.get_instances()) {
+    for (const auto& instance : sim.get_instances()) {
 
         const auto instanceName = instance->instanceName();
 
         if (config_.shouldLogInstance(instanceName)) {
-            auto& properties = instance->get_properties();
-            for (auto& [variableName, p] : properties.get_reals()) {
-                bool logVar = config_.shouldLogVariable(variableName);
-                if (logVar) outFile_ << separator << instanceName << "::" << variableName << "[REAL]";
+            const auto& properties = instance->get_properties();
+
+            for (const auto& variableName : properties.get_reals() | std::views::keys) {
+                if (config_.shouldLogVariable(variableName)) {
+                    outFile_ << separator << instanceName << "::" << variableName << "[REAL]";
+                }
             }
-            for (auto& [variableName, p] : properties.get_integers()) {
-                bool logVar = config_.shouldLogVariable(variableName);
-                if (logVar) outFile_ << separator << instanceName << "::" << variableName << "[INT]";
+            for (const auto& variableName : properties.get_integers() | std::views::keys) {
+                if (config_.shouldLogVariable(variableName)) {
+                    outFile_ << separator << instanceName << "::" << variableName << "[INT]";
+                }
             }
-            for (auto& [variableName, p] : properties.get_booleans()) {
-                bool logVar = config_.shouldLogVariable(variableName);
-                if (logVar) outFile_ << separator << instanceName << "::" << variableName << "[BOOL]";
+            for (const auto& variableName : properties.get_booleans() | std::views::keys) {
+                if (config_.shouldLogVariable(variableName)) {
+                    outFile_ << separator << instanceName << "::" << variableName << "[BOOL]";
+                }
             }
-            for (auto& [variableName, p] : properties.get_strings()) {
-                bool logVar = config_.shouldLogVariable(variableName);
-                if (logVar) outFile_ << separator << instanceName << "::" << variableName << "[STR]";
+            for (const auto& variableName : properties.get_strings() | std::views::keys) {
+                if (config_.shouldLogVariable(variableName)) {
+                    outFile_ << separator << instanceName << "::" << variableName << "[STR]";
+                }
             }
         }
     }
@@ -141,7 +150,7 @@ void csv_writer::post_terminate(simulation& sim)
     }
 }
 
-void csv_config::verify(const std::vector<variable_identifier>& ids)
+void csv_config::verify(const std::vector<variable_identifier>& ids) const
 {
     if (variable_register.empty()) {
         log::debug("Logging all {} variables", ids.size());
@@ -152,7 +161,7 @@ void csv_config::verify(const std::vector<variable_identifier>& ids)
         std::stringstream missing;
         std::stringstream found;
         for (const auto& v : variable_register) {
-            if (std::find(ids.begin(), ids.end(), v) == std::end(ids)) {
+            if (std::ranges::find(ids, v) == std::end(ids)) {
                 if (missingCount++ > 0) {
                     missing << ", ";
                 }
@@ -175,7 +184,7 @@ bool csv_config::shouldLogVariable(const std::string& variableName) const
 {
     if (variable_register.empty()) return true;
 
-    bool log = std::find_if(variable_register.begin(), variable_register.end(), [variableName](const variable_identifier& v) {
+    const bool log = std::ranges::find_if(variable_register, [variableName](const variable_identifier& v) {
         return v.variableName == variableName;
     }) != std::end(variable_register);
     return log;
@@ -185,7 +194,7 @@ bool csv_config::shouldLogInstance(const std::string& instanceName) const
 {
     if (variable_register.empty()) return true;
 
-    bool log = std::find_if(variable_register.begin(), variable_register.end(), [instanceName, this](const variable_identifier& v) {
+    const bool log = std::ranges::find_if(variable_register, [instanceName, this](const variable_identifier& v) {
         return v.instanceName == instanceName;
     }) != std::end(variable_register);
     return log;
@@ -193,18 +202,17 @@ bool csv_config::shouldLogInstance(const std::string& instanceName) const
 
 void csv_config::load(const std::filesystem::path& configPath)
 {
-    if (!std::filesystem::exists(configPath)) {
-        throw std::runtime_error("No such file: '" + std::filesystem::absolute(configPath).string() + "'");
+    if (!exists(configPath)) {
+        throw std::runtime_error("No such file: '" + absolute(configPath).string() + "'");
     }
-    const auto ext = configPath.extension().string();
-    if (ext != ".xml") {
+    if (const auto ext = configPath.extension().string(); ext != ".xml") {
         throw std::runtime_error("Wrong config extension. Was " + ext + ", expected " + ".xml");
     }
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(configPath.c_str());
     if (!result) {
         throw std::runtime_error(
-            "Unable to parse '" + std::filesystem::absolute(configPath).string() + "': " +
+            "Unable to parse '" + absolute(configPath).string() + "': " +
             result.description());
     }
 

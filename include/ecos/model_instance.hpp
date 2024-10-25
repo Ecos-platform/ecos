@@ -50,7 +50,7 @@ public:
 
     bool apply_parameter_set(const std::string& name)
     {
-        if (parameterSets_.count(name)) {
+        if (parameterSets_.contains(name)) {
 
             auto& parameters = parameterSets_.at(name);
             for (const auto& [variableName, value] : parameters) {

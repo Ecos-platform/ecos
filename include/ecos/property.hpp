@@ -178,22 +178,22 @@ public:
         return nullptr;
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<property_t<double>>>& get_reals()
+    [[nodiscard]] const std::unordered_map<std::string, std::unique_ptr<property_t<double>>>& get_reals() const
     {
         return realProperties_;
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<property_t<int>>>& get_integers()
+    [[nodiscard]] const std::unordered_map<std::string, std::unique_ptr<property_t<int>>>& get_integers() const
     {
         return intProperties_;
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<property_t<bool>>>& get_booleans()
+    [[nodiscard]] const std::unordered_map<std::string, std::unique_ptr<property_t<bool>>>& get_booleans() const
     {
         return boolProperties_;
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<property_t<std::string>>>& get_strings()
+    [[nodiscard]] const std::unordered_map<std::string, std::unique_ptr<property_t<std::string>>>& get_strings() const
     {
         return stringProperties_;
     }

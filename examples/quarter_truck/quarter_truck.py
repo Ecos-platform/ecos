@@ -14,16 +14,16 @@ class MyListener(SimulationListener):
 
 
 def main():
-    print(f"Ecoslib version: {EcosLib().version()}")
+    print(f"Ecoslib version: {EcosLib.version()}")
 
-    EcosLib().set_log_level("debug")
+    EcosLib.set_log_level("debug")
 
-    sspDir = f"{__file__}/../../../data/ssp/quarter_truck/"
-    resultFile = f"{__file__}/../results/python/quarter_truck.csv"
+    ssp_dir = f"{__file__}/../../../data/ssp/quarter_truck/"
+    result_file = f"{__file__}/../results/python/quarter_truck.csv"
 
-    sim = EcosSimulation(ssp_path=f"{sspDir}", step_size=1.0 / 100)
+    sim = EcosSimulation(ssp_path=f"{ssp_dir}", step_size=1.0 / 100)
 
-    sim.add_csv_writer(resultFile, f"{sspDir}/LogConfig.xml")
+    sim.add_csv_writer(result_file, f"{ssp_dir}/LogConfig.xml")
     sim.add_listener("custom_listener", MyListener(sim))
 
     sim.init(parameter_set="initialValues")
@@ -31,13 +31,13 @@ def main():
     sim.step_until(time_point=10)
 
     sim.terminate()
-    sim.destroy()
+    del sim
 
     config = TimeSeriesConfig(
         title="Quarter-truck",
         y_label="Height[m]",
         identifiers=["chassis::zChassis", "wheel::zWheel", "ground::zGround"])
-    plotter = Plotter(resultFile, config)
+    plotter = Plotter(result_file, config)
     plotter.show()
 
 

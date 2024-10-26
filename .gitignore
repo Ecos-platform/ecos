@@ -12,6 +12,8 @@ ecospy/dist
 
 /**/results/**/*.csv
 
+/**/examples/**/logs
+
 /**/quarter_truck/quarter_truck_sspgen.ssp
 
 LicenseError.txt

@@ -13,7 +13,7 @@ TEST_CASE("Test C lib")
 
     std::string sspPath = std::string(DATA_FOLDER) + "/ssp/quarter_truck";
 
-    auto sim = ecos_simulation_create(sspPath.c_str(), 1.0 / 100);
+    auto sim = ecos_simulation_create_from_ssp(sspPath.c_str(), 1.0 / 100);
     REQUIRE(sim);
 
     std::string csvFile("results/quarter_truck.csv");

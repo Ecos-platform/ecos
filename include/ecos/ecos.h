@@ -8,14 +8,41 @@
 extern "C" {
 #endif
 
-const char* ecos_last_error_msg();
-
 typedef struct ecos_simulation ecos_simulation_t;
 typedef struct ecos_simulation_listener ecos_simulation_listener_t;
+typedef struct ecos_simulation_structure ecos_simulation_structure_t;
+typedef struct ecos_parameter_set ecos_parameter_set_t;
 
-void set_log_level(const char* level);
+const char* ecos_last_error_msg();
 
-ecos_simulation_t* ecos_simulation_create(const char* sspPath, double stepSize);
+void ecos_set_log_level(const char* level);
+
+// simulation_structure
+ecos_simulation_structure_t* ecos_simulation_structure_create();
+void ecos_simulation_structure_destroy(ecos_simulation_structure_t* ss);
+
+bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri);
+bool ecos_simulation_structure_add_parameter_set(ecos_simulation_structure_t* ss, const char* name, const ecos_parameter_set_t* pps);
+
+void ecos_simulation_structure_make_int_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);
+void ecos_simulation_structure_make_real_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);
+void ecos_simulation_structure_make_string_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);
+void ecos_simulation_structure_make_bool_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);
+// -------------
+
+// parameter_set
+ecos_parameter_set_t* ecos_parameter_set_create();
+void ecos_parameter_set_destroy(ecos_parameter_set_t* parameter_set);
+
+void ecos_parameter_set_add_int(ecos_parameter_set_t* pps, const char* name, int value);
+void ecos_parameter_set_add_real(ecos_parameter_set_t* pps, const char* name, double value);
+void ecos_parameter_set_add_string(ecos_parameter_set_t* pps, const char* name, const char* value);
+void ecos_parameter_set_add_bool(ecos_parameter_set_t* pps, const char* name, bool value);
+// -------------
+
+// simulation
+ecos_simulation_t* ecos_simulation_create_from_ssp(const char* sspPath, double stepSize);
+ecos_simulation_t* ecos_simulation_create_from_structure(ecos_simulation_structure_t* structure, double stepSize);
 
 bool ecos_simulation_init(ecos_simulation_t* sim, double startTime = 0, const char* parameterSet = nullptr);
 
@@ -33,11 +60,10 @@ bool ecos_simulation_set_bool(ecos_simulation_t* sim, const char* identifier, bo
 bool ecos_simulation_set_string(ecos_simulation_t* sim, const char* identifier, const char* value);
 
 void ecos_simulation_terminate(ecos_simulation_t* sim);
+void ecos_simulation_destroy(ecos_simulation_t* sim);
+// -------------
 
-void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener);
-void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name);
-ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* logConfig = nullptr, const char* plotConfig = nullptr);
-
+// simulation_listener
 typedef struct ecos_simulation_info
 {
     double time;
@@ -52,9 +78,12 @@ typedef struct ecos_simulation_listener_config
 
 ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_listener_config config);
 
-void ecos_simulation_destroy(ecos_simulation_t* sim);
+void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener);
+void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name);
+ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* logConfig = nullptr, const char* plotConfig = nullptr);
+// -------------
 
-
+// version
 typedef struct ecos_version
 {
     int major;
@@ -63,6 +92,7 @@ typedef struct ecos_version
 } ecos_version;
 
 ecos_version ecos_library_version();
+// -------------
 
 
 #ifdef __cplusplus

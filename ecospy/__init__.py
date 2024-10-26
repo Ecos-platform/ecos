@@ -8,7 +8,7 @@ class EcosSimulation:
 
         self.listener_configs = {}
 
-        self.sim = EcosLib().create_simulation(ssp_path.encode(), step_size)
+        self.sim = EcosLib().create_simulation_from_ssp(ssp_path.encode(), step_size)
         if self.sim is None:
             raise Exception(EcosLib().get_last_error())
 

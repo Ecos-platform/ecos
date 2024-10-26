@@ -19,6 +19,8 @@
 namespace ecos
 {
 
+using parameter_set = std::map<variable_identifier, scalar_value>;
+
 template<class T>
 struct unbound_connection_t
 {
@@ -59,7 +61,7 @@ public:
         connections_.emplace_back(c);
     }
 
-    void add_parameter_set(const std::string& name, const std::map<variable_identifier, scalar_value>& map)
+    void add_parameter_set(const std::string& name, const parameter_set& map)
     {
         parameterSets[name] = map;
     }
@@ -69,7 +71,7 @@ public:
 private:
     std::unique_ptr<model_resolver> resolver_;
     std::vector<unbound_connection> connections_;
-    std::unordered_map<std::string, std::map<variable_identifier, scalar_value>> parameterSets;
+    std::unordered_map<std::string, parameter_set> parameterSets;
     std::unordered_map<std::string, std::pair<std::shared_ptr<model>, std::optional<double>>> models_;
 };
 

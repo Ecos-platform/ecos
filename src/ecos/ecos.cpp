@@ -24,9 +24,19 @@ struct ecos_simulation
     std::unique_ptr<ecos::simulation> cpp_sim;
 };
 
+struct ecos_simulation_structure
+{
+    ecos::simulation_structure cpp_ss;
+};
+
 struct ecos_simulation_listener
 {
     std::unique_ptr<ecos::simulation_listener> cpp_listener;
+};
+
+struct ecos_parameter_set
+{
+    ecos::parameter_set cpp_parameter_set;
 };
 
 void handle_current_exception()
@@ -38,7 +48,7 @@ void handle_current_exception()
     }
 }
 
-void set_log_level(const char* level)
+void ecos_set_log_level(const char* level)
 {
     if (std::string("trace") == level) {
         set_logging_level(ecos::log::level::trace);
@@ -55,8 +65,136 @@ void set_log_level(const char* level)
     }
 }
 
+ecos_simulation_structure_t* ecos_simulation_structure_create()
+{
+    try {
+        auto ss = std::make_unique<ecos_simulation_structure_t>();
+        return ss.release();
+    } catch (...) {
+        handle_current_exception();
+        return nullptr;
+    }
+}
 
-ecos_simulation_t* ecos_simulation_create(const char* sspPath, double stepSize)
+void ecos_simulation_structure_destroy(ecos_simulation_structure_t* ss)
+{
+    delete ss;
+    ss = nullptr;
+}
+
+
+ecos_parameter_set_t* ecos_parameter_set_create()
+{
+    try {
+        auto pps = std::make_unique<ecos_parameter_set_t>();
+        return pps.release();
+    } catch (...) {
+        handle_current_exception();
+        return nullptr;
+    }
+}
+
+void ecos_parameter_set_destroy(ecos_parameter_set_t* parameter_set)
+{
+    delete parameter_set;
+    parameter_set = nullptr;
+}
+
+void ecos_parameter_set_add_int(ecos_parameter_set_t* pps, const char* name, int value)
+{
+    try {
+        pps->cpp_parameter_set[name] = value;
+    } catch (...) {
+        handle_current_exception();
+    }
+}
+
+void ecos_parameter_set_add_real(ecos_parameter_set_t* pps, const char* name, double value)
+{
+    try {
+        pps->cpp_parameter_set[name] = value;
+    } catch (...) {
+        handle_current_exception();
+    }
+}
+
+void ecos_parameter_set_add_string(ecos_parameter_set_t* pps, const char* name, const char* value)
+{
+    try {
+        pps->cpp_parameter_set[name] = value;
+    } catch (...) {
+        handle_current_exception();
+    }
+}
+
+void ecos_parameter_set_add_bool(ecos_parameter_set_t* pps, const char* name, bool value)
+{
+    try {
+        pps->cpp_parameter_set[name] = value;
+    } catch (...) {
+        handle_current_exception();
+    }
+}
+
+bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri)
+{
+    try {
+        ss->cpp_ss.add_model(instanceName, std::string(uri));
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_simulation_structure_add_parameter_set(ecos_simulation_structure_t* ss, const char* name, const ecos_parameter_set_t* pps)
+{
+    try {
+        ss->cpp_ss.add_parameter_set(name, pps->cpp_parameter_set);
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+void ecos_simulation_structure_make_int_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink)
+{
+    try {
+        ss->cpp_ss.make_connection<int>(source, sink);
+    } catch (...) {
+        handle_current_exception();
+    }
+}
+
+void ecos_simulation_structure_make_real_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink)
+{
+    try {
+        ss->cpp_ss.make_connection<double>(source, sink);
+    } catch (...) {
+        handle_current_exception();
+    }
+}
+
+void ecos_simulation_structure_make_string_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink)
+{
+    try {
+        ss->cpp_ss.make_connection<std::string>(source, sink);
+    } catch (...) {
+        handle_current_exception();
+    }
+}
+
+void ecos_simulation_structure_make_bool_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink)
+{
+    try {
+        ss->cpp_ss.make_connection<bool>(source, sink);
+    } catch (...) {
+        handle_current_exception();
+    }
+}
+
+ecos_simulation_t* ecos_simulation_create_from_ssp(const char* sspPath, double stepSize)
 {
     try {
         const auto ss = ecos::load_ssp(sspPath);
@@ -64,6 +202,21 @@ ecos_simulation_t* ecos_simulation_create(const char* sspPath, double stepSize)
         auto algorithm = std::make_unique<ecos::fixed_step_algorithm>(stepSize);
         auto sim = std::make_unique<ecos_simulation_t>();
         sim->cpp_sim = ss->load(std::move(algorithm));
+        return sim.release();
+    } catch (...) {
+        handle_current_exception();
+        return nullptr;
+    }
+}
+
+ecos_simulation_t* ecos_simulation_create_from_structure(ecos_simulation_structure_t* ss, double stepSize)
+{
+    try {
+
+        auto sim = std::make_unique<ecos_simulation_t>();
+        auto algorithm = std::make_unique<ecos::fixed_step_algorithm>(stepSize);
+        sim->cpp_sim = ss->cpp_ss.load(std::move(algorithm));
+
         return sim.release();
     } catch (...) {
         handle_current_exception();
@@ -140,7 +293,7 @@ bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, 
         if (prop.size() >= value_size) {
             // If the string is too large, copy only up to the available size - 1
             std::strncpy(value, prop.c_str(), value_size - 1);
-            value[value_size - 1] = '\0';  // Null-terminate the string
+            value[value_size - 1] = '\0'; // Null-terminate the string
         } else {
             // Safe to copy the entire string
             std::strcpy(value, prop.c_str());

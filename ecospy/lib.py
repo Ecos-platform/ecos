@@ -42,15 +42,15 @@ class _EcosLib:
 
         self._handle = CDLL(f"libecosc{suffix()}")
 
-        self._set_log_level = self._handle.set_log_level
+        self._set_log_level = self._handle.ecos_set_log_level
         self._set_log_level.argtypes = [c_char_p]
 
         self._get_last_error_msg = self._handle.ecos_last_error_msg
         self._get_last_error_msg.restype = c_char_p
 
-        self.create_simulation = self._handle.ecos_simulation_create
-        self.create_simulation.argtypes = [c_char_p, c_double]
-        self.create_simulation.restype = c_void_p
+        self.create_simulation_from_ssp = self._handle.ecos_simulation_create_from_ssp
+        self.create_simulation_from_ssp.argtypes = [c_char_p, c_double]
+        self.create_simulation_from_ssp.restype = c_void_p
 
         self.init_simulation = self._handle.ecos_simulation_init
         self.init_simulation.argtypes = [c_void_p, c_double, c_char_p]

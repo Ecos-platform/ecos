@@ -13,6 +13,8 @@ add_example_executable(spring_mass_damper_proxy spring_mass_damper/spring_mass_d
 
 if (WIN32)
     add_example_executable(quarter_truck quarter_truck/quarter_truck.cpp)
+    add_example_executable(quarter_truck_c quarter_truck/quarter_truck_c.cpp)
+    target_link_libraries(quarter_truck_c PRIVATE libecosc)
     add_example_executable(quarter_truck_ssp quarter_truck/quarter_truck_ssp.cpp)
 
 #    add_example_executable(gunnerus_trajectory gunnerus/trajectory/gunnerus_trajectory.cpp)

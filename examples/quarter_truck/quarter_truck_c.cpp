@@ -23,7 +23,7 @@ int main()
     ecos_parameter_set_add_real(pps, "chassis::C.mChassis", 400.);
     ecos_simulation_structure_add_parameter_set(ss, "initialValues", pps);
 
-    auto sim = ecos_simulation_create_from_structure(ss, 1.0/100);
+    auto sim = ecos_simulation_create_from_structure(ss, 1.0 / 100);
 
     ecos_simulation_structure_destroy(ss);
     ecos_parameter_set_destroy(pps);
@@ -39,4 +39,5 @@ int main()
     ecos_simulation_step_until(sim, 10);
     ecos_simulation_terminate(sim);
 
+    ecos_simulation_destroy(sim);
 }

@@ -159,7 +159,7 @@ void run_simulation(const CLI::App& vm, simulation& sim)
     log::info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}",
         startTime, stopTime, stepSize, runner.target_real_time_factor());
     auto f = runner.run_while([&] {
-        return sim.time() <= stopTime;
+        return sim.time() + stepSize <= stopTime;
     });
 
     bool inputQuit = false;

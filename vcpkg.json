@@ -6,7 +6,6 @@
     "spdlog",
     "cli11",
     "msgpack",
-    "pugixml",
-    "fmilib"
+    "pugixml"
   ]
 }

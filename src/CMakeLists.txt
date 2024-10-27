@@ -137,7 +137,7 @@ add_library(fmilibcpp OBJECT
         "fmilibcpp/fmi2/fmi2_model_description.cpp"
 )
 set_target_properties(fmilibcpp PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(fmilibcpp PRIVATE unofficial::fmilib::fmilib)
+target_link_libraries(fmilibcpp PRIVATE fmi4c)
 target_include_directories(fmilibcpp
         PRIVATE
         "${PROJECT_SOURCE_DIR}/include"
@@ -165,7 +165,7 @@ target_link_libraries(libecos
         libzip::zip
         spdlog::spdlog
         pugixml::pugixml
-        unofficial::fmilib::fmilib
+#        fmi4c
         "$<TARGET_OBJECTS:util>"
         "$<TARGET_OBJECTS:logger>"
         "$<TARGET_OBJECTS:fmilibcpp>"

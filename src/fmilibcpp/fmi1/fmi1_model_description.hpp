@@ -4,12 +4,12 @@
 
 #include "fmilibcpp/model_description.hpp"
 
-#include <fmilib.h>
+#include <fmi4c.h>
 
 namespace fmilibcpp
 {
 
-model_description create_model_description(fmi1_import_t* handle);
+model_description create_model_description(fmiHandle* handle);
 
 } // namespace fmilibcpp
 

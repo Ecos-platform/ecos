@@ -1,6 +1,8 @@
 
 #include "fmi2_slave.hpp"
 
+#include "../../../cmake-build-debug-wsl/_deps/fmi4c-src/src/fmi4c_private.h"
+
 #include <exception>
 #include <fmilib.h>
 #include <memory>
@@ -8,15 +10,15 @@
 namespace
 {
 
-void fmilogger(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
+void fmilogger(fmi2Component, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
 {
     va_list argp;
     va_start(argp, message);
-    fmi2_log_forwarding_v(c, instanceName, status, category, message, argp);
+    // fmi2_log_forwarding_v(c, instanceName, status, category, message, argp);
     va_end(argp);
 }
 
-void noopfmilogger(fmi2_component_t, fmi2_string_t, fmi2_status_t, fmi2_string_t, fmi2_string_t, ...)
+void noopfmilogger(fmi2Component, fmi2String, fmi2Status, fmi2String, fmi2String, ...)
 {
 }
 
@@ -38,7 +40,7 @@ fmi2_slave::fmi2_slave(
     , tmpDir_(std::move(tmpDir))
 {
 
-    fmi2_callback_functions_t callbackFunctions;
+    fmi2CallbackFunctions callbackFunctions;
     callbackFunctions.allocateMemory = calloc;
     callbackFunctions.freeMemory = free;
     if (fmiLogging) {
@@ -49,11 +51,11 @@ fmi2_slave::fmi2_slave(
     callbackFunctions.componentEnvironment = nullptr;
     callbackFunctions.stepFinished = nullptr;
 
-    if (fmi2_import_create_dllfmu(handle_, fmi2_fmu_kind_cs, &callbackFunctions) != jm_status_success) {
-        throw std::runtime_error(std::string("failed to load fmu dll! Error: ") + fmi2_import_get_last_error(handle_));
+    if (!fmi2_instantiate(handle_.get(), fmi2CoSimulation, &callbackFunctions)) {
+        throw std::runtime_error(std::string("failed to load fmu dll! Error: ") + fmi4cErrorMessage(handle_));
     }
 
-    const auto rc = fmi2_import_instantiate(
+    const auto rc = fmi2_instantiate(
         handle_,
         this->instanceName.c_str(),
         fmi2_cosimulation,

@@ -3,7 +3,7 @@
 #define ECOS_FMI_FMICONTEXT_HPP
 
 #include <cstring>
-#include <fmilib.h>
+#include <fmi4c.h>
 #include <memory>
 
 namespace
@@ -57,7 +57,7 @@ private:
     std::unique_ptr<jm_callbacks> callbacks_;
 
 public:
-    fmi_import_context_t* ctx_;
+    fmicontext* ctx_;
 
     explicit fmicontext(bool logging = true)
         : callbacks_(make_callbacks(logging))

@@ -4,7 +4,7 @@
 
 #include "ecos/logger/logger.hpp"
 
-#include <fmilib.h>
+#include <fmi4c.h>
 
 std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& fmuPath, bool fmiLogging)
 {
@@ -14,16 +14,18 @@ std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& 
         return nullptr;
     }
 
-    auto ctx = std::make_unique<fmicontext>(fmiLogging);
+    // auto ctx = std::make_unique<fmicontext>(fmiLogging);
 
     const std::string fmuName = std::filesystem::path(fmuPath).stem().string();
-    auto tmp = std::make_shared<ecos::temp_dir>(fmuName);
+    // auto tmp = std::make_shared<ecos::temp_dir>(fmuName);
 
-    fmi_version_enu_t version = fmi_import_get_fmi_version(ctx->ctx_, fmuPath.string().c_str(), tmp->path().string().c_str());
-    if (version == fmi_version_1_enu) {
-        return std::make_unique<fmi1_fmu>(std::move(ctx), tmp, fmiLogging);
-    } else if (version == fmi_version_2_0_enu) {
-        return std::make_unique<fmi2_fmu>(std::move(ctx), tmp, fmiLogging);
+    auto handle = fmi4c_loadFmu(fmuPath.string().c_str(), "dummy");
+
+    auto version = fmi1_getVersion(handle);
+    if (version[0] == '1') {
+        return std::make_unique<fmi1_fmu>(handle, fmiLogging);
+    } else if (version[0] == '2') {
+        return std::make_unique<fmi2_fmu>(handle, fmiLogging);
     } else {
         // TODO
     }

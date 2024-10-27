@@ -7,7 +7,7 @@
 #include "fmilibcpp/fmicontext.hpp"
 #include "fmilibcpp/slave.hpp"
 
-#include <fmilib.h>
+#include <fmi4c.h>
 #include <memory>
 
 namespace fmilibcpp
@@ -48,7 +48,7 @@ public:
 
 private:
     bool freed_{false};
-    fmi1_import_t* handle_;
+    std::shared_ptr<fmiHandle> handle_;
     const model_description md_;
     std::shared_ptr<fmicontext> ctx_;
     std::shared_ptr<ecos::temp_dir> tmpDir_;

@@ -7,7 +7,7 @@
 #include "fmilibcpp/fmicontext.hpp"
 #include "fmilibcpp/fmu.hpp"
 
-#include <fmilib.h>
+#include <fmi4c.h>
 
 namespace fmilibcpp
 {
@@ -25,7 +25,7 @@ public:
     ~fmi1_fmu() override;
 
 private:
-    fmi1_import_t* handle_;
+    fmiHandle* handle_;
     std::shared_ptr<fmicontext> ctx_;
 
     const bool fmiLogging_;

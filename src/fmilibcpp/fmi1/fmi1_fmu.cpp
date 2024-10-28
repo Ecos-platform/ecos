@@ -10,7 +10,7 @@ fmi1_fmu::fmi1_fmu(std::unique_ptr<fmicontext> ctx, bool fmiLogging)
     : handle_(ctx->ctx_)
     , ctx_(std::move(ctx))
     , fmiLogging_(fmiLogging)
-    , md_(create_model_description(handle_))
+    , md_(create_fmi1_model_description(handle_))
 {
     const auto kind = fmi1_getType(handle_);
     if (kind != fmi1CoSimulationTool && kind != fmi1CoSimulationStandAlone) {

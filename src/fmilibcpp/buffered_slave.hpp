@@ -7,6 +7,7 @@
 #include <set>
 #include <unordered_map>
 #include <utility>
+#include <memory>
 
 namespace fmilibcpp
 {

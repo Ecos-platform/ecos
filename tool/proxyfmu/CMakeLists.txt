@@ -20,7 +20,7 @@ target_link_libraries(proxyfmu
         spdlog::spdlog
         msgpack-cxx
         simple_socket
-#        unofficial::fmilib::fmilib
+        fmi4c
         "$<TARGET_OBJECTS:util>"
         "$<TARGET_OBJECTS:logger>"
         "$<TARGET_OBJECTS:fmilibcpp>"

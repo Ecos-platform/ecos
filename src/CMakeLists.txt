@@ -165,7 +165,7 @@ target_link_libraries(libecos
         libzip::zip
         spdlog::spdlog
         pugixml::pugixml
-#        fmi4c
+        fmi4c
         "$<TARGET_OBJECTS:util>"
         "$<TARGET_OBJECTS:logger>"
         "$<TARGET_OBJECTS:fmilibcpp>"

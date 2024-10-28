@@ -61,8 +61,8 @@ FetchContent_MakeAvailable(SimpleSocket)
 set(FMI4C_BUILD_SHARED OFF)
 FetchContent_Declare(
         fmi4c
-        GIT_REPOSITORY https://github.com/robbr48/fmi4c.git
-        GIT_TAG cd4151bdbe3c24a1eb2b3710c32857dac741b491
+        GIT_REPOSITORY https://github.com/Ecos-platform/fmi4c.git
+        GIT_TAG 60f7cd4f88c146aaaa857645a20ab7e1149f390c
 )
 FetchContent_MakeAvailable(fmi4c)
 

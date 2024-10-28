@@ -91,7 +91,7 @@ std::optional<fmilibcpp::scalar_variable> to_scalar_variable(fmi1VariableHandle*
 namespace fmilibcpp
 {
 
-model_description create_model_description(fmiHandle* handle)
+model_description create_fmi1_model_description(fmiHandle* handle)
 {
     model_description md;
     md.fmiVersion = "1.0";

@@ -13,7 +13,7 @@ fmi2_fmu::fmi2_fmu(std::unique_ptr<fmicontext> ctx, bool fmiLogging)
     : handle_(ctx->ctx_)
     , ctx_(std::move(ctx))
     , fmiLogging_(fmiLogging)
-    , md_(create_model_description(handle_))
+    , md_(create_fmi2_model_description(handle_))
 {
     if (!fmi2_getSupportsCoSimulation(handle_)) {
         throw std::runtime_error("FMU does not support Co-simulation!");

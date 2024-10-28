@@ -14,18 +14,14 @@ std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& 
         return nullptr;
     }
 
-    // auto ctx = std::make_unique<fmicontext>(fmiLogging);
-
     const std::string fmuName = std::filesystem::path(fmuPath).stem().string();
-    // auto tmp = std::make_shared<ecos::temp_dir>(fmuName);
+    auto handle = std::make_unique<fmicontext>(fmi4c_loadFmu(fmuPath.string().c_str(), "dummy"), fmiLogging);
 
-    auto handle = fmi4c_loadFmu(fmuPath.string().c_str(), "dummy");
-
-    auto version = fmi1_getVersion(handle);
+    const auto version = fmi1_getVersion(handle->ctx_);
     if (version[0] == '1') {
-        return std::make_unique<fmi1_fmu>(handle, fmiLogging);
+        return std::make_unique<fmi1_fmu>(std::move(handle), fmiLogging);
     } else if (version[0] == '2') {
-        return std::make_unique<fmi2_fmu>(handle, fmiLogging);
+        return std::make_unique<fmi2_fmu>(std::move(handle), fmiLogging);
     } else {
         // TODO
     }

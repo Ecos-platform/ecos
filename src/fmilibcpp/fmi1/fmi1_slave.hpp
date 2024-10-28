@@ -21,7 +21,6 @@ public:
         const std::shared_ptr<fmicontext>& ctx,
         const std::string& instanceName,
         model_description md,
-        std::shared_ptr<ecos::temp_dir> tmpDir,
         bool fmiLogging);
 
     [[nodiscard]] const model_description& get_model_description() const override;
@@ -48,10 +47,10 @@ public:
 
 private:
     bool freed_{false};
-    std::shared_ptr<fmiHandle> handle_;
-    const model_description md_;
+    fmiHandle* handle_;
     std::shared_ptr<fmicontext> ctx_;
-    std::shared_ptr<ecos::temp_dir> tmpDir_;
+
+    model_description md_;
 
     double start_time_{};
     double stop_time_{};

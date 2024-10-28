@@ -4,9 +4,9 @@
 
 #include "scalar_variable.hpp"
 
-#include <algorithm>
 #include <optional>
 #include <vector>
+#include <algorithm>
 
 namespace fmilibcpp
 {

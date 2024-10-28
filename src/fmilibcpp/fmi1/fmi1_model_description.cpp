@@ -6,7 +6,8 @@
 namespace
 {
 
-std::optional<std::string> fmi1CausalityToString(fmi1Causality causality) {
+std::optional<std::string> fmi1CausalityToString(fmi1Causality causality)
+{
     switch (causality) {
         case fmi1CausalityInput:
             return "Input";
@@ -21,7 +22,8 @@ std::optional<std::string> fmi1CausalityToString(fmi1Causality causality) {
     }
 }
 
-std::optional<std::string> fmi1VariabilityToString(fmi1Variability variability) {
+std::optional<std::string> fmi1VariabilityToString(fmi1Variability variability)
+{
     switch (variability) {
         case fmi1VariabilityConstant:
             return "Constant";
@@ -93,28 +95,26 @@ model_description create_model_description(fmiHandle* handle)
 {
     model_description md;
     md.fmiVersion = "1.0";
-    md.guid = handle->fmi1.guid;
-    md.author = fmi1_import_get_author(handle);
-    md.modelName = fmi1_import_get_model_name(handle);
-    md.modelIdentifier = fmi1_import_get_model_identifier(handle);
-    md.description = fmi1_import_get_description(handle);
-    md.generationTool = fmi1_import_get_generation_tool(handle);
-    md.generationDateAndTime = fmi1_import_get_generation_date_and_time(handle);
+    // md.guid = handle->fmi1.guid;
+    // md.author = fmi1_import_get_author(handle);
+    // md.modelName = fmi1_import_get_model_name(handle);
+    // md.modelIdentifier = fmi1_import_get_model_identifier(handle);
+    // md.description = fmi1_import_get_description(handle);
+    // md.generationTool = fmi1_import_get_generation_tool(handle);
+    // md.generationDateAndTime = fmi1_import_get_generation_date_and_time(handle);
+    //
+    md.defaultExperiment.startTime = fmi1_getDefaultStartTime(handle);
+    md.defaultExperiment.stopTime = fmi1_getDefaultStopTime(handle);
+    md.defaultExperiment.tolerance = fmi1_getDefaultTolerance(handle);
 
-    md.defaultExperiment.startTime = fmi1_import_get_default_experiment_start(handle);
-    md.defaultExperiment.stopTime = fmi1_import_get_default_experiment_stop(handle);
-    md.defaultExperiment.tolerance = fmi1_import_get_default_experiment_tolerance(handle);
 
-    const auto varList = fmi1_import_get_variable_list(handle);
-    const auto varCount = fmi1_import_get_variable_list_size(varList);
+    const auto varCount = fmi1_getNumberOfVariables(handle);
     for (auto i = 0; i < varCount; i++) {
-        const auto var = fmi1_import_get_variable(varList, i);
+        const auto var = fmi1_getVariableByIndex(handle, i);
         if (const auto scalar = to_scalar_variable(var)) {
             md.modelVariables.push_back(scalar.value());
         }
     }
-
-    fmi1_import_free_variable_list(varList);
 
     return md;
 }

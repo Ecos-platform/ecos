@@ -1,11 +1,9 @@
 
 #include "fmi1_slave.hpp"
 
-#include "../../../cmake-build-debug-wsl/_deps/fmi4c-src/src/fmi4c_private.h"
-#include "fmi4c.h"
-
 #include <fmi4c.h>
 #include <utility>
+#include <cstdarg>
 
 namespace
 {
@@ -34,23 +32,21 @@ fmi1_slave::fmi1_slave(
     const std::shared_ptr<fmicontext>& ctx,
     const std::string& instanceName,
     model_description md,
-    std::shared_ptr<ecos::temp_dir> tmpDir,
     bool fmiLogging)
     : slave(instanceName)
-    , handle_(fmi1_import_parse_xml(ctx->ctx_, tmpDir->path().string().c_str()))
-    , md_(std::move(md))
+    , handle_(ctx->ctx_)
     , ctx_(ctx)
-    , tmpDir_(std::move(tmpDir))
+    , md_(std::move(md))
 {
 
     fmi1CallbackLogger_t logger = fmiLogging ? fmilogger : noopfmilogger;
-    if (!fmi1_instantiateModel(handle_.get(), logger, std::calloc, std::free, fmiLogging ? fmi1True : fmi1False)) {
-        fmi1_freeModelInstance(handle_.get());
-        throw std::runtime_error(std::string("failed to load fmu dll! Error: ") + fmi4cErrorMessage(handle_));
+    if (!fmi1_instantiateModel(handle_, logger, std::calloc, std::free, fmiLogging ? fmi1True : fmi1False)) {
+        fmi1_freeModelInstance(handle_);
+        throw std::runtime_error(std::string("failed to load fmu dll! Error: "));
     }
 
     const auto rc = fmi1_instantiateSlave(
-        handle_.get(),
+        handle_,
         "application/x-fmu-sharedlibrary",
         1000,
         fmi1False,
@@ -63,7 +59,7 @@ fmi1_slave::fmi1_slave(
 
     if (!rc) {
 
-        fmi1_freeSlaveInstance(handle_.get());
+        fmi1_freeSlaveInstance(handle_);
         throw std::runtime_error("failed to instantiate slave!");
     }
 }
@@ -88,44 +84,44 @@ bool fmi1_slave::enter_initialization_mode()
 bool fmi1_slave::exit_initialization_mode()
 {
     const fmi1Boolean stop_defined = (stop_time_ > 0) ? fmi1True : fmi1False;
-    const auto status = fmi1_initializeSlave(handle_.get(), start_time_, stop_defined, stop_time_);
+    const auto status = fmi1_initializeSlave(handle_, start_time_, stop_defined, stop_time_);
     return status == fmi1OK;
 }
 
 bool fmi1_slave::step(double current_time, double step_size)
 {
-    const auto status = fmi1_doStep(handle_.get(), current_time, step_size, fmi1True);
+    const auto status = fmi1_doStep(handle_, current_time, step_size, fmi1True);
     return status == fmi1OK;
 }
 
 bool fmi1_slave::terminate()
 {
-    const auto status = fmi1_terminateSlave(handle_.get());
+    const auto status = fmi1_terminateSlave(handle_);
     return status == fmi1OK;
 }
 
 bool fmi1_slave::reset()
 {
-    const auto status = fmi1_resetSlave(handle_.get());
+    const auto status = fmi1_resetSlave(handle_);
     return status == fmi1OK;
 }
 
 bool fmi1_slave::get_integer(const std::vector<value_ref>& vr, std::vector<int>& values)
 {
-    const auto status = fmi1_getInteger(handle_.get(), vr.data(), vr.size(), values.data());
+    const auto status = fmi1_getInteger(handle_, vr.data(), vr.size(), values.data());
     return status == fmi1OK;
 }
 
 bool fmi1_slave::get_real(const std::vector<value_ref>& vr, std::vector<double>& values)
 {
-    const auto status = fmi1_getReal(handle_.get(), vr.data(), vr.size(), values.data());
+    const auto status = fmi1_getReal(handle_, vr.data(), vr.size(), values.data());
     return status == fmi1OK;
 }
 
 bool fmi1_slave::get_string(const std::vector<value_ref>& vr, std::vector<std::string>& values)
 {
     auto tmp = std::vector<fmi1String>(vr.size());
-    const auto status = fmi1_getString(handle_.get(), vr.data(), vr.size(), tmp.data());
+    const auto status = fmi1_getString(handle_, vr.data(), vr.size(), tmp.data());
     for (auto i = 0; i < tmp.size(); i++) {
         values[i] = tmp[i];
     }
@@ -135,7 +131,7 @@ bool fmi1_slave::get_string(const std::vector<value_ref>& vr, std::vector<std::s
 bool fmi1_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>& values)
 {
     auto tmp = std::vector<fmi1Boolean>(vr.size());
-    const auto status = fmi1_getBoolean(handle_.get(), vr.data(), vr.size(), tmp.data());
+    const auto status = fmi1_getBoolean(handle_, vr.data(), vr.size(), tmp.data());
     for (auto i = 0; i < tmp.size(); i++) {
         values[i] = tmp[i] != 0;
     }
@@ -144,13 +140,13 @@ bool fmi1_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>
 
 bool fmi1_slave::set_integer(const std::vector<value_ref>& vr, const std::vector<int>& values)
 {
-    const auto status = fmi1_setInteger(handle_.get(), vr.data(), vr.size(), values.data());
+    const auto status = fmi1_setInteger(handle_, vr.data(), vr.size(), values.data());
     return status == fmi1OK;
 }
 
 bool fmi1_slave::set_real(const std::vector<value_ref>& vr, const std::vector<double>& values)
 {
-    const auto status = fmi1_setReal(handle_.get(), vr.data(), vr.size(), values.data());
+    const auto status = fmi1_setReal(handle_, vr.data(), vr.size(), values.data());
     return status == fmi1OK;
 }
 
@@ -160,7 +156,7 @@ bool fmi1_slave::set_string(const std::vector<value_ref>& vr, const std::vector<
     for (auto i = 0; i < vr.size(); i++) {
         _values[i] = values[i].c_str();
     }
-    const auto status = fmi1_setString(handle_.get(), vr.data(), vr.size(), _values.data());
+    const auto status = fmi1_setString(handle_, vr.data(), vr.size(), _values.data());
     return status == fmi1OK;
 }
 
@@ -170,7 +166,7 @@ bool fmi1_slave::set_boolean(const std::vector<value_ref>& vr, const std::vector
     for (auto i = 0; i < vr.size(); i++) {
         _values[i] = values[i] ? fmi1True : fmi1False;
     }
-    const auto status = fmi1_setBoolean(handle_.get(), vr.data(), vr.size(), _values.data());
+    const auto status = fmi1_setBoolean(handle_, vr.data(), vr.size(), _values.data());
     return status == fmi1OK;
 }
 
@@ -178,9 +174,8 @@ void fmi1_slave::freeInstance()
 {
     if (!freed_) {
         freed_ = true;
-        fmi1_freeSlaveInstance(handle_.get());
-        fmi1_freeModelInstance(handle_.get());
-        // fmi1_import_free(handle_);
+        fmi1_freeSlaveInstance(handle_);
+        fmi1_freeModelInstance(handle_);
     }
 }
 

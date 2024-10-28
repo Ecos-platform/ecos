@@ -137,7 +137,7 @@ add_library(fmilibcpp OBJECT
         "fmilibcpp/fmi2/fmi2_model_description.cpp"
 )
 set_target_properties(fmilibcpp PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(fmilibcpp PRIVATE fmi4c)
+target_link_libraries(fmilibcpp PRIVATE fmi4c fmt::fmt)
 target_include_directories(fmilibcpp
         PRIVATE
         "${PROJECT_SOURCE_DIR}/include"

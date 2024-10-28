@@ -4,7 +4,6 @@
 
 #include "model_description.hpp"
 
-#include <memory>
 #include <vector>
 
 namespace fmilibcpp

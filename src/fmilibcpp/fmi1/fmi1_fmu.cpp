@@ -6,12 +6,11 @@
 namespace fmilibcpp
 {
 
-fmi1_fmu::fmi1_fmu(std::unique_ptr<fmicontext> ctx, std::shared_ptr<ecos::temp_dir> tmpDir, bool fmiLogging)
-    : handle_(fmi4c_loadFmu(ctx->ctx_, tmpDir->path().string().c_str()))
+fmi1_fmu::fmi1_fmu(std::unique_ptr<fmicontext> ctx, bool fmiLogging)
+    : handle_(ctx->ctx_)
     , ctx_(std::move(ctx))
     , fmiLogging_(fmiLogging)
     , md_(create_model_description(handle_))
-    , tmpDir_(std::move(tmpDir))
 {
     const auto kind = fmi1_getType(handle_);
     if (kind != fmi1CoSimulationTool && kind != fmi1CoSimulationStandAlone) {
@@ -26,7 +25,7 @@ const model_description& fmi1_fmu::get_model_description() const
 
 std::unique_ptr<slave> fmi1_fmu::new_instance(const std::string& instanceName)
 {
-    return std::make_unique<fmi1_slave>(ctx_, instanceName, md_, tmpDir_, fmiLogging_);
+    return std::make_unique<fmi1_slave>(ctx_, instanceName, md_, fmiLogging_);
 }
 
 fmi1_fmu::~fmi1_fmu()

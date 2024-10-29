@@ -94,14 +94,14 @@ namespace fmilibcpp
 model_description create_fmi1_model_description(fmiHandle* handle)
 {
     model_description md;
-    md.fmiVersion = "1.0";
-    // md.guid = handle->fmi1.guid;
-    // md.author = fmi1_import_get_author(handle);
-    // md.modelName = fmi1_import_get_model_name(handle);
-    // md.modelIdentifier = fmi1_import_get_model_identifier(handle);
-    // md.description = fmi1_import_get_description(handle);
-    // md.generationTool = fmi1_import_get_generation_tool(handle);
-    // md.generationDateAndTime = fmi1_import_get_generation_date_and_time(handle);
+    md.fmiVersion = fmi1_getVersion(handle) ? fmi1_getVersion(handle) : "";
+    md.guid = fmi1_getGuid(handle);
+    md.author = fmi1_getAuthor(handle) ? fmi1_getAuthor(handle) : "";
+    md.modelName = fmi1_getModelName(handle);
+    md.modelIdentifier = fmi1_getModelIdentifier(handle);
+    md.description = fmi1_getModelDescription(handle) ? fmi1_getModelDescription(handle) : "";
+    md.generationTool = fmi1_getGenerationTool(handle) ? fmi1_getGenerationTool(handle) : "";
+    md.generationDateAndTime = fmi1_getGenerationDateAndTime(handle) ? fmi1_getGenerationDateAndTime(handle) : "";
     //
     md.defaultExperiment.startTime = fmi1_getDefaultStartTime(handle);
     md.defaultExperiment.stopTime = fmi1_getDefaultStopTime(handle);

@@ -85,7 +85,7 @@ namespace fmilibcpp
 model_description create_fmi2_model_description(fmiHandle* handle)
 {
     model_description md;
-    md.fmiVersion = "2.0";
+    md.fmiVersion = fmi2_getVersion(handle) ? fmi2_getVersion(handle) : "2.0";
     md.guid = fmi2_getGuid(handle);
     md.author = fmi2_getAuthor(handle) ? fmi2_getAuthor(handle) : "";
     md.modelName = fmi2_getModelName(handle);

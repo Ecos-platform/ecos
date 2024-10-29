@@ -28,10 +28,7 @@ std::unique_ptr<slave> fmi1_fmu::new_instance(const std::string& instanceName)
     return std::make_unique<fmi1_slave>(ctx_, instanceName, md_, fmiLogging_);
 }
 
-fmi1_fmu::~fmi1_fmu()
-{
-    fmi4c_freeFmu(handle_);
-}
+fmi1_fmu::~fmi1_fmu() = default;
 
 
 } // namespace fmilibcpp

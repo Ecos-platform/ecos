@@ -39,19 +39,13 @@ fmi1_slave::fmi1_slave(
     , md_(std::move(md))
 {
 
-    fmi1CallbackLogger_t logger = fmiLogging ? fmilogger : noopfmilogger;
-    if (!fmi1_instantiateModel(handle_, logger, std::calloc, std::free, fmiLogging ? fmi1True : fmi1False)) {
-        fmi1_freeModelInstance(handle_);
-        throw std::runtime_error(std::string("failed to load fmu dll! Error: "));
-    }
-
     const auto rc = fmi1_instantiateSlave(
         handle_,
         "application/x-fmu-sharedlibrary",
         1000,
         fmi1False,
         fmi1False,
-        logger,
+        fmiLogging ? fmilogger : noopfmilogger,
         std::calloc,
         std::free,
         nullptr,
@@ -175,7 +169,7 @@ void fmi1_slave::freeInstance()
     if (!freed_) {
         freed_ = true;
         fmi1_freeSlaveInstance(handle_);
-        fmi1_freeModelInstance(handle_);
+        // fmi1_freeModelInstance(handle_);
     }
 }
 

@@ -15,7 +15,7 @@ std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& 
     }
 
     const std::string fmuName = std::filesystem::path(fmuPath).stem().string();
-    auto handle = std::make_unique<fmicontext>(fmi4c_loadFmu(fmuPath.string().c_str(), "dummy"), fmiLogging);
+    auto handle = std::make_unique<fmicontext>(fmi4c_loadFmu(fmuPath.string().c_str(), fmuName.c_str()), fmiLogging);
 
     const auto version = fmi4c_getFmiVersion(handle->ctx_);
     if (version == fmiVersion1) {

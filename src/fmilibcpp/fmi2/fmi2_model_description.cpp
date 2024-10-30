@@ -46,33 +46,33 @@ std::optional<fmilibcpp::scalar_variable> to_scalar_variable(fmi2VariableHandle*
     switch (type) {
         case fmi2DataTypeReal: {
             fmilibcpp::real_attributes r{};
-            if (false) {
+            if (fmi2_getVariableHasStartValue(v)) {
                 r.start = fmi2_getVariableStartReal(v);
             }
             var.typeAttributes = r;
         } break;
         case fmi2DataTypeInteger: {
             fmilibcpp::integer_attributes i{};
-            if (false) {
+            if (fmi2_getVariableHasStartValue(v)) {
                 i.start = fmi2_getVariableStartInteger(v);
             }
             var.typeAttributes = i;
         } break;
         case fmi2DataTypeBoolean: {
             fmilibcpp::boolean_attributes b{};
-            if (false) {
+            if (fmi2_getVariableHasStartValue(v)) {
                 b.start = fmi2_getVariableStartBoolean(v);
             }
             var.typeAttributes = b;
         } break;
         case fmi2DataTypeString: {
             fmilibcpp::string_attributes s{};
-            if (false) {
+            if (fmi2_getVariableHasStartValue(v)) {
                 s.start = fmi2_getVariableStartString(v);
             }
             var.typeAttributes = s;
         } break;
-        case fmi2DataTypeEnumeration: break;
+        default: break;
     }
     return var;
 }

@@ -62,7 +62,7 @@ set(FMI4C_BUILD_SHARED OFF)
 FetchContent_Declare(
         fmi4c
         GIT_REPOSITORY https://github.com/Ecos-platform/fmi4c.git
-        GIT_TAG 05c3a3a2b8f9532015e628aa305143b53cc5304e
+        GIT_TAG ceeb0f270ccf36492ac2f12bd1bbc7576ec7c158
 )
 FetchContent_MakeAvailable(fmi4c)
 

@@ -1,10 +1,10 @@
 
 #include "fmi2_slave.hpp"
 
-#include <memory>
-#include <cstdarg>
-
 #include <fmi4c.h>
+
+#include <cstdarg>
+#include <memory>
 
 namespace
 {
@@ -39,26 +39,15 @@ fmi2_slave::fmi2_slave(
     , md_(std::move(md))
 {
 
-    fmi2CallbackFunctions callbackFunctions;
-    callbackFunctions.allocateMemory = calloc;
-    callbackFunctions.freeMemory = free;
-    if (fmiLogging) {
-        callbackFunctions.logger = &fmilogger;
-    } else {
-        callbackFunctions.logger = &noopfmilogger;
-    }
-    callbackFunctions.componentEnvironment = nullptr;
-    callbackFunctions.stepFinished = nullptr;
-
     if (!fmi2_instantiate(handle_,
-        fmi2CoSimulation,
-        callbackFunctions.logger,
-        callbackFunctions.allocateMemory,
-        callbackFunctions.freeMemory,
-        nullptr, nullptr,
-        fmi2False, fmi2False)) {
+            fmi2CoSimulation,
+            fmiLogging ? &fmilogger : &noopfmilogger,
+            std::calloc, std::free,
+            nullptr, nullptr,
+            fmi2False, fmiLogging ? fmi2True : fmi2False)) {
 
-        throw std::runtime_error(std::string("failed to load fmu dll! Error: ") + fmi4c_getErrorMessages());
+        fmi2_slave::freeInstance();
+        throw std::runtime_error(std::string("Failed to instantiate fmi2 slave! Error: ") + fmi4c_getErrorMessages());
     }
 }
 
@@ -174,8 +163,6 @@ void fmi2_slave::freeInstance()
     if (!freed_) {
         freed_ = true;
         fmi2_freeInstance(handle_);
-        // fmi2_import_destroy_dllfmu(handle_);
-        // fmi2_import_free(handle_);
     }
 }
 

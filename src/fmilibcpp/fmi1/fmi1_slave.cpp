@@ -2,8 +2,9 @@
 #include "fmi1_slave.hpp"
 
 #include <fmi4c.h>
-#include <utility>
+
 #include <cstdarg>
+#include <utility>
 
 namespace
 {
@@ -18,7 +19,7 @@ void fmilogger(fmi1Component_t c, fmi1String instanceName, fmi1Status status, fm
     va_end(args);
 }
 
-void noopfmilogger(fmi1Component_t , fmi1String , fmi1Status , fmi1String , fmi1String , ...)
+void noopfmilogger(fmi1Component_t, fmi1String, fmi1Status, fmi1String, fmi1String, ...)
 {
 }
 
@@ -39,22 +40,19 @@ fmi1_slave::fmi1_slave(
     , md_(std::move(md))
 {
 
-    const auto rc = fmi1_instantiateSlave(
-        handle_,
-        "application/x-fmu-sharedlibrary",
-        1000,
-        fmi1False,
-        fmi1False,
-        fmiLogging ? fmilogger : noopfmilogger,
-        std::calloc,
-        std::free,
-        nullptr,
-        fmi1True);
+    if (!fmi1_instantiateSlave(
+            handle_,
+            "application/x-fmu-sharedlibrary",
+            1000,
+            fmi1False,
+            fmi1False,
+            fmiLogging ? fmilogger : noopfmilogger,
+            std::calloc, std::free,
+            nullptr,
+            fmiLogging ? fmi1True : fmi1False)) {
 
-    if (!rc) {
-
-        fmi1_freeSlaveInstance(handle_);
-        throw std::runtime_error("failed to instantiate slave!");
+        fmi1_slave::freeInstance();
+        throw std::runtime_error(std::string("Failed to instantiate fmi1 slave! Error: ") + fmi4c_getErrorMessages());
     }
 }
 
@@ -169,7 +167,6 @@ void fmi1_slave::freeInstance()
     if (!freed_) {
         freed_ = true;
         fmi1_freeSlaveInstance(handle_);
-        // fmi1_freeModelInstance(handle_);
     }
 }
 

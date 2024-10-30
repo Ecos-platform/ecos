@@ -13,7 +13,7 @@ class fmicontext
 public:
     fmiHandle* ctx_;
 
-    explicit fmicontext(fmiHandle* handle, bool logging = true)
+    explicit fmicontext(fmiHandle* handle)
         : ctx_(handle)
     { }
 

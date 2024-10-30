@@ -48,7 +48,7 @@ std::optional<fmilibcpp::scalar_variable> to_scalar_variable(fmi1VariableHandle*
     fmilibcpp::scalar_variable var;
     var.vr = fmi1_getVariableValueReference(v);
     var.name = fmi1_getVariableName(v);
-    // var.description = fmi1_import_get_variable_description(v);
+    var.description = fmi1_getVariableDescription(v) ? fmi1_getVariableDescription(v) : "";
     var.causality = fmi1CausalityToString(fmi1_getVariableCausality(v));
     var.variability = fmi1VariabilityToString(fmi1_getVariableVariability(v));
 
@@ -99,7 +99,7 @@ model_description create_fmi1_model_description(fmiHandle* handle)
     md.author = fmi1_getAuthor(handle) ? fmi1_getAuthor(handle) : "";
     md.modelName = fmi1_getModelName(handle);
     md.modelIdentifier = fmi1_getModelIdentifier(handle);
-    // md.description = fmi1_getModelDescription(handle) ? fmi1_getModelDescription(handle) : "";
+    md.description = fmi1_getDescription(handle) ? fmi1_getDescription(handle) : "";
     md.generationTool = fmi1_getGenerationTool(handle) ? fmi1_getGenerationTool(handle) : "";
     md.generationDateAndTime = fmi1_getGenerationDateAndTime(handle) ? fmi1_getGenerationDateAndTime(handle) : "";
     //

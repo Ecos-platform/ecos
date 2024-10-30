@@ -49,6 +49,7 @@ struct scalar_variable
 {
     value_ref vr;
     std::string name;
+    std::string description;
     std::optional<std::string> causality;
     std::optional<std::string> variability;
     type_attributes typeAttributes;

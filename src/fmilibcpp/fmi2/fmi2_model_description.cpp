@@ -39,7 +39,7 @@ std::optional<fmilibcpp::scalar_variable> to_scalar_variable(fmi2VariableHandle*
     fmilibcpp::scalar_variable var;
     var.vr = fmi2_getVariableValueReference(v);
     var.name = fmi2_getVariableName(v);
-    //    var.description = fmi2_import_get_variable_description(v);
+    var.description = fmi2_getVariableDescription(v) ? fmi2_getVariableDescription(v) : "";
     var.causality = fmi2CausalityToString(fmi2_getVariableCausality(v));
     var.variability = fmi2VariabilityToString(fmi2_getVariableVariability(v));
 

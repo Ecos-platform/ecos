@@ -4,7 +4,7 @@
 namespace
 {
 
-int getStartInt(fmi3VariableHandle* v, fmi3DataType type)
+int32_t getStartInt(fmi3VariableHandle* v, fmi3DataType type)
 {
     switch (type) {
         case fmi3DataTypeInt8:
@@ -75,7 +75,7 @@ std::optional<fmilibcpp::scalar_variable> to_scalar_variable(fmi3VariableHandle*
     fmilibcpp::scalar_variable var;
     var.vr = fmi3_getVariableValueReference(v);
     var.name = fmi3_getVariableName(v);
-    //    var.description = fmi3_import_get_variable_description(v);
+    var.description = fmi3_getVariableDescription(v) ? fmi3_getVariableDescription(v) : "";
     var.causality = fmi3CausalityToString(fmi3_getVariableCausality(v));
     var.variability = fmi3VariabilityToString(fmi3_getVariableVariability(v));
 

@@ -1,7 +1,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "fmilibcpp/fmi1/fmi1_fmu.hpp"
 #include "proxyfmu/opcodes.hpp"
 #include <msgpack.hpp>
 
@@ -39,7 +38,7 @@ TEST_CASE("msgpack 1", "[msgpack]")
 TEST_CASE("msgpack 2", "[msgpack]")
 {
 
-    std::vector<fmilibcpp::value_ref> vr{1, 2, 3};
+    std::vector<long> vr{1, 2, 3};
     std::vector<double> values = {9.1, 10.2, 11.3};
 
     msgpack::sbuffer sbuf;
@@ -48,7 +47,7 @@ TEST_CASE("msgpack 2", "[msgpack]")
     msgpack::pack(sbuf, values);
 
     int f;
-    std::vector<fmilibcpp::value_ref> f1;
+    std::vector<long> f1;
     std::vector<double> f2;
     std::size_t offset = 0;
     auto oh = msgpack::unpack(sbuf.data(), sbuf.size(), offset);

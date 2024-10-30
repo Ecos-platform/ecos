@@ -18,7 +18,7 @@ struct real_attributes
 
 struct integer_attributes
 {
-    std::optional<int> start;
+    std::optional<int32_t> start;
 };
 
 struct string_attributes

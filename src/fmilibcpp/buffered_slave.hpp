@@ -31,17 +31,9 @@ public:
         return slave_->get_model_description();
     }
 
-    bool setup_experiment(
-        double start_time = 0,
-        double stop_time = 0,
-        double tolerance = 0) override
+    bool enter_initialization_mode(double start_time = 0, double stop_time = 0, double tolerance = 0) override
     {
-        return slave_->setup_experiment(start_time, stop_time, tolerance);
-    }
-
-    bool enter_initialization_mode() override
-    {
-        bool status = slave_->enter_initialization_mode();
+        bool status = slave_->enter_initialization_mode(start_time, stop_time, tolerance);
         initialized = true;
         return status;
     }

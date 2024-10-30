@@ -1,6 +1,7 @@
 
 #include "fmi1/fmi1_fmu.hpp"
 #include "fmi2/fmi2_fmu.hpp"
+#include "fmi3/fmi3_fmu.hpp"
 
 #include "ecos/logger/logger.hpp"
 
@@ -22,6 +23,8 @@ std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& 
             return std::make_unique<fmi1_fmu>(std::move(handle), fmiLogging);
         case fmiVersion2:
             return std::make_unique<fmi2_fmu>(std::move(handle), fmiLogging);
+        case fmiVersion3:
+            return std::make_unique<fmi3_fmu>(std::move(handle), fmiLogging);
         default:
             return nullptr;
     }

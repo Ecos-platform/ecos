@@ -16,7 +16,6 @@ void test(fmu& fmu)
     //     "Has one input and one output of each type, and outputs are always set equal to inputs");
 
     auto slave = std::make_unique<buffered_slave>(fmu.new_instance("instance"));
-    REQUIRE(slave->setup_experiment());
     REQUIRE(slave->enter_initialization_mode());
     REQUIRE(slave->exit_initialization_mode());
 

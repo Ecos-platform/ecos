@@ -56,8 +56,7 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
                     uint8_t token;
                     conn->write(&token, 1);
                 } break;
-                case ecos::proxy::opcodes::setup_experiment: {
-
+                case ecos::proxy::opcodes::enter_initialization_mode: {
                     double startTime;
                     double endTime;
                     double tolerance;
@@ -68,12 +67,7 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
                     oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
                     oh.get().convert(tolerance);
 
-                    const auto status = slave->setup_experiment(startTime, endTime, tolerance);
-                    sendStatus(*conn, status);
-
-                } break;
-                case ecos::proxy::opcodes::enter_initialization_mode: {
-                    const auto status = slave->enter_initialization_mode();
+                    const auto status = slave->enter_initialization_mode(startTime, endTime, tolerance);
                     sendStatus(*conn, status);
                 } break;
                 case ecos::proxy::opcodes::exit_initialization_mode: {

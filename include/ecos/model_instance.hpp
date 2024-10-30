@@ -33,9 +33,7 @@ public:
         return stepSizeHint_;
     }
 
-    virtual void setup_experiment(double start = 0) = 0;
-
-    virtual void enter_initialization_mode() = 0;
+    virtual void enter_initialization_mode(double start = 0) = 0;
 
     virtual void exit_initialization_mode() = 0;
 

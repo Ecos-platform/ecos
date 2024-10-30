@@ -12,7 +12,7 @@ TEST_CASE("msgpack 1", "[msgpack]")
     float tolerance = 0.01;
 
     msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(ecos::proxy::opcodes::setup_experiment));
+    msgpack::pack(sbuf, enum_to_int(ecos::proxy::opcodes::enter_initialization_mode));
     msgpack::pack(sbuf, start_time);
     msgpack::pack(sbuf, stop_time);
     msgpack::pack(sbuf, tolerance);
@@ -29,7 +29,7 @@ TEST_CASE("msgpack 1", "[msgpack]")
     oh = msgpack::unpack(sbuf.data(), sbuf.size(), offset);
     oh.get().convert(f3);
 
-    CHECK(f == enum_to_int(ecos::proxy::opcodes::setup_experiment));
+    CHECK(f == enum_to_int(ecos::proxy::opcodes::enter_initialization_mode));
     CHECK(f1 == start_time);
     CHECK(f2 == stop_time);
     CHECK(f3 == tolerance);

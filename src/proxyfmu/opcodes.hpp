@@ -11,7 +11,6 @@ enum class opcodes
 {
 
     instantiate,
-    setup_experiment,
     enter_initialization_mode,
     exit_initialization_mode,
 
@@ -49,7 +48,6 @@ inline std::string opcode_to_string(opcodes op)
     switch (op)
     {
         case opcodes::instantiate: return "instantiate";
-        case opcodes::setup_experiment: return "setup_experiment";
         case opcodes::enter_initialization_mode: return "enter_initialization_mode";
         case opcodes::exit_initialization_mode: return "exit_initialization_mode";
 

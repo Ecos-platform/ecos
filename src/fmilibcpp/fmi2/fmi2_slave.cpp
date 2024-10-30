@@ -56,18 +56,18 @@ const model_description& fmi2_slave::get_model_description() const
     return md_;
 }
 
-bool fmi2_slave::setup_experiment(double start_time, double stop_time, double tolerance)
+bool fmi2_slave::enter_initialization_mode(double start_time, double stop_time, double tolerance)
 {
     fmi2Boolean stop_defined = (stop_time > 0) ? fmi2True : fmi2False;
     fmi2Boolean tolerance_defined = (tolerance > 0) ? fmi2True : fmi2False;
-    const auto status = fmi2_setupExperiment(handle_, tolerance_defined, tolerance, start_time, stop_defined, stop_time);
-    return status == fmi2OK;
-}
+    const auto status1 = fmi2_setupExperiment(handle_, tolerance_defined, tolerance, start_time, stop_defined, stop_time);
 
-bool fmi2_slave::enter_initialization_mode()
-{
-    const auto status = fmi2_enterInitializationMode(handle_);
-    return status == fmi2OK;
+    if (!status1 == fmi2OK) {
+        return false;
+    }
+
+    const auto status2 = fmi2_enterInitializationMode(handle_);
+    return status2 == fmi2OK;
 }
 
 bool fmi2_slave::exit_initialization_mode()
@@ -94,7 +94,7 @@ bool fmi2_slave::reset()
     return status == fmi2OK;
 }
 
-bool fmi2_slave::get_integer(const std::vector<value_ref>& vr, std::vector<int>& values)
+bool fmi2_slave::get_integer(const std::vector<value_ref>& vr, std::vector<int32_t>& values)
 {
     const auto status = fmi2_getInteger(handle_, vr.data(), vr.size(), values.data());
     return status == fmi2OK;

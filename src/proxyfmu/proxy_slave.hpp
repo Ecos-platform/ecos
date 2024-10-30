@@ -27,8 +27,7 @@ public:
 
     [[nodiscard]] const fmilibcpp::model_description& get_model_description() const override;
 
-    bool setup_experiment(double start_time, double stop_time, double tolerance) override;
-    bool enter_initialization_mode() override;
+    bool enter_initialization_mode(double start_time, double stop_time, double tolerance) override;
     bool exit_initialization_mode() override;
 
     bool step(double current_time, double step_size) override;

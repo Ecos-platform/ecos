@@ -12,8 +12,8 @@ void test(fmu& fmu)
 {
     const auto d = fmu.get_model_description();
     CHECK(d.modelName == "no.viproma.demo.identity");
-    // CHECK(d.description ==
-    //     "Has one input and one output of each type, and outputs are always set equal to inputs");
+    CHECK(d.description ==
+        "Has one input and one output of each type, and outputs are always set equal to inputs");
 
     auto slave = std::make_unique<buffered_slave>(fmu.new_instance("instance"));
     REQUIRE(slave->enter_initialization_mode());

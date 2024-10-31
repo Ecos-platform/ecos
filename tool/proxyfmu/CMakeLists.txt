@@ -15,7 +15,6 @@ target_include_directories(proxyfmu
 target_link_libraries(proxyfmu
         PRIVATE
         fmt::fmt
-        libzip::zip
         CLI11::CLI11
         spdlog::spdlog
         msgpack-cxx

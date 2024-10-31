@@ -121,7 +121,7 @@ add_library(util OBJECT
         "ecos/util/uuid.cpp"
 )
 set_target_properties(util PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(util PRIVATE libzip::zip)
+target_link_libraries(util PRIVATE fmt::fmt)
 target_include_directories(util
         PRIVATE
         "${PROJECT_SOURCE_DIR}/include"
@@ -168,7 +168,6 @@ target_link_libraries(libecos
         PRIVATE
         simple_socket
         msgpack-cxx
-        libzip::zip
         spdlog::spdlog
         pugixml::pugixml
         fmi4c

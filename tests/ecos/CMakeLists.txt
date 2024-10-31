@@ -6,7 +6,6 @@ add_test_executable(test_property)
 add_test_executable(test_runner)
 add_test_executable(test_ssp_parser)
 add_test_executable(test_unzipper)
-target_link_libraries(test_unzipper PRIVATE libzip::zip)
 
 if (MSVC AND ECOS_BUILD_CLIB)
     add_test_executable(test_clib)

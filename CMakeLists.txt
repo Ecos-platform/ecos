@@ -69,7 +69,6 @@ FetchContent_MakeAvailable(fmi4c)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-find_package(libzip CONFIG REQUIRED)
 find_package(pugixml CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(msgpack-cxx CONFIG REQUIRED)

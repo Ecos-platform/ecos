@@ -1,22 +1,25 @@
 
 #include "fmi2_slave.hpp"
 
-#include <exception>
-#include <fmilib.h>
+#include <fmi4c.h>
+
+#include <cstdarg>
 #include <memory>
 
 namespace
 {
 
-void fmilogger(fmi2_component_t c, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
+void fmilogger(fmi2Component, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
 {
-    va_list argp;
-    va_start(argp, message);
-    fmi2_log_forwarding_v(c, instanceName, status, category, message, argp);
-    va_end(argp);
+    va_list args;
+    va_start(args, message);
+    char msgstr[1024];
+    sprintf(msgstr, "%s: %s\n", category, message);
+    printf(msgstr, args);
+    va_end(args);
 }
 
-void noopfmilogger(fmi2_component_t, fmi2_string_t, fmi2_status_t, fmi2_string_t, fmi2_string_t, ...)
+void noopfmilogger(fmi2Component, fmi2String, fmi2Status, fmi2String, fmi2String, ...)
 {
 }
 
@@ -29,41 +32,22 @@ fmi2_slave::fmi2_slave(
     const std::shared_ptr<fmicontext>& ctx,
     const std::string& instanceName,
     model_description md,
-    std::shared_ptr<ecos::temp_dir> tmpDir,
     bool fmiLogging)
     : slave(instanceName)
-    , handle_(fmi2_import_parse_xml(ctx->ctx_, tmpDir->path().string().c_str(), nullptr))
-    , md_(std::move(md))
+    , handle_(ctx->ctx_)
     , ctx_(ctx)
-    , tmpDir_(std::move(tmpDir))
+    , md_(std::move(md))
 {
 
-    fmi2_callback_functions_t callbackFunctions;
-    callbackFunctions.allocateMemory = calloc;
-    callbackFunctions.freeMemory = free;
-    if (fmiLogging) {
-        callbackFunctions.logger = &fmilogger;
-    } else {
-        callbackFunctions.logger = &noopfmilogger;
-    }
-    callbackFunctions.componentEnvironment = nullptr;
-    callbackFunctions.stepFinished = nullptr;
+    if (!fmi2_instantiate(handle_,
+            fmi2CoSimulation,
+            fmiLogging ? &fmilogger : &noopfmilogger,
+            std::calloc, std::free,
+            nullptr, nullptr,
+            fmi2False, fmiLogging ? fmi2True : fmi2False)) {
 
-    if (fmi2_import_create_dllfmu(handle_, fmi2_fmu_kind_cs, &callbackFunctions) != jm_status_success) {
-        throw std::runtime_error(std::string("failed to load fmu dll! Error: ") + fmi2_import_get_last_error(handle_));
-    }
-
-    const auto rc = fmi2_import_instantiate(
-        handle_,
-        this->instanceName.c_str(),
-        fmi2_cosimulation,
-        nullptr,
-        fmi2_false);
-
-    if (rc != jm_status_success) {
-        fmi2_import_destroy_dllfmu(handle_);
-        fmi2_import_free(handle_);
-        throw std::runtime_error("failed to instantiate fmu!");
+        fmi2_slave::freeInstance();
+        throw std::runtime_error(std::string("Failed to instantiate fmi2 slave! Error: ") + fmi4c_getErrorMessages());
     }
 }
 
@@ -72,115 +56,113 @@ const model_description& fmi2_slave::get_model_description() const
     return md_;
 }
 
-bool fmi2_slave::setup_experiment(double start_time, double stop_time, double tolerance)
+bool fmi2_slave::enter_initialization_mode(double start_time, double stop_time, double tolerance)
 {
-    fmi2_boolean_t stop_defined = (stop_time > 0) ? fmi2_true : fmi2_false;
-    fmi2_boolean_t tolerance_defined = (tolerance > 0) ? fmi2_true : fmi2_false;
-    const auto status = fmi2_import_setup_experiment(handle_, tolerance_defined, tolerance, start_time, stop_defined, stop_time);
-    return status == fmi2_status_ok;
-}
+    fmi2Boolean stop_defined = (stop_time > 0) ? fmi2True : fmi2False;
+    fmi2Boolean tolerance_defined = (tolerance > 0) ? fmi2True : fmi2False;
+    const auto status1 = fmi2_setupExperiment(handle_, tolerance_defined, tolerance, start_time, stop_defined, stop_time);
 
-bool fmi2_slave::enter_initialization_mode()
-{
-    const auto status = fmi2_import_enter_initialization_mode(handle_);
-    return status == fmi2_status_ok;
+    if (!status1 == fmi2OK) {
+        return false;
+    }
+
+    const auto status2 = fmi2_enterInitializationMode(handle_);
+    return status2 == fmi2OK;
 }
 
 bool fmi2_slave::exit_initialization_mode()
 {
-    const auto status = fmi2_import_exit_initialization_mode(handle_);
-    return status == fmi2_status_ok;
+    const auto status = fmi2_exitInitializationMode(handle_);
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::step(double current_time, double step_size)
 {
-    const auto status = fmi2_import_do_step(handle_, current_time, step_size, fmi2_true);
-    return status == fmi2_status_ok;
+    const auto status = fmi2_doStep(handle_, current_time, step_size, fmi2True);
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::terminate()
 {
-    const auto status = fmi2_import_terminate(handle_);
-    return status == fmi2_status_ok;
+    const auto status = fmi2_terminate(handle_);
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::reset()
 {
-    const auto status = fmi2_import_reset(handle_);
-    return status == fmi2_status_ok;
+    const auto status = fmi2_reset(handle_);
+    return status == fmi2OK;
 }
 
-bool fmi2_slave::get_integer(const std::vector<value_ref>& vr, std::vector<int>& values)
+bool fmi2_slave::get_integer(const std::vector<value_ref>& vr, std::vector<int32_t>& values)
 {
-    const auto status = fmi2_import_get_integer(handle_, vr.data(), vr.size(), values.data());
-    return status == fmi2_status_ok;
+    const auto status = fmi2_getInteger(handle_, vr.data(), vr.size(), values.data());
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::get_real(const std::vector<value_ref>& vr, std::vector<double>& values)
 {
-    const auto status = fmi2_import_get_real(handle_, vr.data(), vr.size(), values.data());
-    return status == fmi2_status_ok;
+    const auto status = fmi2_getReal(handle_, vr.data(), vr.size(), values.data());
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::get_string(const std::vector<value_ref>& vr, std::vector<std::string>& values)
 {
-    auto tmp = std::vector<fmi2_string_t>(vr.size());
-    const auto status = fmi2_import_get_string(handle_, vr.data(), vr.size(), tmp.data());
+    auto tmp = std::vector<fmi2String>(vr.size());
+    const auto status = fmi2_getString(handle_, vr.data(), vr.size(), tmp.data());
     for (auto i = 0; i < tmp.size(); i++) {
         values[i] = tmp[i];
     }
-    return status == fmi2_status_ok;
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>& values)
 {
-    auto tmp = std::vector<fmi2_boolean_t>(vr.size());
-    const auto status = fmi2_import_get_boolean(handle_, vr.data(), vr.size(), tmp.data());
+    auto tmp = std::vector<fmi2Boolean>(vr.size());
+    const auto status = fmi2_getBoolean(handle_, vr.data(), vr.size(), tmp.data());
     for (auto i = 0; i < tmp.size(); i++) {
         values[i] = tmp[i] != 0;
     }
-    return status == fmi2_status_ok;
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::set_integer(const std::vector<value_ref>& vr, const std::vector<int>& values)
 {
-    const auto status = fmi2_import_set_integer(handle_, vr.data(), vr.size(), values.data());
-    return status == fmi2_status_ok;
+    const auto status = fmi2_setInteger(handle_, vr.data(), vr.size(), values.data());
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::set_real(const std::vector<value_ref>& vr, const std::vector<double>& values)
 {
-    const auto status = fmi2_import_set_real(handle_, vr.data(), vr.size(), values.data());
-    return status == fmi2_status_ok;
+    const auto status = fmi2_setReal(handle_, vr.data(), vr.size(), values.data());
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::set_string(const std::vector<value_ref>& vr, const std::vector<std::string>& values)
 {
-    std::vector<fmi2_string_t> _values(vr.size());
+    std::vector<fmi2String> _values(vr.size());
     for (auto i = 0; i < vr.size(); i++) {
         _values[i] = values[i].c_str();
     }
-    const auto status = fmi2_import_set_string(handle_, vr.data(), vr.size(), _values.data());
-    return status == fmi2_status_ok;
+    const auto status = fmi2_setString(handle_, vr.data(), vr.size(), _values.data());
+    return status == fmi2OK;
 }
 
 bool fmi2_slave::set_boolean(const std::vector<value_ref>& vr, const std::vector<bool>& values)
 {
-    std::vector<fmi2_boolean_t> _values(vr.size());
+    std::vector<fmi2Boolean> _values(vr.size());
     for (auto i = 0; i < vr.size(); i++) {
-        _values[i] = values[i] ? fmi2_true : fmi2_false;
+        _values[i] = values[i] ? fmi2True : fmi2False;
     }
-    const auto status = fmi2_import_set_boolean(handle_, vr.data(), vr.size(), _values.data());
-    return status == fmi2_status_ok;
+    const auto status = fmi2_setBoolean(handle_, vr.data(), vr.size(), _values.data());
+    return status == fmi2OK;
 }
 
 void fmi2_slave::freeInstance()
 {
     if (!freed_) {
         freed_ = true;
-        fmi2_import_free_instance(handle_);
-        fmi2_import_destroy_dllfmu(handle_);
-        fmi2_import_free(handle_);
+        fmi2_freeInstance(handle_);
     }
 }
 

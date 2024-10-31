@@ -10,7 +10,7 @@ def main():
 
     ss = EcosSimulationStructure()
     if not ss.add_model("instance", fmu_path):
-        print(EcosLib.get_last_error())
+        raise Exception(EcosLib.get_last_error())
 
     sim = EcosSimulation(structure=ss, step_size=1/100)
     sim.add_csv_writer("results/python/temperature.csv")

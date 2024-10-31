@@ -17,7 +17,6 @@ void test(fmu& fmu)
     CHECK(d.generationTool == "20-sim");
 
     auto slave = fmu.new_instance("instance");
-    REQUIRE(slave->setup_experiment());
     REQUIRE(slave->enter_initialization_mode());
     REQUIRE(slave->exit_initialization_mode());
 

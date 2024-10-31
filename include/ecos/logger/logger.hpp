@@ -2,7 +2,7 @@
 #ifndef LIBECOS_LOGGER_HPP
 #define LIBECOS_LOGGER_HPP
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace ecos::log
 {

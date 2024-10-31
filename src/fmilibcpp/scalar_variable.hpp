@@ -18,7 +18,7 @@ struct real_attributes
 
 struct integer_attributes
 {
-    std::optional<int> start;
+    std::optional<int32_t> start;
 };
 
 struct string_attributes
@@ -49,6 +49,7 @@ struct scalar_variable
 {
     value_ref vr;
     std::string name;
+    std::string description;
     std::optional<std::string> causality;
     std::optional<std::string> variability;
     type_attributes typeAttributes;

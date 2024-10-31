@@ -129,15 +129,21 @@ target_include_directories(util
 
 add_library(fmilibcpp OBJECT
         "fmilibcpp/fmu.cpp"
+
         "fmilibcpp/fmi1/fmi1_fmu.cpp"
         "fmilibcpp/fmi1/fmi1_slave.cpp"
         "fmilibcpp/fmi1/fmi1_model_description.cpp"
+
         "fmilibcpp/fmi2/fmi2_fmu.cpp"
         "fmilibcpp/fmi2/fmi2_slave.cpp"
         "fmilibcpp/fmi2/fmi2_model_description.cpp"
+
+        "fmilibcpp/fmi3/fmi3_fmu.cpp"
+        "fmilibcpp/fmi3/fmi3_slave.cpp"
+        "fmilibcpp/fmi3/fmi3_model_description.cpp"
 )
 set_target_properties(fmilibcpp PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(fmilibcpp PRIVATE unofficial::fmilib::fmilib)
+target_link_libraries(fmilibcpp PRIVATE fmi4c fmt::fmt)
 target_include_directories(fmilibcpp
         PRIVATE
         "${PROJECT_SOURCE_DIR}/include"
@@ -165,7 +171,7 @@ target_link_libraries(libecos
         libzip::zip
         spdlog::spdlog
         pugixml::pugixml
-        unofficial::fmilib::fmilib
+        fmi4c
         "$<TARGET_OBJECTS:util>"
         "$<TARGET_OBJECTS:logger>"
         "$<TARGET_OBJECTS:fmilibcpp>"

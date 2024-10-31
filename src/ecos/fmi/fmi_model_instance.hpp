@@ -87,14 +87,9 @@ public:
         properties_.add_listener(std::make_unique<prop_lister>(*slave_));
     }
 
-    void setup_experiment(double start) override
+    void enter_initialization_mode(double start) override
     {
-        slave_->setup_experiment(start);
-    }
-
-    void enter_initialization_mode() override
-    {
-        slave_->enter_initialization_mode();
+        slave_->enter_initialization_mode(start);
     }
 
     void exit_initialization_mode() override

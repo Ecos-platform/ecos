@@ -110,31 +110,13 @@ const fmilibcpp::model_description& proxy_slave::get_model_description() const
     return modelDescription_;
 }
 
-bool proxy_slave::setup_experiment(double start_time, double stop_time, double tolerance)
-{
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::setup_experiment));
-    msgpack::pack(sbuf, start_time);
-    msgpack::pack(sbuf, stop_time);
-    msgpack::pack(sbuf, tolerance);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
-        return false;
-    }
-    std::vector<uint8_t> buffer(32);
-    const int read = client_->read(buffer.data(), buffer.size());
-
-    bool status;
-    std::size_t offset = 0;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-    oh.get().convert(status);
-
-    return status;
-}
-
-bool proxy_slave::enter_initialization_mode()
+bool proxy_slave::enter_initialization_mode(double start_time, double stop_time, double tolerance)
 {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, enum_to_int(opcodes::enter_initialization_mode));
+    msgpack::pack(sbuf, start_time);
+    msgpack::pack(sbuf, stop_time);
+    msgpack::pack(sbuf, tolerance);
     if (!client_->write(sbuf.data(), sbuf.size())) {
         return false;
     }

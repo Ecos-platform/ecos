@@ -27,6 +27,9 @@ simulation_structure::simulation_structure()
 void simulation_structure::add_model(const std::string& instanceName, const std::string& uri, std::optional<double> stepSizeHint)
 {
     const auto model = resolver_->resolve(uri);
+    if (!model) {
+        throw std::runtime_error("Unable to resolve model: " + uri);
+    }
     add_model(instanceName, model, stepSizeHint);
 }
 

@@ -58,13 +58,21 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SimpleSocket)
 
+set(FMI4C_BUILD_SHARED OFF)
+FetchContent_Declare(
+        fmi4c
+        GIT_REPOSITORY https://github.com/Ecos-platform/fmi4c.git
+        GIT_TAG ecde7752301e88ca8f82bd7f2b3330000cf6c208
+)
+FetchContent_MakeAvailable(fmi4c)
+
+
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(libzip CONFIG REQUIRED)
 find_package(pugixml CONFIG REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(msgpack-cxx CONFIG REQUIRED)
-find_package(unofficial-fmilib CONFIG REQUIRED)
 
 # ==============================================================================
 # Targets

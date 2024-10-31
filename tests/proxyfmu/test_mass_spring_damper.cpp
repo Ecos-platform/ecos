@@ -91,7 +91,6 @@ void test(fmu* damper, fmu* mass, fmu* spring)
     std::vector<unsigned int> mass_damper_out_vr = {mass_out_f_u, mass_out_f_w};
 
     for (auto& [name, instance] : slaves) {
-        REQUIRE(instance->setup_experiment());
         REQUIRE(instance->enter_initialization_mode());
     }
 

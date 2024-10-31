@@ -16,7 +16,6 @@ void test(fmilibcpp::fmu& fmu)
 
     auto slave = fmu.new_instance("instance");
     REQUIRE(slave);
-    REQUIRE(slave->setup_experiment());
     REQUIRE(slave->enter_initialization_mode());
     REQUIRE(slave->exit_initialization_mode());
 

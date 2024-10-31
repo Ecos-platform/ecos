@@ -30,8 +30,8 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
             if (start < 0) {
                 throw std::runtime_error("Explicitly defined startTime must be greater than 0!");
             }
-            instance->setup_experiment(start);
-            instance->enter_initialization_mode();
+
+            instance->enter_initialization_mode(start);
             if (parameterSet) {
                 if (instance->apply_parameter_set(*parameterSet)) {
                     ++parameterSetAppliedCount;

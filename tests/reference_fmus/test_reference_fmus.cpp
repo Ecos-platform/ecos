@@ -1,5 +1,5 @@
 
-#include <Catch2/catch_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include "ecos/model_resolver.hpp"
 #include "ecos/simulation.hpp"
@@ -23,20 +23,20 @@ std::vector<std::filesystem::path> collectFMus(const std::filesystem::path& base
 
 std::vector<std::filesystem::path> v1FMus()
 {
-    return collectFMus(std::filesystem::current_path() / "../data/fmus/1.0/cs");
+    return collectFMus("../data/fmus/1.0/cs");
 }
 
 std::vector<std::filesystem::path> v2FMus()
 {
-    return collectFMus(std::filesystem::current_path() / "../data/fmus/2.0");
+    return collectFMus("../data/fmus/2.0");
 }
 
 std::vector<std::filesystem::path> v3FMus()
 {
-    return collectFMus(std::filesystem::current_path() / "../data/fmus/3.0");
+    return collectFMus("../data/fmus/3.0");
 }
 
-void run(std::vector<std::filesystem::path> paths)
+void run(const std::vector<std::filesystem::path>& paths)
 {
     const auto resolver = default_model_resolver();
     for (const auto& path : paths) {

@@ -4,7 +4,7 @@
   "dependencies": [
     "spdlog",
     "cli11",
-    "msgpack",
+    "flatbuffers",
     "pugixml"
   ]
 }

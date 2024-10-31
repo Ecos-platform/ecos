@@ -9,7 +9,7 @@
 #include "simple_socket/TCPSocket.hpp"
 #include "simple_socket/UnixDomainSocket.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
-#include <msgpack.hpp>
+#include <flatbuffers/flexbuffers.h>
 
 #include <chrono>
 #include <fstream>
@@ -77,29 +77,32 @@ proxy_slave::proxy_slave(
         const std::string data = read_data(fmuPath.string());
         const std::string fmuName = std::filesystem::path(fmuPath).stem().string();
 
-        msgpack::sbuffer sbuf;
-        msgpack::pack(sbuf, fmuName);
-        msgpack::pack(sbuf, instanceName);
-        msgpack::pack(sbuf, data);
-        sbuf.write(data.c_str(), data.size());
+        flexbuffers::Builder fbb;
+        fbb.String(fmuName);
+        fbb.String(instanceName);
+        fbb.String(data);
+        fbb.Finish();
 
-        const auto msgLen = sbuf.size();
+        const auto msgLen = fbb.GetSize();
         bootClient->write(encode_uint32(msgLen));
-        bootClient->write(sbuf.data(), sbuf.size());
+        bootClient->write(fbb.GetBuffer());
 
         std::vector<uint8_t> buffer(32);
         const int read = bootClient->read(buffer.data(), buffer.size());
 
         uint16_t port;
-        const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
-        oh.get().convert(port);
+        auto root = flexbuffers::GetRoot(buffer.data(), read).AsInt16();
+        port = static_cast<uint16_t>(root);
 
         client_ = ctx_->connect(remote->host() + ":" + std::to_string(port));
     }
 
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::instantiate));
-    client_->write(sbuf.data(), sbuf.size());
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::instantiate));
+    });
+    fbb.Finish();
+    client_->write(fbb.GetBuffer());
 
     uint8_t token;
     client_->readExact(&token, 1);
@@ -112,100 +115,110 @@ const fmilibcpp::model_description& proxy_slave::get_model_description() const
 
 bool proxy_slave::enter_initialization_mode(double start_time, double stop_time, double tolerance)
 {
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::enter_initialization_mode));
-    msgpack::pack(sbuf, start_time);
-    msgpack::pack(sbuf, stop_time);
-    msgpack::pack(sbuf, tolerance);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::enter_initialization_mode));
+        fbb.Double(start_time);
+        fbb.Double(stop_time);
+        fbb.Double(tolerance);
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
 
-    bool status;
-    std::size_t offset = 0;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-    return oh.get().convert(status);
+    const bool status = flexbuffers::GetRoot(buffer.data(), read).AsBool();
+    return status;
 }
 
 bool proxy_slave::exit_initialization_mode()
 {
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::exit_initialization_mode));
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::exit_initialization_mode));
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
 
-    bool status;
-    std::size_t offset = 0;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-    return oh.get().convert(status);
+    const bool status = flexbuffers::GetRoot(buffer.data(), read).AsBool();
+    return status;
 }
 
 bool proxy_slave::step(double current_time, double step_size)
 {
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::step));
-    msgpack::pack(sbuf, current_time);
-    msgpack::pack(sbuf, step_size);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::step));
+        fbb.Double(current_time);
+        fbb.Double(step_size);
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
 
-    bool status;
-    std::size_t offset = 0;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-    return oh.get().convert(status);
+    const bool status = flexbuffers::GetRoot(buffer.data(), read).AsBool();
+    return status;
 }
 
 bool proxy_slave::terminate()
 {
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::terminate));
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::terminate));
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
 
-    bool status;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
-    return oh.get().convert(status);
+    const bool status = flexbuffers::GetRoot(buffer.data(), read).AsBool();
+    return status;
 }
 
 bool proxy_slave::reset()
 {
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::reset));
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::reset));
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
     std::vector<uint8_t> buffer(32);
     const int read = client_->read(buffer.data(), buffer.size());
 
-    bool status;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
-    return oh.get().convert(status);
+    const bool status = flexbuffers::GetRoot(buffer.data(), read).AsBool();
+    return status;
 }
 
-bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::vector<int>& values)
+bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::vector<int32_t>& values)
 {
     assert(values.size() == vr.size());
 
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::read_int));
-    msgpack::pack(sbuf, vr);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::read_int));
+        fbb.Vector(vr);
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
@@ -217,31 +230,28 @@ bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::
         return false;
     }
 
-    bool status;
-
-    try {
-        std::size_t offset = 0;
-        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-        oh.get().convert(status);
-
-        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-        oh.get().convert(values);
-    } catch (const std::exception& e) {
-        log::err("[get_integer] Error during unpacking: {}", e.what());
-        return false;
+    const auto root = flexbuffers::GetRoot(buffer.data(), read).AsVector();
+    const bool status = root[0].AsBool();
+    if (!status) return false;
+    const auto flexValues = root[1].AsTypedVector();
+    for (auto i = 0; i < flexValues.size(); i++) {
+        values[i] = flexValues[i].AsInt32();
     }
 
-    return status;
+    return true;
 }
 
 bool proxy_slave::get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vector<double>& values)
 {
     assert(values.size() == vr.size());
 
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::read_real));
-    msgpack::pack(sbuf, vr);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::read_real));
+        fbb.Vector(vr);
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
@@ -253,31 +263,28 @@ bool proxy_slave::get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vec
         return false;
     }
 
-    bool status;
-
-    try {
-        std::size_t offset = 0;
-        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-        oh.get().convert(status);
-
-        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-        oh.get().convert(values);
-    } catch (const std::exception& e) {
-        log::err("[get_real] Error during unpacking: {}", e.what());
-        return false;
+    const auto root = flexbuffers::GetRoot(buffer.data(), read).AsVector();
+    const bool status = root[0].AsBool();
+    if (!status) return false;
+    const auto flexValues = root[1].AsTypedVector();
+    for (auto i = 0; i < flexValues.size(); i++) {
+        values[i] = flexValues[i].AsDouble();
     }
 
-    return status;
+    return true;
 }
 
 bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::vector<std::string>& values)
 {
     assert(values.size() == vr.size());
 
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::read_string));
-    msgpack::pack(sbuf, vr);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::read_string));
+        fbb.Vector(vr);
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
@@ -289,31 +296,28 @@ bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::v
         return false;
     }
 
-    bool status;
-    std::size_t offset = 0;
-
-    try {
-        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-        oh.get().convert(status);
-
-        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-        oh.get().convert(values);
-    } catch (const std::exception& e) {
-        log::err("[get_string] Error during unpacking: {}", e.what());
-        return false;
+    const auto root = flexbuffers::GetRoot(buffer.data(), read).AsVector();
+    const bool status = root[0].AsBool();
+    if (!status) return false;
+    const auto flexValues = root[1].AsTypedVector();
+    for (auto i = 0; i < flexValues.size(); i++) {
+        values[i] = flexValues[i].AsString().str();
     }
 
-    return status;
+    return true;
 }
 
 bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::vector<bool>& values)
 {
     assert(values.size() == vr.size());
 
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::read_bool));
-    msgpack::pack(sbuf, vr);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::read_bool));
+        fbb.Vector(vr);
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
@@ -325,32 +329,29 @@ bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::
         return false;
     }
 
-    bool status;
-    std::size_t offset = 0;
-
-    try {
-        auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-        oh.get().convert(status);
-
-        oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-        oh.get().convert(values);
-    } catch (const std::exception& e) {
-        log::err("[get_boolean] Error during unpacking: {}", e.what());
-        return false;
+    const auto root = flexbuffers::GetRoot(buffer.data(), read).AsVector();
+    const bool status = root[0].AsBool();
+    if (!status) return false;
+    const auto flexValues = root[1].AsTypedVector();
+    for (auto i = 0; i < flexValues.size(); i++) {
+        values[i] = flexValues[i].AsBool();
     }
 
-    return status;
+    return true;
 }
 
-bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<int>& values)
+bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<int32_t>& values)
 {
     assert(values.size() == vr.size());
 
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::write_int));
-    msgpack::pack(sbuf, vr);
-    msgpack::pack(sbuf, values);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::write_int));
+        fbb.Vector(vr);
+        fbb.Vector(values);
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
@@ -362,20 +363,22 @@ bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const
         return false;
     }
 
-    bool status;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
-    return oh.get().convert(status);
+    const bool status = flexbuffers::GetRoot(buffer.data(), read).AsBool();
+    return status;
 }
 
 bool proxy_slave::set_real(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<double>& values)
 {
     assert(values.size() == vr.size());
 
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::write_real));
-    msgpack::pack(sbuf, vr);
-    msgpack::pack(sbuf, values);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::write_real));
+        fbb.Vector(vr);
+        fbb.Vector(values);
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
@@ -387,20 +390,26 @@ bool proxy_slave::set_real(const std::vector<fmilibcpp::value_ref>& vr, const st
         return false;
     }
 
-    bool status;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
-    return oh.get().convert(status);
+    const bool status = flexbuffers::GetRoot(buffer.data(), read).AsBool();
+    return status;
 }
 
 bool proxy_slave::set_string(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<std::string>& values)
 {
     assert(values.size() == vr.size());
 
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::write_string));
-    msgpack::pack(sbuf, vr);
-    msgpack::pack(sbuf, values);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::write_string));
+        fbb.Vector(vr);
+        fbb.Vector([&] {
+            for (const std::string& value : values) {
+                fbb.String(value);
+            }
+        });
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
@@ -412,20 +421,26 @@ bool proxy_slave::set_string(const std::vector<fmilibcpp::value_ref>& vr, const 
         return false;
     }
 
-    bool status;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
-    return oh.get().convert(status);
+    const bool status = flexbuffers::GetRoot(buffer.data(), read).AsBool();
+    return status;
 }
 
 bool proxy_slave::set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<bool>& values)
 {
     assert(values.size() == vr.size());
 
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, enum_to_int(opcodes::write_bool));
-    msgpack::pack(sbuf, vr);
-    msgpack::pack(sbuf, values);
-    if (!client_->write(sbuf.data(), sbuf.size())) {
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Int(enum_to_int(opcodes::write_bool));
+        fbb.Vector(vr);
+        fbb.Vector([&] {
+            for (const bool value : values) {
+                fbb.Bool(value);
+            }
+        });
+    });
+    fbb.Finish();
+    if (!client_->write(fbb.GetBuffer())) {
         return false;
     }
 
@@ -437,9 +452,8 @@ bool proxy_slave::set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const
         return false;
     }
 
-    bool status;
-    const auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, nullptr);
-    return oh.get().convert(status);
+    const bool status = flexbuffers::GetRoot(buffer.data(), read).AsBool();
+    return status;
 }
 
 void proxy_slave::freeInstance()
@@ -448,9 +462,12 @@ void proxy_slave::freeInstance()
         freed = true;
         log::debug("Shutting down proxy for '{}::{}'", modelDescription_.modelName, instanceName);
         if (client_) {
-            msgpack::sbuffer sbuf;
-            msgpack::pack(sbuf, enum_to_int(opcodes::freeInstance));
-            client_->write(sbuf.data(), sbuf.size());
+            flexbuffers::Builder fbb;
+            fbb.Vector([&] {
+                fbb.Int(enum_to_int(opcodes::freeInstance));
+            });
+            fbb.Finish();
+            client_->write(fbb.GetBuffer());
         }
         if (thread_.joinable()) {
             thread_.join();

@@ -4,25 +4,69 @@
 
 #include "fmilibcpp/fmu.hpp"
 #include "fmilibcpp/slave.hpp"
+
 #include "proxyfmu/opcodes.hpp"
 #include "simple_socket/TCPSocket.hpp"
-#include <msgpack.hpp>
+#include <flatbuffers/flexbuffers.h>
 #include <spdlog/spdlog.h>
 
 inline void sendStatus(simple_socket::SimpleConnection& conn, bool status)
 {
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, status);
-    conn.write(sbuf.data(), sbuf.size());
+    flexbuffers::Builder fbb;
+    fbb.Bool(status);
+    fbb.Finish();
+    conn.write(fbb.GetBuffer());
 }
+
+template<typename T>
+struct is_bool : std::false_type
+{
+};
+
+template<>
+struct is_bool<bool> : std::true_type
+{
+};
+
+template<typename T>
+struct is_string : std::false_type
+{
+};
+
+template<>
+struct is_string<std::string> : std::true_type
+{
+};
 
 template<typename T>
 void sendStatusAndValues(simple_socket::SimpleConnection& conn, bool status, const std::vector<T>& values)
 {
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, status);
-    msgpack::pack(sbuf, values);
-    conn.write(sbuf.data(), sbuf.size());
+    flexbuffers::Builder fbb;
+    fbb.Vector([&] {
+        fbb.Bool(status);
+        if constexpr (is_bool<T>::value) {
+            // If T is std::vector<bool>, pack each value as a boolean
+            fbb.Vector([&] {
+                for (const bool value : values) {
+                    fbb.Bool(value);
+                }
+            });
+        } else if constexpr (is_string<T>::value) {
+            // If T is std::string, pack each string
+            fbb.Vector([&] {
+                for (const auto& value : values) {
+                    fbb.String(value);
+                }
+            });
+        } else {
+            fbb.Vector(values);
+        }
+    });
+
+    std::cout << "HEI" << std::endl;
+
+    fbb.Finish();
+    conn.write(fbb.GetBuffer());
 }
 
 inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn, const std::string& fmu, const std::string& instanceName)
@@ -30,23 +74,15 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
 
     std::unique_ptr<fmilibcpp::slave> slave;
     std::vector<uint8_t> buffer(1024 * 32);
-    ecos::proxy::opcodes op{ecos::proxy::opcodes::NONE};
+    auto op{ecos::proxy::opcodes::NONE};
     try {
         bool stop{false};
         while (!stop) {
             const int read = conn->read(buffer);
 
-            uint8_t func;
-            std::size_t offset = 0;
-            try {
-                auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                oh.get().convert(func);
-            } catch (const std::exception& e) {
-                spdlog::error("Exception on unpack: {}", e.what());
-                sendStatus(*conn, false);
-                continue;
-            }
+            auto root = flexbuffers::GetRoot(buffer.data(), read).AsVector();
 
+            uint8_t func = root[0].AsUInt8();
             op = ecos::proxy::int_to_enum(func);
             spdlog::trace("Got opcode: {}", opcode_to_string(op));
             switch (op) {
@@ -57,15 +93,9 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
                     conn->write(&token, 1);
                 } break;
                 case ecos::proxy::opcodes::enter_initialization_mode: {
-                    double startTime;
-                    double endTime;
-                    double tolerance;
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(startTime);
-                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(endTime);
-                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(tolerance);
+                    double startTime = root[1].AsDouble();
+                    double endTime = root[2].AsDouble();
+                    double tolerance = root[3].AsDouble();
 
                     const auto status = slave->enter_initialization_mode(startTime, endTime, tolerance);
                     sendStatus(*conn, status);
@@ -75,12 +105,9 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
                     sendStatus(*conn, status);
                 } break;
                 case ecos::proxy::opcodes::step: {
-                    double currentTime;
-                    double stepSize;
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(currentTime);
-                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(stepSize);
+                    double currentTime = root[1].AsDouble();
+                    double stepSize = root[2].AsDouble();
+
                     const auto status = slave->step(currentTime, stepSize);
                     sendStatus(*conn, status);
                 } break;
@@ -94,21 +121,23 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
                     continue;
                 }
                 case ecos::proxy::opcodes::read_int: {
-                    std::vector<fmilibcpp::value_ref> vr;
+                    const auto flexVr = root[1].AsTypedVector();
+                    std::vector<fmilibcpp::value_ref> vr(flexVr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        vr[i] = flexVr[i].AsUInt32();
+                    }
 
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(vr);
-
-                    std::vector<int> values(vr.size());
+                    std::vector<int32_t> values(vr.size());
                     const auto status = slave->get_integer(vr, values);
 
                     sendStatusAndValues(*conn, status, values);
                 } break;
                 case ecos::proxy::opcodes::read_real: {
-                    std::vector<fmilibcpp::value_ref> vr;
-
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(vr);
+                    const auto flexVr = root[1].AsTypedVector();
+                    std::vector<fmilibcpp::value_ref> vr(flexVr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        vr[i] = flexVr[i].AsUInt32();
+                    }
 
                     std::vector<double> values(vr.size());
                     const auto status = slave->get_real(vr, values);
@@ -116,10 +145,11 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
                     sendStatusAndValues(*conn, status, values);
                 } break;
                 case ecos::proxy::opcodes::read_string: {
-                    std::vector<fmilibcpp::value_ref> vr;
-
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(vr);
+                    const auto flexVr = root[1].AsTypedVector();
+                    std::vector<fmilibcpp::value_ref> vr(flexVr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        vr[i] = flexVr[i].AsUInt32();
+                    }
 
                     std::vector<std::string> values(vr.size());
                     const auto status = slave->get_string(vr, values);
@@ -127,10 +157,11 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
                     sendStatusAndValues(*conn, status, values);
                 } break;
                 case ecos::proxy::opcodes::read_bool: {
-                    std::vector<fmilibcpp::value_ref> vr;
-
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(vr);
+                    const auto flexVr = root[1].AsTypedVector();
+                    std::vector<fmilibcpp::value_ref> vr(flexVr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        vr[i] = flexVr[i].AsUInt32();
+                    }
 
                     std::vector<bool> values(vr.size());
                     const auto status = slave->get_boolean(vr, values);
@@ -138,49 +169,65 @@ inline void client_handler(std::unique_ptr<simple_socket::SimpleConnection> conn
                     sendStatusAndValues(*conn, status, values);
                 } break;
                 case ecos::proxy::opcodes::write_int: {
-                    std::vector<fmilibcpp::value_ref> vr;
-                    std::vector<int> values;
+                    const auto flexVr = root[1].AsTypedVector();
+                    const auto flexValues = root[2].AsTypedVector();
 
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(vr);
-                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(values);
+                    std::vector<fmilibcpp::value_ref> vr(flexVr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        vr[i] = flexVr[i].AsUInt32();
+                    }
+                    std::vector<int32_t> values(vr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        values[i] = flexValues[i].AsInt32();
+                    }
 
                     const auto status = slave->set_integer(vr, values);
                     sendStatus(*conn, status);
                 } break;
                 case ecos::proxy::opcodes::write_real: {
-                    std::vector<fmilibcpp::value_ref> vr;
-                    std::vector<double> values;
+                    const auto flexVr = root[1].AsTypedVector();
+                    const auto flexValues = root[2].AsTypedVector();
 
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(vr);
-                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(values);
+                    std::vector<fmilibcpp::value_ref> vr(flexVr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        vr[i] = flexVr[i].AsUInt32();
+                    }
+                    std::vector<double> values(vr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        values[i] = flexValues[i].AsDouble();
+                    }
 
                     const auto status = slave->set_real(vr, values);
                     sendStatus(*conn, status);
                 } break;
                 case ecos::proxy::opcodes::write_string: {
-                    std::vector<fmilibcpp::value_ref> vr;
-                    std::vector<std::string> values;
+                    const auto flexVr = root[1].AsTypedVector();
+                    const auto flexValues = root[2].AsTypedVector();
 
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(vr);
-                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(values);
+                    std::vector<fmilibcpp::value_ref> vr(flexVr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        vr[i] = flexVr[i].AsUInt32();
+                    }
+                    std::vector<std::string> values(vr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        values[i] = flexValues[i].AsString().str();
+                    }
 
                     const auto status = slave->set_string(vr, values);
                     sendStatus(*conn, status);
                 } break;
                 case ecos::proxy::opcodes::write_bool: {
-                    std::vector<fmilibcpp::value_ref> vr;
-                    std::vector<bool> values;
+                    const auto flexVr = root[1].AsTypedVector();
+                    const auto flexValues = root[2].AsTypedVector();
 
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(vr);
-                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), read, offset);
-                    oh.get().convert(values);
+                    std::vector<fmilibcpp::value_ref> vr(flexVr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        vr[i] = flexVr[i].AsUInt32();
+                    }
+                    std::vector<bool> values(vr.size());
+                    for (auto i = 0; i < flexVr.size(); i++) {
+                        values[i] = flexValues[i].AsBool();
+                    }
 
                     const auto status = slave->set_boolean(vr, values);
                     sendStatus(*conn, status);

@@ -7,18 +7,18 @@ def main():
 
     EcosLib.set_log_level("debug")
 
-    fmuFolder = f"{__file__}/../../../data/fmus/1.0"
-    result_file = f"{__file__}/../results/python/bouncing_ball.csv"
+    fmu_folder = f"{__file__}/../../../data/fmus/1.0"
+    result_file = f"results/python/bouncing_ball.csv"
 
     ss = EcosSimulationStructure()
     if True:
-        ss.add_model("damper", f"{fmuFolder}/Damper.fmu")
-        ss.add_model("mass", f"{fmuFolder}/Mass.fmu")
-        ss.add_model("spring", f"{fmuFolder}/Spring.fmu")
+        ss.add_model("damper", f"{fmu_folder}/Damper.fmu")
+        ss.add_model("mass", f"{fmu_folder}/Mass.fmu")
+        ss.add_model("spring", f"{fmu_folder}/Spring.fmu")
     else:
-        ss.add_model("damper", f"proxyfmu://localhost?file={fmuFolder}/Damper.fmu")
-        ss.add_model("mass", f"proxyfmu://localhost?file={fmuFolder}/Mass.fmu")
-        ss.add_model("spring", f"proxyfmu://localhost?file={fmuFolder}/Spring.fmu")
+        ss.add_model("damper", f"proxyfmu://localhost?file={fmu_folder}/Damper.fmu")
+        ss.add_model("mass", f"proxyfmu://localhost?file={fmu_folder}/Mass.fmu")
+        ss.add_model("spring", f"proxyfmu://localhost?file={fmu_folder}/Spring.fmu")
 
     ss.make_real_connection("spring::for_xx", "mass::in_l_u")
     ss.make_real_connection("spring::for_yx", "mass::in_l_w")
@@ -40,17 +40,17 @@ def main():
     if not ss.add_parameter_set("initialValues", params):
         print(EcosLib.get_last_error())
     
-    sim = EcosSimulation(structure=ss, step_size=1.0/100)
-    del ss
+    with(EcosSimulation(structure=ss, step_size=1.0/100) as sim):
 
-    sim.add_csv_writer(result_file)
+        del ss
 
-    if not sim.init(parameter_set="initialValues"):
-        print(EcosLib.get_last_error())
+        sim.add_csv_writer(result_file)
 
-    sim.step_until(80)
-    sim.terminate()
-    del sim
+        if not sim.init(parameter_set="initialValues"):
+            print(EcosLib.get_last_error())
+
+        sim.step_until(80)
+        sim.terminate()
 
     config = TimeSeriesConfig(
         title="Mass-spring-damper",

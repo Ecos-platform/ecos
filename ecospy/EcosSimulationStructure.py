@@ -41,20 +41,20 @@ class EcosSimulationStructure:
         if isinstance(parameters, EcosParameterSet):
             return self._add_parameter_set(self.handle, name.encode(), parameters.handle)
         elif isinstance(parameters, dict):
-            params = EcosParameterSet()
-            for key, value in parameters.items():
-                if isinstance(value, float):
-                    params.add_real(key, value)
-                elif isinstance(value, int):
-                    params.add_int(key, value)
-                elif isinstance(value, str):
-                    params.add_string(key, value)
-                elif isinstance(value, bool):
-                    params.add_bool(key, value)
-                else:
-                    raise Exception("Illegal value type. Must be int, float, bool or str")
-            self.add_parameter_set(name, params)
-            del params
+            with (EcosParameterSet()) as params:
+                for key, value in parameters.items():
+                    if isinstance(value, float):
+                        params.add_real(key, value)
+                    elif isinstance(value, int):
+                        params.add_int(key, value)
+                    elif isinstance(value, str):
+                        params.add_string(key, value)
+                    elif isinstance(value, bool):
+                        params.add_bool(key, value)
+                    else:
+                        raise Exception("Illegal value type. Must be int, float, bool or str")
+                return self.add_parameter_set(name, params)
+
         else:
             raise Exception("Illegal parameter type. Must be EcosParameterSet or dict")
 
@@ -74,8 +74,13 @@ class EcosSimulationStructure:
     def handle(self):
         return self._handle
 
-    def __del__(self):
-        simulation_structure_destroy = dll.ecos_simulation_structure_destroy
-        simulation_structure_destroy.argtypes = [c_void_p]
+    def free(self):
+        if not self._handle is None:
+            simulation_structure_destroy = dll.ecos_simulation_structure_destroy
+            simulation_structure_destroy.argtypes = [c_void_p]
 
-        simulation_structure_destroy(self._handle)
+            simulation_structure_destroy(self._handle)
+            self._handle = None
+
+    def __del__(self):
+        self.free()

@@ -11,6 +11,7 @@ class MyListener(SimulationListener):
         print(f"pre invoked @ t={info.time}")
         if info.time > 5:
             self.sim.remove_listener(self.name)
+            print(f"Removed listener at t={info.time}")
 
 
 def main():
@@ -19,19 +20,16 @@ def main():
     EcosLib.set_log_level("debug")
 
     ssp_dir = f"{__file__}/../../../data/ssp/quarter_truck/"
-    result_file = f"{__file__}/../results/python/quarter_truck.csv"
+    result_file = f"results/python/quarter_truck.csv"
 
-    sim = EcosSimulation(ssp_path=f"{ssp_dir}", step_size=1.0 / 100)
+    with (EcosSimulation(ssp_path=f"{ssp_dir}", step_size=1.0 / 100)) as sim:
 
-    sim.add_csv_writer(result_file, f"{ssp_dir}/LogConfig.xml")
-    sim.add_listener("custom_listener", MyListener(sim))
+        sim.add_csv_writer(result_file, f"{ssp_dir}/LogConfig.xml")
+        sim.add_listener("custom_listener", MyListener(sim))
 
-    sim.init(parameter_set="initialValues")
-
-    sim.step_until(time_point=10)
-
-    sim.terminate()
-    del sim
+        sim.init(parameter_set="initialValues")
+        sim.step_until(time_point=10)
+        sim.terminate()
 
     config = TimeSeriesConfig(
         title="Quarter-truck",

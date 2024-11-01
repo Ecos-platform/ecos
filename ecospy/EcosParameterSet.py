@@ -1,6 +1,6 @@
 from ctypes import c_void_p, c_char_p, c_int, c_bool, c_double
 
-from .lib import dll
+from .lib import dll, EcosLib
 
 
 class EcosParameterSet:
@@ -21,6 +21,8 @@ class EcosParameterSet:
         create_parameter_set = dll.ecos_parameter_set_create
         create_parameter_set.restype = c_void_p
         self._handle = create_parameter_set()
+        if self._handle is None:
+            raise Exception(EcosLib.get_last_error())
 
     def add_int(self, name: str, value: int):
         self._parameter_set_add_int(self.handle, name.encode(), value)
@@ -38,8 +40,19 @@ class EcosParameterSet:
     def handle(self):
         return self._handle
 
-    def __del__(self):
-        destroy_parameter_set = dll.ecos_parameter_set_destroy
-        destroy_parameter_set.argtypes = [c_void_p]
+    def free(self):
+        if not self._handle is None:
+            destroy_parameter_set = dll.ecos_parameter_set_destroy
+            destroy_parameter_set.argtypes = [c_void_p]
 
-        destroy_parameter_set(self.handle)
+            destroy_parameter_set(self._handle)
+            self._handle = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.free()
+
+    def __del__(self):
+        self.free()

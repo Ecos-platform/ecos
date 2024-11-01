@@ -199,8 +199,19 @@ class EcosSimulation:
 
         terminate_simulation(self.sim)
 
-    def __del__(self):
-        destroy_simulation = dll.ecos_simulation_destroy
-        destroy_simulation.argtypes = [c_void_p]
+    def free(self):
+        if not self.sim is None:
+            destroy_simulation = dll.ecos_simulation_destroy
+            destroy_simulation.argtypes = [c_void_p]
 
-        destroy_simulation(self.sim)
+            destroy_simulation(self.sim)
+            self.sim = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.free()
+
+    def __del__(self):
+       self.free()

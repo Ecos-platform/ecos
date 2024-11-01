@@ -9,12 +9,12 @@
 namespace
 {
 
-void loggerFmi3(fmi3InstanceEnvironment instanceEnvironment,
-                 fmi3Status status,
-                 fmi3String category,
-                 fmi3String message)
+void loggerFmi3(fmi3InstanceEnvironment /*instanceEnvironment*/,
+    fmi3Status /*status*/,
+    fmi3String category,
+    fmi3String message)
 {
-    printf("%s: %s\n",category, message);
+    printf("%s: %s\n", category, message);
 }
 
 } // namespace
@@ -108,16 +108,16 @@ bool fmi3_slave::get_integer(const std::vector<value_ref>& vr, std::vector<int32
     switch (fmi3_getVariableDataType(ref)) {
         case fmi3DataTypeInt8:
             status = fmi3_getInt8(handle_, vr.data(), vr.size(), reinterpret_cast<int8_t*>(values.data()), values.size());
-        break;
+            break;
         case fmi3DataTypeInt16:
             status = fmi3_getInt16(handle_, vr.data(), vr.size(), reinterpret_cast<int16_t*>(values.data()), values.size());
-        break;
+            break;
         case fmi3DataTypeInt32:
             status = fmi3_getInt32(handle_, vr.data(), vr.size(), values.data(), values.size());
-        break;
+            break;
         case fmi3DataTypeInt64:
             status = fmi3_getInt64(handle_, vr.data(), vr.size(), reinterpret_cast<int64_t*>(values.data()), values.size());
-        break;
+            break;
         default:
             return false;
     }
@@ -165,11 +165,61 @@ bool fmi3_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>
     return status == fmi3OK;
 }
 
-bool fmi3_slave::set_integer(const std::vector<value_ref>& vr, const std::vector<int>& values)
+bool fmi3_slave::set_integer(const std::vector<value_ref>& vr, const std::vector<int32_t>& values)
 {
-    // const auto status = fmi3_setInteger(handle_, vr.data(), vr.size(), values.data());
-    // return status == fmi3OK;
-    return false;
+    fmi3Status status;
+    const auto ref = fmi3_getVariableByValueReference(handle_, vr.front());
+    switch (fmi3_getVariableDataType(ref)) {
+        case fmi3DataTypeInt8: {
+            std::vector<fmi3Int8> int8Values(values.size());
+            std::ranges::transform(values, int8Values.begin(),
+                [](int32_t val) { return static_cast<fmi3Int8>(val); });
+            status = fmi3_setInt8(handle_, vr.data(), vr.size(), int8Values.data(), values.size());
+        } break;
+        case fmi3DataTypeInt16: {
+            std::vector<fmi3Int16> int16Values(values.size());
+            std::ranges::transform(values, int16Values.begin(),
+                [](int32_t val) { return static_cast<fmi3Int16>(val); });
+            status = fmi3_setInt16(handle_, vr.data(), vr.size(), int16Values.data(), values.size());
+        } break;
+        case fmi3DataTypeInt32: {
+            status = fmi3_setInt32(handle_, vr.data(), vr.size(), values.data(), values.size());
+        } break;
+        case fmi3DataTypeInt64: {
+            std::vector<fmi3Int64> int64Values(values.size());
+            std::ranges::transform(values, int64Values.begin(),
+                [](int64_t val) { return static_cast<fmi3Int16>(val); });
+            status = fmi3_setInt64(handle_, vr.data(), vr.size(), int64Values.data(), values.size());
+        } break;
+        case fmi3DataTypeUInt8: {
+            std::vector<fmi3UInt8> uInt8Values(values.size());
+            std::ranges::transform(values, uInt8Values.begin(),
+                [](int32_t val) { return static_cast<fmi3Int8>(val); });
+            status = fmi3_setUInt8(handle_, vr.data(), vr.size(), uInt8Values.data(), values.size());
+        } break;
+        case fmi3DataTypeUInt16: {
+            std::vector<fmi3UInt16> uInt16Values(values.size());
+            std::ranges::transform(values, uInt16Values.begin(),
+                [](int32_t val) { return static_cast<fmi3Int16>(val); });
+            status = fmi3_setUInt16(handle_, vr.data(), vr.size(), uInt16Values.data(), values.size());
+        } break;
+        case fmi3DataTypeUInt32: {
+            std::vector<fmi3UInt32> uInt32Values(values.size());
+            std::ranges::transform(values, uInt32Values.begin(),
+                [](int32_t val) { return static_cast<fmi3Int16>(val); });
+            status = fmi3_setUInt32(handle_, vr.data(), vr.size(), uInt32Values.data(), values.size());
+        } break;
+        case fmi3DataTypeUInt64: {
+            std::vector<fmi3UInt64> uInt64Values(values.size());
+            std::ranges::transform(values, uInt64Values.begin(),
+                [](int64_t val) { return static_cast<fmi3Int16>(val); });
+            status = fmi3_setUInt64(handle_, vr.data(), vr.size(), uInt64Values.data(), values.size());
+        } break;
+        default:
+            return false;
+    }
+
+    return status == fmi3OK;
 }
 
 bool fmi3_slave::set_real(const std::vector<value_ref>& vr, const std::vector<double>& values)
@@ -184,7 +234,7 @@ bool fmi3_slave::set_real(const std::vector<value_ref>& vr, const std::vector<do
             status = fmi3_setFloat32(handle_, vr.data(), vr.size(), float32Values.data(), float32Values.size());
         } break;
         case fmi3DataTypeFloat64: {
-            status = fmi3_setFloat64(handle_, vr.data(), vr.size(), const_cast<double*>(values.data()), values.size());
+            status = fmi3_setFloat64(handle_, vr.data(), vr.size(), values.data(), values.size());
         } break;
         default:
             return false;

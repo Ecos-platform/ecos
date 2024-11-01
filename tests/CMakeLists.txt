@@ -11,4 +11,4 @@ endfunction()
 add_subdirectory(ecos)
 add_subdirectory(proxyfmu)
 add_subdirectory(fmilibcpp)
-#add_subdirectory(reference_fmus)
+#add_subdirectory(reference_fmus) #disabled due to CI issue

@@ -1,3 +1,4 @@
+import re
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -72,9 +73,9 @@ class Plotter:
             x = xy[0]
             y = xy[1]
 
-            m1 = csv.columns.str.contains(x)
+            m1 = csv.columns.str.contains(re.escape(x))
             data1 = csv.loc[:, m1]
-            m2 = csv.columns.str.contains(y)
+            m2 = csv.columns.str.contains(re.escape(y))
             data2 = csv.loc[:, m2]
             plt.plot(data1, data2, label=name)
 

@@ -44,6 +44,12 @@ jobs:
           name: ecos
           path: build/bin/ecos*
 
+      - uses: actions/upload-artifact@v3
+        if: matrix.build_type == 'Release'
+        with:
+          name: ecos
+          path: build/bin/proxyfmu*
+
   cmake-on-windows:
 
     timeout-minutes: 15
@@ -81,3 +87,9 @@ jobs:
         with:
           name: ecos
           path: build/bin/ecos*
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.build_type == 'Release'
+        with:
+          name: ecos
+          path: build/bin/proxyfmu*

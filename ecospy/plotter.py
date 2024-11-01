@@ -1,14 +1,16 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
+from typing import Callable
 
 
 class TimeSeriesConfig:
 
-    def __init__(self, title: str, y_label: str, identifiers: list[str]):
+    def __init__(self, title: str, y_label: str, identifiers: list[str], modifiers: dict[str, Callable[[any], any]] = None):
         self.title = title
         self.y_label = y_label
         self.identifiers = identifiers
+        self.modifiers = modifiers
 
 
 class XYSeriesConfig:
@@ -50,6 +52,9 @@ class Plotter:
         for identifier in timeseries.identifiers:
             m = csv.columns.str.contains(identifier)
             data = csv.loc[:, m]
+            if timeseries.modifiers is not None and identifier in timeseries.modifiers:
+                data = data.map(timeseries.modifiers[identifier])
+
             plt.plot(t, data, label=csv.columns[m][0])
 
         plt.legend(loc='upper right')

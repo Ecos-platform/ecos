@@ -1,6 +1,9 @@
 from ecospy import *
 from ecospy.plotter import *
 
+def kelvin_to_deg(value: float) -> float:
+    return value - 273.15
+
 def main():
     print(f"Ecoslib version: {EcosLib.version()}")
 
@@ -24,8 +27,13 @@ def main():
 
     config = TimeSeriesConfig(
         title="ControlledTemperature",
-        y_label="Temperature[kelvin]",
-        identifiers=["model::Temperature_Reference", "model::Temperature_Room"])
+        y_label="Temperature[deg]",
+        identifiers=["model::Temperature_Reference", "model::Temperature_Room"],
+        modifiers={
+            "model::Temperature_Reference" : kelvin_to_deg,
+            "model::Temperature_Room" : kelvin_to_deg
+        }
+    )
     plotter = Plotter(result_file, config)
     plotter.show()
 

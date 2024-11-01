@@ -7,7 +7,7 @@ def main():
     EcosLib.set_log_level("debug")
 
     fmu_path = f"{__file__}/../../../data/fmus/3.0/ref/BouncingBall.fmu"
-    result_file = f"{__file__}/../results/python/quarter_truck.csv"
+    result_file = f"{__file__}/../results/python/bouncing_ball.csv"
 
     ss = EcosSimulationStructure()
     if not ss.add_model("ball", fmu_path):

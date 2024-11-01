@@ -128,7 +128,7 @@ To use the python interface, simply clone the project and run:
 
 `pip install ./ecospy`
 
-> Note: You will need `cmake` and `wheel`
+> Note: You will need `wheel` in addition to the compile-time requirements listed further below
 
 See [here](examples/quarter_truck/quarter_truck.py) for an example.
 
@@ -139,8 +139,8 @@ See [here](examples/quarter_truck/quarter_truck.py) for an example.
 ### Compile-time requirements
 
 * Windows (10 >=) or Ubuntu (20.04 >=) 
-* C++17 compiler (MSVC >= 16 || gcc9 >=)
-* CMake >= 3.17
+* C++20 compiler (MSVC >= 17 || gcc11 >=)
+* CMake >= 3.19
 * Vcpkg
 
 #### Additional Linux requirements
@@ -148,7 +148,7 @@ See [here](examples/quarter_truck/quarter_truck.py) for an example.
 `sudo apt install libtbb-dev`
 
 ### Run-time requirements
-* Python3 (required for plotting)
+* Python3 (optional, required for plotting)
   * matplotlib
   * pandas
 

@@ -69,7 +69,33 @@ int main() {
     
     sim->terminate();
 }
+```
 
+```python
+print(f"Ecoslib version: {EcosLib.version()}")
+
+EcosLib.set_log_level("debug")
+
+fmu_path = "BouncingBall.fmu"
+result_file = f"results/bouncing_ball.csv"
+
+ss = EcosSimulationStructure()
+if not ss.add_model("ball", fmu_path):
+    raise Exception(EcosLib.get_last_error())
+
+with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
+
+    sim.add_csv_writer(result_file)
+    sim.init()
+    sim.step_until(10)
+    sim.terminate()
+
+config = TimeSeriesConfig(
+    title="BouncingBall",
+    y_label="Height[m]",
+    identifiers=["ball::h"])
+plotter = Plotter(result_file, config)
+plotter.show()
 ```
 
 ### SSP example

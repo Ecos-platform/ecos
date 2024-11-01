@@ -145,7 +145,7 @@ See [here](examples/quarter_truck/quarter_truck.py) for an example.
 
 #### Additional Linux requirements
 
-`sudo apt install libtbb-dev`
+`sudo apt install libtbb-dev unzip`
 
 ### Run-time requirements
 * Python3 (optional, required for plotting)

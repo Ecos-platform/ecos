@@ -299,7 +299,7 @@ bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::v
     const auto root = flexbuffers::GetRoot(buffer.data(), read).AsVector();
     const bool status = root[0].AsBool();
     if (!status) return false;
-    const auto flexValues = root[1].AsTypedVector();
+    const auto flexValues = root[1].AsVector();
     for (auto i = 0; i < flexValues.size(); i++) {
         values[i] = flexValues[i].AsString().str();
     }
@@ -332,7 +332,7 @@ bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::
     const auto root = flexbuffers::GetRoot(buffer.data(), read).AsVector();
     const bool status = root[0].AsBool();
     if (!status) return false;
-    const auto flexValues = root[1].AsTypedVector();
+    const auto flexValues = root[1].AsVector();
     for (auto i = 0; i < flexValues.size(); i++) {
         values[i] = flexValues[i].AsBool();
     }

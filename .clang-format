@@ -30,7 +30,7 @@ IncludeCategories:
     Priority: 10
   - Regex:      '^[<"]ecos[/.]'
     Priority:   20
-  - Regex:      '^[<"](CLI|msgpack|simple_socket|ssp|spdlog|fmi4c|proxyfmu|subprocess)[/.]'
+  - Regex:      '^[<"](CLI|flatbuffers|simple_socket|ssp|spdlog|fmi4c|proxyfmu|subprocess)[/.]'
     Priority:   30
   - Regex:      '^"'
     Priority:   10

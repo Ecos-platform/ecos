@@ -167,7 +167,7 @@ target_link_libraries(libecos
         fmt::fmt
         PRIVATE
         simple_socket
-        msgpack-cxx
+        flatbuffers::flatbuffers
         spdlog::spdlog
         pugixml::pugixml
         fmi4c

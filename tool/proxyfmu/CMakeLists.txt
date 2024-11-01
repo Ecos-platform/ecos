@@ -17,7 +17,7 @@ target_link_libraries(proxyfmu
         fmt::fmt
         CLI11::CLI11
         spdlog::spdlog
-        msgpack-cxx
+        flatbuffers::flatbuffers
         simple_socket
         fmi4c
         "$<TARGET_OBJECTS:util>"

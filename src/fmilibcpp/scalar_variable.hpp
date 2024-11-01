@@ -31,7 +31,7 @@ struct boolean_attributes
     std::optional<bool> start;
 };
 
-using value_ref = unsigned int;
+using value_ref = uint32_t;
 using type_attributes = std::variant<integer_attributes, real_attributes, string_attributes, boolean_attributes>;
 
 inline std::string type_name(const type_attributes& attribute)

@@ -10,11 +10,11 @@
 #include "simple_socket/util/byte_conversion.hpp"
 #include "simple_socket/util/port_query.hpp"
 #include <CLI/CLI.hpp>
-#include <msgpack.hpp>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+#include <flatbuffers/flexbuffers.h>
 #include <iostream>
 #include <random>
 #include <utility>
@@ -111,24 +111,19 @@ int run_boot_application(const int port)
                     buffer.resize(msgSize);
                     conn->readExact(buffer);
 
-                    std::string fmuName;
-                    std::string instanceName;
-                    std::string data;
+                    const auto root = flexbuffers::GetRoot(buffer.data(), msgSize).AsVector();
 
-                    std::size_t offset = 0;
-                    auto oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
-                    oh.get().convert(fmuName);
-                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
-                    oh.get().convert(instanceName);
-                    oh = msgpack::unpack(reinterpret_cast<const char*>(buffer.data()), msgSize, offset);
-                    oh.get().convert(data);
+                    std::string fmuName = root[0].AsString().str();
+                    std::string instanceName = root[1].AsString().str();
+                    std::string data = root[2].AsString().str();
 
                     spdlog::info("Booting: {}::{}, file size={}", fmuName, instanceName, data.size());
 
-                    int16_t instance_port = handler.loadFromBinaryData(fmuName, instanceName, data);
-                    msgpack::sbuffer sbuf;
-                    msgpack::pack(sbuf, instance_port);
-                    conn->write(sbuf.data(), sbuf.size());
+                    const int16_t instance_port = handler.loadFromBinaryData(fmuName, instanceName, data);
+                    flexbuffers::Builder fbb;
+                    fbb.UInt(instance_port);
+                    fbb.Finish();
+                    conn->write(fbb.GetBuffer());
 
                     } catch (const std::exception& ex) {
                         spdlog::error("Exception occurred: {}", ex.what());

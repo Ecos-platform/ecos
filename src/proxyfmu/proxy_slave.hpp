@@ -36,12 +36,12 @@ public:
     bool terminate() override;
     void freeInstance() override;
 
-    bool get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::vector<int>& values) override;
+    bool get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::vector<int32_t>& values) override;
     bool get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vector<double>& values) override;
     bool get_string(const std::vector<fmilibcpp::value_ref>& vr, std::vector<std::string>& values) override;
     bool get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::vector<bool>& values) override;
 
-    bool set_integer(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<int>& values) override;
+    bool set_integer(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<int32_t>& values) override;
     bool set_real(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<double>& values) override;
     bool set_string(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<std::string>& values) override;
     bool set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const std::vector<bool>& values) override;

@@ -5,8 +5,9 @@
 #include <fmi4c.h>
 
 #include <filesystem>
-#include <iostream>
 #include <string>
+
+#include "ecos/logger/logger.hpp"
 
 namespace fmilibcpp
 {
@@ -21,6 +22,11 @@ public:
         : ctx_(handle)
     { }
 
+    fmicontext(const fmicontext& rhs) = delete;
+    fmicontext& operator=(const fmicontext& rhs) = delete;
+    fmicontext(fmicontext&& rhs) = delete;
+    fmicontext& operator=(fmicontext&& rhs) = delete;
+
     ~fmicontext()
     {
         std::string unzippedLoc = fmi4c_getUnzippedLocation(ctx_);
@@ -30,9 +36,8 @@ public:
             std::error_code success;
             std::filesystem::remove_all(unzippedLoc, success);
             if (!success) {
-                std::cout << "[ecos] Removed lingering folder: " << unzippedLoc << std::endl;
+                ecos::log::debug("Removed lingering folder: {}", unzippedLoc);
             }
-
         }
     }
 };

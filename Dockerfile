@@ -15,12 +15,7 @@ RUN apt-get update \
     libtbb-dev \
   && apt-get clean
 
-WORKDIR /home
-RUN git clone https://github.com/Microsoft/vcpkg.git
-WORKDIR /home/vcpkg
-RUN ./bootstrap-vcpkg.sh
-
 WORKDIR /home/ecos
 COPY . .
-RUN cmake . -B build -DCMAKE_TOOLCHAIN_FILE="/home/vcpkg/scripts/buildsystems/vcpkg.cmake" -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE="Release"
+RUN cmake . -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE="Release"
 RUN cmake --build build

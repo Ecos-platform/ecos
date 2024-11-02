@@ -92,9 +92,17 @@ set(sources
 
         "ecos/structure/simulation_structure.cpp"
 
+        "ecos/logger/logger.cpp"
+
+        "ecos/util/temp_dir.cpp"
+        "ecos/util/unzipper.cpp"
+        "ecos/util/uuid.cpp"
+
         "proxyfmu/proxy_fmu.cpp"
         "proxyfmu/proxy_slave.cpp"
 
+        "external/pugixml/pugixml.cpp"
+        "external/flatbuffers/flatbuffers/util.cpp"
 )
 
 # Generate sources from .in files
@@ -104,28 +112,6 @@ configure_file(
         "${generatedFiles}"
         @ONLY
 )
-
-add_library(logger OBJECT "ecos/logger/logger.cpp")
-set_target_properties(logger PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_include_directories(logger PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_link_libraries(logger
-        PUBLIC
-        fmt::fmt
-        PRIVATE
-        spdlog::spdlog
-)
-
-add_library(util OBJECT
-        "ecos/util/temp_dir.cpp"
-        "ecos/util/unzipper.cpp"
-        "ecos/util/uuid.cpp"
-)
-set_target_properties(util PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(util PRIVATE fmt::fmt)
-target_include_directories(util
-        PRIVATE
-        "${PROJECT_SOURCE_DIR}/include"
-        "${PROJECT_SOURCE_DIR}/src")
 
 add_library(fmilibcpp OBJECT
         "fmilibcpp/fmu.cpp"
@@ -141,10 +127,14 @@ add_library(fmilibcpp OBJECT
         "fmilibcpp/fmi3/fmi3_fmu.cpp"
         "fmilibcpp/fmi3/fmi3_slave.cpp"
         "fmilibcpp/fmi3/fmi3_model_description.cpp"
+
+        "external/pugixml/pugixml.cpp"
 )
 set_target_properties(fmilibcpp PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(fmilibcpp PRIVATE fmi4c fmt::fmt)
+target_link_libraries(fmilibcpp PRIVATE fmi4c)
 target_include_directories(fmilibcpp
+        PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog"
         PRIVATE
         "${PROJECT_SOURCE_DIR}/include"
         "${PROJECT_SOURCE_DIR}/src")
@@ -155,24 +145,20 @@ set_target_properties(libecos PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_compile_features(libecos PUBLIC "cxx_std_20")
 target_include_directories(libecos
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/pugixml>"
         PRIVATE
         "${generatedSourcesDir}"
         "${SUBPROCESS_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers"
 )
 target_link_libraries(libecos
-        PUBLIC
-        fmt::fmt
         PRIVATE
-        simple_socket
-        flatbuffers::flatbuffers
-        spdlog::spdlog
-        pugixml::pugixml
         fmi4c
-        "$<TARGET_OBJECTS:util>"
-        "$<TARGET_OBJECTS:logger>"
+        simple_socket
         "$<TARGET_OBJECTS:fmilibcpp>"
 )
 if (UNIX)
@@ -183,9 +169,7 @@ if (ECOS_BUILD_CLIB)
     add_library(libecosc SHARED "${CMAKE_CURRENT_SOURCE_DIR}/ecos/ecos.cpp")
     set_target_properties(libecosc PROPERTIES PREFIX "")
     set_property(TARGET libecosc PROPERTY POSITION_INDEPENDENT_CODE ON)
-    target_link_libraries(libecosc
-            PUBLIC
-            libecos)
+    target_link_libraries(libecosc PUBLIC libecos)
 endif ()
 
 # Make sure executable is up to date

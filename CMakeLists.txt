@@ -1,7 +1,4 @@
 cmake_minimum_required(VERSION 3.19)
-if (NOT DEFINED CMAKE_TOOLCHAIN_FILE AND NOT $ENV{VCPKG_ROOT} STREQUAL "")
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
-endif ()
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" projectVersion)
 project("libecos" VERSION ${projectVersion})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
@@ -49,6 +46,11 @@ set(SUBPROCESS_INCLUDE_DIR "${CMAKE_BINARY_DIR}/thirdparty")
 file(DOWNLOAD https://raw.githubusercontent.com/Ecos-platform/subprocess.h/master/subprocess.h
         "${SUBPROCESS_INCLUDE_DIR}/subprocess/subprocess.h")
 
+set(CLI11_INCLUDE_DIR "${CMAKE_BINARY_DIR}/thirdparty")
+file(DOWNLOAD https://github.com/CLIUtils/CLI11/releases/download/v2.4.2/CLI11.hpp
+        "${SUBPROCESS_INCLUDE_DIR}/cli11/CLI11.h")
+
+
 include(FetchContent)
 set(SIMPLE_SOCKET_BUILD_TESTS OFF)
 FetchContent_Declare(
@@ -66,15 +68,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmi4c)
 
-
-find_package(fmt CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
-find_package(pugixml CONFIG REQUIRED)
-find_package(flatbuffers CONFIG REQUIRED)
-
-if (ECOS_BUILD_CLI)
-    find_package(CLI11 CONFIG REQUIRED)
-endif ()
 
 # ==============================================================================
 # Targets

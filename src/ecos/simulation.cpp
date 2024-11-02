@@ -5,6 +5,7 @@
 #include "ecos/logger/logger.hpp"
 
 #include <execution>
+#include <iostream>
 #include <ranges>
 
 using namespace ecos;
@@ -25,7 +26,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
         }
 
         int parameterSetAppliedCount = 0;
-        for (auto& instance : instances_) {
+        for (const auto& instance : instances_) {
             double start = startTime.value_or(0);
             if (start < 0) {
                 throw std::runtime_error("Explicitly defined startTime must be greater than 0!");
@@ -104,6 +105,7 @@ double simulation::step(unsigned int numStep)
             instance->get_properties().apply_gets();
         });
 
+        lastDelta_ = newT - currentTime_;
         currentTime_ = newT;
         ++num_iterations_;
 
@@ -120,8 +122,10 @@ void simulation::step_until(double t)
     if (t <= currentTime_) {
         log::warn("Input time {} is not greater than the current simulation time {}. Simulation will not progress.", t, currentTime_);
     } else {
-        while (currentTime_ < t) {
+        double newT = (currentTime_ + lastDelta_);
+        while (newT < t) {
             step();
+            newT = currentTime_ + lastDelta_;
         }
     }
 }

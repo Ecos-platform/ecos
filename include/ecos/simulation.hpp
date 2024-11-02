@@ -110,6 +110,7 @@ public:
     }
 
 private:
+    double lastDelta_{};
     double currentTime_{0};
     bool initialized_{false};
     bool terminated_{false};

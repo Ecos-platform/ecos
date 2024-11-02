@@ -244,6 +244,11 @@ void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps)
     sim->cpp_sim->step(numSteps);
 }
 
+void ecos_simulation_step_for(ecos_simulation_t* sim, double duration)
+{
+    sim->cpp_sim->step_for(duration);
+}
+
 void ecos_simulation_step_until(ecos_simulation_t* sim, double timePoint)
 {
     sim->cpp_sim->step_until(timePoint);

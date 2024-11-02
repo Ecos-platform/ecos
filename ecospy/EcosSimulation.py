@@ -38,6 +38,9 @@ class EcosSimulation:
         self._step_simulation = dll.ecos_simulation_step
         self._step_simulation.argtypes = [c_void_p, c_size_t]
 
+        self._step_simulation_for = dll.ecos_simulation_step_for
+        self._step_simulation_for.argtypes = [c_void_p, c_double]
+
         self._step_simulation_until = dll.ecos_simulation_step_until
         self._step_simulation_until.argtypes = [c_void_p, c_double]
 
@@ -189,6 +192,9 @@ class EcosSimulation:
 
     def step(self, num_steps: int = 1):
         self._step_simulation(self.sim, num_steps)
+
+    def step_for(self, duration: float):
+        self._step_simulation_until(self.sim, duration)
 
     def step_until(self, time_point: float):
         self._step_simulation_until(self.sim, time_point)

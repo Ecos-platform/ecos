@@ -1,7 +1,4 @@
 cmake_minimum_required(VERSION 3.19)
-if (NOT DEFINED CMAKE_TOOLCHAIN_FILE AND NOT $ENV{VCPKG_ROOT} STREQUAL "")
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
-endif ()
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" projectVersion)
 project("libecos" VERSION ${projectVersion})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
@@ -71,8 +68,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmi4c)
 
-
-find_package(flatbuffers CONFIG REQUIRED)
 
 # ==============================================================================
 # Targets

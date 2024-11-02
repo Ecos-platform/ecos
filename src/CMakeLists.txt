@@ -102,7 +102,7 @@ set(sources
         "proxyfmu/proxy_slave.cpp"
 
         "external/pugixml/pugixml.cpp"
-
+        "external/flatbuffers/flatbuffers/util.cpp"
 )
 
 # Generate sources from .in files
@@ -153,12 +153,12 @@ target_include_directories(libecos
         "${generatedSourcesDir}"
         "${SUBPROCESS_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers"
 )
 target_link_libraries(libecos
         PRIVATE
         fmi4c
         simple_socket
-        flatbuffers::flatbuffers
         "$<TARGET_OBJECTS:fmilibcpp>"
 )
 if (UNIX)

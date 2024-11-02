@@ -45,7 +45,7 @@ class CMakeBuild(build_ext):
             '-DCMAKE_BUILD_TYPE={}'.format(build_type),
         ]
         if WINDOWS:
-            cmake_args.extend(['-A', 'x64', '-DVCPKG_TARGET_TRIPLET=x64-windows-static-md'])
+            cmake_args.extend(['-A', 'x64'])
 
         subprocess.check_call(cmake_args)
         cmake_args_build = [

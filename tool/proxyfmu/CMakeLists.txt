@@ -5,6 +5,7 @@ set(sources
         "${PROJECT_SOURCE_DIR}/src/ecos/util/unzipper.cpp"
         "${PROJECT_SOURCE_DIR}/src/ecos/util/uuid.cpp"
         "${PROJECT_SOURCE_DIR}/src/ecos/logger/logger.cpp"
+        "${PROJECT_SOURCE_DIR}/src/external/flatbuffers/flatbuffers/util.cpp"
         "${generatedSourcesDir}/ecos/lib_info.cpp"
 )
 
@@ -15,6 +16,7 @@ target_include_directories(proxyfmu
         "${PROJECT_SOURCE_DIR}/include"
         "${PROJECT_SOURCE_DIR}/src"
         "${PROJECT_SOURCE_DIR}/src/external/spdlog"
+        "${PROJECT_SOURCE_DIR}/src/external/flatbuffers"
         "${SUBPROCESS_INCLUDE_DIR}"
         "${CLI11_INCLUDE_DIR}"
         "${generatedSourcesDir}")
@@ -22,7 +24,6 @@ target_link_libraries(proxyfmu
         PRIVATE
         fmi4c
         simple_socket
-        flatbuffers::flatbuffers
         "$<TARGET_OBJECTS:fmilibcpp>"
 )
 if (UNIX)

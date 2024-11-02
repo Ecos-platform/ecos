@@ -9,12 +9,12 @@
 #include "simple_socket/UnixDomainSocket.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
 #include "simple_socket/util/port_query.hpp"
-#include <CLI/CLI.hpp>
+#include <flatbuffers/flexbuffers.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-#include <flatbuffers/flexbuffers.h>
+#include <CLI11/CLI11.h>
 #include <iostream>
 #include <random>
 #include <utility>

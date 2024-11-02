@@ -7,8 +7,7 @@
 #include "ecos/simulation_runner.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
-#include <CLI/CLI.hpp>
-
+#include <CLI11/CLI11.h>
 #include <iostream>
 
 using namespace ecos;

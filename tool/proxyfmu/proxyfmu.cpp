@@ -14,7 +14,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-#include <CLI11/CLI11.h>
+#include <cli11/CLI11.h>
 #include <iostream>
 #include <random>
 #include <utility>

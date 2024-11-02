@@ -5,7 +5,6 @@
 #include "ecos/logger/logger.hpp"
 
 #include <execution>
-#include <iostream>
 #include <ranges>
 
 using namespace ecos;

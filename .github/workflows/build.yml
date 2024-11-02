@@ -19,18 +19,9 @@ jobs:
         run: |
           sudo apt install libtbb-dev
 
-      - name: Restore artifacts, or run vcpkg, build (and cache artifacts as post step)
-        uses: lukka/run-vcpkg@v10
-        id: runvcpkg
-        with:
-          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-          vcpkgGitCommitId: 'd567b667adba0e72c5c3931ddbe745b66aa34b73'
-          vcpkgJsonGlob: 'vcpkg.json'
-          appendedCacheKey: vcpkginstall
-
       - name: Configure and build
         run: |
-          cmake . -B build -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          cmake . -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           cmake --build build
 
       - name: Test
@@ -63,18 +54,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Restore artifacts, or run vcpkg, build (and cache artifacts as post step)
-        uses: lukka/run-vcpkg@v10
-        id: runvcpkg
-        with:
-          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-          vcpkgGitCommitId: 'd567b667adba0e72c5c3931ddbe745b66aa34b73'
-          vcpkgJsonGlob: 'vcpkg.json'
-          appendedCacheKey: vcpkginstall
-
       - name: Configure and build
         run: |
-          cmake . -A x64 -B build -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static-md -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          cmake . -A x64 -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           cmake --build build --config ${{ matrix.build_type }}
 
       - name: Test

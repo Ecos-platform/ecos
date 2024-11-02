@@ -1,11 +1,13 @@
 from .EcosParameterSet import EcosParameterSet
 from .lib import dll, EcosLib
-from ctypes import c_void_p, c_bool, c_char_p
-
+from ctypes import c_void_p, c_bool, c_char_p, CFUNCTYPE, c_double
 
 class EcosSimulationStructure:
 
     def __init__(self):
+
+        self.modifiers = [] # to keep modifier function alive
+
         create_simulation_structure = dll.ecos_simulation_structure_create
         create_simulation_structure.restype = c_void_p
 
@@ -19,6 +21,9 @@ class EcosSimulationStructure:
 
         self._make_int_connection = dll.ecos_simulation_structure_make_int_connection
         self._make_int_connection.argtypes = [c_void_p, c_char_p, c_char_p]
+
+        self._make_real_connection_mod = dll.ecos_simulation_structure_make_real_connection
+        self._make_real_connection_mod.argtypes = [c_void_p, c_char_p, c_char_p, CFUNCTYPE(c_double, c_double)]
 
         self._make_real_connection = dll.ecos_simulation_structure_make_real_connection
         self._make_real_connection.argtypes = [c_void_p, c_char_p, c_char_p]
@@ -58,8 +63,19 @@ class EcosSimulationStructure:
         else:
             raise Exception("Illegal parameter type. Must be EcosParameterSet or dict")
 
-    def make_real_connection(self, source: str, sink: str):
-        self._make_real_connection(self.handle, source.encode(), sink.encode())
+
+    def make_real_connection(self, source: str, sink: str, modifier = None):
+
+        if modifier is not None:
+            @CFUNCTYPE(c_double, c_double)
+            def _modifier(value: float) -> float:
+                return modifier(value)
+
+            self.modifiers.append(_modifier)
+            self._make_real_connection_mod(self.handle, source.encode(), sink.encode(), _modifier)
+
+        else:
+            self._make_real_connection(self.handle, source.encode(), sink.encode())
 
     def make_int_connection(self, source: str, sink: str):
         self._make_int_connection(self.handle, source.encode(), sink.encode())
@@ -81,6 +97,7 @@ class EcosSimulationStructure:
 
             simulation_structure_destroy(self._handle)
             self._handle = None
+            self.modifiers.clear()
 
     def __del__(self):
         self.free()

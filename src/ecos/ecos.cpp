@@ -167,10 +167,14 @@ void ecos_simulation_structure_make_int_connection(ecos_simulation_structure_t* 
     }
 }
 
-void ecos_simulation_structure_make_real_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink)
+void ecos_simulation_structure_make_real_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink, double (*modifier)(double))
 {
     try {
-        ss->cpp_ss.make_connection<double>(source, sink);
+        if (!modifier) {
+            ss->cpp_ss.make_connection<double>(source, sink);
+        } else {
+            ss->cpp_ss.make_connection<double>(source, sink, [modifier](double value) { return modifier(value); });
+        }
     } catch (...) {
         handle_current_exception();
     }

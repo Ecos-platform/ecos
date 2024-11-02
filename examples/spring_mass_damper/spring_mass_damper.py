@@ -20,7 +20,7 @@ def main():
         ss.add_model("mass", f"proxyfmu://localhost?file={fmu_folder}/Mass.fmu")
         ss.add_model("spring", f"proxyfmu://localhost?file={fmu_folder}/Spring.fmu")
 
-    ss.make_real_connection("spring::for_xx", "mass::in_l_u")
+    ss.make_real_connection("spring::for_xx", "mass::in_l_u", lambda val: val) # dummy modifier for test
     ss.make_real_connection("spring::for_yx", "mass::in_l_w")
     ss.make_real_connection("mass::out_l_u", "spring::dis_xx")
     ss.make_real_connection("mass::out_l_w", "spring::dis_yx")
@@ -42,8 +42,6 @@ def main():
     
     with(EcosSimulation(structure=ss, step_size=1.0/100) as sim):
 
-        del ss
-
         sim.add_csv_writer(result_file)
 
         if not sim.init(parameter_set="initialValues"):
@@ -58,6 +56,8 @@ def main():
         identifiers=["mass::out_l_u"])
     plotter = Plotter(result_file, config)
     plotter.show()
+
+    del ss # when using modifers, cannot del EcosSimulationStructure while simulation is active
 
 
 if __name__ == "__main__":

@@ -51,7 +51,7 @@ class Plotter:
         plt.xlabel("time[s]")
         plt.ylabel(timeseries.y_label)
         for identifier in timeseries.identifiers:
-            m = csv.columns.str.contains(identifier)
+            m = csv.columns.str.contains(re.escape(identifier))
             data = csv.loc[:, m]
             if timeseries.modifiers is not None and identifier in timeseries.modifiers:
                 data = data.map(timeseries.modifiers[identifier])

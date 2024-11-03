@@ -60,7 +60,8 @@ bool ecos_simulation_set_real(ecos_simulation_t* sim, const char* identifier, do
 bool ecos_simulation_set_bool(ecos_simulation_t* sim, const char* identifier, bool value);
 bool ecos_simulation_set_string(ecos_simulation_t* sim, const char* identifier, const char* value);
 
-void ecos_simulation_terminate(ecos_simulation_t* sim);
+bool ecos_simulation_terminate(ecos_simulation_t* sim);
+bool ecos_simulation_reset(ecos_simulation_t* sim);
 void ecos_simulation_destroy(ecos_simulation_t* sim);
 // -------------
 

@@ -199,11 +199,19 @@ class EcosSimulation:
     def step_until(self, time_point: float):
         self._step_simulation_until(self.sim, time_point)
 
-    def terminate(self):
+    def reset(self) -> bool:
+        reset_simulation = dll.ecos_simulation_reset
+        reset_simulation.argtypes = [c_void_p]
+        reset_simulation.restype = c_bool
+
+        return reset_simulation(self.sim)
+
+    def terminate(self) -> bool:
         terminate_simulation = dll.ecos_simulation_terminate
         terminate_simulation.argtypes = [c_void_p]
+        terminate_simulation.restype = c_bool
 
-        terminate_simulation(self.sim)
+        return terminate_simulation(self.sim)
 
     def free(self):
         if not self.sim is None:

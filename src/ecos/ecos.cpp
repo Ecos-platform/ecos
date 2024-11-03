@@ -403,11 +403,27 @@ ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const
     }
 }
 
-void ecos_simulation_terminate(ecos_simulation_t* sim)
+bool ecos_simulation_terminate(ecos_simulation_t* sim)
 {
-    if (sim) {
+    try {
         sim->cpp_sim->terminate();
+    } catch (...) {
+        handle_current_exception();
+        return false;
     }
+    return true;
+}
+
+
+bool ecos_simulation_reset(ecos_simulation_t* sim)
+{
+    try {
+        sim->cpp_sim->reset();
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+    return true;
 }
 
 void ecos_simulation_destroy(ecos_simulation_t* sim)

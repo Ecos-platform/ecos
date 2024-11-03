@@ -2,9 +2,10 @@
 #ifndef ECOS_FMI_MODEL_INSTANCE_HPP
 #define ECOS_FMI_MODEL_INSTANCE_HPP
 
-#include "ecos/model_instance.hpp"
-
 #include "fmilibcpp/buffered_slave.hpp"
+
+#include "ecos/model_instance.hpp"
+#include <ecos/logger/logger.hpp>
 
 namespace ecos
 {

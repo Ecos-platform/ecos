@@ -19,10 +19,9 @@ struct csv_config
 
     void load(const std::filesystem::path& configPath);
 
-    void register_variable(variable_identifier v)
-    {
-        variable_register.emplace_back(std::move(v));
-    }
+    void register_variable(variable_identifier v);
+
+    void clear_on_reset(bool flag);
 
     void enable_plotting(const std::filesystem::path& plotConfig);
 
@@ -33,6 +32,7 @@ struct csv_config
     void verify(const std::vector<variable_identifier>& ids) const;
 
 private:
+    bool clear_on_reset_{true};
     std::optional<std::filesystem::path> plotConfig_;
     std::vector<variable_identifier> variable_register;
 
@@ -59,6 +59,8 @@ public:
     void post_step(simulation& sim) override;
 
     void post_terminate(simulation& sim) override;
+
+    void on_reset() override;
 
 private:
     bool headerWritten{false};

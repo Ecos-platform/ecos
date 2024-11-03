@@ -118,6 +118,15 @@ void csv_writer::post_terminate(simulation& sim)
     }
 }
 
+void csv_writer::on_reset()
+{
+    if (config().clear_on_reset_) {
+        headerWritten = false;
+        outFile_ = std::ofstream(path_.string(), std::ios::out | std::ios::trunc);
+    }
+}
+
+
 void csv_config::verify(const std::vector<variable_identifier>& ids) const
 {
     if (variable_register.empty()) {
@@ -193,6 +202,16 @@ void csv_config::load(const std::filesystem::path& configPath)
             register_variable({instanceName, variableName});
         }
     }
+}
+
+void csv_config::register_variable(variable_identifier v)
+{
+    variable_register.emplace_back(std::move(v));
+}
+
+void csv_config::clear_on_reset(bool flag)
+{
+    clear_on_reset_ = flag;
 }
 
 void csv_config::enable_plotting(const std::filesystem::path& plotConfig)

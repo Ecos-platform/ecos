@@ -73,42 +73,10 @@ csv_writer::csv_writer(const std::filesystem::path& path)
 
 void csv_writer::pre_init(simulation& sim)
 {
-    outFile_ << "iterations" << separator << "time";
-
-    config_.verify(sim.identifiers());
-
-    for (const auto& instance : sim.get_instances()) {
-
-        const auto instanceName = instance->instanceName();
-
-        if (config_.shouldLogInstance(instanceName)) {
-            const auto& properties = instance->get_properties();
-
-            for (const auto& variableName : properties.get_reals() | std::views::keys) {
-                if (config_.shouldLogVariable(variableName)) {
-                    outFile_ << separator << instanceName << "::" << variableName << "[REAL]";
-                }
-            }
-            for (const auto& variableName : properties.get_integers() | std::views::keys) {
-                if (config_.shouldLogVariable(variableName)) {
-                    outFile_ << separator << instanceName << "::" << variableName << "[INT]";
-                }
-            }
-            for (const auto& variableName : properties.get_booleans() | std::views::keys) {
-                if (config_.shouldLogVariable(variableName)) {
-                    outFile_ << separator << instanceName << "::" << variableName << "[BOOL]";
-                }
-            }
-            for (const auto& variableName : properties.get_strings() | std::views::keys) {
-                if (config_.shouldLogVariable(variableName)) {
-                    outFile_ << separator << instanceName << "::" << variableName << "[STR]";
-                }
-            }
-        }
+    if (!headerWritten) {
+        write_header(sim);
+        headerWritten = true;
     }
-
-    outFile_ << "\n";
-    outFile_.flush();
 }
 
 void csv_writer::post_init(simulation& sim)
@@ -235,6 +203,47 @@ void csv_config::enable_plotting(const std::filesystem::path& plotConfig)
     }
     plotConfig_ = absolute(plotConfig);
 }
+
+void csv_writer::write_header(const simulation& sim)
+{
+    outFile_ << "iterations" << separator << "time";
+
+    config_.verify(sim.identifiers());
+
+    for (const auto& instance : sim.get_instances()) {
+
+        const auto instanceName = instance->instanceName();
+
+        if (config_.shouldLogInstance(instanceName)) {
+            const auto& properties = instance->get_properties();
+
+            for (const auto& variableName : properties.get_reals() | std::views::keys) {
+                if (config_.shouldLogVariable(variableName)) {
+                    outFile_ << separator << instanceName << "::" << variableName << "[REAL]";
+                }
+            }
+            for (const auto& variableName : properties.get_integers() | std::views::keys) {
+                if (config_.shouldLogVariable(variableName)) {
+                    outFile_ << separator << instanceName << "::" << variableName << "[INT]";
+                }
+            }
+            for (const auto& variableName : properties.get_booleans() | std::views::keys) {
+                if (config_.shouldLogVariable(variableName)) {
+                    outFile_ << separator << instanceName << "::" << variableName << "[BOOL]";
+                }
+            }
+            for (const auto& variableName : properties.get_strings() | std::views::keys) {
+                if (config_.shouldLogVariable(variableName)) {
+                    outFile_ << separator << instanceName << "::" << variableName << "[STR]";
+                }
+            }
+        }
+    }
+
+    outFile_ << "\n";
+    outFile_.flush();
+}
+
 
 std::string plotScript()
 {

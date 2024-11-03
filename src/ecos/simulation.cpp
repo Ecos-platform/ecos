@@ -66,8 +66,6 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
         for (const auto& instance : instances_) {
             instance->get_properties().apply_sets();
             instance->get_properties().apply_gets();
-
-            algorithm_->model_instance_added(instance.get());
         }
 
         for (auto l = listeners_; const auto& listener : listeners_ | std::views::values) {
@@ -142,10 +140,8 @@ void simulation::terminate()
 
         log::debug("Terminating simulation..");
 
-        for (auto& instance : instances_) {
+        for (const auto& instance : instances_) {
             instance->terminate();
-
-            algorithm_->model_instance_removed(instance.get());
         }
 
         for (auto l = listeners_; const auto& listener : l | std::views::values) {
@@ -200,6 +196,7 @@ void simulation::add_slave(std::unique_ptr<model_instance> instance)
     }
 
     instances_.emplace_back(std::move(instance));
+    algorithm_->model_instance_added(instances_.back().get());
 }
 
 real_connection* simulation::make_real_connection(const variable_identifier& source, const variable_identifier& sink)

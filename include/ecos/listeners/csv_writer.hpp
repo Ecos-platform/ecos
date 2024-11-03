@@ -61,9 +61,12 @@ public:
     void post_terminate(simulation& sim) override;
 
 private:
+    bool headerWritten{false};
     csv_config config_;
     std::ofstream outFile_;
     std::filesystem::path path_;
+
+    void write_header(const simulation& sim);
 };
 
 } // namespace ecos

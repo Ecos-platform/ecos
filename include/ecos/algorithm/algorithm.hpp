@@ -12,8 +12,6 @@ struct algorithm
 
     virtual void model_instance_added(model_instance* instance) = 0;
 
-    virtual void model_instance_removed(model_instance* instance){}
-
     virtual double step(double currentTime) = 0;
 
     virtual ~algorithm() = default;

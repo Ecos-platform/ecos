@@ -15,13 +15,13 @@ inline void run(const std::string& fmuPath)
     set_logging_level(log::level::debug);
 
     try {
-        auto resolver = default_model_resolver();
-        auto fmuModel = resolver->resolve(fmuPath);
+        const auto resolver = default_model_resolver();
+        const auto fmuModel = resolver->resolve(fmuPath);
 
         simulation sim(std::make_unique<fixed_step_algorithm>(1.0 / 100));
         sim.add_slave(fmuModel->instantiate("slave"));
 
-        auto p = sim.get_real_property("slave::Temperature_Room");
+        const auto p = sim.get_real_property("slave::Temperature_Room");
         p->set_output_modifier([](double value) {
             return value * 10;
         });

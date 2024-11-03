@@ -166,7 +166,6 @@ plotter.show()
 * Windows (10 >=) or Ubuntu (20.04 >=) 
 * C++20 compiler (MSVC >= 17 || gcc11 >=)
 * CMake >= 3.19
-* Vcpkg
 
 #### Additional Linux requirements
 

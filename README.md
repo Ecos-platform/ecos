@@ -5,13 +5,14 @@
 Ecos (Easy co-simulation) is a fast, efficient and very easy to use co-simulation
 engine written in modern C++.
 
-Ecos provides the following features:
-* FMI for Co-simulation version 1.0, 2.0 & 3.0
-* SSP version 1.0
-* Optional sandboxed/remote model execution
-* Post-simulation plotting using matplotlib
-* Command-line-interface (CLI)
-* Simplified Python and C interface
+##### Ecos provides the following features:
+* FMI for Co-simulation version 1.0, 2.0 & 3.0.
+* SSP version 1.0.
+* Optional per process/remote model execution.
+* Post-simulation plotting using matplotlib.
+* Command-line-interface (CLI).
+* Simplified Python and C interface.
+* Simple build process (simply build with CMake or pip install).
 
 ### Building
 
@@ -26,6 +27,15 @@ cmake --build build --config Release
 cmake . -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
+
+### Per process / remote execution
+
+Ecos enabled models to run on separate processes, possibly on another PC.
+Simply prepend `proxyfmu://localhost?file=` to the `fmu(s)` you load.
+This is effectively archived using [simplesocket](https://github.com/markaren/SimpleSocket)
+in conjunction with [flexbuffers](https://flatbuffers.dev/flexbuffers.html).
+Just make sure that the `proxyfmu` target built by `libecos` is on PATH.
+
 
 ### Example
 

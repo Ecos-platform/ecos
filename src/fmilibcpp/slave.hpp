@@ -63,6 +63,21 @@ public:
         return values.front();
     }
 
+    virtual void* get_state()
+    {
+        throw std::runtime_error("get_state not implemented");
+    }
+
+    virtual void set_state(void* state)
+    {
+        throw std::runtime_error("set_state not implemented");
+    }
+
+    virtual void free_state(void* state)
+    {
+        throw std::runtime_error("free_state not implemented");
+    }
+
     virtual bool get_integer(const std::vector<value_ref>& vrs, std::vector<int32_t>& values) = 0;
     virtual bool get_real(const std::vector<value_ref>& vrs, std::vector<double>& values) = 0;
     virtual bool get_string(const std::vector<value_ref>& vrs, std::vector<std::string>& values) = 0;

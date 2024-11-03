@@ -33,6 +33,10 @@ public:
     bool reset() override;
     void freeInstance() override;
 
+    void* get_state() override;
+    void set_state(void* state) override;
+    void free_state(void* state) override;
+
     bool get_integer(const std::vector<value_ref>& vr, std::vector<int32_t>& values) override;
     bool get_real(const std::vector<value_ref>& vr, std::vector<double>& values) override;
     bool get_string(const std::vector<value_ref>& vr, std::vector<std::string>& values) override;

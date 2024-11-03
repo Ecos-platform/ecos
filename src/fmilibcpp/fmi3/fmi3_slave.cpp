@@ -269,6 +269,27 @@ void fmi3_slave::freeInstance()
     }
 }
 
+void* fmi3_slave::get_state()
+{
+    if (!fmi3cs_getCanGetAndSetFMUState(handle_)) {
+        throw std::runtime_error("This instance cannot get and set FMU state: " + instanceName);
+    }
+    void* state = nullptr;
+    fmi3_getFMUState(handle_, &state);
+
+    return state;
+}
+
+void fmi3_slave::free_state(void* state)
+{
+    fmi3_freeFMUState(handle_, &state);
+}
+
+void fmi3_slave::set_state(void* state)
+{
+    fmi3_setFMUState(handle_, state);
+}
+
 fmi3_slave::~fmi3_slave()
 {
     fmi3_slave::freeInstance();

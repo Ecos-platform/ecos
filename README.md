@@ -13,6 +13,7 @@ engine written in modern C++.
 * Command-line-interface (CLI).
 * Simplified Python and C interface.
 * Simple build process (simply build with CMake or pip install).
+* Minimal (and bundled) build depedencies.
 
 ### Building
 
@@ -30,9 +31,9 @@ cmake --build build
 
 ### Per process / remote execution
 
-Ecos enabled models to run on separate processes, possibly on another PC.
-Simply prepend `proxyfmu://localhost?file=` to the `fmu(s)` you load.
-This is effectively archived using [simplesocket](https://github.com/markaren/SimpleSocket)
+Ecos enables models to run on separate processes, possibly on another PC.
+Simply prepend `proxyfmu://localhost?file=` to the path of the `fmu(s)` you load.
+This is effectively achieved using [simplesocket](https://github.com/markaren/SimpleSocket)
 in conjunction with [flexbuffers](https://flatbuffers.dev/flexbuffers.html).
 Just make sure that the `proxyfmu` target built by `libecos` is on PATH.
 

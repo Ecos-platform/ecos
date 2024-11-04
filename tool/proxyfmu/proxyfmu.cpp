@@ -129,7 +129,7 @@ int run_boot_application(const int port)
                         spdlog::error("Exception occurred: {}", ex.what());
                     }
                 }
-            } catch (std::exception&) {}
+            } catch (const std::exception&) {}
 
     });
 
@@ -141,7 +141,7 @@ int run_boot_application(const int port)
     return SUCCESS;
 }
 
-int printHelp(CLI::App& desc)
+int printHelp(const CLI::App& desc)
 {
     std::cout << desc.help() << std::endl;
     return SUCCESS;
@@ -180,7 +180,7 @@ int main(int argc, char** argv)
 
         if (*sub) {
 
-            auto logger = spdlog::stdout_color_mt("proxyfmu");
+            const auto logger = spdlog::stdout_color_mt("proxyfmu");
             set_default_logger(logger);
             logger->set_level(spdlog::level::debug);
 
@@ -194,7 +194,7 @@ int main(int argc, char** argv)
         const auto local = app["--local"]->as<bool>();
         const auto instanceName = app["--instanceName"]->as<std::string>();
 
-        std::string logFile{"logs/" + instanceName + ".txt"};
+        const std::string logFile{"logs/" + instanceName + ".txt"};
         std::ofstream ofs(logFile, std::ofstream::out | std::ofstream::trunc);
         ofs.close();
 

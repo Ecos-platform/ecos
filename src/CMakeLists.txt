@@ -47,21 +47,6 @@ set(privateHeaders
         "ecos/util/unzipper.hpp"
         "ecos/util/uuid.hpp"
 
-        "fmilibcpp/buffered_slave.hpp"
-        "fmilibcpp/fmicontext.hpp"
-        "fmilibcpp/fmu.hpp"
-        "fmilibcpp/model_description.hpp"
-        "fmilibcpp/scalar_variable.hpp"
-        "fmilibcpp/slave.hpp"
-
-        "fmilibcpp/fmi1/fmi1_fmu.hpp"
-        "fmilibcpp/fmi1/fmi1_slave.hpp"
-        "fmilibcpp/fmi1/fmi1_model_description.hpp"
-
-        "fmilibcpp/fmi2/fmi2_fmu.hpp"
-        "fmilibcpp/fmi2/fmi2_slave.hpp"
-        "fmilibcpp/fmi2/fmi2_model_description.hpp"
-
         "proxyfmu/opcodes.hpp"
         "proxyfmu/process_helper.hpp"
         "proxyfmu/proxy_fmu.hpp"
@@ -101,7 +86,6 @@ set(sources
         "proxyfmu/proxy_fmu.cpp"
         "proxyfmu/proxy_slave.cpp"
 
-        "external/pugixml/pugixml.cpp"
         "external/flatbuffers/flatbuffers/util.cpp"
 )
 
@@ -114,6 +98,22 @@ configure_file(
 )
 
 add_library(fmilibcpp OBJECT
+
+        "fmilibcpp/buffered_slave.hpp"
+        "fmilibcpp/fmicontext.hpp"
+        "fmilibcpp/fmu.hpp"
+        "fmilibcpp/model_description.hpp"
+        "fmilibcpp/scalar_variable.hpp"
+        "fmilibcpp/slave.hpp"
+
+        "fmilibcpp/fmi1/fmi1_fmu.hpp"
+        "fmilibcpp/fmi1/fmi1_slave.hpp"
+        "fmilibcpp/fmi1/fmi1_model_description.hpp"
+
+        "fmilibcpp/fmi2/fmi2_fmu.hpp"
+        "fmilibcpp/fmi2/fmi2_slave.hpp"
+        "fmilibcpp/fmi2/fmi2_model_description.hpp"
+
         "fmilibcpp/fmu.cpp"
 
         "fmilibcpp/fmi1/fmi1_fmu.cpp"

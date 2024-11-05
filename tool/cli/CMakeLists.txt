@@ -6,5 +6,5 @@ target_link_libraries(ecos
 )
 target_include_directories(ecos
         PRIVATE
-        "${CLI11_INCLUDE_DIR}"
+        "${THIRD_PARTY_INCLUDE_DIR}"
 )

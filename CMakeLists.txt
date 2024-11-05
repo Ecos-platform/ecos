@@ -34,21 +34,20 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif ()
 
-if(MSVC)
+if (MSVC)
     add_compile_options(/utf-8)
-endif()
+endif ()
 
 # ==============================================================================
 # Dependencies
 # ==============================================================================
 
-set(SUBPROCESS_INCLUDE_DIR "${CMAKE_BINARY_DIR}/thirdparty")
+set(THIRD_PARTY_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/thirdparty")
 file(DOWNLOAD https://raw.githubusercontent.com/Ecos-platform/subprocess.h/master/subprocess.h
-        "${SUBPROCESS_INCLUDE_DIR}/subprocess/subprocess.h")
+        "${THIRD_PARTY_INCLUDE_DIR}/subprocess/subprocess.h")
 
-set(CLI11_INCLUDE_DIR "${CMAKE_BINARY_DIR}/thirdparty")
 file(DOWNLOAD https://github.com/CLIUtils/CLI11/releases/download/v2.4.2/CLI11.hpp
-        "${SUBPROCESS_INCLUDE_DIR}/cli11/CLI11.h")
+        "${THIRD_PARTY_INCLUDE_DIR}/cli11/CLI11.h")
 
 
 include(FetchContent)
@@ -76,26 +75,22 @@ FetchContent_MakeAvailable(fmi4c)
 add_subdirectory(src)
 add_subdirectory(tool)
 
-if (ECOS_BUILD_EXAMPLES OR ECOS_BUILD_TESTS)
 
-    if (ECOS_BUILD_EXAMPLES)
-        add_subdirectory(examples)
-    endif ()
+if (ECOS_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif ()
 
-    if (ECOS_BUILD_TESTS)
+if (ECOS_BUILD_TESTS)
 
-        include(FetchContent)
-        FetchContent_Declare(
-                Catch2
-                GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-                GIT_TAG v3.7.1
-        )
-        FetchContent_MakeAvailable(Catch2)
+    FetchContent_Declare(
+            Catch2
+            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+            GIT_TAG v3.7.1
+    )
+    FetchContent_MakeAvailable(Catch2)
 
-        enable_testing()
-        add_subdirectory(tests)
-    endif ()
-
+    enable_testing()
+    add_subdirectory(tests)
 endif ()
 
 

@@ -18,6 +18,6 @@ temp_dir::~temp_dir()
     std::error_code status;
     remove_all(path_, status);
     if (status) {
-        log::warn("Failed to remove temp folder '{}': {}", path_.string(), status.message());
+        spdlog::warn("Failed to remove temp folder '{}': {}", path_.string(), status.message());
     }
 }

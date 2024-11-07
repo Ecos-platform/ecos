@@ -226,7 +226,7 @@ bool proxy_slave::get_integer(const std::vector<fmilibcpp::value_ref>& vr, std::
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        log::err("[get_integer] Failed to read data from client");
+        spdlog::error("[get_integer] Failed to read data from client");
         return false;
     }
 
@@ -259,7 +259,7 @@ bool proxy_slave::get_real(const std::vector<fmilibcpp::value_ref>& vr, std::vec
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        log::err("[get_real] Failed to read data from client");
+        spdlog::error("[get_real] Failed to read data from client");
         return false;
     }
 
@@ -292,7 +292,7 @@ bool proxy_slave::get_string(const std::vector<fmilibcpp::value_ref>& vr, std::v
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        log::err("[get_string] Failed to read data from client");
+        spdlog::error("[get_string] Failed to read data from client");
         return false;
     }
 
@@ -325,7 +325,7 @@ bool proxy_slave::get_boolean(const std::vector<fmilibcpp::value_ref>& vr, std::
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        log::err("[get_boolean] Failed to read data from client");
+        spdlog::error("[get_boolean] Failed to read data from client");
         return false;
     }
 
@@ -359,7 +359,7 @@ bool proxy_slave::set_integer(const std::vector<fmilibcpp::value_ref>& vr, const
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        log::err("[set_integer] Failed to read data from client");
+        spdlog::error("[set_integer] Failed to read data from client");
         return false;
     }
 
@@ -386,7 +386,7 @@ bool proxy_slave::set_real(const std::vector<fmilibcpp::value_ref>& vr, const st
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        log::err("[set_real] Failed to read data from client");
+        spdlog::error("[set_real] Failed to read data from client");
         return false;
     }
 
@@ -417,7 +417,7 @@ bool proxy_slave::set_string(const std::vector<fmilibcpp::value_ref>& vr, const 
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        log::err("[set_string] Failed to read data from client");
+        spdlog::error("[set_string] Failed to read data from client");
         return false;
     }
 
@@ -448,7 +448,7 @@ bool proxy_slave::set_boolean(const std::vector<fmilibcpp::value_ref>& vr, const
     const int read = client_->read(buffer.data(), buffer.size());
 
     if (read <= 0) {
-        log::err("[set_boolean] Failed to read data from client");
+        spdlog::error("[set_boolean] Failed to read data from client");
         return false;
     }
 
@@ -460,7 +460,7 @@ void proxy_slave::freeInstance()
 {
     if (!freed) {
         freed = true;
-        log::debug("Shutting down proxy for '{}::{}'", modelDescription_.modelName, instanceName);
+        spdlog::debug("Shutting down proxy for '{}::{}'", modelDescription_.modelName, instanceName);
         if (client_) {
             flexbuffers::Builder fbb;
             fbb.Vector([&] {

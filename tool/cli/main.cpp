@@ -15,16 +15,16 @@ using namespace ecos;
 namespace
 {
 
-std::unordered_map<std::string, log::level> map{
-    {"trace", log::level::trace},
-    {"debug", log::level::debug},
-    {"info", log::level::info},
-    {"warn", log::level::warn},
-    {"err", log::level::err},
-    {"off", log::level::off},
+std::unordered_map<std::string, spdlog::level::level_enum> map{
+    {"trace", spdlog::level::trace},
+    {"debug", spdlog::level::debug},
+    {"info", spdlog::level::info},
+    {"warn", spdlog::level::warn},
+    {"err", spdlog::level::err},
+    {"off", spdlog::level::off},
 };
 
-log::level lvl = log::level::info;
+spdlog::level::level_enum lvl = spdlog::level::info;
 
 int print_help(const CLI::App& desc)
 {
@@ -140,7 +140,7 @@ void run_simulation(const CLI::App& vm, simulation& sim)
         const unsigned long i = sim.iterations();
         const double percentComplete = static_cast<double>(i) / static_cast<double>(numSteps) * 100;
         if (i != 0 && i % aTenth == 0 || i == numSteps) {
-            log::info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
+            spdlog::info("{}% complete, simulated {:.3f}s in {:.3f}s, target RTF={:.2f}, actual RTF={:.2f}",
                 percentComplete,
                 sim.time(),
                 runner.wall_clock(),
@@ -155,7 +155,7 @@ void run_simulation(const CLI::App& vm, simulation& sim)
         std::cout << "\t'p' -> pause simulation.." << std::endl;
     }
 
-    log::info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}",
+    spdlog::info("Simulation commencing. Start={}s, stop={}s, stepSize={}s, target RTF={}",
         startTime, stopTime, stepSize, runner.target_real_time_factor());
     auto f = runner.run_while([&] {
         return sim.time() + stepSize <= stopTime;
@@ -174,14 +174,14 @@ void run_simulation(const CLI::App& vm, simulation& sim)
                             if (!sim.terminated()) {
                                 runner.stop();
                                 inputQuit = true;
-                                log::info("Simulation manually aborted at t={:.3f}s", sim.time());
+                                spdlog::info("Simulation manually aborted at t={:.3f}s", sim.time());
                             }
                             return;
                         case 'p':
                             if (runner.toggle_pause()) {
-                                log::info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
+                                spdlog::info("Simulation paused at t={:.3f}. Press 'p' to continue..", sim.time());
                             } else {
-                                log::info("Simulation un-paused..");
+                                spdlog::info("Simulation un-paused..");
                             }
                             break;
                     }
@@ -218,7 +218,7 @@ int main(int argc, char** argv)
 
         CLI11_PARSE(app, argc, argv)
 
-        set_logging_level(lvl);
+        log::create_default_logger(lvl);
 
         std::string csvName;
         const std::filesystem::path path = app["--path"]->as<std::string>();
@@ -233,7 +233,7 @@ int main(int argc, char** argv)
         run_simulation(app, *sim);
 
     } catch (std::exception& e) {
-        log::err("Unhandled Exception reached the top of main: '{}', application will now exit", e.what());
+        spdlog::error("Unhandled Exception reached the top of main: '{}', application will now exit", e.what());
         return 1;
     }
 }

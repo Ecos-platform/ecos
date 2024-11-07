@@ -36,7 +36,7 @@ public:
             std::error_code success;
             std::filesystem::remove_all(unzippedLoc, success);
             if (!success) {
-                ecos::log::debug("Removed lingering folder: {}", unzippedLoc);
+                spdlog::debug("Removed lingering folder: {}", unzippedLoc);
             }
         }
     }

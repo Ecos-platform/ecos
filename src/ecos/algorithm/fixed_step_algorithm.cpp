@@ -28,7 +28,7 @@ int calculateDecimationFactor(const model_instance& m, double baseStepSize)
     const double actualStepSize = baseStepSize * decimationFactor;
     const double diff = std::fabs(actualStepSize - *stepSizeHint);
     if (diff >= EPS) {
-        log::warn("Actual stepSize for {} will be {} rather than requested value {}", m.instanceName(), actualStepSize, *stepSizeHint);
+        spdlog::warn("Actual stepSize for {} will be {} rather than requested value {}", m.instanceName(), actualStepSize, *stepSizeHint);
     }
 
     return decimationFactor;

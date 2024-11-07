@@ -38,7 +38,7 @@ void ecos::load_scenario(simulation& sim, const std::filesystem::path& config)
             if ((var = variable.child("ecos:real"))) {
                 auto p = sim.get_real_property(id);
                 if (!p) {
-                    log::warn("No variable with id: {}", id.str());
+                    spdlog::warn("No variable with id: {}", id.str());
                     continue;
                 }
                 const double value = var.attribute("value").as_double();
@@ -50,7 +50,7 @@ void ecos::load_scenario(simulation& sim, const std::filesystem::path& config)
             } else if ((var = variable.child("ecos:integer"))) {
                 auto p = sim.get_int_property(id);
                 if (!p) {
-                    log::warn("No variable with id: {}", id.str());
+                    spdlog::warn("No variable with id: {}", id.str());
                     continue;
                 }
                 const int value = var.attribute("value").as_int();
@@ -62,7 +62,7 @@ void ecos::load_scenario(simulation& sim, const std::filesystem::path& config)
             } else if ((var = variable.child("ecos:boolean"))) {
                 auto p = sim.get_bool_property(id);
                 if (!p) {
-                    log::warn("No variable with id: {}", id.str());
+                    spdlog::warn("No variable with id: {}", id.str());
                     continue;
                 }
                 const bool value = var.attribute("value").as_bool();
@@ -74,7 +74,7 @@ void ecos::load_scenario(simulation& sim, const std::filesystem::path& config)
             } else if ((var = variable.child("ecos:string"))) {
                 auto p = sim.get_string_property(id);
                 if (!p) {
-                    log::warn("No variable with id: {}", id.str());
+                    spdlog::warn("No variable with id: {}", id.str());
                     continue;
                 }
                 const std::string value = var.attribute("value").as_string();

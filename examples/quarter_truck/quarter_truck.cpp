@@ -8,7 +8,7 @@ using namespace ecos;
 
 int main()
 {
-    set_logging_level(log::level::debug);
+    log::create_default_logger(spdlog::level::debug);
 
     simulation_structure ss;
     const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/fmus/2.0/quarter-truck";
@@ -41,6 +41,6 @@ int main()
         sim->terminate();
     } catch (const std::exception& ex) {
 
-        log::err(ex.what());
+        spdlog::error(ex.what());
     }
 }

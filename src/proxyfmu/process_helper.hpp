@@ -73,16 +73,16 @@ inline void start_process(
     }
 #endif
 
-    log::debug("Checking if proxyfmu is available..");
+    spdlog::debug("Checking if proxyfmu is available..");
     const int statusCode = system(("\"" + execStr + "\" -v").c_str());
     if (statusCode != 0) {
-        log::err("Unable to invoke proxyfmu!");
+        spdlog::error("Unable to invoke proxyfmu!");
 
         bind.set_value("-");
         return;
     }
 
-    log::info("Booting FMU instance '{}'", instanceName);
+    spdlog::info("Booting FMU instance '{}'", instanceName);
 
     const std::string fmuPathStr = fmuPath.string();
     const std::string localStr = toString(local);
@@ -112,9 +112,9 @@ inline void start_process(
                     bind.set_value(bindVal);
 
                     if (!local) {
-                        log::info("FMU proxy instance '{}' instantiated using port {}", instanceName, bindVal);
+                        spdlog::info("FMU proxy instance '{}' instantiated using port {}", instanceName, bindVal);
                     } else {
-                        log::info("FMU proxy instance '{}' instantiated using file '{}'", instanceName, bindVal);
+                        spdlog::info("FMU proxy instance '{}' instantiated using file '{}'", instanceName, bindVal);
                     }
                 }
                 bound = true;
@@ -127,10 +127,10 @@ inline void start_process(
         result = subprocess_join(&process, &status);
 
         if (result == 0 && status == 0 && bound) {
-            log::info("FMU proxy process for instance '{}' returned with status {}", instanceName, status);
+            spdlog::info("FMU proxy process for instance '{}' returned with status {}", instanceName, status);
             return;
         }
-        log::err("External proxy process for instance '{}' returned with status {}. Unable to bind..", instanceName, std::to_string(status));
+        spdlog::error("External proxy process for instance '{}' returned with status {}. Unable to bind..", instanceName, std::to_string(status));
     }
 
     bind.set_value("");

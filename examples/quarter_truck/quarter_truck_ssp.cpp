@@ -9,7 +9,7 @@ using namespace ecos;
 
 int main()
 {
-    log::set_logging_level(ecos::log::level::debug);
+    log::create_default_logger(spdlog::level::debug);
 
     try {
         auto ss = load_ssp(std::string(DATA_FOLDER) + "/ssp/quarter_truck");
@@ -26,11 +26,11 @@ int main()
         spdlog::stopwatch sw;
         sim->init("initialValues");
         sim->step_until(5);
-        log::info("Elapsed {:.4f}s", sw);
+        spdlog::info("Elapsed {:.4f}s", sw);
 
         sim->terminate();
     } catch (const std::exception& ex) {
 
-        log::err(ex.what());
+        spdlog::info(ex.what());
     }
 }

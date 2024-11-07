@@ -11,7 +11,7 @@ std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& 
 {
 
     if (!exists(fmuPath)) {
-        ecos::log::err("No such file: {}", absolute(fmuPath).string());
+        spdlog::error("No such file: {}", absolute(fmuPath).string());
         return nullptr;
     }
 

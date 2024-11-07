@@ -18,7 +18,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
     if (!initialized_) {
 
         initialized_ = true;
-        log::debug("Initializing simulation..");
+        spdlog::debug("Initializing simulation..");
 
         for (auto l = listeners_; const auto& listener : l | std::views::values) {
             listener->pre_init(*this);
@@ -39,7 +39,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
             }
         }
         if (parameterSet) {
-            log::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
+            spdlog::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
         }
 
         scenario_.runInitActions();
@@ -72,7 +72,7 @@ void simulation::init(std::optional<double> startTime, const std::optional<std::
             listener->post_init(*this);
         }
 
-        log::debug("Initialized.");
+        spdlog::debug("Initialized.");
     }
 }
 
@@ -117,7 +117,7 @@ double simulation::step(unsigned int numStep)
 void simulation::step_until(double t)
 {
     if (t <= currentTime_) {
-        log::warn("Input time {} is not greater than the current simulation time {}. Simulation will not progress.", t, currentTime_);
+        spdlog::warn("Input time {} is not greater than the current simulation time {}. Simulation will not progress.", t, currentTime_);
     } else {
         double newT = (currentTime_ + lastDelta_);
         while (newT < t) {
@@ -138,7 +138,7 @@ void simulation::terminate()
     if (!terminated_) {
         terminated_ = true;
 
-        log::debug("Terminating simulation..");
+        spdlog::debug("Terminating simulation..");
 
         for (const auto& instance : instances_) {
             instance->terminate();
@@ -148,13 +148,13 @@ void simulation::terminate()
             listener->post_terminate(*this);
         }
 
-        log::debug("Terminated.");
+        spdlog::debug("Terminated.");
     }
 }
 
 void simulation::reset()
 {
-    log::debug("Resetting simulation at t={}", time());
+    spdlog::debug("Resetting simulation at t={}", time());
     for (const auto& instance : instances_) {
         instance->reset();
     }
@@ -167,7 +167,7 @@ void simulation::reset()
 void simulation::add_listener(const std::string& name, std::shared_ptr<simulation_listener> listener)
 {
     if (listeners_.contains(name)) {
-        log::warn("A listener named {} already exists..", name);
+        spdlog::warn("A listener named {} already exists..", name);
     } else {
         listeners_[name] = std::move(listener);
     }
@@ -175,7 +175,7 @@ void simulation::add_listener(const std::string& name, std::shared_ptr<simulatio
 
 void simulation::remove_listener(const std::string& name)
 {
-    log::debug("Removing listener named {}", name);
+    spdlog::debug("Removing listener named {}", name);
     listeners_.erase(name);
 }
 

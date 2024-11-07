@@ -201,7 +201,7 @@ int main(int argc, char** argv)
         auto file_logger = spdlog::basic_logger_mt("proxyfmu", logFile);
         file_logger->set_level(spdlog::level::debug);
         file_logger->flush_on(spdlog::level::info);
-        set_default_logger(file_logger);
+        set_default_logger(std::move(file_logger));
         spdlog::flush_every(std::chrono::seconds(1));  // Flush every 1 second
 
         const auto fmu = app["--fmu"]->as<std::string>();

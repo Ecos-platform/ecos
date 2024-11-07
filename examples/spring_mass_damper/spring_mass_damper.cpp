@@ -4,7 +4,7 @@
 int main()
 {
 
-    set_logging_level(log::level::debug);
+    log::create_default_logger(spdlog::level::debug);
 
     simulation_structure ss;
     ss.add_model("mass", std::string(DATA_FOLDER) + "/fmus/1.0/Mass.fmu");

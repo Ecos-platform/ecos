@@ -36,7 +36,7 @@ inline void addParmeterSets(simulation_structure& ss)
 
 inline void run(simulation_structure& ss)
 {
-    set_logging_level(log::level::debug);
+    log::create_default_logger(spdlog::level::debug);
 
     try {
 
@@ -49,7 +49,7 @@ inline void run(simulation_structure& ss)
         sim->terminate();
     } catch (const std::exception& ex) {
 
-        log::err(ex.what());
+        spdlog::error(ex.what());
     }
 }
 

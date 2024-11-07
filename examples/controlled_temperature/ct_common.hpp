@@ -12,7 +12,7 @@ using namespace ecos;
 
 inline void run(const std::string& fmuPath)
 {
-    set_logging_level(log::level::debug);
+    log::create_default_logger(spdlog::level::debug);
 
     try {
         const auto resolver = default_model_resolver();
@@ -27,14 +27,14 @@ inline void run(const std::string& fmuPath)
         });
 
         sim.init();
-        log::info("Value={}", p->get_value());
+        spdlog::info("Value={}", p->get_value());
         sim.step(10);
-        log::info("Value={}", p->get_value());
+        spdlog::info("Value={}", p->get_value());
 
         sim.terminate();
     } catch (const std::exception& ex) {
 
-        log::err(ex.what());
+        spdlog::error(ex.what());
     }
 }
 

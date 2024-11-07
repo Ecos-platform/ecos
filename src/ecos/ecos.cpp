@@ -51,17 +51,17 @@ void handle_current_exception()
 void ecos_set_log_level(const char* level)
 {
     if (std::string("trace") == level) {
-        set_logging_level(ecos::log::level::trace);
+        spdlog::set_level(spdlog::level::trace);
     } else if (std::string("debug") == level) {
-        set_logging_level(ecos::log::level::debug);
+        spdlog::set_level(spdlog::level::debug);
     } else if (std::string("info") == level) {
-        set_logging_level(ecos::log::level::info);
+        spdlog::set_level(spdlog::level::info);
     } else if (std::string("warn") == level) {
-        set_logging_level(ecos::log::level::warn);
+        spdlog::set_level(spdlog::level::warn);
     } else if (std::string("err") == level) {
-        set_logging_level(ecos::log::level::err);
+        spdlog::set_level(spdlog::level::err);
     } else if (std::string("off") == level) {
-        set_logging_level(ecos::log::level::off);
+        spdlog::set_level(spdlog::level::off);
     }
 }
 

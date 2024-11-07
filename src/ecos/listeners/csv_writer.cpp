@@ -93,7 +93,7 @@ void csv_writer::post_terminate(simulation& sim)
 {
     outFile_.flush();
     outFile_.close();
-    log::info("Wrote CSV data to file: '{}'", path_.string());
+    spdlog::info("Wrote CSV data to file: '{}'", path_.string());
 
     if (auto plotConfig = config_.plotConfig_) {
 
@@ -107,12 +107,12 @@ void csv_writer::post_terminate(simulation& sim)
         ss << "python ecos_plotter.py \"" << path_.string() << "\" \"" << plotConfig->string() << "\"";
         auto t = std::thread([&ss] {
             if (int status = system(ss.str().c_str())) {
-                log::warn("Command {} returned with status: {}", ss.str(), status);
+                spdlog::warn("Command {} returned with status: {}", ss.str(), status);
             }
         });
-        log::info("Waiting for plotting window(s) to close..");
+        spdlog::info("Waiting for plotting window(s) to close..");
         t.join();
-        log::info("Plotting window(s) closed.");
+        spdlog::info("Plotting window(s) closed.");
 
         std::filesystem::remove(plotter);
     }
@@ -130,7 +130,7 @@ void csv_writer::on_reset()
 void csv_config::verify(const std::vector<variable_identifier>& ids) const
 {
     if (variable_register.empty()) {
-        log::debug("Logging all {} variables", ids.size());
+        spdlog::debug("Logging all {} variables", ids.size());
     } else {
 
         int foundCount = 0;
@@ -151,9 +151,9 @@ void csv_config::verify(const std::vector<variable_identifier>& ids) const
             }
         }
         if (missingCount > 0) {
-            log::warn("Missing {} variables declared for logging: {}", missingCount, missing.str());
+            spdlog::warn("Missing {} variables declared for logging: {}", missingCount, missing.str());
         }
-        log::debug("Logging {} variables: {}", foundCount, found.str());
+        spdlog::debug("Logging {} variables: {}", foundCount, found.str());
     }
 }
 
@@ -217,7 +217,7 @@ void csv_config::clear_on_reset(bool flag)
 void csv_config::enable_plotting(const std::filesystem::path& plotConfig)
 {
     if (!exists(plotConfig)) {
-        log::warn("No such file: '{}'", absolute(plotConfig).string());
+        spdlog::warn("No such file: '{}'", absolute(plotConfig).string());
         return;
     }
     plotConfig_ = absolute(plotConfig);

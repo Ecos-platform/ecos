@@ -23,8 +23,10 @@ void ecos::load_scenario(simulation& sim, const std::filesystem::path& config)
         throw std::runtime_error("Unable to parse '" + absolute(config).string() + "': " + result.description());
     }
 
+    size_t numActions{};
     const auto root = doc.child("ecos:Scenario");
     for (const auto& action : root) {
+        ++numActions;
         const auto t = action.attribute("t").as_double();
         const auto epsAttr = action.attribute("eps");
         std::optional<double> eps;
@@ -88,4 +90,6 @@ void ecos::load_scenario(simulation& sim, const std::filesystem::path& config)
             }
         }
     }
+
+    log::debug("Applied scenario {} with {} actions to simulation", config.string(), numActions);
 }

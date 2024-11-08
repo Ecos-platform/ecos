@@ -16,7 +16,7 @@ class TimeSeriesConfig:
 
 class XYSeriesConfig:
 
-    def __init__(self, title: str, x_label: str, y_label: str, series):
+    def __init__(self, title: str, x_label: str, y_label: str, series: dict[str, tuple[str, str]]):
         self.title = title
         self.x_label = x_label
         self.y_label = y_label
@@ -72,12 +72,16 @@ class Plotter:
             xy = xyseries.series[name]
             x = xy[0]
             y = xy[1]
+            marker = None if len(xy) < 3 else xy[2]
 
             m1 = csv.columns.str.contains(re.escape(x))
             data1 = csv.loc[:, m1]
             m2 = csv.columns.str.contains(re.escape(y))
             data2 = csv.loc[:, m2]
-            plt.plot(data1, data2, label=name)
+            if marker is None:
+                plt.plot(data1, data2, label=name)
+            else:
+                plt.plot(data1, data2, marker, label=name)
 
         plt.legend(loc='upper right')
 

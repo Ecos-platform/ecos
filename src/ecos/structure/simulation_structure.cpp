@@ -40,6 +40,9 @@ void simulation_structure::add_model(const std::string& instanceName, const std:
 
 void simulation_structure::add_model(const std::string& instanceName, std::shared_ptr<model> model, std::optional<double> stepSizeHint)
 {
+
+    if (!model) throw std::runtime_error("Attempting to pass nullptr as model!");
+
     if (models_.contains(instanceName)) {
         throw std::runtime_error("A model named " + instanceName + " has already been added!");
     }

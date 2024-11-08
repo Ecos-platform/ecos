@@ -147,6 +147,13 @@ class EcosSimulation:
 
         self._add_listener(self.sim, b'csv_writer', listener)
 
+    def load_scenario(self, scenario_file: str):
+        _load_scenario = dll.ecos_simulation_load_scenario
+        _load_scenario.argtypes = [c_void_p, c_char_p]
+        _load_scenario.restype = c_bool
+
+        _load_scenario(self.sim, scenario_file.encode())
+
     def get_integer(self, identifier: str):
         val = c_int()
         if not self._get_integer(self.sim, identifier.encode(), byref(val)):

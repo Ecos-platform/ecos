@@ -7,6 +7,7 @@
 #include "ecos/logger/logger.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
+#include "ecos/scenario/scenario_loader.hpp"
 
 #include <cstring>
 #include <memory>
@@ -481,4 +482,15 @@ ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_list
     l->cpp_listener = std::make_unique<my_listener>(config);
 
     return l.release();
+}
+
+bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_file)
+{
+    try {
+        load_scenario(*sim->cpp_sim, scenario_file);
+        return true;
+    }catch (...) {
+        handle_current_exception();
+        return false;
+    }
 }

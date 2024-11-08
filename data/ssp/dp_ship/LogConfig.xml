@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecos:LogConfig xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/LogConfig">
+<ecos:LogConfig decimationFactor="25" xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/LogConfig">
 
     <ecos:components>
         <ecos:component name="Reference Generator">

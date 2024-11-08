@@ -23,6 +23,8 @@ struct csv_config
 
     void clear_on_reset(bool flag);
 
+    size_t& decimation_factor();
+
     void enable_plotting(const std::filesystem::path& plotConfig);
 
     [[nodiscard]] bool shouldLogInstance(const std::string& instanceName) const;
@@ -33,6 +35,7 @@ struct csv_config
 
 private:
     bool clear_on_reset_{true};
+    size_t decimationFactor_ = 1;
     std::optional<std::filesystem::path> plotConfig_;
     std::vector<variable_identifier> variable_register;
 

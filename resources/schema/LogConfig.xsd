@@ -10,6 +10,7 @@
         <xs:sequence>
             <xs:element name="components" type="ecos:TComponents"/>
         </xs:sequence>
+        <xs:attribute name="decimationFactor" type="xs:integer" default="1"/>
     </xs:complexType>
 
     <xs:complexType name="TComponents">

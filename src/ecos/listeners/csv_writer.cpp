@@ -86,7 +86,9 @@ void csv_writer::post_init(simulation& sim)
 
 void csv_writer::post_step(simulation& sim)
 {
-    writeData(outFile_, sim, config_);
+    if (sim.iterations() % config().decimation_factor() == 0) {
+        writeData(outFile_, sim, config_);
+    }
 }
 
 void csv_writer::post_terminate(simulation& sim)
@@ -194,6 +196,10 @@ void csv_config::load(const std::filesystem::path& configPath)
     }
 
     const auto root = doc.child("ecos:LogConfig");
+    if (const auto decimationFactor = root.attribute("decimationFactor")) {
+        decimationFactor_ = decimationFactor.as_int();
+    }
+
     const auto components = root.child("ecos:components");
     for (const auto& instances : components) {
         const auto instanceName = instances.attribute("name").as_string();
@@ -212,6 +218,11 @@ void csv_config::register_variable(variable_identifier v)
 void csv_config::clear_on_reset(bool flag)
 {
     clear_on_reset_ = flag;
+}
+
+size_t& csv_config::decimation_factor()
+{
+    return decimationFactor_;
 }
 
 void csv_config::enable_plotting(const std::filesystem::path& plotConfig)

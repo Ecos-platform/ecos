@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ssd:SystemStructureDescription name="simple-cse-example" version="1.0"
+<ssd:SystemStructureDescription name="dp-ship" version="1.0"
                                 xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription"
                                 xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon">
 

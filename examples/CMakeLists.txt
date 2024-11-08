@@ -16,7 +16,4 @@ if (WIN32)
     add_example_executable(quarter_truck_c quarter_truck/quarter_truck_c.cpp)
     target_link_libraries(quarter_truck_c PRIVATE libecosc)
     add_example_executable(quarter_truck_ssp quarter_truck/quarter_truck_ssp.cpp)
-
-#    add_example_executable(gunnerus_trajectory gunnerus/trajectory/gunnerus_trajectory.cpp)
-#    target_compile_definitions(gunnerus_trajectory PRIVATE SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/gunnerus/trajectory")
 endif ()

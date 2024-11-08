@@ -29,15 +29,15 @@ int main()
     ecos_parameter_set_add_real(pps, "chassis::C.mChassis", 400.);
     ecos_simulation_structure_add_parameter_set(ss, "initialValues", pps);
 
-    auto sim = ecos_simulation_create_from_structure(ss, 1.0 / 100);
+    const auto sim = ecos_simulation_create_from_structure(ss, 1.0 / 100);
 
     ecos_simulation_structure_destroy(ss);
     ecos_parameter_set_destroy(pps);
 
-    auto logConfig = std::string(DATA_FOLDER) + "/ssp/quarter_truck/LogConfig.xml";
-    auto plotConfig = std::string(DATA_FOLDER) + "/ssp/quarter_truck/ChartConfig.xml";
-    auto resultFile = std::string{"results/quarter_truck_c_with_config.csv"};
-    auto csvWriter = ecos_csv_writer_create(resultFile.c_str(), plotConfig.c_str(), plotConfig.c_str());
+    const auto logConfig = std::string(DATA_FOLDER) + "/ssp/quarter_truck/LogConfig.xml";
+    const auto plotConfig = std::string(DATA_FOLDER) + "/ssp/quarter_truck/ChartConfig.xml";
+    const auto resultFile = std::string{"results/quarter_truck_c_with_config.csv"};
+    const auto csvWriter = ecos_csv_writer_create(resultFile.c_str(), logConfig.c_str(), plotConfig.c_str());
 
     ecos_simulation_add_listener(sim, "CSV Writer", csvWriter);
 

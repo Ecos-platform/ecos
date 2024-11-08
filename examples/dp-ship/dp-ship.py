@@ -4,10 +4,11 @@ from ecospy.plotter import *
 def main():
     EcosLib.set_log_level("debug")
 
-    ssp_dir = f"{__file__}/../"
-    result_file = "results/dp_ship.csv"
+    ssp_dir = f"{__file__}/../../../data/ssp/dp_ship"
     log_config = f"{ssp_dir}/LogConfig.xml"
     scenario = f"{ssp_dir}/waypoints_scenario.xml"
+
+    result_file = "results/dp_ship.csv"
 
     with(EcosSimulation(ssp_path=ssp_dir, step_size=0.1)) as sim:
 

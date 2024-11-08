@@ -9,7 +9,7 @@ int main()
     set_logging_level(log::level::debug);
 
     try {
-        const auto ss = load_ssp(std::string(DATA_FOLDER));
+        const auto ss = load_ssp(std::string(DATA_FOLDER) + "/ssp/dp_ship");
         const auto sim = ss->load(std::make_unique<fixed_step_algorithm>(0.04));
 
         sim->init();

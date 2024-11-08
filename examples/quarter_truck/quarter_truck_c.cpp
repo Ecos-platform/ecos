@@ -13,9 +13,9 @@ int main()
 {
     ecos_set_log_level("debug");
 
-    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/fmus/2.0/quarter-truck";
+    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/ssp/quarter_truck/resources";
 
-    auto ss = ecos_simulation_structure_create();
+    const auto ss = ecos_simulation_structure_create();
     ecos_simulation_structure_add_model(ss, "chassis", (fmuDir / "chassis.fmu").string().c_str());
     ecos_simulation_structure_add_model(ss, "ground", (fmuDir / "ground.fmu").string().c_str());
     ecos_simulation_structure_add_model(ss, "wheel", (fmuDir / "wheel.fmu").string().c_str());
@@ -25,7 +25,7 @@ int main()
     ecos_simulation_structure_make_real_connection(ss, "wheel::p.e", "ground::p.e");
     ecos_simulation_structure_make_real_connection(ss, "ground::p.f", "wheel::p.f");
 
-    auto pps = ecos_parameter_set_create();
+    const auto pps = ecos_parameter_set_create();
     ecos_parameter_set_add_real(pps, "chassis::C.mChassis", 400.);
     ecos_simulation_structure_add_parameter_set(ss, "initialValues", pps);
 

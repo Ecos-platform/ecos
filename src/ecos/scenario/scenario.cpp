@@ -31,7 +31,7 @@ void scenario::apply(double t)
     while (!timedActions.empty()) {
         auto& action = timedActions.back();
         const double nextT = action.time_point();
-        double diff = std::abs(t - nextT);
+        const double diff = std::abs(t - nextT);
         if (nextT < t || diff < action.eps()) {
             action.invoke();
             discardedTimedActions.emplace_back(std::move(action));

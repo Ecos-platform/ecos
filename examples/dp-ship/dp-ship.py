@@ -17,7 +17,7 @@ def main():
             print(EcosLib.get_last_error())
 
         sim.init()
-        sim.step_for(1000)
+        sim.step_for(3000)
 
         sim.terminate()
 

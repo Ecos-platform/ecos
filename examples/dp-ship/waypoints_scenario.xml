@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecos:Scenario xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ScenarioConfig">
+
+    <ecos:action t="100" eps="0.01">
+        <ecos:variable id="Reference Generator::x_wp">
+            <ecos:real value="20"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::x_tp">
+            <ecos:real value="700"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="400" eps="0.01">
+        <ecos:variable id="Reference Generator::psi_wp">
+            <ecos:real value="1.507"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::psi_tp">
+            <ecos:real value="1200"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="600" eps="0.01">
+        <ecos:variable id="Reference Generator::y_wp">
+            <ecos:real value="20"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::y_tp">
+            <ecos:real value="1500"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="700" eps="0.01">
+        <ecos:variable id="Reference Generator::psi_wp">
+            <ecos:real value="0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::psi_tp">
+            <ecos:real value="2000"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="900" eps="0.01">
+        <ecos:variable id="Reference Generator::x_wp">
+            <ecos:real value="40"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::x_tp">
+            <ecos:real value="2300"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="1000" eps="0.01">
+        <ecos:variable id="Reference Generator::psi_wp">
+            <ecos:real value="-1.507"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::psi_tp">
+            <ecos:real value="2800"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="1100" eps="0.01">
+        <ecos:variable id="Reference Generator::y_wp">
+            <ecos:real value="-20"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::y_tp">
+            <ecos:real value="3300"/>
+        </ecos:variable>
+    </ecos:action>
+
+</ecos:Scenario>

@@ -11,6 +11,9 @@ add_example_executable(controlled_temperature_proxy controlled_temperature/contr
 add_example_executable(spring_mass_damper spring_mass_damper/spring_mass_damper.cpp)
 add_example_executable(spring_mass_damper_proxy spring_mass_damper/spring_mass_damper_proxy.cpp)
 
+add_example_executable(dp_ship dp-ship/dp_ship.cpp)
+target_compile_definitions(dp_ship PRIVATE DATA_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/dp-ship")
+
 if (WIN32)
     add_example_executable(quarter_truck quarter_truck/quarter_truck.cpp)
     add_example_executable(quarter_truck_c quarter_truck/quarter_truck_c.cpp)

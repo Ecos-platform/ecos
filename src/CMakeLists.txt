@@ -37,9 +37,12 @@ set(privateHeaders
 
         "ecos/fmi/fmi_model.hpp"
         "ecos/fmi/fmi_model_instance.hpp"
-        "ecos/fmi/fmi_model_sub_resolver.hpp"
+
         "ecos/fmi/proxy/proxy_model.hpp"
-        "ecos/fmi/proxy/proxy_model_sub_resolver.hpp"
+
+        "ecos/resolvers/file_model_sub_resolver.hpp"
+        "ecos/resolvers/proxy_model_sub_resolver.hpp"
+        "ecos/resolvers/url_model_sub_resolver.hpp"
 
         "ecos/ssp/ssp.hpp"
 
@@ -66,8 +69,9 @@ set(sources
 
         "ecos/algorithm/fixed_step_algorithm.cpp"
 
-        "ecos/fmi/fmi_model_sub_resolver.cpp"
-        "ecos/fmi/proxy/proxy_model_sub_resolver.cpp"
+        "ecos/resolvers/file_model_sub_resolver.cpp"
+        "ecos/resolvers/proxy_model_sub_resolver.cpp"
+        "ecos/resolvers/url_model_sub_resolver.cpp"
 
         "ecos/listeners/csv_writer.cpp"
         "ecos/listeners/simulation_listener.cpp"

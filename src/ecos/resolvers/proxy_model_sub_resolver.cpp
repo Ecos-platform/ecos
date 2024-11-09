@@ -1,7 +1,7 @@
 
 #include "proxy_model_sub_resolver.hpp"
 
-#include "proxy_model.hpp"
+#include "ecos/fmi/proxy/proxy_model.hpp"
 
 using namespace ecos;
 

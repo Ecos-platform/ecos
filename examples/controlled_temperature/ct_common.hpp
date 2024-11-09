@@ -41,6 +41,8 @@ inline int run(const std::string& fmuPath)
         log::err(ex.what());
         return 1;
     }
+
+    return 0;
 }
 
 #endif // LIBECOS_CT_COMMON_HPP

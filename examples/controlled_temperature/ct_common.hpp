@@ -10,13 +10,17 @@
 
 using namespace ecos;
 
-inline void run(const std::string& fmuPath)
+inline int run(const std::string& fmuPath)
 {
     set_logging_level(log::level::debug);
 
     try {
         const auto resolver = default_model_resolver();
         const auto fmuModel = resolver->resolve(fmuPath);
+
+        if (!fmuModel) {
+            return 1;
+        }
 
         simulation sim(std::make_unique<fixed_step_algorithm>(1.0 / 100));
         sim.add_slave(fmuModel->instantiate("slave"));
@@ -35,6 +39,7 @@ inline void run(const std::string& fmuPath)
     } catch (const std::exception& ex) {
 
         log::err(ex.what());
+        return 1;
     }
 }
 

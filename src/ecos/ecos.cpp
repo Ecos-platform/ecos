@@ -263,6 +263,10 @@ bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier,
 {
     try {
         const auto prop = sim->cpp_sim->get_int_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No int property " + std::string(identifier) +" found!";
+            return false;
+        }
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -275,6 +279,10 @@ bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, do
 {
     try {
         const auto prop = sim->cpp_sim->get_real_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No real property " + std::string(identifier) +" found!";
+            return false;
+        }
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -287,6 +295,10 @@ bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bo
 {
     try {
         const auto prop = sim->cpp_sim->get_bool_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No bool property " + std::string(identifier) +" found!";
+            return false;
+        }
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -298,15 +310,20 @@ bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bo
 bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value, size_t value_size)
 {
     try {
-        const auto prop = sim->cpp_sim->get_string_property(identifier)->get_value();
+        const auto prop = sim->cpp_sim->get_string_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No string property named" + std::string(identifier) +" found!";
+            return false;
+        }
+        const auto propValue = prop->get_value();
         // Ensure we don't exceed the buffer size
-        if (prop.size() >= value_size) {
+        if (propValue.size() >= value_size) {
             // If the string is too large, copy only up to the available size - 1
-            std::strncpy(value, prop.c_str(), value_size - 1);
+            std::strncpy(value, propValue.c_str(), value_size - 1);
             value[value_size - 1] = '\0'; // Null-terminate the string
         } else {
             // Safe to copy the entire string
-            std::strcpy(value, prop.c_str());
+            std::strcpy(value, propValue.c_str());
         }
 
         return true;
@@ -320,6 +337,10 @@ bool ecos_simulation_set_integer(ecos_simulation_t* sim, const char* identifier,
 {
     try {
         const auto prop = sim->cpp_sim->get_int_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No int property " + std::string(identifier) +" found!";
+            return false;
+        }
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -332,6 +353,10 @@ bool ecos_simulation_set_real(ecos_simulation_t* sim, const char* identifier, do
 {
     try {
         const auto prop = sim->cpp_sim->get_real_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No real property " + std::string(identifier) +" found!";
+            return false;
+        }
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -344,6 +369,10 @@ bool ecos_simulation_set_bool(ecos_simulation_t* sim, const char* identifier, bo
 {
     try {
         const auto prop = sim->cpp_sim->get_bool_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No bool property " + std::string(identifier) +" found!";
+            return false;
+        }
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -356,6 +385,10 @@ bool ecos_simulation_set_string(ecos_simulation_t* sim, const char* identifier, 
 {
     try {
         const auto prop = sim->cpp_sim->get_string_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No string property " + std::string(identifier) +" found!";
+            return false;
+        }
         prop->set_value(value);
         return true;
     } catch (...) {

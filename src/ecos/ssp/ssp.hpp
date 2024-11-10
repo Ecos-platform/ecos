@@ -142,8 +142,6 @@ public:
 
     [[nodiscard]] std::filesystem::path file(const std::filesystem::path& source) const;
 
-    [[nodiscard]] std::shared_ptr<temp_dir> get_temp_dir() const;
-
     ~SystemStructureDescription();
 };
 

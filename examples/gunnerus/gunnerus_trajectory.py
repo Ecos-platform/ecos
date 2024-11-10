@@ -68,73 +68,73 @@ def main():
     ss.add_model("azimuth1", f"proxyfmu://localhost?file={model_folder}/PMAzimuth.fmu")
     ss.add_model("azimuth0_rpmActuator", f"proxyfmu://localhost?file={model_folder}/ThrusterDrive2.fmu")
     ss.add_model("azimuth1_rpmActuator", f"proxyfmu://localhost?file={model_folder}/ThrusterDrive2.fmu")
-    ss.add_model("powerPlant", f"{model_folder}/PowerPlant.fmu")
+    ss.add_model("powerPlant", f"proxyfmu://localhost?file={model_folder}/PowerPlant.fmu")
     ss.add_model("trackController", f"{model_folder}/TrajectoryController.fmu")
     ss.add_model("wpProvider", f"{model_folder}/WaypointProvider2DOF.fmu")
 
-    ss.make_real_connection("vesselModel::additionalBodyForce[1].pointOfAttackRel2APAndBL.zpos", "azimuth1::output_z_rel_bl")
-    ss.make_real_connection("vesselModel::additionalBodyForce[1].pointOfAttackRel2APAndBL.ypos", "azimuth1::output_y_rel_cl")
-    ss.make_real_connection("vesselModel::additionalBodyForce[1].pointOfAttackRel2APAndBL.xpos", "azimuth1::output_x_rel_ap")
-    ss.make_real_connection("vesselModel::additionalBodyForce[1].force.sway", "azimuth1::output_force_sway")
-    ss.make_real_connection("vesselModel::additionalBodyForce[1].force.surge", "azimuth1::output_force_surge")
-    ss.make_real_connection("vesselModel::additionalBodyForce[1].force.heave", "azimuth1::output_force_heave")
-
-    ss.make_real_connection("vesselModel::additionalBodyForce[0].pointOfAttackRel2APAndBL.zpos", "azimuth0::output_z_rel_bl")
-    ss.make_real_connection("vesselModel::additionalBodyForce[0].pointOfAttackRel2APAndBL.ypos", "azimuth0::output_y_rel_cl")
-    ss.make_real_connection("vesselModel::additionalBodyForce[0].pointOfAttackRel2APAndBL.xpos", "azimuth0::output_x_rel_ap")
-    ss.make_real_connection("vesselModel::additionalBodyForce[0].force.sway", "azimuth0::output_force_sway")
-    ss.make_real_connection("vesselModel::additionalBodyForce[0].force.surge", "azimuth0::output_force_surge")
-    ss.make_real_connection("vesselModel::additionalBodyForce[0].force.heave", "azimuth0::output_force_heave")
-
-    ss.make_real_connection("azimuth1::input_act_revs", "azimuth1_rpmActuator::Shaft.f", lambda val: val * 60 / (2*math.pi))
-    ss.make_real_connection("azimuth1::input_yaw_vel", "vesselModel::cgShipMotion.angularVelocity.yaw")
-    ss.make_real_connection("azimuth1::input_cg_sway_vel", "vesselModel::cgShipMotion.linearVelocity.sway")
-    ss.make_real_connection("azimuth1::input_cg_surge_vel", "vesselModel::cgShipMotion.linearVelocity.surge")
-    ss.make_real_connection("azimuth1::input_cg_z_rel_bl", "vesselModel::cg_z_rel_bl")
-    ss.make_real_connection("azimuth1::input_cg_y_rel_cl", "vesselModel::cg_y_rel_cl")
-    ss.make_real_connection("azimuth1::input_cg_x_rel_ap", "vesselModel::cg_x_rel_ap")
-    ss.make_real_connection("azimuth1::input_act_angle", "trackController::rudderCommand")
-
-    ss.make_real_connection("azimuth0::input_act_revs", "azimuth0_rpmActuator::Shaft.f", lambda val: val * 60 / (2*math.pi))
-    ss.make_real_connection("azimuth0::input_yaw_vel", "vesselModel::cgShipMotion.angularVelocity.yaw")
-    ss.make_real_connection("azimuth0::input_cg_sway_vel", "vesselModel::cgShipMotion.linearVelocity.sway")
-    ss.make_real_connection("azimuth0::input_cg_surge_vel", "vesselModel::cgShipMotion.linearVelocity.surge")
-    ss.make_real_connection("azimuth0::input_cg_z_rel_bl", "vesselModel::cg_z_rel_bl")
-    ss.make_real_connection("azimuth0::input_cg_y_rel_cl", "vesselModel::cg_y_rel_cl")
-    ss.make_real_connection("azimuth0::input_cg_x_rel_ap", "vesselModel::cg_x_rel_ap")
-    ss.make_real_connection("azimuth0::input_act_angle", "trackController::rudderCommand")
-
-    ss.make_real_connection("azimuth1_rpmActuator::Shaft.e", "azimuth1::output_torque")
-    ss.make_real_connection("azimuth1_rpmActuator::ThrustCom", "trackController::forceCommand")
-    ss.make_real_connection("azimuth1_rpmActuator::q_in.e", "powerPlant::p2.e[2]")
-    ss.make_real_connection("azimuth1_rpmActuator::d_in.e", "powerPlant::p2.e[1]")
-
-    ss.make_real_connection("azimuth0_rpmActuator::Shaft.e", "azimuth0::output_torque")
-    ss.make_real_connection("azimuth0_rpmActuator::ThrustCom", "trackController::forceCommand")
-    ss.make_real_connection("azimuth0_rpmActuator::q_in.e", "powerPlant::p1.e[2]")
-    ss.make_real_connection("azimuth0_rpmActuator::d_in.e", "powerPlant::p1.e[1]")
-
-    ss.make_real_connection("powerPlant::p2.f[2]", "azimuth1_rpmActuator::q_in.f")
-    ss.make_real_connection("powerPlant::p2.f[1]", "azimuth1_rpmActuator::d_in.f")
-    ss.make_real_connection("powerPlant::p1.f[2]", "azimuth0_rpmActuator::q_in.f")
-    ss.make_real_connection("powerPlant::p1.f[1]", "azimuth0_rpmActuator::d_in.f")
-
-    ss.make_real_connection("wpProvider::headingAngle", "vesselModel::cgShipMotion.angularDisplacement.yaw")
-    ss.make_real_connection("wpProvider::eastPosition", "vesselModel::cgShipMotion.nedDisplacement.east")
-    ss.make_real_connection("wpProvider::northPosition", "vesselModel::cgShipMotion.nedDisplacement.north")
-
-    ss.make_real_connection("trackController::prevWP.speed", "wpProvider::prevWP.speed")
-    ss.make_real_connection("trackController::prevWP.east", "wpProvider::prevWP.east")
-    ss.make_real_connection("trackController::prevWP.north", "wpProvider::prevWP.north")
-    ss.make_real_connection("trackController::targetWP.speed", "wpProvider::targetWP.speed")
-    ss.make_real_connection("trackController::targetWP.east", "wpProvider::targetWP.east")
-    ss.make_real_connection("trackController::targetWP.north", "wpProvider::targetWP.north")
-
-    ss.make_real_connection("trackController::headingAngle", "vesselModel::cgShipMotion.angularDisplacement.yaw")
-    ss.make_real_connection("trackController::swayVelocity", "vesselModel::cgShipMotion.linearVelocity.sway")
-    ss.make_real_connection("trackController::surgeVelocity", "vesselModel::cgShipMotion.linearVelocity.surge")
-    ss.make_real_connection("trackController::eastPosition", "vesselModel::cgShipMotion.nedDisplacement.east")
-    ss.make_real_connection("trackController::northPosition", "vesselModel::cgShipMotion.nedDisplacement.north")
+    ss.make_real_connection("vesselModel::cgShipMotion.nedDisplacement.north", "trackController::northPosition")
+    ss.make_real_connection("vesselModel::cgShipMotion.nedDisplacement.east", "trackController::eastPosition")
+    ss.make_real_connection("vesselModel::cgShipMotion.linearVelocity.surge", "trackController::surgeVelocity")
+    ss.make_real_connection("vesselModel::cgShipMotion.linearVelocity.sway", "trackController::swayVelocity")
+    ss.make_real_connection("vesselModel::cgShipMotion.angularDisplacement.yaw", "trackController::headingAngle")
+    ss.make_real_connection("wpProvider::targetWP.north", "trackController::targetWP.north")
+    ss.make_real_connection("wpProvider::targetWP.east", "trackController::targetWP.east")
+    ss.make_real_connection("wpProvider::targetWP.speed", "trackController::targetWP.speed")
+    ss.make_real_connection("wpProvider::prevWP.north", "trackController::prevWP.north")
+    ss.make_real_connection("wpProvider::prevWP.east", "trackController::prevWP.east")
+    ss.make_real_connection("wpProvider::prevWP.speed", "trackController::prevWP.speed")
+    
+    ss.make_real_connection("vesselModel::cgShipMotion.nedDisplacement.north", "wpProvider::northPosition")
+    ss.make_real_connection("vesselModel::cgShipMotion.nedDisplacement.east", "wpProvider::eastPosition")
+    ss.make_real_connection("vesselModel::cgShipMotion.angularDisplacement.yaw", "wpProvider::headingAngle")
+    
+    ss.make_real_connection("azimuth0_rpmActuator::d_in.f", "powerPlant::p1.f[1]")
+    ss.make_real_connection("azimuth0_rpmActuator::q_in.f", "powerPlant::p1.f[2]")
+    ss.make_real_connection("azimuth1_rpmActuator::d_in.f", "powerPlant::p2.f[1]")
+    ss.make_real_connection("azimuth1_rpmActuator::q_in.f", "powerPlant::p2.f[2]")
+    
+    ss.make_real_connection("powerPlant::p1.e[1]", "azimuth0_rpmActuator::d_in.e")
+    ss.make_real_connection("powerPlant::p1.e[2]", "azimuth0_rpmActuator::q_in.e")
+    ss.make_real_connection("trackController::forceCommand", "azimuth0_rpmActuator::ThrustCom")
+    ss.make_real_connection("azimuth0::output_torque", "azimuth0_rpmActuator::Shaft.e")
+    
+    ss.make_real_connection("powerPlant::p2.e[1]", "azimuth1_rpmActuator::d_in.e")
+    ss.make_real_connection("powerPlant::p2.e[2]", "azimuth1_rpmActuator::q_in.e")
+    ss.make_real_connection("trackController::forceCommand", "azimuth1_rpmActuator::ThrustCom")
+    ss.make_real_connection("azimuth1::output_torque", "azimuth1_rpmActuator::Shaft.e")
+    
+    ss.make_real_connection("azimuth0_rpmActuator::Shaft.f", "azimuth0::input_act_revs", lambda val: val * 60 / (2*math.pi))
+    ss.make_real_connection("trackController::rudderCommand", "azimuth0::input_act_angle")
+    ss.make_real_connection("vesselModel::cg_x_rel_ap", "azimuth0::input_cg_x_rel_ap")
+    ss.make_real_connection("vesselModel::cg_y_rel_cl", "azimuth0::input_cg_y_rel_cl")
+    ss.make_real_connection("vesselModel::cg_z_rel_bl", "azimuth0::input_cg_z_rel_bl")
+    ss.make_real_connection("vesselModel::cgShipMotion.linearVelocity.surge", "azimuth0::input_cg_surge_vel")
+    ss.make_real_connection("vesselModel::cgShipMotion.linearVelocity.sway", "azimuth0::input_cg_sway_vel")
+    ss.make_real_connection("vesselModel::cgShipMotion.angularVelocity.yaw", "azimuth0::input_yaw_vel")
+    
+    ss.make_real_connection("azimuth1_rpmActuator::Shaft.f", "azimuth1::input_act_revs", lambda val: val * 60 / (2*math.pi))
+    ss.make_real_connection("trackController::rudderCommand", "azimuth1::input_act_angle")
+    ss.make_real_connection("vesselModel::cg_x_rel_ap", "azimuth1::input_cg_x_rel_ap")
+    ss.make_real_connection("vesselModel::cg_y_rel_cl", "azimuth1::input_cg_y_rel_cl")
+    ss.make_real_connection("vesselModel::cg_z_rel_bl", "azimuth1::input_cg_z_rel_bl")
+    ss.make_real_connection("vesselModel::cgShipMotion.linearVelocity.surge", "azimuth1::input_cg_surge_vel")
+    ss.make_real_connection("vesselModel::cgShipMotion.linearVelocity.sway", "azimuth1::input_cg_sway_vel")
+    ss.make_real_connection("vesselModel::cgShipMotion.angularVelocity.yaw", "azimuth1::input_yaw_vel")
+    
+    ss.make_real_connection("azimuth0::output_force_heave", "vesselModel::additionalBodyForce[0].force.heave")
+    ss.make_real_connection("azimuth0::output_force_surge", "vesselModel::additionalBodyForce[0].force.surge")
+    ss.make_real_connection("azimuth0::output_force_sway", "vesselModel::additionalBodyForce[0].force.sway")
+    ss.make_real_connection("azimuth0::output_x_rel_ap", "vesselModel::additionalBodyForce[0].pointOfAttackRel2APAndBL.xpos")
+    ss.make_real_connection("azimuth0::output_y_rel_cl", "vesselModel::additionalBodyForce[0].pointOfAttackRel2APAndBL.ypos")
+    ss.make_real_connection("azimuth0::output_z_rel_bl", "vesselModel::additionalBodyForce[0].pointOfAttackRel2APAndBL.zpos")
+    
+    ss.make_real_connection("azimuth1::output_force_heave", "vesselModel::additionalBodyForce[1].force.heave")
+    ss.make_real_connection("azimuth1::output_force_surge", "vesselModel::additionalBodyForce[1].force.surge")
+    ss.make_real_connection("azimuth1::output_force_sway", "vesselModel::additionalBodyForce[1].force.sway")
+    ss.make_real_connection("azimuth1::output_x_rel_ap", "vesselModel::additionalBodyForce[1].pointOfAttackRel2APAndBL.xpos")
+    ss.make_real_connection("azimuth1::output_y_rel_cl", "vesselModel::additionalBodyForce[1].pointOfAttackRel2APAndBL.ypos")
+    ss.make_real_connection("azimuth1::output_z_rel_bl", "vesselModel::additionalBodyForce[1].pointOfAttackRel2APAndBL.zpos")
+    
 
     params = EcosParameterSet()
     params.add_bool("vesselModel::additionalBodyForce[0].enabled", True)
@@ -180,14 +180,17 @@ def main():
         sim.add_listener("custom_listener", MyListener(sim))
 
         sim.init(parameter_set="initialValues")
-        sim.step_until(time_point=100)
+        sim.step_until(time_point=1000)
         sim.terminate()
 
     config = XYSeriesConfig(
         title="Gunnerus trajectory demo",
-        x_label="Position [north]",
-        y_label="Position [east]",
-        series={"path": ("vesselModel::cgShipMotion.nedDisplacement.north", "vesselModel::cgShipMotion.nedDisplacement.east")})
+        x_label="Position [east]",
+        y_label="Position [north]",
+        series={
+            "path": ("vesselModel::cgShipMotion.nedDisplacement.east", "vesselModel::cgShipMotion.nedDisplacement.north"),
+            "target": ("wpProvider::targetWP.east", "wpProvider::targetWP.north", "x")
+        })
     plotter = Plotter(result_file, config)
     plotter.show()
 

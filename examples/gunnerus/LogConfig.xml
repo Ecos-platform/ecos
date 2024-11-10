@@ -7,8 +7,9 @@
             <ecos:variable name="cgShipMotion.nedDisplacement.east"/>
             <ecos:variable name="cgShipMotion.nedDisplacement.down"/>
         </ecos:component>
-        <ecos:component name="trackController">
-            <ecos:variable name="rudderCommand"/>
+        <ecos:component name="wpProvider">
+            <ecos:variable name="targetWP.north"/>
+            <ecos:variable name="targetWP.east"/>
         </ecos:component>
     </ecos:components>
 

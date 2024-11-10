@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ssd:SystemStructureDescription xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" version="1.0" name="KPN Twinship Gunnerus case" generationTool="sspgen 0.5.1">
+    <ssd:System name="gunnerus-trajectory">
+
+        <ssd:Elements>
+            <ssd:Component source="models/VesselFmu2.fmu" name="vesselModel">
+                <ssd:Connectors>
+                    <ssd:Connector name="additionalBodyForce[0].force.heave" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[0].force.surge" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[0].force.sway" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[0].pointOfAttackRel2APAndBL.xpos" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[0].pointOfAttackRel2APAndBL.ypos" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[0].pointOfAttackRel2APAndBL.zpos" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[1].force.heave" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[1].force.surge" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[1].force.sway" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[1].pointOfAttackRel2APAndBL.xpos" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[1].pointOfAttackRel2APAndBL.ypos" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="additionalBodyForce[1].pointOfAttackRel2APAndBL.zpos" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="cg_x_rel_ap" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="cg_y_rel_cl" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="cg_z_rel_bl" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="cgShipMotion.nedDisplacement.north" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="cgShipMotion.nedDisplacement.east" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="cgShipMotion.linearVelocity.surge" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="cgShipMotion.linearVelocity.sway" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="cgShipMotion.angularVelocity.yaw" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="cgShipMotion.angularDisplacement.yaw" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="initialValues">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="vesselZipFile">
+                                        <ssv:String value="%fmu%/resources/ShipModel-gunnerus-elongated.zip"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="additionalBodyForce[0].enabled">
+                                        <ssv:Boolean value="true"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="additionalBodyForce[1].enabled">
+                                        <ssv:Boolean value="true"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>
+            <ssd:Component source="proxyfmu://localhost?file=models/PMAzimuth.fmu" name="azimuth0">
+                <ssd:Connectors>
+                    <ssd:Connector name="input_act_revs" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_act_angle" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_x_rel_ap" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_y_rel_cl" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_z_rel_bl" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_surge_vel" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_sway_vel" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_yaw_vel" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_torque" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_force_heave" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_force_surge" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_force_sway" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_x_rel_ap" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_y_rel_cl" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_z_rel_bl" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="initialValues">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="input_x_rel_ap">
+                                        <ssv:Real value="1.5"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_y_rel_cl">
+                                        <ssv:Real value="-2.7"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_z_rel_bl">
+                                        <ssv:Real value="0.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_prop_diam">
+                                        <ssv:Real value="1.9"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_distancetohull">
+                                        <ssv:Real value="1.5"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_bilgeradius">
+                                        <ssv:Real value="3.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_rho">
+                                        <ssv:Real value="1025.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_lpp">
+                                        <ssv:Real value="33.9"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>
+            <ssd:Component source="proxyfmu://localhost?file=models/PMAzimuth.fmu" name="azimuth1">
+                <ssd:Connectors>
+                    <ssd:Connector name="input_act_revs" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_act_angle" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_x_rel_ap" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_y_rel_cl" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_z_rel_bl" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_surge_vel" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_cg_sway_vel" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="input_yaw_vel" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_torque" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_force_heave" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_force_surge" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_force_sway" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_x_rel_ap" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_y_rel_cl" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="output_z_rel_bl" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="initialValues">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="input_x_rel_ap">
+                                        <ssv:Real value="1.5"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_y_rel_cl">
+                                        <ssv:Real value="2.7"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_z_rel_bl">
+                                        <ssv:Real value="0.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_prop_diam">
+                                        <ssv:Real value="1.9"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_distancetohull">
+                                        <ssv:Real value="1.5"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_bilgeradius">
+                                        <ssv:Real value="3.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_rho">
+                                        <ssv:Real value="1025.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="input_lpp">
+                                        <ssv:Real value="33.9"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>
+            <ssd:Component source="proxyfmu://localhost?file=models/ThrusterDrive2.fmu" name="azimuth0_rpmActuator">
+                <ssd:Connectors>
+                    <ssd:Connector name="d_in.e" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="q_in.e" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="ThrustCom" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="Shaft.e" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="d_in.f" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="q_in.f" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="Shaft.f" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+            </ssd:Component>
+            <ssd:Component source="proxyfmu://localhost?file=models/ThrusterDrive2.fmu" name="azimuth1_rpmActuator">
+                <ssd:Connectors>
+                    <ssd:Connector name="d_in.e" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="q_in.e" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="ThrustCom" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="Shaft.e" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="d_in.f" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="q_in.f" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="Shaft.f" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+            </ssd:Component>
+            <ssd:Component source="proxyfmu://localhost?file=models/PowerPlant.fmu" name="powerPlant">
+                <ssd:Connectors>
+                    <ssd:Connector name="p1.f[1]" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p1.f[2]" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p2.f[1]" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p2.f[2]" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p1.e[1]" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p1.e[2]" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p2.e[1]" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="p2.e[2]" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+            </ssd:Component>
+            <ssd:Component source="models/TrajectoryController.fmu" name="trackController">
+                <ssd:Connectors>
+                    <ssd:Connector name="northPosition" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="eastPosition" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="surgeVelocity" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="swayVelocity" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="headingAngle" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="targetWP.north" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="targetWP.east" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="targetWP.speed" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="prevWP.north" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="prevWP.east" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="prevWP.speed" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="forceCommand" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="rudderCommand" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="initialValues">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="autopilot.heading.kp">
+                                        <ssv:Real value="0.5"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="autopilot.heading.ki">
+                                        <ssv:Real value="0.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="autopilot.heading.kd">
+                                        <ssv:Real value="2.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="autopilot.speed.kp">
+                                        <ssv:Real value="1000.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="autopilot.speed.ki">
+                                        <ssv:Real value="100.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="autopilot.speed.kd">
+                                        <ssv:Real value="500.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="lookaheadDistance">
+                                        <ssv:Real value="50.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="enable">
+                                        <ssv:Boolean value="false"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="shouldLog">
+                                        <ssv:Boolean value="false"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>
+            <ssd:Component source="models/WaypointProvider2DOF.fmu" name="wpProvider">
+                <ssd:Connectors>
+                    <ssd:Connector name="northPosition" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="eastPosition" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="headingAngle" kind="input">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="targetWP.north" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="targetWP.east" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="targetWP.speed" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="prevWP.north" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="prevWP.east" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                    <ssd:Connector name="prevWP.speed" kind="output">
+                        <ssc:Real/>
+                    </ssd:Connector>
+                </ssd:Connectors>
+                <ssd:ParameterBindings>
+                    <ssd:ParameterBinding>
+                        <ssd:ParameterValues>
+                            <ssv:ParameterSet version="1.0" name="initialValues">
+                                <ssv:Parameters>
+                                    <ssv:Parameter name="wpSwitchDistance">
+                                        <ssv:Real value="20.0"/>
+                                    </ssv:Parameter>
+                                    <ssv:Parameter name="shouldLog">
+                                        <ssv:Boolean value="false"/>
+                                    </ssv:Parameter>
+                                </ssv:Parameters>
+                            </ssv:ParameterSet>
+                        </ssd:ParameterValues>
+                    </ssd:ParameterBinding>
+                </ssd:ParameterBindings>
+            </ssd:Component>
+        </ssd:Elements>
+        <ssd:Connections>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.nedDisplacement.north" endElement="trackController" endConnector="northPosition"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.nedDisplacement.east" endElement="trackController" endConnector="eastPosition"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.linearVelocity.surge" endElement="trackController" endConnector="surgeVelocity"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.linearVelocity.sway" endElement="trackController" endConnector="swayVelocity"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.angularDisplacement.yaw" endElement="trackController" endConnector="headingAngle"/>
+            <ssd:Connection startElement="wpProvider" startConnector="targetWP.north" endElement="trackController" endConnector="targetWP.north"/>
+            <ssd:Connection startElement="wpProvider" startConnector="targetWP.east" endElement="trackController" endConnector="targetWP.east"/>
+            <ssd:Connection startElement="wpProvider" startConnector="targetWP.speed" endElement="trackController" endConnector="targetWP.speed"/>
+            <ssd:Connection startElement="wpProvider" startConnector="prevWP.north" endElement="trackController" endConnector="prevWP.north"/>
+            <ssd:Connection startElement="wpProvider" startConnector="prevWP.east" endElement="trackController" endConnector="prevWP.east"/>
+            <ssd:Connection startElement="wpProvider" startConnector="prevWP.speed" endElement="trackController" endConnector="prevWP.speed"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.nedDisplacement.north" endElement="wpProvider" endConnector="northPosition"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.nedDisplacement.east" endElement="wpProvider" endConnector="eastPosition"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.angularDisplacement.yaw" endElement="wpProvider" endConnector="headingAngle"/>
+            <ssd:Connection startElement="azimuth0_rpmActuator" startConnector="d_in.f" endElement="powerPlant" endConnector="p1.f[1]"/>
+            <ssd:Connection startElement="azimuth0_rpmActuator" startConnector="q_in.f" endElement="powerPlant" endConnector="p1.f[2]"/>
+            <ssd:Connection startElement="azimuth1_rpmActuator" startConnector="d_in.f" endElement="powerPlant" endConnector="p2.f[1]"/>
+            <ssd:Connection startElement="azimuth1_rpmActuator" startConnector="q_in.f" endElement="powerPlant" endConnector="p2.f[2]"/>
+            <ssd:Connection startElement="powerPlant" startConnector="p1.e[1]" endElement="azimuth0_rpmActuator" endConnector="d_in.e"/>
+            <ssd:Connection startElement="powerPlant" startConnector="p1.e[2]" endElement="azimuth0_rpmActuator" endConnector="q_in.e"/>
+            <ssd:Connection startElement="trackController" startConnector="forceCommand" endElement="azimuth0_rpmActuator" endConnector="ThrustCom"/>
+            <ssd:Connection startElement="azimuth0" startConnector="output_torque" endElement="azimuth0_rpmActuator" endConnector="Shaft.e"/>
+            <ssd:Connection startElement="powerPlant" startConnector="p2.e[1]" endElement="azimuth1_rpmActuator" endConnector="d_in.e"/>
+            <ssd:Connection startElement="powerPlant" startConnector="p2.e[2]" endElement="azimuth1_rpmActuator" endConnector="q_in.e"/>
+            <ssd:Connection startElement="trackController" startConnector="forceCommand" endElement="azimuth1_rpmActuator" endConnector="ThrustCom"/>
+            <ssd:Connection startElement="azimuth1" startConnector="output_torque" endElement="azimuth1_rpmActuator" endConnector="Shaft.e"/>
+            <ssd:Connection startElement="azimuth0_rpmActuator" startConnector="Shaft.f" endElement="azimuth0" endConnector="input_act_revs">
+                <ssc:LinearTransformation factor="9.549296585513721"/>
+            </ssd:Connection>
+            <ssd:Connection startElement="trackController" startConnector="rudderCommand" endElement="azimuth0" endConnector="input_act_angle"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cg_x_rel_ap" endElement="azimuth0" endConnector="input_cg_x_rel_ap"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cg_y_rel_cl" endElement="azimuth0" endConnector="input_cg_y_rel_cl"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cg_z_rel_bl" endElement="azimuth0" endConnector="input_cg_z_rel_bl"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.linearVelocity.surge" endElement="azimuth0" endConnector="input_cg_surge_vel"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.linearVelocity.sway" endElement="azimuth0" endConnector="input_cg_sway_vel"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.angularVelocity.yaw" endElement="azimuth0" endConnector="input_yaw_vel"/>
+            <ssd:Connection startElement="azimuth1_rpmActuator" startConnector="Shaft.f" endElement="azimuth1" endConnector="input_act_revs">
+                <ssc:LinearTransformation factor="9.549296585513721"/>
+            </ssd:Connection>
+            <ssd:Connection startElement="trackController" startConnector="rudderCommand" endElement="azimuth1" endConnector="input_act_angle"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cg_x_rel_ap" endElement="azimuth1" endConnector="input_cg_x_rel_ap"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cg_y_rel_cl" endElement="azimuth1" endConnector="input_cg_y_rel_cl"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cg_z_rel_bl" endElement="azimuth1" endConnector="input_cg_z_rel_bl"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.linearVelocity.surge" endElement="azimuth1" endConnector="input_cg_surge_vel"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.linearVelocity.sway" endElement="azimuth1" endConnector="input_cg_sway_vel"/>
+            <ssd:Connection startElement="vesselModel" startConnector="cgShipMotion.angularVelocity.yaw" endElement="azimuth1" endConnector="input_yaw_vel"/>
+            <ssd:Connection startElement="azimuth0" startConnector="output_force_heave" endElement="vesselModel" endConnector="additionalBodyForce[0].force.heave"/>
+            <ssd:Connection startElement="azimuth0" startConnector="output_force_surge" endElement="vesselModel" endConnector="additionalBodyForce[0].force.surge"/>
+            <ssd:Connection startElement="azimuth0" startConnector="output_force_sway" endElement="vesselModel" endConnector="additionalBodyForce[0].force.sway"/>
+            <ssd:Connection startElement="azimuth0" startConnector="output_x_rel_ap" endElement="vesselModel" endConnector="additionalBodyForce[0].pointOfAttackRel2APAndBL.xpos"/>
+            <ssd:Connection startElement="azimuth0" startConnector="output_y_rel_cl" endElement="vesselModel" endConnector="additionalBodyForce[0].pointOfAttackRel2APAndBL.ypos"/>
+            <ssd:Connection startElement="azimuth0" startConnector="output_z_rel_bl" endElement="vesselModel" endConnector="additionalBodyForce[0].pointOfAttackRel2APAndBL.zpos"/>
+            <ssd:Connection startElement="azimuth1" startConnector="output_force_heave" endElement="vesselModel" endConnector="additionalBodyForce[1].force.heave"/>
+            <ssd:Connection startElement="azimuth1" startConnector="output_force_surge" endElement="vesselModel" endConnector="additionalBodyForce[1].force.surge"/>
+            <ssd:Connection startElement="azimuth1" startConnector="output_force_sway" endElement="vesselModel" endConnector="additionalBodyForce[1].force.sway"/>
+            <ssd:Connection startElement="azimuth1" startConnector="output_x_rel_ap" endElement="vesselModel" endConnector="additionalBodyForce[1].pointOfAttackRel2APAndBL.xpos"/>
+            <ssd:Connection startElement="azimuth1" startConnector="output_y_rel_cl" endElement="vesselModel" endConnector="additionalBodyForce[1].pointOfAttackRel2APAndBL.ypos"/>
+            <ssd:Connection startElement="azimuth1" startConnector="output_z_rel_bl" endElement="vesselModel" endConnector="additionalBodyForce[1].pointOfAttackRel2APAndBL.zpos"/>
+        </ssd:Connections>
+    </ssd:System>
+
+</ssd:SystemStructureDescription>

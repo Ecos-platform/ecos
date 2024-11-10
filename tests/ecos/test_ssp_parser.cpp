@@ -73,22 +73,15 @@ TEST_CASE("test_ssp_parser_archive")
     std::filesystem::path temporal;
 
     {
-        std::shared_ptr<temp_dir> tmp;
+        const auto quarterTruckArchive = std::string(DATA_FOLDER) + "/ssp/quarter_truck/quarter-truck.ssp";
+        ssp::SystemStructureDescription desc(quarterTruckArchive);
+        checkSystemStructure(desc);
+        temporal = desc.dir();
 
-        {
-            const auto quarterTruckArchive = std::string(DATA_FOLDER) + "/ssp/quarter_truck/quarter-truck.ssp";
-            ssp::SystemStructureDescription desc(quarterTruckArchive);
-            checkSystemStructure(desc);
-            tmp = desc.get_temp_dir();
-            temporal = tmp->path();
-
-            const auto& groundComponent = desc.system.elements.components.at("ground");
-            const auto groundFmu = desc.file(groundComponent.source);
-            REQUIRE(std::filesystem::exists(groundFmu));
-            REQUIRE(groundFmu.extension().string() == ".fmu");
-        }
-
-        REQUIRE(std::filesystem::exists(temporal));
+        const auto& groundComponent = desc.system.elements.components.at("ground");
+        const auto& groundFmu = desc.file(groundComponent.source);
+        REQUIRE(std::filesystem::exists(groundFmu));
+        REQUIRE(groundFmu.extension().string() == ".fmu");
     }
 
     REQUIRE(!std::filesystem::exists(temporal));

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecos:ChartConfig xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ChartConfig">
+
+    <ecos:chart>
+        <ecos:xyseries title="dp-ship" xLabel="Position [north]" yLabel="Position [east]">
+            <ecos:series name="actual">
+                <ecos:x component="Ship" variable="q[1]"/>
+                <ecos:y component="Ship" variable="q[2]"/>
+            </ecos:series>
+            <ecos:series name="ref" marker="x">
+                <ecos:x component="Reference Generator" variable="x_wp"/>
+                <ecos:y component="Reference Generator" variable="y_wp"/>
+            </ecos:series>
+
+        </ecos:xyseries>
+    </ecos:chart>
+
+</ecos:ChartConfig>

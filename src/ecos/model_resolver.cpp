@@ -13,7 +13,7 @@ std::unique_ptr<model_resolver> ecos::default_model_resolver()
     auto resolver = std::make_unique<model_resolver>();
     resolver->add_sub_resolver(std::make_unique<file_model_sub_resolver>());
     resolver->add_sub_resolver(std::make_unique<proxy_model_sub_resolver>());
-    resolver->add_sub_resolver(std::make_unique<url_model_sub_resolver>());
+    // resolver->add_sub_resolver(std::make_unique<url_model_sub_resolver>());
     return resolver;
 }
 

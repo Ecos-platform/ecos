@@ -20,7 +20,7 @@ int main()
     ecos_simulation_structure_add_model(ss, "ground", (fmuDir / "ground.fmu").string().c_str());
     ecos_simulation_structure_add_model(ss, "wheel", (fmuDir / "wheel.fmu").string().c_str());
 
-    ecos_simulation_structure_make_real_connection(ss, "chassis::p.e", "wheel::p1.e", modifier);
+    ecos_simulation_structure_make_real_connection_mod(ss, "chassis::p.e", "wheel::p1.e", modifier);
     ecos_simulation_structure_make_real_connection(ss, "wheel::p1.f", "chassis::p.f");
     ecos_simulation_structure_make_real_connection(ss, "wheel::p.e", "ground::p.e");
     ecos_simulation_structure_make_real_connection(ss, "ground::p.f", "wheel::p.f");

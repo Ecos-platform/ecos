@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecos:LogConfig xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/LogConfig">
+
+    <ecos:components>
+        <ecos:component name="vesselModel">
+            <ecos:variable name="cgShipMotion.nedDisplacement.north"/>
+            <ecos:variable name="cgShipMotion.nedDisplacement.east"/>
+            <ecos:variable name="cgShipMotion.nedDisplacement.down"/>
+        </ecos:component>
+        <ecos:component name="wpProvider">
+            <ecos:variable name="targetWP.north"/>
+            <ecos:variable name="targetWP.east"/>
+        </ecos:component>
+    </ecos:components>
+
+</ecos:LogConfig>

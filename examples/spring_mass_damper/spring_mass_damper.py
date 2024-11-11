@@ -8,7 +8,7 @@ def main():
     EcosLib.set_log_level("debug")
 
     fmu_folder = f"{__file__}/../../../data/fmus/1.0"
-    result_file = f"results/python/bouncing_ball.csv"
+    result_file = f"results/spring_mass_damper.csv"
 
     ss = EcosSimulationStructure()
     if True:

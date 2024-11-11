@@ -17,8 +17,7 @@ target_include_directories(proxyfmu
         "${PROJECT_SOURCE_DIR}/src"
         "${PROJECT_SOURCE_DIR}/src/external/spdlog"
         "${PROJECT_SOURCE_DIR}/src/external/flatbuffers"
-        "${SUBPROCESS_INCLUDE_DIR}"
-        "${CLI11_INCLUDE_DIR}"
+        "${THIRD_PARTY_INCLUDE_DIR}"
         "${generatedSourcesDir}")
 target_link_libraries(proxyfmu
         PRIVATE

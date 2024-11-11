@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecos:Scenario xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ScenarioConfig">
+
+    <ecos:action t="500" eps="0.01">
+        <ecos:variable id="Reference Generator::x_wp">
+            <ecos:real value="20.0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::x_tp">
+            <ecos:real value="700.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="800" eps="0.01">
+        <ecos:variable id="Reference Generator::psi_wp">
+            <ecos:real value="1.507"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::psi_tp">
+            <ecos:real value="1200.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="1300" eps="0.01">
+        <ecos:variable id="Reference Generator::y_wp">
+            <ecos:real value="20.0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::y_tp">
+            <ecos:real value="1500.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="1600" eps="0.01">
+        <ecos:variable id="Reference Generator::psi_wp">
+            <ecos:real value="0.0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::psi_tp">
+            <ecos:real value="2000.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="2100" eps="0.01">
+        <ecos:variable id="Reference Generator::x_wp">
+            <ecos:real value="40.0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::x_tp">
+            <ecos:real value="2300.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="2400" eps="0.01">
+        <ecos:variable id="Reference Generator::psi_wp">
+            <ecos:real value="-1.507"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::psi_tp">
+            <ecos:real value="2800.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="2900" eps="0.01">
+        <ecos:variable id="Reference Generator::y_wp">
+            <ecos:real value="-20.0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::y_tp">
+            <ecos:real value="3300.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="3400" eps="0.01">
+        <ecos:variable id="Reference Generator::psi_wp">
+            <ecos:real value="0.0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::psi_tp">
+            <ecos:real value="3800.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="3900" eps="0.01">
+        <ecos:variable id="Reference Generator::x_wp">
+            <ecos:real value="60.0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::x_tp">
+            <ecos:real value="4100.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="4200" eps="0.01">
+        <ecos:variable id="Reference Generator::psi_wp">
+            <ecos:real value="1.507"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::psi_tp">
+            <ecos:real value="4600"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="4700" eps="0.01">
+        <ecos:variable id="Reference Generator::y_wp">
+            <ecos:real value="0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::y_tp">
+            <ecos:real value="4900.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="5000" eps="0.01">
+        <ecos:variable id="Reference Generator::psi_wp">
+            <ecos:real value="0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::psi_tp">
+            <ecos:real value="5400.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+    <ecos:action t="5500" eps="0.01">
+        <ecos:variable id="Reference Generator::x_wp">
+            <ecos:real value="80.0"/>
+        </ecos:variable>
+        <ecos:variable id="Reference Generator::x_tp">
+            <ecos:real value="5700.0"/>
+        </ecos:variable>
+    </ecos:action>
+
+</ecos:Scenario>

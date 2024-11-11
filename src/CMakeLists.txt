@@ -37,30 +37,18 @@ set(privateHeaders
 
         "ecos/fmi/fmi_model.hpp"
         "ecos/fmi/fmi_model_instance.hpp"
-        "ecos/fmi/fmi_model_sub_resolver.hpp"
+
         "ecos/fmi/proxy/proxy_model.hpp"
-        "ecos/fmi/proxy/proxy_model_sub_resolver.hpp"
+
+        "ecos/resolvers/file_model_sub_resolver.hpp"
+        "ecos/resolvers/proxy_model_sub_resolver.hpp"
+        "ecos/resolvers/url_model_sub_resolver.hpp"
 
         "ecos/ssp/ssp.hpp"
 
         "ecos/util/temp_dir.hpp"
         "ecos/util/unzipper.hpp"
         "ecos/util/uuid.hpp"
-
-        "fmilibcpp/buffered_slave.hpp"
-        "fmilibcpp/fmicontext.hpp"
-        "fmilibcpp/fmu.hpp"
-        "fmilibcpp/model_description.hpp"
-        "fmilibcpp/scalar_variable.hpp"
-        "fmilibcpp/slave.hpp"
-
-        "fmilibcpp/fmi1/fmi1_fmu.hpp"
-        "fmilibcpp/fmi1/fmi1_slave.hpp"
-        "fmilibcpp/fmi1/fmi1_model_description.hpp"
-
-        "fmilibcpp/fmi2/fmi2_fmu.hpp"
-        "fmilibcpp/fmi2/fmi2_slave.hpp"
-        "fmilibcpp/fmi2/fmi2_model_description.hpp"
 
         "proxyfmu/opcodes.hpp"
         "proxyfmu/process_helper.hpp"
@@ -81,8 +69,9 @@ set(sources
 
         "ecos/algorithm/fixed_step_algorithm.cpp"
 
-        "ecos/fmi/fmi_model_sub_resolver.cpp"
-        "ecos/fmi/proxy/proxy_model_sub_resolver.cpp"
+        "ecos/resolvers/file_model_sub_resolver.cpp"
+        "ecos/resolvers/proxy_model_sub_resolver.cpp"
+        "ecos/resolvers/url_model_sub_resolver.cpp"
 
         "ecos/listeners/csv_writer.cpp"
         "ecos/listeners/simulation_listener.cpp"
@@ -101,7 +90,6 @@ set(sources
         "proxyfmu/proxy_fmu.cpp"
         "proxyfmu/proxy_slave.cpp"
 
-        "external/pugixml/pugixml.cpp"
         "external/flatbuffers/flatbuffers/util.cpp"
 )
 
@@ -114,6 +102,22 @@ configure_file(
 )
 
 add_library(fmilibcpp OBJECT
+
+        "fmilibcpp/buffered_slave.hpp"
+        "fmilibcpp/fmicontext.hpp"
+        "fmilibcpp/fmu.hpp"
+        "fmilibcpp/model_description.hpp"
+        "fmilibcpp/scalar_variable.hpp"
+        "fmilibcpp/slave.hpp"
+
+        "fmilibcpp/fmi1/fmi1_fmu.hpp"
+        "fmilibcpp/fmi1/fmi1_slave.hpp"
+        "fmilibcpp/fmi1/fmi1_model_description.hpp"
+
+        "fmilibcpp/fmi2/fmi2_fmu.hpp"
+        "fmilibcpp/fmi2/fmi2_slave.hpp"
+        "fmilibcpp/fmi2/fmi2_model_description.hpp"
+
         "fmilibcpp/fmu.cpp"
 
         "fmilibcpp/fmi1/fmi1_fmu.cpp"
@@ -151,7 +155,7 @@ target_include_directories(libecos
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/pugixml>"
         PRIVATE
         "${generatedSourcesDir}"
-        "${SUBPROCESS_INCLUDE_DIR}"
+        "${THIRD_PARTY_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers"
 )

@@ -22,7 +22,7 @@ class EcosSimulationStructure:
         self._make_int_connection = dll.ecos_simulation_structure_make_int_connection
         self._make_int_connection.argtypes = [c_void_p, c_char_p, c_char_p]
 
-        self._make_real_connection_mod = dll.ecos_simulation_structure_make_real_connection
+        self._make_real_connection_mod = dll.ecos_simulation_structure_make_real_connection_mod
         self._make_real_connection_mod.argtypes = [c_void_p, c_char_p, c_char_p, CFUNCTYPE(c_double, c_double)]
 
         self._make_real_connection = dll.ecos_simulation_structure_make_real_connection

@@ -72,7 +72,7 @@ public:
 
     void remove_listener(const std::string& name);
 
-    model_instance* get_instance(const std::string& name) const;
+    [[nodiscard]] model_instance* get_instance(const std::string& name) const;
 
     real_connection* make_real_connection(const variable_identifier& source, const variable_identifier& sink);
 

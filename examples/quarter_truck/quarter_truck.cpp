@@ -11,7 +11,7 @@ int main()
     set_logging_level(log::level::debug);
 
     simulation_structure ss;
-    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/fmus/2.0/quarter-truck";
+    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/ssp/quarter_truck/resources";
 
     try {
         ss.add_model("chassis", fmuDir / "chassis.fmu");

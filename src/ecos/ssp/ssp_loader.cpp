@@ -1,6 +1,8 @@
 
 #include "ecos/ssp/ssp_loader.hpp"
 
+#include "ecos/logger/logger.hpp"
+
 #include "ssp.hpp"
 
 using namespace ecos;
@@ -15,15 +17,18 @@ public:
         : desc_(path)
     {
 
+        log::debug("Loading SSP from {}", path.string());
+
         const auto& system = desc_.system;
         const auto& parameterSets = system.elements.parameterSets;
         const auto& components = system.elements.components;
         const auto& connections = system.connections;
 
-        auto resolver = default_model_resolver();
+        const auto resolver = default_model_resolver();
         for (const auto& [name, component] : components) {
             auto model = resolver->resolve(desc_.dir(), component.source);
-            add_model(name, model);
+            if (!model) throw std::runtime_error("Could not resolve model: " + component.source);
+            add_model(name, std::move(model));
         }
 
         for (const auto& connection : connections) {
@@ -34,11 +39,11 @@ public:
             const variable_identifier source(connection.startElement, connection.startConnector);
             const variable_identifier sink(connection.endElement, connection.endConnector);
 
-            if (!(startConnector.type == endConnector.type)) {
+            if (startConnector.type != endConnector.type) {
                 throw std::runtime_error("Incompatible connector types!");
             }
 
-            const auto typeName = startConnector.type.typeName();
+            const auto& typeName = startConnector.type.typeName();
             if (typeName == "Real") {
                 std::optional<std::function<double(double)>> f;
                 if (connection.linearTransformation) {

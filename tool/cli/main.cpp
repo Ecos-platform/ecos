@@ -62,7 +62,7 @@ void create_options(CLI::App& app)
 std::unique_ptr<simulation_structure> create_structure(const std::filesystem::path& path, std::string& csvName)
 {
     if (!exists(path)) {
-        throw std::runtime_error("No such file: " + std::filesystem::absolute(path).string());
+        throw std::runtime_error("No such file: " + absolute(path).string());
     }
 
     std::unique_ptr<simulation_structure> ss;
@@ -84,7 +84,7 @@ std::unique_ptr<simulation_structure> create_structure(const std::filesystem::pa
         csvName = path.stem().string();
     } else if (path.extension() == ".fmu") {
         ss = std::make_unique<simulation_structure>();
-        auto resolver = default_model_resolver();
+        const auto resolver = default_model_resolver();
         ss->add_model("instance", resolver->resolve(path.string()));
         csvName = path.stem().string();
     }
@@ -94,7 +94,7 @@ std::unique_ptr<simulation_structure> create_structure(const std::filesystem::pa
 void setup_scenario(const CLI::App& vm, simulation& sim)
 {
     if (vm.count("--scenarioConfig")) {
-        std::filesystem::path config = vm["--scenarioConfig"]->as<std::string>();
+        const std::filesystem::path config = vm["--scenarioConfig"]->as<std::string>();
         load_scenario(sim, config);
     }
 }

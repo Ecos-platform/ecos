@@ -86,7 +86,9 @@ void csv_writer::post_init(simulation& sim)
 
 void csv_writer::post_step(simulation& sim)
 {
-    writeData(outFile_, sim, config_);
+    if (sim.iterations() % config().decimation_factor() == 0) {
+        writeData(outFile_, sim, config_);
+    }
 }
 
 void csv_writer::post_terminate(simulation& sim)
@@ -194,6 +196,10 @@ void csv_config::load(const std::filesystem::path& configPath)
     }
 
     const auto root = doc.child("ecos:LogConfig");
+    if (const auto decimationFactor = root.attribute("decimationFactor")) {
+        decimationFactor_ = decimationFactor.as_int();
+    }
+
     const auto components = root.child("ecos:components");
     for (const auto& instances : components) {
         const auto instanceName = instances.attribute("name").as_string();
@@ -212,6 +218,11 @@ void csv_config::register_variable(variable_identifier v)
 void csv_config::clear_on_reset(bool flag)
 {
     clear_on_reset_ = flag;
+}
+
+size_t& csv_config::decimation_factor()
+{
+    return decimationFactor_;
 }
 
 void csv_config::enable_plotting(const std::filesystem::path& plotConfig)
@@ -268,6 +279,7 @@ std::string plotScript()
 {
     return R"(
 
+import re
 import sys
 
 import pandas as pd
@@ -296,7 +308,7 @@ def make_time_series(csv, timeseries):
             for variable in comp:
                 var_name = variable.attrib["name"]
                 identifier = "{}::{}".format(comp_name, var_name)
-                m = csv.columns.str.contains(identifier)
+                m = csv.columns.str.contains(re.escape(identifier))
                 data = csv.loc[:, m]
                 plt.plot(t, data, label=csv.columns[m][0])
 
@@ -312,15 +324,21 @@ def make_xy_series(csv, xyseries):
     plt.xlabel(xyseries.attrib["xLabel"])
     plt.ylabel(xyseries.attrib["yLabel"])
     for series in xyseries:
+        name = series.attrib["name"]
+        marker = series.attrib["marker"] if 'marker' in series.attrib else None
         x = series[0]
         v1 = "{}::{}".format(x.attrib["component"], x.attrib["variable"])
         y = series[1]
         v2 = "{}::{}".format(y.attrib["component"], y.attrib["variable"])
-        m1 = csv.columns.str.contains(v1)
+        m1 = csv.columns.str.contains(re.escape(v1))
         data1 = csv.loc[:, m1]
-        m2 = csv.columns.str.contains(v2)
+        m2 = csv.columns.str.contains(re.escape(v2))
         data2 = csv.loc[:, m2]
-        plt.plot(data1, data2, label=series.attrib["name"])
+
+        if marker is None:
+            plt.plot(data1, data2, label=name)
+        else:
+            plt.plot(data1, data2, marker, label=name)
 
     plt.legend(loc='upper right')
 

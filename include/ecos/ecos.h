@@ -25,7 +25,8 @@ bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const 
 bool ecos_simulation_structure_add_parameter_set(ecos_simulation_structure_t* ss, const char* name, const ecos_parameter_set_t* pps);
 
 void ecos_simulation_structure_make_int_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);
-void ecos_simulation_structure_make_real_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink, double (*modifier)(double) = nullptr);
+void ecos_simulation_structure_make_real_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);
+void ecos_simulation_structure_make_real_connection_mod(ecos_simulation_structure_t* ss, const char* source, const char* sink, double (*modifier)(double) = nullptr);
 void ecos_simulation_structure_make_string_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);
 void ecos_simulation_structure_make_bool_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);
 // -------------
@@ -63,6 +64,8 @@ bool ecos_simulation_set_string(ecos_simulation_t* sim, const char* identifier, 
 bool ecos_simulation_terminate(ecos_simulation_t* sim);
 bool ecos_simulation_reset(ecos_simulation_t* sim);
 void ecos_simulation_destroy(ecos_simulation_t* sim);
+
+bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_file);
 // -------------
 
 // simulation_listener

@@ -5,6 +5,7 @@
 #include "ecos/lib_info.hpp"
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/logger/logger.hpp"
+#include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 
@@ -167,14 +168,19 @@ void ecos_simulation_structure_make_int_connection(ecos_simulation_structure_t* 
     }
 }
 
-void ecos_simulation_structure_make_real_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink, double (*modifier)(double))
+void ecos_simulation_structure_make_real_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink)
 {
     try {
-        if (!modifier) {
-            ss->cpp_ss.make_connection<double>(source, sink);
-        } else {
-            ss->cpp_ss.make_connection<double>(source, sink, [modifier](double value) { return modifier(value); });
-        }
+        ss->cpp_ss.make_connection<double>(source, sink);
+    } catch (...) {
+        handle_current_exception();
+    }
+}
+
+void ecos_simulation_structure_make_real_connection_mod(ecos_simulation_structure_t* ss, const char* source, const char* sink, double (*modifier)(double))
+{
+    try {
+        ss->cpp_ss.make_connection<double>(source, sink, [modifier](double value) { return modifier(value); });
     } catch (...) {
         handle_current_exception();
     }
@@ -262,6 +268,10 @@ bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier,
 {
     try {
         const auto prop = sim->cpp_sim->get_int_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No int property " + std::string(identifier) + " found!";
+            return false;
+        }
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -274,6 +284,10 @@ bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, do
 {
     try {
         const auto prop = sim->cpp_sim->get_real_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No real property " + std::string(identifier) + " found!";
+            return false;
+        }
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -286,6 +300,10 @@ bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bo
 {
     try {
         const auto prop = sim->cpp_sim->get_bool_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No bool property " + std::string(identifier) + " found!";
+            return false;
+        }
         *value = prop->get_value();
         return true;
     } catch (...) {
@@ -297,15 +315,20 @@ bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bo
 bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value, size_t value_size)
 {
     try {
-        const auto prop = sim->cpp_sim->get_string_property(identifier)->get_value();
+        const auto prop = sim->cpp_sim->get_string_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No string property named" + std::string(identifier) + " found!";
+            return false;
+        }
+        const auto propValue = prop->get_value();
         // Ensure we don't exceed the buffer size
-        if (prop.size() >= value_size) {
+        if (propValue.size() >= value_size) {
             // If the string is too large, copy only up to the available size - 1
-            std::strncpy(value, prop.c_str(), value_size - 1);
+            std::strncpy(value, propValue.c_str(), value_size - 1);
             value[value_size - 1] = '\0'; // Null-terminate the string
         } else {
             // Safe to copy the entire string
-            std::strcpy(value, prop.c_str());
+            std::strcpy(value, propValue.c_str());
         }
 
         return true;
@@ -319,6 +342,10 @@ bool ecos_simulation_set_integer(ecos_simulation_t* sim, const char* identifier,
 {
     try {
         const auto prop = sim->cpp_sim->get_int_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No int property " + std::string(identifier) + " found!";
+            return false;
+        }
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -331,6 +358,10 @@ bool ecos_simulation_set_real(ecos_simulation_t* sim, const char* identifier, do
 {
     try {
         const auto prop = sim->cpp_sim->get_real_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No real property " + std::string(identifier) + " found!";
+            return false;
+        }
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -343,6 +374,10 @@ bool ecos_simulation_set_bool(ecos_simulation_t* sim, const char* identifier, bo
 {
     try {
         const auto prop = sim->cpp_sim->get_bool_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No bool property " + std::string(identifier) + " found!";
+            return false;
+        }
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -355,6 +390,10 @@ bool ecos_simulation_set_string(ecos_simulation_t* sim, const char* identifier, 
 {
     try {
         const auto prop = sim->cpp_sim->get_string_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No string property " + std::string(identifier) + " found!";
+            return false;
+        }
         prop->set_value(value);
         return true;
     } catch (...) {
@@ -481,4 +520,15 @@ ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_list
     l->cpp_listener = std::make_unique<my_listener>(config);
 
     return l.release();
+}
+
+bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_file)
+{
+    try {
+        load_scenario(*sim->cpp_sim, scenario_file);
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
 }

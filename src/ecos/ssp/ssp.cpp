@@ -233,7 +233,7 @@ struct SystemStructureDescription::Impl
 
     std::filesystem::path dir_;
     pugi::xml_document doc_;
-    std::shared_ptr<temp_dir> tmp_ = nullptr;
+    std::unique_ptr<temp_dir> tmp_ = nullptr;
 
     explicit Impl(const std::filesystem::path& path)
     {
@@ -300,11 +300,6 @@ std::filesystem::path SystemStructureDescription::file(const std::filesystem::pa
 std::filesystem::path SystemStructureDescription::dir() const
 {
     return pimpl_->dir_;
-}
-
-std::shared_ptr<temp_dir> SystemStructureDescription::get_temp_dir() const
-{
-    return pimpl_->tmp_;
 }
 
 SystemStructureDescription::~SystemStructureDescription() = default;

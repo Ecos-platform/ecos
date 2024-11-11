@@ -165,6 +165,7 @@ void fmi2_slave::freeInstance()
         fmi2_freeInstance(handle_);
     }
 }
+
 void* fmi2_slave::get_state()
 {
 

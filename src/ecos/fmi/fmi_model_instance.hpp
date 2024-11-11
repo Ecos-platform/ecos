@@ -5,10 +5,31 @@
 #include "fmilibcpp/buffered_slave.hpp"
 
 #include "ecos/model_instance.hpp"
-#include <ecos/logger/logger.hpp>
+#include "ecos/logger/logger.hpp"
 
 namespace ecos
 {
+
+struct fmi_state : model_state
+{
+    fmi_state(fmilibcpp::slave* slave, void* state)
+        : slave_(slave)
+        , state_(state)
+    { }
+
+    ~fmi_state() override
+    {
+        if (slave_ && state_) {
+            slave_->free_state(state_);
+            state_ = nullptr;
+        }
+    }
+
+private:
+    friend class fmi_model_instance;
+    fmilibcpp::slave* slave_;
+    void* state_;
+};
 
 class fmi_model_instance : public model_instance
 {
@@ -113,6 +134,25 @@ public:
         slave_->reset();
     }
 
+    [[nodiscard]] bool can_get_and_set_state() const override
+    {
+        return slave_->get_model_description().canGetAndSetState;
+    }
+
+    std::unique_ptr<model_state> get_state() override
+    {
+        if (!can_get_and_set_state()) {
+            throw std::runtime_error("Model does not support get/set state!");
+        }
+
+        return std::make_unique<fmi_state>(slave_->get(), slave_->get_state());
+    }
+
+    void set_state(model_state& state) override
+    {
+        slave_->set_state(dynamic_cast<fmi_state*>(&state)->state_);
+    }
+
 private:
     std::vector<fmilibcpp::value_ref> vrBuf = std::vector<fmilibcpp::value_ref>(1);
     std::vector<double> rBuf = std::vector<double>(1);
@@ -132,6 +172,7 @@ private:
         {
             slave_.transferCachedSets();
         }
+
         void pre_gets() override
         {
             slave_.receiveCachedGets();

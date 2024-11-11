@@ -29,6 +29,7 @@ struct model_description
     std::string description;
     std::string generationTool;
     std::string generationDateAndTime;
+    bool canGetAndSetState;
 
     model_variables modelVariables;
     default_experiment defaultExperiment;

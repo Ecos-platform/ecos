@@ -138,6 +138,8 @@ model_description create_fmi3_model_description(fmiHandle* handle)
     // md.generationTool = fmi3_getGenerationTool(handle) ? fmi3_getGenerationTool(handle) : "";
     // md.generationDateAndTime = fmi3_getGenerationDateAndTime(handle) ? fmi3_getGenerationDateAndTime(handle) : "";
 
+    md.canGetAndSetState = fmi3cs_getCanGetAndSetFMUState(handle);
+
     md.defaultExperiment.startTime = fmi3_getDefaultStartTime(handle);
     md.defaultExperiment.stopTime = fmi3_getDefaultStopTime(handle);
     md.defaultExperiment.stepSize = fmi3_getDefaultStepSize(handle);

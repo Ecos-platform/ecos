@@ -94,6 +94,8 @@ model_description create_fmi2_model_description(fmiHandle* handle)
     md.generationTool = fmi2_getGenerationTool(handle) ? fmi2_getGenerationTool(handle) : "";
     md.generationDateAndTime = fmi2_getGenerationDateAndTime(handle) ? fmi2_getGenerationDateAndTime(handle) : "";
 
+    md.canGetAndSetState = fmi2cs_getCanGetAndSetFMUState(handle);
+
     md.defaultExperiment.startTime = fmi2_getDefaultStartTime(handle);
     md.defaultExperiment.stopTime = fmi2_getDefaultStopTime(handle);
     md.defaultExperiment.stepSize = fmi2_getDefaultStepSize(handle);

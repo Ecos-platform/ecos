@@ -11,6 +11,11 @@
 namespace ecos
 {
 
+struct model_state
+{
+    virtual ~model_state() = default;
+};
+
 class model_instance
 {
 
@@ -113,6 +118,21 @@ public:
     properties& get_properties()
     {
         return properties_;
+    }
+
+    [[nodiscard]] virtual bool can_get_and_set_state() const
+    {
+        return false;
+    }
+
+    virtual std::unique_ptr<model_state> get_state()
+    {
+        throw std::runtime_error("Not implemented!");
+    }
+
+    virtual void set_state(model_state&)
+    {
+        throw std::runtime_error("Not implemented!");
     }
 
     virtual ~model_instance() = default;

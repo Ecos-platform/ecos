@@ -102,7 +102,9 @@ model_description create_fmi1_model_description(fmiHandle* handle)
     md.description = fmi1_getDescription(handle) ? fmi1_getDescription(handle) : "";
     md.generationTool = fmi1_getGenerationTool(handle) ? fmi1_getGenerationTool(handle) : "";
     md.generationDateAndTime = fmi1_getGenerationDateAndTime(handle) ? fmi1_getGenerationDateAndTime(handle) : "";
-    //
+
+    md.canGetAndSetState = false;
+
     md.defaultExperiment.startTime = fmi1_getDefaultStartTime(handle);
     md.defaultExperiment.stopTime = fmi1_getDefaultStopTime(handle);
     md.defaultExperiment.tolerance = fmi1_getDefaultTolerance(handle);

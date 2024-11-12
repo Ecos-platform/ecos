@@ -280,14 +280,14 @@ void* fmi3_slave::get_state()
     return state;
 }
 
-void fmi3_slave::free_state(void* state)
+bool fmi3_slave::free_state(void* state)
 {
-    fmi3_freeFMUState(handle_, &state);
+    return fmi3_freeFMUState(handle_, &state) == fmi3OK;
 }
 
-void fmi3_slave::set_state(void* state)
+bool fmi3_slave::set_state(void* state)
 {
-    fmi3_setFMUState(handle_, state);
+    return fmi3_setFMUState(handle_, state) == fmi3OK;
 }
 
 fmi3_slave::~fmi3_slave()

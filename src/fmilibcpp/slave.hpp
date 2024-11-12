@@ -4,6 +4,8 @@
 
 #include "model_description.hpp"
 
+#include <ecos/logger/logger.hpp>
+
 #include <vector>
 
 namespace fmilibcpp
@@ -68,14 +70,16 @@ public:
         throw std::runtime_error("get_state not implemented");
     }
 
-    virtual void set_state(void* state)
+    virtual bool set_state(void* state)
     {
-        throw std::runtime_error("set_state not implemented");
+        ecos::log::err("get/set_state not supported!");
+        return false;
     }
 
-    virtual void free_state(void* state)
+    virtual bool free_state(void* state)
     {
-        throw std::runtime_error("free_state not implemented");
+        ecos::log::err("get/set_state not supported!");
+        return false;
     }
 
     virtual bool get_integer(const std::vector<value_ref>& vrs, std::vector<int32_t>& values) = 0;

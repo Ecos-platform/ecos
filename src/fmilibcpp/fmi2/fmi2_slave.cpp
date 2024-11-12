@@ -179,14 +179,14 @@ void* fmi2_slave::get_state()
     return state;
 }
 
-void fmi2_slave::set_state(void* state)
+bool fmi2_slave::set_state(void* state)
 {
-    fmi2_setFMUstate(handle_, state);
+    return fmi2_setFMUstate(handle_, state) == fmi2OK;
 }
 
-void fmi2_slave::free_state(void* state)
+bool fmi2_slave::free_state(void* state)
 {
-    fmi2_freeFMUstate(handle_, &state);
+    return fmi2_freeFMUstate(handle_, &state) == fmi2OK;
 }
 
 fmi2_slave::~fmi2_slave()

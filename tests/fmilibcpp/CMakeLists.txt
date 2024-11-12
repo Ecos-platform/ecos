@@ -2,3 +2,4 @@
 add_test_executable(test_identity)
 add_test_executable(test_buffered_identity)
 add_test_executable(test_controlled_temp)
+add_test_executable(test_state)

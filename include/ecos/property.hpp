@@ -80,12 +80,12 @@ struct property_t : property
         outputModifier_ = std::move(modifier);
     }
 
-    static std::unique_ptr<property_t<T>> create(
+    static std::unique_ptr<property_t> create(
         const variable_identifier& id,
         const std::function<T()>& getter,
         const std::optional<std::function<void(const T&)>>& setter = std::nullopt)
     {
-        return std::make_unique<property_t<T>>(id, getter, setter);
+        return std::make_unique<property_t>(id, getter, setter);
     }
 
 private:

@@ -52,14 +52,6 @@ public:
         instances_.emplace_back(instance_wrapper{decimationFactor, instance});
     }
 
-    void model_instance_removed(model_instance* instance)
-    {
-        const auto find = std::ranges::remove_if(instances_, [instance](auto& elem) {
-            return elem.instance == instance;
-        }).begin();
-        instances_.erase(find, instances_.end());
-    }
-
     double step(double currentTime)
     {
         auto f = [currentTime, this](auto& wrapper) {

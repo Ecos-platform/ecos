@@ -131,12 +131,12 @@ model_description create_fmi3_model_description(fmiHandle* handle)
     model_description md;
     md.fmiVersion = fmi3_getVersion(handle) ? fmi3_getVersion(handle) : "3.0";
     // md.guid = fmi3_getGuid(handle);
-    // md.author = fmi3_getAuthor(handle) ? fmi3_getAuthor(handle) : "";
-    // md.modelName = fmi3_getModelName(handle);
-    // md.modelIdentifier = fmi3_getModelIdentifier(handle);
-    // md.description = fmi3_getModelDescription(handle) ? fmi3_getModelDescription(handle) : "";
-    // md.generationTool = fmi3_getGenerationTool(handle) ? fmi3_getGenerationTool(handle) : "";
-    // md.generationDateAndTime = fmi3_getGenerationDateAndTime(handle) ? fmi3_getGenerationDateAndTime(handle) : "";
+    md.author = fmi3_author(handle) ? fmi3_author(handle) : "";
+    md.modelName = fmi3_modelName(handle);
+    md.modelIdentifier = fmi3cs_getModelIdentifier(handle);
+    md.description = fmi3_description(handle) ? fmi3_description(handle) : "";
+    md.generationTool = fmi3_generationTool(handle) ? fmi3_generationTool(handle) : "";
+    md.generationDateAndTime = fmi3_generationDateAndTime(handle) ? fmi3_generationDateAndTime(handle) : "";
 
     md.canGetAndSetState = fmi3cs_getCanGetAndSetFMUState(handle);
 

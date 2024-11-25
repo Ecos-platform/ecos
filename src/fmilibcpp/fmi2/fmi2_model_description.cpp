@@ -89,7 +89,7 @@ model_description create_fmi2_model_description(fmiHandle* handle)
     md.guid = fmi2_getGuid(handle);
     md.author = fmi2_getAuthor(handle) ? fmi2_getAuthor(handle) : "";
     md.modelName = fmi2_getModelName(handle);
-    md.modelIdentifier = fmi2_getModelIdentifier(handle);
+    md.modelIdentifier = fmi2cs_getModelIdentifier(handle);
     md.description = fmi2_getModelDescription(handle) ? fmi2_getModelDescription(handle) : "";
     md.generationTool = fmi2_getGenerationTool(handle) ? fmi2_getGenerationTool(handle) : "";
     md.generationDateAndTime = fmi2_getGenerationDateAndTime(handle) ? fmi2_getGenerationDateAndTime(handle) : "";

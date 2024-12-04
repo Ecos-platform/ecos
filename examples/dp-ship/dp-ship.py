@@ -1,7 +1,14 @@
 from ecospy import *
 from ecospy.plotter import *
 
+import sys, signal
+
+def signal_handler(sig, frame):
+    print("\nSimulation interrupted by user (CTRL+C).")
+    sys.exit(0)
+
 def main():
+    signal.signal(signal.SIGINT, signal_handler)
     EcosLib.set_log_level("debug")
 
     ssp_dir = f"{__file__}/../../../data/ssp/dp_ship"
@@ -17,7 +24,13 @@ def main():
             print(EcosLib.get_last_error())
 
         sim.init()
-        sim.step_for(3000)
+        try:
+            print("Press CTRL+C to terminate the simulation.")
+            t = 0
+            while t < 3000:
+                t = sim.step(1)
+        except SystemExit:
+            print(f"Simulation requested to stop at t={t}")
 
         sim.terminate()
 

@@ -47,7 +47,7 @@ ecos_simulation_t* ecos_simulation_create_from_structure(ecos_simulation_structu
 
 bool ecos_simulation_init(ecos_simulation_t* sim, double startTime = 0, const char* parameterSet = nullptr);
 
-void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps = 1);
+double ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps = 1);
 void ecos_simulation_step_for(ecos_simulation_t* sim, double duration);
 void ecos_simulation_step_until(ecos_simulation_t* sim, double timePoint);
 

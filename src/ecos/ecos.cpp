@@ -249,9 +249,9 @@ bool ecos_simulation_init(ecos_simulation_t* sim, double startTime, const char* 
     }
 }
 
-void ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps)
+double ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps)
 {
-    sim->cpp_sim->step(numSteps);
+    return sim->cpp_sim->step(numSteps);
 }
 
 void ecos_simulation_step_for(ecos_simulation_t* sim, double duration)

@@ -111,7 +111,7 @@ double simulation::step(unsigned int numStep)
         }
     }
 
-    return newT;
+    return currentTime_;
 }
 
 void simulation::step_until(double t)

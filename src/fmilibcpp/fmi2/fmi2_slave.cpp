@@ -9,12 +9,24 @@
 namespace
 {
 
-void fmilogger(fmi2Component, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
+const char* fmi2StatusToString(fmi2Status status) {
+    switch (status) {
+        case fmi2OK:      return "fmi2OK";
+        case fmi2Warning: return "fmi2Warning";
+        case fmi2Discard: return "fmi2Discard";
+        case fmi2Error:   return "fmi2Error";
+        case fmi2Fatal:   return "fmi2Fatal";
+        case fmi2Pending: return "fmi2Pending";
+        default:          return "Unknown fmi2Status";
+    }
+}
+
+void fmilogger(fmi2Component, fmi2String instanceName, fmi2Status status, fmi2String, fmi2String message, ...)
 {
     va_list args;
     va_start(args, message);
     char msgstr[1024];
-    sprintf(msgstr, "%s: %s\n", category, message);
+    sprintf(msgstr, "[%s] %s: %s\n", fmi2StatusToString(status), instanceName, message);
     printf(msgstr, args);
     va_end(args);
 }

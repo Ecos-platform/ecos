@@ -13,7 +13,7 @@ engine written in modern C++.
 * Command-line-interface (CLI).
 * Simplified Python and C interface.
 * Simple build process (simply build with CMake or pip install).
-* Minimal (and bundled) build depedencies.
+* Minimal (and bundled) build dependencies.
 
 ### Building
 

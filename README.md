@@ -53,10 +53,10 @@ int main() {
     ss.add_model("wheel", "wheel.fmu");
     
     //make connections
-    ss.make_connection<double>("chassis::p.e", "wheel.p1::e");
-    ss.make_connection<double>("wheel::p1.f", "chassis.p::f");
-    ss.make_connection<double>("wheel::p.e", "ground.p::e");
-    ss.make_connection<double>("ground::p.f", "wheel.p::f");
+    ss.make_connection<double>("chassis::p.e", "wheel::p1.e");
+    ss.make_connection<double>("wheel::p1.f", "chassis::p.f");
+    ss.make_connection<double>("wheel::p.e", "ground::p.e");
+    ss.make_connection<double>("ground::p.f", "wheel::p.f");
     
     // setup initialValues
     std::map<variable_identifier, scalar_value> map;

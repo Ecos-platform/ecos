@@ -32,14 +32,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: matrix.build_type == 'Release'
         with:
-          name: ecos
-          path: build/bin/ecos*
-
-      - uses: actions/upload-artifact@v4
-        if: matrix.build_type == 'Release'
-        with:
-          name: ecos
-          path: build/bin/proxyfmu*
+          name: ecos-${{ matrix.os }}
+          path: |
+            build/bin/ecos*
+            build/bin/proxyfmu*
 
   cmake-on-windows:
 
@@ -67,11 +63,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: matrix.build_type == 'Release'
         with:
-          name: ecos
-          path: build/bin/ecos*
-
-      - uses: actions/upload-artifact@v4
-        if: matrix.build_type == 'Release'
-        with:
-          name: ecos
-          path: build/bin/proxyfmu*
+          name: ecos-${{ matrix.os }}
+          path: |
+            build/bin/ecos*
+            build/bin/proxyfmu*

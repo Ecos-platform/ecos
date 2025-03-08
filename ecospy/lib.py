@@ -4,9 +4,10 @@ from ctypes import CDLL, Structure, c_char_p, c_int
 def load_library():
     def suffix() -> str:
         return ".dll" if os.name == "nt" else ".so"
-    
-    bin_folder = f"{__file__}\\..\\build\\bin"
-    os.add_dll_directory(bin_folder)
+
+    if os.name == "nt":
+        bin_folder = f"{__file__}\\..\\build\\bin"
+        os.add_dll_directory(bin_folder)
     
     return  CDLL(f"libecosc{suffix()}")
 

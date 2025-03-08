@@ -1,12 +1,15 @@
 import os
 import subprocess
-from setuptools import setup, Extension
+from pathlib import Path
+
+from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
 WINDOWS = (os.name == 'nt')
 
-buildFolder = "build"
-
+build_folder = "build"
+bin_folder = f"{build_folder}/bin"
+bin_files = [str(p) for p in Path(bin_folder).glob("*") if p.suffix in {".so", ".dll"}]
 
 def version():
     with open("../version.txt", "r") as f:
@@ -18,16 +21,19 @@ class CMakeExtension(Extension):
     def __init__(self, name):
         super().__init__(
             name,
-            sources=[],
-            library_dirs=["build/bin"]
+            sources=[]
         )
 
 
 class CMakeBuild(build_ext):
 
     def run(self):
-        for ext in self.extensions:
-            self.build_extension(ext)
+
+        if os.path.exists(build_folder):
+            print("CMake build folder exists, skipping redundant build.")
+        else:
+            for ext in self.extensions:
+                self.build_extension(ext)
         super().run()
 
     def build_extension(self, ext):
@@ -38,7 +44,7 @@ class CMakeBuild(build_ext):
             'cmake',
             '..',
             '-B',
-            buildFolder,
+            build_folder,
             '-DCMAKE_BUILD_TYPE={}'.format(build_type),
         ]
         if WINDOWS:
@@ -48,7 +54,7 @@ class CMakeBuild(build_ext):
         cmake_args_build = [
             'cmake',
             '--build',
-            buildFolder
+            build_folder
         ]
         if WINDOWS:
             cmake_args_build.extend(['--config', 'Release'])
@@ -65,14 +71,12 @@ setup(name="ecospy",
       url="https://github.com/Ecos-platform/ecos",
       author="Lars Ivar Hatledal",
       license="MIT",
-      include_package_data=True,
-      packages=['ecospy'],
-      package_data={
-          "ecospy": [f'{buildFolder}/bin/*.so', f'{buildFolder}/bin/*.dll']
-      },
-      package_dir={'ecospy': '.'},
+      include_package_data=False,
+      packages=find_packages(),
       data_files=[
-          ("Scripts", [f"{buildFolder}/bin/proxyfmu{binary_suffix()}", f"{buildFolder}/bin/ecos{binary_suffix()}"])],
+          ("Scripts", [f"{build_folder}/bin/proxyfmu{binary_suffix()}", f"{build_folder}/bin/ecos{binary_suffix()}"]),
+          ("ecospy/build/bin", bin_files)
+      ],
       ext_modules=[CMakeExtension("ecospy")],
       cmdclass=dict(build_ext=CMakeBuild),
       )

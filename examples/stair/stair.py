@@ -1,13 +1,14 @@
 from ecospy import *
 from ecospy.plotter import *
 
+from pathlib import Path
 
 def main():
     print(f"Ecoslib version: {EcosLib.version()}")
 
     EcosLib.set_log_level("debug")
 
-    fmu_path = f"{__file__}/../../../data/fmus/3.0/ref/Stair.fmu"
+    fmu_path = str((Path(__file__).parent.parent.parent / 'data' / 'fmus' / '3.0' / 'ref' / 'Stair.fmu').resolve())
     result_file = "results/python/stair.csv"
 
     ss = EcosSimulationStructure()

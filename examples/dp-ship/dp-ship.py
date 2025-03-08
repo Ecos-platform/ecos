@@ -2,6 +2,7 @@ from ecospy import *
 from ecospy.plotter import *
 
 import sys, signal
+from pathlib import Path
 
 def signal_handler(sig, frame):
     print("\nSimulation interrupted by user (CTRL+C).")
@@ -11,7 +12,7 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
     EcosLib.set_log_level("debug")
 
-    ssp_dir = f"{__file__}/../../../data/ssp/dp_ship"
+    ssp_dir = str((Path(__file__).parent.parent.parent / 'data' / 'ssp' / 'dp_ship').resolve())
     log_config = f"{ssp_dir}/LogConfig.xml"
     scenario = f"{ssp_dir}/waypoints_scenario.xml"
 

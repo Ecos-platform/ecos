@@ -1,15 +1,19 @@
 import os
+from pathlib import Path
 from ctypes import CDLL, Structure, c_char_p, c_int
 
 def load_library():
     def suffix() -> str:
         return ".dll" if os.name == "nt" else ".so"
 
+    bin_folder = (Path(__file__).parent / 'build' / 'bin').resolve()
+
     if os.name == "nt":
-        bin_folder = f"{__file__}\\..\\build\\bin"
-        os.add_dll_directory(bin_folder)
-    
-    return  CDLL(f"libecosc{suffix()}")
+        with os.add_dll_directory(str(bin_folder)):
+            return CDLL(f"libecosc{suffix()}")
+    else:
+        return CDLL(f"{str(bin_folder)}/libecosc{suffix()}")
+
 
 dll = load_library()
 

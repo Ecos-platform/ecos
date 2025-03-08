@@ -25,6 +25,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
 set(generatedSourcesDir "${CMAKE_BINARY_DIR}/generated")
 

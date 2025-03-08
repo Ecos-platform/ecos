@@ -1,13 +1,14 @@
 
 from ecospy import *
-from ecospy.EcosParameterSet import EcosParameterSet
 from ecospy.plotter import *
+
+from pathlib import Path
 
 def main():
 
     EcosLib.set_log_level("debug")
 
-    fmu_folder = f"{__file__}/../../../data/fmus/1.0"
+    fmu_folder = (Path(__file__).parent.parent.parent / 'data' / 'fmus' /'1.0').resolve()
     result_file = f"results/spring_mass_damper.csv"
 
     ss = EcosSimulationStructure()

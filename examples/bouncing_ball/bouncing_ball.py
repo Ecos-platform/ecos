@@ -1,12 +1,14 @@
 from ecospy import *
 from ecospy.plotter import Plotter, TimeSeriesConfig
 
+from pathlib import Path
+
 def main():
     print(f"Ecoslib version: {EcosLib.version()}")
 
     EcosLib.set_log_level("debug")
 
-    fmu_path = f"{__file__}/../../../data/fmus/3.0/ref/BouncingBall.fmu"
+    fmu_path =  str((Path(__file__).parent.parent.parent / 'data' / 'fmus' / '3.0' / 'ref' / 'BouncingBall.fmu').resolve())
     result_file = f"results/python/bouncing_ball.csv"
 
     ss = EcosSimulationStructure()

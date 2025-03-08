@@ -1,6 +1,8 @@
 from ecospy import *
 from ecospy.plotter import *
 
+from pathlib import Path
+
 def kelvin_to_deg(value: float) -> float:
     return value - 273.15
 
@@ -9,7 +11,7 @@ def main():
 
     EcosLib.set_log_level("debug")
 
-    fmu_path = f"{__file__}/../../../data/fmus/3.0/ref/Dahlquist.fmu"
+    fmu_path = str((Path(__file__).parent.parent.parent / 'data' / 'fmus' / '3.0' / 'ref' / 'Dahlquist.fmu').resolve())
     result_file = "results/python/results.csv"
 
     ss = EcosSimulationStructure()

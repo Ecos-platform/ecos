@@ -1,13 +1,14 @@
 from ecospy import *
 from ecospy.plotter import *
 
+from pathlib import Path
 
 def main():
     print(f"Ecoslib version: {EcosLib().version()}")
 
     EcosLib().set_log_level("debug")
 
-    ssp_dir = f"{__file__}/../../../data/ssp/quarter_truck/"
+    ssp_dir = (Path(__file__).parent.parent.parent / 'data' / 'ssp' / 'quarter_truck').resolve()
     ssp_file = f"{ssp_dir}/quarter-truck.ssp"
     result_file = "results/python/quarter_truck_ssp.csv"
 

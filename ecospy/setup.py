@@ -15,15 +15,8 @@ def version():
 
 class CMakeExtension(Extension):
 
-    def __init__(self):
-        super().__init__(
-            name="ecospy",
-            sources=[
-                "lib.py",
-                "plotter.py"
-            ],
-            library_dirs=["build/bin"],
-            libraries=["libecosc"])
+    def __init__(self, name):
+        super().__init__(name, sources=[])
 
 
 class CMakeBuild(build_ext):
@@ -70,9 +63,12 @@ setup(name="ecospy",
       license="MIT",
       include_package_data=True,
       packages=['ecospy'],
+      package_data={
+          "ecospy": [f'{buildFolder}/bin/*.so', f'{buildFolder}/bin/*.dll']
+      },
       package_dir={'ecospy': '.'},
       data_files=[
           ("Scripts", [f"{buildFolder}/bin/proxyfmu{binary_suffix()}", f"{buildFolder}/bin/ecos{binary_suffix()}"])],
-      ext_modules=[CMakeExtension()],
+      ext_modules=[CMakeExtension("ecospy")],
       cmdclass=dict(build_ext=CMakeBuild),
       )

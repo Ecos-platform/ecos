@@ -16,7 +16,11 @@ def version():
 class CMakeExtension(Extension):
 
     def __init__(self, name):
-        super().__init__(name, sources=[])
+        super().__init__(
+            name,
+            sources=[],
+            library_dirs=["build/bin"]
+        )
 
 
 class CMakeBuild(build_ext):

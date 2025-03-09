@@ -27,15 +27,19 @@ class Plotter:
 
     fig_id = 0
 
-    def __init__(self, csv_file, config):
+    def __init__(self, csv_file, configs):
         self.csv = pd.read_csv(csv_file, delimiter=r",\s+", engine="python")
 
-        if isinstance(config, TimeSeriesConfig):
-            self.make_time_series(self.csv, config)
-        elif isinstance(config, XYSeriesConfig):
-            self.make_xy_series(self.csv, config)
-        else:
-            raise Exception("Missing or unsupported configuration")
+        if not isinstance(configs, (list, tuple)):
+            configs = [configs]
+
+        for config in configs:
+            if isinstance(config, TimeSeriesConfig):
+                self.make_time_series(self.csv, config)
+            elif isinstance(config, XYSeriesConfig):
+                self.make_xy_series(self.csv, config)
+            else:
+                raise Exception("Missing or unsupported configuration")
 
     @staticmethod
     def show():

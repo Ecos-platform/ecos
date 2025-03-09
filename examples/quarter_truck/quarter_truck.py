@@ -32,11 +32,21 @@ def main():
         sim.step_until(time_point=10)
         sim.terminate()
 
-    config = TimeSeriesConfig(
-        title="Quarter-truck",
-        y_label="Height[m]",
-        identifiers=["chassis::zChassis", "wheel::zWheel", "ground::zGround"])
-    plotter = Plotter(result_file, config)
+    configs = [
+        TimeSeriesConfig(
+            title="Quarter-truck",
+            y_label="Height[m]",
+            identifiers=["chassis::zChassis"]),
+        TimeSeriesConfig(
+            title="Quarter-truck",
+            y_label="Height[m]",
+            identifiers=["wheel::zWheel"]),
+        TimeSeriesConfig(
+            title="Quarter-truck",
+            y_label="Height[m]",
+            identifiers=["ground::zGround"])
+    ]
+    plotter = Plotter(result_file, configs)
     plotter.show()
 
 

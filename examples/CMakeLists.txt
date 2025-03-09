@@ -6,10 +6,15 @@ function(add_example_executable name src)
 endfunction()
 
 add_example_executable(controlled_temperature controlled_temperature/controlled_temperature.cpp)
-add_example_executable(controlled_temperature_proxy controlled_temperature/controlled_temperature_proxy.cpp)
+if (ECOS_WITH_PROXYFMU)
+    add_example_executable(controlled_temperature_proxy controlled_temperature/controlled_temperature_proxy.cpp)
+endif ()
 
 add_example_executable(spring_mass_damper spring_mass_damper/spring_mass_damper.cpp)
-add_example_executable(spring_mass_damper_proxy spring_mass_damper/spring_mass_damper_proxy.cpp)
+if (ECOS_WITH_PROXYFMU)
+    add_example_executable(spring_mass_damper_proxy spring_mass_damper/spring_mass_damper_proxy.cpp)
+endif ()
+
 
 add_example_executable(dp_ship dp-ship/dp_ship.cpp)
 

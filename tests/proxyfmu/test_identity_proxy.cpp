@@ -1,6 +1,8 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "fmilibcpp/fmu.hpp"
+#include "proxyfmu/proxy_fmu.hpp"
+#include "proxyfmu/proxy_slave.hpp"
 
 namespace
 {
@@ -66,9 +68,9 @@ void test(fmilibcpp::fmu& fmu)
 
 } // namespace
 
-TEST_CASE("fmi_test_identity")
+TEST_CASE("proxy_test_identity")
 {
     std::string fmuPath = std::string(DATA_FOLDER) + "/fmus/1.0/identity.fmu";
-    auto fmu = fmilibcpp::loadFmu(fmuPath);
-    test(*fmu);
+    auto fmu = ecos::proxy::proxy_fmu(fmuPath);
+    test(fmu);
 }

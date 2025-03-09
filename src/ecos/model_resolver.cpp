@@ -2,7 +2,9 @@
 #include "ecos/model_resolver.hpp"
 
 #include "ecos/resolvers/file_model_sub_resolver.hpp"
+#ifdef ECOS_WITH_PROXYFMU
 #include "ecos/resolvers/proxy_model_sub_resolver.hpp"
+#endif
 #include "ecos/resolvers/url_model_sub_resolver.hpp"
 #include "ecos/logger/logger.hpp"
 
@@ -12,7 +14,9 @@ std::unique_ptr<model_resolver> ecos::default_model_resolver()
 {
     auto resolver = std::make_unique<model_resolver>();
     resolver->add_sub_resolver(std::make_unique<file_model_sub_resolver>());
+#ifdef ECOS_WITH_PROXYFMU
     resolver->add_sub_resolver(std::make_unique<proxy_model_sub_resolver>());
+#endif
     // resolver->add_sub_resolver(std::make_unique<url_model_sub_resolver>());
     return resolver;
 }

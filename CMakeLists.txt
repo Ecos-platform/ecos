@@ -13,6 +13,7 @@ option(ECOS_BUILD_TESTS "Build tests" OFF)
 option(ECOS_BUILD_EXAMPLES "Build examples" OFF)
 option(ECOS_BUILD_CLI "Build CLI" ON)
 option(ECOS_BUILD_CLIB "Build C library" ON)
+option(ECOS_WITH_PROXYFMU "Build with proxyfmu" ON)
 
 
 # ==============================================================================
@@ -52,13 +53,16 @@ file(DOWNLOAD https://github.com/CLIUtils/CLI11/releases/download/v2.4.2/CLI11.h
 
 
 include(FetchContent)
-set(SIMPLE_SOCKET_BUILD_TESTS OFF)
-FetchContent_Declare(
-        SimpleSocket
-        GIT_REPOSITORY https://github.com/markaren/SimpleSocket.git
-        GIT_TAG e0e989bdd52137d743a4599e25167d5681a0de00
-)
-FetchContent_MakeAvailable(SimpleSocket)
+
+if (ECOS_WITH_PROXYFMU)
+    set(SIMPLE_SOCKET_BUILD_TESTS OFF)
+    FetchContent_Declare(
+            SimpleSocket
+            GIT_REPOSITORY https://github.com/markaren/SimpleSocket.git
+            GIT_TAG e0e989bdd52137d743a4599e25167d5681a0de00
+    )
+    FetchContent_MakeAvailable(SimpleSocket)
+endif ()
 
 set(FMI4C_BUILD_SHARED OFF)
 FetchContent_Declare(
@@ -115,9 +119,16 @@ install(
         ${CMAKE_INSTALL_DATADIR}/ecos)
 
 install(
-        TARGETS libecos libecosc ecos proxyfmu
+        TARGETS libecos libecosc ecos
         EXPORT ecos-targets
 )
+if (ECOS_WITH_PROXYFMU)
+    install(
+            TARGETS proxyfmu
+            EXPORT ecos-targets
+    )
+endif ()
+
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(EXPORT ecos-targets
         NAMESPACE ecos::

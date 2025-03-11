@@ -39,8 +39,9 @@ class EcosSimulationStructure:
         if self._handle is None:
             raise Exception(EcosLib.get_last_error())
 
-    def add_model(self, instance_name: str, uri: str) -> bool:
-        return self._add_model(self.handle, instance_name.encode(), uri.encode())
+    def add_model(self, instance_name: str, uri: str):
+        if not self._add_model(self.handle, instance_name.encode(), uri.encode()):
+            raise Exception(EcosLib.get_last_error())
 
     def add_parameter_set(self, name: str, parameters: EcosParameterSet | dict[str, any]):
         if isinstance(parameters, EcosParameterSet):

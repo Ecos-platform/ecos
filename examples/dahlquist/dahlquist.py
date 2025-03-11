@@ -15,9 +15,7 @@ def main():
     result_file = "results/python/results.csv"
 
     ss = EcosSimulationStructure()
-    if not ss.add_model("model", fmu_path):
-        raise Exception(EcosLib.get_last_error())
-
+    ss.add_model("model", fmu_path)
 
     ss.add_parameter_set("initials", {
         "model::k": 2.0

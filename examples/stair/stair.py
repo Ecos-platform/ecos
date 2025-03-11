@@ -12,8 +12,7 @@ def main():
     result_file = "results/python/stair.csv"
 
     ss = EcosSimulationStructure()
-    if not ss.add_model("model", fmu_path):
-        raise Exception(EcosLib.get_last_error())
+    ss.add_model("model", fmu_path)
 
     step = 0.2
     with (EcosSimulation(structure=ss, step_size=step)) as sim:

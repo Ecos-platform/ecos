@@ -38,7 +38,7 @@ jobs:
       - name: Archive wrapper library
         uses: actions/upload-artifact@v4
         with:
-          name: lib-wrapper-${{ matrix.os }}
+          name: binaries-${{ matrix.os }}
           path: ecospy/binaries
 
   deploy:
@@ -53,7 +53,7 @@ jobs:
       - name: Download wrappers
         uses: actions/download-artifact@v4
         with:
-          pattern: lib-wrapper-*
+          pattern: binaries-*
           path: ecospy/binaries
           merge-multiple: true
       - name: Install dependencies

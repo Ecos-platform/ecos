@@ -12,7 +12,7 @@ option(BUILD_SHARED_LIBS OFF)
 option(ECOS_BUILD_TESTS "Build tests" OFF)
 option(ECOS_BUILD_EXAMPLES "Build examples" OFF)
 option(ECOS_BUILD_CLI "Build CLI" ON)
-option(ECOS_BUILD_CLIB "Build C library" ON)
+option(ECOS_BUILD_CLIB "Build C library (required for ecospy)" ON)
 option(ECOS_WITH_PROXYFMU "Build with proxyfmu" ON)
 
 

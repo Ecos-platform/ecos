@@ -204,4 +204,14 @@ if (ECOS_BUILD_CLIB)
     set_target_properties(libecosc PROPERTIES PREFIX "")
     set_property(TARGET libecosc PROPERTY POSITION_INDEPENDENT_CODE ON)
     target_link_libraries(libecosc PUBLIC libecos)
+
+    set(TARGET_DIR "${PROJECT_SOURCE_DIR}/ecospy/binaries")
+    add_custom_command(TARGET libecosc POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${TARGET_DIR}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:libecosc>
+            ${TARGET_DIR}
+            COMMENT "Copying libecosc to ${TARGET_DIR}"
+    )
+
 endif ()

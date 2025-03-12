@@ -5,6 +5,7 @@ build
 cmake-build-*
 
 ecospy/dist
+ecospy/binaries
 
 *.egg-info
 
@@ -18,3 +19,5 @@ ecospy/dist
 /**/quarter_truck/quarter_truck_sspgen.ssp
 
 LicenseError.txt
+
+

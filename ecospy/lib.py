@@ -6,7 +6,7 @@ def load_library():
     def suffix() -> str:
         return ".dll" if os.name == "nt" else ".so"
 
-    bin_folder = (Path(__file__).parent / 'build' / 'bin').resolve()
+    bin_folder = (Path(__file__).parent / 'binaries').resolve()
 
     if os.name == "nt":
         with os.add_dll_directory(str(bin_folder)):

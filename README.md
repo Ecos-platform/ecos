@@ -123,11 +123,15 @@ Options:
 
 ### Python interface
 
-To use the python interface:
+`pip install ecospy`
+
+
+#### Local pip installation
+To install the python package locally:
 
 1. Clone the project
 2. Run CMake installation (see Building)
-3. Run `pip install ./ecospy`
+3. Run `pip install .`
 
 > Note: You will need `wheel` in addition to the compile-time requirements listed further below
 

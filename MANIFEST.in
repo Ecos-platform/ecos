@@ -3,3 +3,5 @@ include README.md
 include LICENSE
 
 recursive-include ecospy/binaries *.dll
+recursive-include ecospy/binaries *.so
+recursive-include ecospy/binaries *.dylib

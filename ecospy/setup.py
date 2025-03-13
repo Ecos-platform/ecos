@@ -1,11 +1,11 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 WINDOWS = (os.name == 'nt')
 
 
 def version():
-    with open("../version.txt", "r") as f:
+    with open("version.txt", "r") as f:
         return f.readline().strip()
 
 

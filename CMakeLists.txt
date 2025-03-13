@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" projectVersion)
-project("libecos" VERSION ${projectVersion})
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" PROJECT_VERSION)
+project("libecos" VERSION ${PROJECT_VERSION})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 
 
@@ -40,6 +40,11 @@ endif ()
 if (MSVC)
     add_compile_options(/utf-8)
 endif ()
+
+# Copy README.md, LICENSE and version.txt to the Python project
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/")
 
 # ==============================================================================
 # Dependencies

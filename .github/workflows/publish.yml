@@ -28,13 +28,11 @@ jobs:
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release -A x64
           cmake --build build --config Release
-          cd ..
-      - name: Compile on Linux / macOS
+      - name: Compile on Linux
         if: startsWith(runner.os, 'Linux')
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build
-          cd ..
       - name: Archive binaries
         uses: actions/upload-artifact@v4
         with:
@@ -46,6 +44,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Configure on Windows
+        if: startsWith(runner.os, 'Windows')
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -A x64
+      - name: Configure on Linux
+        if: startsWith(runner.os, 'Linux')
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
       - name: Set up Python
         uses: actions/setup-python@v2
         with:

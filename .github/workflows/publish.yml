@@ -44,14 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Configure on Windows
-        if: startsWith(runner.os, 'Windows')
-        run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -A x64
-      - name: Configure on Linux
-        if: startsWith(runner.os, 'Linux')
-        run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -71,6 +63,5 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          cd ecospy
           python setup.py sdist bdist_wheel
           twine upload dist/*

@@ -16,6 +16,6 @@ def binary_suffix():
 setup(name="ecospy",
       version=version(),
       data_files=[
-          ("Scripts", [f"binaries/proxyfmu{binary_suffix()}", f"binaries/ecos{binary_suffix()}"])
+          ("Scripts", [f"ecospy/binaries/proxyfmu{binary_suffix()}", f"ecospy/binaries/ecos{binary_suffix()}"])
       ]
       )

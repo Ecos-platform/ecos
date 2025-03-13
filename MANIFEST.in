@@ -2,4 +2,4 @@ include version.txt
 include README.md
 include LICENSE
 
-recursive-include binaries *.dll
+recursive-include ecospy/binaries *.dll

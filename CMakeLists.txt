@@ -41,10 +41,6 @@ if (MSVC)
     add_compile_options(/utf-8)
 endif ()
 
-# Copy README.md, LICENSE and version.txt to the Python project
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/")
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/")
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/")
 
 # ==============================================================================
 # Dependencies

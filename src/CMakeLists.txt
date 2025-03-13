@@ -108,7 +108,7 @@ if (ECOS_WITH_PROXYFMU)
 endif ()
 
 # Generate sources from .in files
-set(generatedFiles "${generatedSourcesDir}/ecos/lib_info.cpp")
+set(generatedFiles "${GENERATED_SRC_DIR}/ecos/lib_info.cpp")
 configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/ecos/lib_info.cpp.in"
         "${generatedFiles}"
@@ -168,7 +168,7 @@ target_include_directories(libecos
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/pugixml>"
         PRIVATE
-        "${generatedSourcesDir}"
+        "${GENERATED_SRC_DIR}"
         "${THIRD_PARTY_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
 )
@@ -204,4 +204,13 @@ if (ECOS_BUILD_CLIB)
     set_target_properties(libecosc PROPERTIES PREFIX "")
     set_property(TARGET libecosc PROPERTY POSITION_INDEPENDENT_CODE ON)
     target_link_libraries(libecosc PUBLIC libecos)
+
+    add_custom_command(TARGET libecosc POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${PY_BINARY_DIR}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:libecosc>
+            ${PY_BINARY_DIR}
+            COMMENT "Copying libecosc to ${PY_BINARY_DIR}"
+    )
+
 endif ()

@@ -5,6 +5,10 @@ build
 cmake-build-*
 
 ecospy/dist
+ecospy/binaries
+ecospy/version.txt
+ecospy/README.md
+ecospy/LICENSE
 
 *.egg-info
 

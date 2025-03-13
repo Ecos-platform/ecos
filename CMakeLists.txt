@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" projectVersion)
-project("libecos" VERSION ${projectVersion})
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" PROJECT_VERSION)
+project("libecos" VERSION ${PROJECT_VERSION})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 
 
@@ -12,7 +12,7 @@ option(BUILD_SHARED_LIBS OFF)
 option(ECOS_BUILD_TESTS "Build tests" OFF)
 option(ECOS_BUILD_EXAMPLES "Build examples" OFF)
 option(ECOS_BUILD_CLI "Build CLI" ON)
-option(ECOS_BUILD_CLIB "Build C library" ON)
+option(ECOS_BUILD_CLIB "Build C library (required for ecospy)" ON)
 option(ECOS_WITH_PROXYFMU "Build with proxyfmu" ON)
 
 
@@ -28,7 +28,8 @@ include(GNUInstallDirs)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
-set(generatedSourcesDir "${CMAKE_BINARY_DIR}/generated")
+set(GENERATED_SRC_DIR "${CMAKE_BINARY_DIR}/generated")
+set(PY_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/binaries")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2")
@@ -39,6 +40,11 @@ endif ()
 if (MSVC)
     add_compile_options(/utf-8)
 endif ()
+
+# Copy README.md, LICENSE and version.txt to the Python project
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/ecospy/")
 
 # ==============================================================================
 # Dependencies

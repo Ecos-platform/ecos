@@ -6,7 +6,7 @@ set(sources
         "${PROJECT_SOURCE_DIR}/src/ecos/util/uuid.cpp"
         "${PROJECT_SOURCE_DIR}/src/ecos/logger/logger.cpp"
         "${PROJECT_SOURCE_DIR}/src/external/flatbuffers/flatbuffers/util.cpp"
-        "${generatedSourcesDir}/ecos/lib_info.cpp"
+        "${GENERATED_SRC_DIR}/ecos/lib_info.cpp"
 )
 
 add_executable(proxyfmu ${sources})
@@ -18,7 +18,7 @@ target_include_directories(proxyfmu
         "${PROJECT_SOURCE_DIR}/src/external/spdlog"
         "${PROJECT_SOURCE_DIR}/src/external/flatbuffers"
         "${THIRD_PARTY_INCLUDE_DIR}"
-        "${generatedSourcesDir}")
+        "${GENERATED_SRC_DIR}")
 target_link_libraries(proxyfmu
         PRIVATE
         fmi4c
@@ -28,3 +28,11 @@ target_link_libraries(proxyfmu
 if (UNIX)
     target_link_libraries(proxyfmu PRIVATE pthread)
 endif ()
+
+add_custom_command(TARGET proxyfmu POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${PY_BINARY_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:proxyfmu>
+        ${PY_BINARY_DIR}
+        COMMENT "Copying proxyfmu to ${PY_BINARY_DIR}"
+)

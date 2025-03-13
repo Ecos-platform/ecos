@@ -12,7 +12,6 @@ engine written in modern C++.
 * Post-simulation plotting using matplotlib.
 * Command-line-interface (CLI).
 * Simplified Python and C interface.
-* Simple build process (simply build with CMake or pip install).
 * Minimal (and bundled) build dependencies.
 
 ### Building
@@ -124,9 +123,11 @@ Options:
 
 ### Python interface
 
-To use the python interface, simply clone the project and run:
+To use the python interface:
 
-`pip install ./ecospy`
+1. Clone the project
+2. Run CMake installation (see Building)
+3. Run `pip install ./ecospy`
 
 > Note: You will need `wheel` in addition to the compile-time requirements listed further below
 

@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.x'
           architecture: 'x64'
-      - name: Compile wrapper on Windows
+      - name: Compile on Windows
         if: startsWith(runner.os, 'Windows')
         run: |
           mkdir tmp-build
@@ -27,7 +27,7 @@ jobs:
           cmake $Env:github_workspace -DCMAKE_BUILD_TYPE=Release -A x64
           cmake --build . --config Release
           cd ..
-      - name: Compile wrapper on Linux / macOS
+      - name: Compile on Linux / macOS
         if: startsWith(runner.os, 'Linux') || startsWith(runner.os, 'macOS')
         run: |
           mkdir tmp-build
@@ -35,7 +35,7 @@ jobs:
           cmake $Env:github_workspace -DCMAKE_BUILD_TYPE=Release
           cmake --build .
           cd ..
-      - name: Archive wrapper library
+      - name: Archive binaries
         uses: actions/upload-artifact@v4
         with:
           name: binaries-${{ matrix.os }}
@@ -50,7 +50,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      - name: Download wrappers
+      - name: Download binaries
         uses: actions/download-artifact@v4
         with:
           pattern: binaries-*

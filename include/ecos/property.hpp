@@ -75,9 +75,19 @@ struct property_t : property
         inputModifier_ = std::move(modifier);
     }
 
+    void clear_input_modifier()
+    {
+        inputModifier_ = std::nullopt;
+    }
+
     void set_output_modifier(std::function<T(const T&)> modifier)
     {
         outputModifier_ = std::move(modifier);
+    }
+
+    void clear_output_modifier()
+    {
+        outputModifier_ = std::nullopt;
     }
 
     static std::unique_ptr<property_t> create(

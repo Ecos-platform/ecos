@@ -1,6 +1,5 @@
 
 #include "ecos/ecos.h"
-#include <ecos/plotter.hpp>
 
 #include <filesystem>
 

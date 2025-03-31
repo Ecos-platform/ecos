@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/LogConfig"
+           xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/CsvConfig"
            elementFormDefault="qualified"
-           targetNamespace="http://github.com/Ecos-platform/libecos/resources/schema/LogConfig">
+           targetNamespace="http://github.com/Ecos-platform/libecos/resources/schema/CsvConfig">
 
-    <xs:element name="LogConfig" type="ecos:TLogConfig"/>
+    <xs:element name="CsvConfig" type="ecos:TCsvConfig"/>
 
-    <xs:complexType name="TLogConfig">
+    <xs:complexType name="TCsvConfig">
         <xs:sequence>
             <xs:element name="components" type="ecos:TComponents"/>
         </xs:sequence>

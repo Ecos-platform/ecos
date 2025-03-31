@@ -115,7 +115,7 @@ Options:
                                 inf).
   --noLog                       Disable CSV logging.
   --noParallel                  Run single-threaded.
-  --logConfig arg               Path to logging configuration.
+  --csvConfig arg               Path to CSV configuration.
   --chartConfig arg             Path to chart configuration.
   --scenarioConfig arg          Path to scenario configuration.
 

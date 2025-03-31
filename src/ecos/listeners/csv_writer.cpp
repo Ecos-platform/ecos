@@ -172,7 +172,7 @@ void csv_config::load(const std::filesystem::path& configPath)
             result.description());
     }
 
-    const auto root = doc.child("ecos:LogConfig");
+    const auto root = doc.child("ecos:CsvConfig");
     if (const auto decimationFactor = root.attribute("decimationFactor")) {
         decimationFactor_ = decimationFactor.as_int();
     }

@@ -13,7 +13,7 @@ def main():
     EcosLib.set_log_level("debug")
 
     ssp_dir = str((Path(__file__).parent.parent.parent / 'data' / 'ssp' / 'dp_ship').resolve())
-    log_config = f"{ssp_dir}/LogConfig.xml"
+    log_config = f"{ssp_dir}/CsvConfig.xml"
     scenario = f"{ssp_dir}/waypoints_scenario.xml"
 
     result_file = "results/dp_ship.csv"

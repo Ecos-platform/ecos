@@ -34,7 +34,7 @@ int main()
         auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck_with_config.csv");
         const auto outputPath = csvWriter->output_path();
         csv_config& config = csvWriter->config();
-        config.load(sspDir / "LogConfig.xml");
+        config.load(sspDir / "CsvConfig.xml");
         sim->add_listener("csv_writer", std::move(csvWriter));
 
         sim->init("initialValues");

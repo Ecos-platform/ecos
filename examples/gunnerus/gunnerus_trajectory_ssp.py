@@ -64,7 +64,7 @@ def main():
 
     with (EcosSimulation(ssp_path=".", step_size=0.05)) as sim:
 
-        sim.add_csv_writer(result_file, "LogConfig.xml")
+        sim.add_csv_writer(result_file, "CsvConfig.xml")
         sim.add_listener("custom_listener", MyListener(sim))
 
         sim.init(parameter_set="initialValues")

@@ -23,7 +23,7 @@ int main()
 
         auto writer = std::make_unique<csv_writer>("results/dp_ship_cpp.csv");
         const auto outputPath = writer->output_path();
-        writer->config().load(sspDir / "LogConfig.xml");
+        writer->config().load(sspDir / "CsvConfig.xml");
         sim->add_listener("writer", std::move(writer));
 
         sim->init();

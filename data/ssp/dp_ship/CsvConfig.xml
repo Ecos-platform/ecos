@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecos:LogConfig decimationFactor="25" xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/LogConfig">
+<ecos:CsvConfig decimationFactor="25" xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/CsvConfig.xsd">
 
     <ecos:components>
         <ecos:component name="Reference Generator">
@@ -14,4 +14,4 @@
         </ecos:component>
     </ecos:components>
 
-</ecos:LogConfig>
+</ecos:CsvConfig>

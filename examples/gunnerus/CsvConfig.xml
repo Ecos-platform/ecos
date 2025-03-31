@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecos:LogConfig xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/LogConfig">
+<ecos:CsvConfig xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/CsvConfig.xsd">
 
     <ecos:components>
         <ecos:component name="vesselModel">
@@ -13,4 +13,4 @@
         </ecos:component>
     </ecos:components>
 
-</ecos:LogConfig>
+</ecos:CsvConfig>

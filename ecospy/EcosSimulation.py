@@ -142,10 +142,10 @@ class EcosSimulation:
     def remove_listener(self, name: str):
         self._remove_listener(self.sim, name.encode())
 
-    def add_csv_writer(self, result_file: str, log_config: str = None):
+    def add_csv_writer(self, result_file: str, csv_config: str = None):
 
         listener = self._create_csv_writer(result_file.encode(),
-                                           None if log_config is None else log_config.encode())
+                                           None if csv_config is None else csv_config.encode())
         if listener is None:
             raise Exception(EcosLib.get_last_error())
 

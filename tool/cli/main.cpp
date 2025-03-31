@@ -54,7 +54,7 @@ void create_options(CLI::App& app)
     app.add_option("--startTime", "Simulation start.")->default_val(0.0);
     app.add_option("--stepSize", "Simulation stepSize.")->required();
     app.add_option("--rtf", "Target real time factor (non-positive number -> inf).")->default_val(-1);
-    app.add_option("--logConfig", "Path to logging configuration.");
+    app.add_option("--csvConfig", "Path to CSV configuration.");
     app.add_option("--chartConfig", "Path to chart configuration.");
     app.add_option("--scenarioConfig", "Path to scenario configuration.");
     app.add_option("-l,--logLevel", lvl, "Specify log level.")->transform(CLI::CheckedTransformer(map, CLI::ignore_case));
@@ -107,8 +107,8 @@ void setup_logging(const CLI::App& vm, simulation& sim, const std::string& csvNa
         auto writer = std::make_unique<csv_writer>(csvName + ".csv");
         csv_config& config = writer->config();
 
-        if (vm.count("--logConfig")) {
-            config.load(vm["--logConfig"]->as<std::string>());
+        if (vm.count("--csvConfig")) {
+            config.load(vm["--csvConfig"]->as<std::string>());
         }
         if (vm.count("--chartConfig")) {
             const auto chartConfig = vm["--chartConfig"]->as<std::string>();

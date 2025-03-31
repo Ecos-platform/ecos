@@ -14,7 +14,7 @@ def main():
 
     with(EcosSimulation(ssp_path=ssp_file, step_size=1.0 / 100)) as sim:
 
-        sim.add_csv_writer(result_file, f"{ssp_dir}/LogConfig.xml")
+        sim.add_csv_writer(result_file, f"{ssp_dir}/CsvConfig.xml")
 
         sim.init(parameter_set="initialValues")
         sim.step_until(time_point=10)

@@ -8,6 +8,7 @@
 #include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
+#include "ecos/util/plotter.hpp"
 
 #include <cstring>
 #include <memory>
@@ -419,16 +420,13 @@ void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name)
     }
 }
 
-ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* csvConfig, const char* plotConfig)
+ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* csvConfig)
 {
     try {
 
         auto writer = std::make_unique<ecos::csv_writer>(resultFile);
         if (csvConfig) {
             writer->config().load(csvConfig);
-        }
-        if (plotConfig) {
-            writer->config().enable_plotting(plotConfig);
         }
 
         auto l = std::make_unique<ecos_simulation_listener_t>();
@@ -440,6 +438,11 @@ ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const
         handle_current_exception();
         return nullptr;
     }
+}
+
+void ecos_plot_csv(const char* csvFile, const char* chartConfig)
+{
+    ecos::plot_csv(csvFile, chartConfig);
 }
 
 bool ecos_simulation_terminate(ecos_simulation_t* sim)

@@ -85,7 +85,9 @@ ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_list
 
 void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener);
 void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name);
-ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* csvConfig = nullptr, const char* plotConfig = nullptr);
+ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* csvConfig = nullptr);
+
+void ecos_plot_csv(const char* csvFile, const char* chartConfig);
 // -------------
 
 // version

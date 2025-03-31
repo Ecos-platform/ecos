@@ -37,13 +37,15 @@ int main()
     const auto logConfig = std::string(DATA_FOLDER) + "/ssp/quarter_truck/LogConfig.xml";
     const auto plotConfig = std::string(DATA_FOLDER) + "/ssp/quarter_truck/ChartConfig.xml";
     const auto resultFile = std::string{"results/quarter_truck_c_with_config.csv"};
-    const auto csvWriter = ecos_csv_writer_create(resultFile.c_str(), logConfig.c_str(), plotConfig.c_str());
+    const auto csvWriter = ecos_csv_writer_create(resultFile.c_str(), logConfig.c_str());
 
     ecos_simulation_add_listener(sim, "CSV Writer", csvWriter);
 
     ecos_simulation_init(sim, 0, "initialValues");
     ecos_simulation_step_until(sim, 10);
     ecos_simulation_terminate(sim);
+
+    ecos_plot_csv(resultFile.c_str(), plotConfig.c_str());
 
     ecos_simulation_destroy(sim);
 }

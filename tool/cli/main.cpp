@@ -6,6 +6,7 @@
 #include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/simulation_runner.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
+#include "ecos/util/plotter.hpp"
 
 #include <cli11/CLI11.h>
 #include <iostream>
@@ -103,17 +104,21 @@ void setup_logging(const CLI::App& vm, simulation& sim, const std::string& csvNa
 {
     if (!vm.get_option("--noLog")->as<bool>()) {
 
-        auto logger = std::make_unique<csv_writer>(csvName + ".csv");
-        csv_config& config = logger->config();
+        auto writer = std::make_unique<csv_writer>(csvName + ".csv");
+        csv_config& config = writer->config();
 
         if (vm.count("--logConfig")) {
             config.load(vm["--logConfig"]->as<std::string>());
         }
         if (vm.count("--chartConfig")) {
-            config.enable_plotting(vm["--chartConfig"]->as<std::string>());
+            const auto chartConfig = vm["--chartConfig"]->as<std::string>();
+            const auto outputPath = writer->output_path();
+            sim.add_listener("plotter", std::make_shared<post_terminate_hook>([outputPath, chartConfig] {
+                plot_csv(outputPath, chartConfig);
+            }));
         }
 
-        sim.add_listener("csv_writer", std::move(logger));
+        sim.add_listener("csv_writer", std::move(writer));
     }
 }
 

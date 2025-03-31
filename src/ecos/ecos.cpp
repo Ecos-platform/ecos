@@ -419,13 +419,13 @@ void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name)
     }
 }
 
-ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* logConfig, const char* plotConfig)
+ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* csvConfig, const char* plotConfig)
 {
     try {
 
         auto writer = std::make_unique<ecos::csv_writer>(resultFile);
-        if (logConfig) {
-            writer->config().load(logConfig);
+        if (csvConfig) {
+            writer->config().load(csvConfig);
         }
         if (plotConfig) {
             writer->config().enable_plotting(plotConfig);

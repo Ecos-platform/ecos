@@ -3,6 +3,7 @@
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/logger/logger.hpp"
 #include "ecos/structure/simulation_structure.hpp"
+#include "ecos/util/plotter.hpp"
 
 using namespace ecos;
 
@@ -10,10 +11,11 @@ int main()
 {
     set_logging_level(log::level::debug);
 
-    simulation_structure ss;
-    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/ssp/quarter_truck/resources";
+    const std::filesystem::path sspDir = std::string(DATA_FOLDER) + "/ssp/quarter_truck";
+    const std::filesystem::path fmuDir = sspDir / "resources";
 
     try {
+        simulation_structure ss;
         ss.add_model("chassis", fmuDir / "chassis.fmu");
         ss.add_model("ground", fmuDir / "ground.fmu");
         ss.add_model("wheel", fmuDir / "wheel.fmu");
@@ -30,15 +32,17 @@ int main()
         const auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
 
         auto csvWriter = std::make_unique<csv_writer>("results/quarter_truck_with_config.csv");
+        const auto outputPath = csvWriter->output_path();
         csv_config& config = csvWriter->config();
-        config.load(std::string(DATA_FOLDER) + "/ssp/quarter_truck/LogConfig.xml");
-        config.enable_plotting(std::string(DATA_FOLDER) + "/ssp/quarter_truck/ChartConfig.xml");
+        config.load(sspDir / "LogConfig.xml");
         sim->add_listener("csv_writer", std::move(csvWriter));
 
         sim->init("initialValues");
         sim->step_until(5);
 
         sim->terminate();
+
+        plot_csv(outputPath, sspDir / "ChartConfig.xml");
     } catch (const std::exception& ex) {
 
         log::err(ex.what());

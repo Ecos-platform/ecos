@@ -22,10 +22,11 @@ set(publicHeaders
 
         "ecos/logger/logger.hpp"
 
-        "ecos/structure/simulation_structure.hpp"
-
         "ecos/ssp/ssp_loader.hpp"
 
+        "ecos/structure/simulation_structure.hpp"
+
+        "ecos/util/plotter.hpp"
 )
 
 set(publicHeadersFull)
@@ -89,6 +90,7 @@ set(sources
 
         "ecos/logger/logger.cpp"
 
+        "ecos/util/plotter.cpp"
         "ecos/util/temp_dir.cpp"
         "ecos/util/unzipper.cpp"
         "ecos/util/uuid.cpp"

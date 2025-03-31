@@ -1,5 +1,4 @@
 
-
 #ifndef ECOS_CSV_WRITER_HPP
 #define ECOS_CSV_WRITER_HPP
 
@@ -8,7 +7,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <optional>
 #include <vector>
 
 namespace ecos
@@ -25,8 +23,6 @@ struct csv_config
 
     size_t& decimation_factor();
 
-    void enable_plotting(const std::filesystem::path& plotConfig);
-
     [[nodiscard]] bool shouldLogInstance(const std::string& instanceName) const;
 
     [[nodiscard]] bool shouldLogVariable(const std::string& variableName) const;
@@ -36,7 +32,6 @@ struct csv_config
 private:
     bool clear_on_reset_{true};
     size_t decimationFactor_ = 1;
-    std::optional<std::filesystem::path> plotConfig_;
     std::vector<variable_identifier> variable_register;
 
     csv_config() = default;
@@ -64,6 +59,11 @@ public:
     void post_terminate(simulation& sim) override;
 
     void on_reset() override;
+
+    [[nodiscard]] std::filesystem::path output_path() const
+    {
+        return path_;
+    }
 
 private:
     bool headerWritten{false};

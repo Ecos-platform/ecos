@@ -3,6 +3,7 @@
 #include "ecos/logger/logger.hpp"
 #include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
+#include "ecos/util/plotter.hpp"
 
 #include <filesystem>
 
@@ -12,23 +13,25 @@ int main()
 {
     set_logging_level(log::level::debug);
 
-    std::filesystem::path ssp_dir = std::string(DATA_FOLDER) + "/ssp/dp_ship";
+    std::filesystem::path sspDir = std::string(DATA_FOLDER) + "/ssp/dp_ship";
 
     try {
-        const auto ss = load_ssp(ssp_dir);
+        const auto ss = load_ssp(sspDir);
         const auto sim = ss->load(std::make_unique<fixed_step_algorithm>(0.04));
 
-        load_scenario(*sim, ssp_dir / "waypoints_scenario.xml");
+        load_scenario(*sim, sspDir / "waypoints_scenario.xml");
 
-        const auto writer = std::make_shared<csv_writer>("results/dp_ship_cpp.csv");
-        writer->config().load(ssp_dir / "LogConfig.xml");
-        writer->config().enable_plotting(ssp_dir / "ChartConfig.xml");
-        sim->add_listener("writer", writer);
+        auto writer = std::make_unique<csv_writer>("results/dp_ship_cpp.csv");
+        const auto outputPath = writer->output_path();
+        writer->config().load(sspDir / "LogConfig.xml");
+        sim->add_listener("writer", std::move(writer));
 
         sim->init();
         sim->step_until(1500);
 
         sim->terminate();
+
+        plot_csv(outputPath, sspDir / "ChartConfig.xml");
     } catch (const std::exception& ex) {
 
         log::err(ex.what());

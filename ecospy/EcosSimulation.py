@@ -2,6 +2,7 @@ from .lib import dll, EcosLib
 from .EcosSimulationStructure import EcosSimulationStructure
 from ctypes import c_bool, c_int, c_void_p, c_double, c_char_p, c_size_t, POINTER, Structure, CFUNCTYPE, byref, c_char
 
+
 class SimulationInfo(Structure):
     _fields_ = [("time", c_double), ("iterations", c_size_t)]
 
@@ -82,7 +83,7 @@ class EcosSimulation:
         self._create_listener.restype = c_void_p
 
         self._create_csv_writer = dll.ecos_csv_writer_create
-        self._create_csv_writer.argtypes = [c_char_p, c_char_p, c_char_p]
+        self._create_csv_writer.argtypes = [c_char_p, c_char_p]
         self._create_csv_writer.restype = c_void_p
 
         self._add_listener = dll.ecos_simulation_add_listener
@@ -126,11 +127,13 @@ class EcosSimulation:
         @CFUNCTYPE(None, SimulationInfo)
         def pre(info: SimulationInfo):
             listener.pre(info)
+
         config.preStepCallback = pre
 
         @CFUNCTYPE(None, SimulationInfo)
         def post(info: SimulationInfo):
             listener.post(info)
+
         config.postStepCallback = post
 
         cpp_listener = self._create_listener(config)
@@ -142,7 +145,7 @@ class EcosSimulation:
     def add_csv_writer(self, result_file: str, log_config: str = None):
 
         listener = self._create_csv_writer(result_file.encode(),
-                                               None if log_config is None else log_config.encode(), None)
+                                           None if log_config is None else log_config.encode())
         if listener is None:
             raise Exception(EcosLib.get_last_error())
 
@@ -236,4 +239,4 @@ class EcosSimulation:
         self.free()
 
     def __del__(self):
-       self.free()
+        self.free()

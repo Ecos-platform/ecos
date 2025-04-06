@@ -2,6 +2,7 @@
 #ifndef ECOS_FMI_SCALAR_VARIABLE_HPP
 #define ECOS_FMI_SCALAR_VARIABLE_HPP
 
+#include <cstdint>
 #include <optional>
 #include <stdexcept>
 #include <string>

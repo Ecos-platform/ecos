@@ -147,19 +147,25 @@ void test(fmu* damper, fmu* mass, fmu* spring)
 
 TEST_CASE("fmi_test_mass-spring-damper")
 {
-    auto damper = loadFmu(std::string(DATA_FOLDER) + "/fmus/1.0/Damper.fmu");
+
+    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/fmus/1.0/mass_spring_damper";
+
+    auto damper = loadFmu(fmuDir / "Damper.fmu");
     REQUIRE(damper);
-    auto mass = loadFmu(std::string(DATA_FOLDER) + "/fmus/1.0/Mass.fmu");
+    auto mass = loadFmu(fmuDir / "Mass.fmu");
     REQUIRE(mass);
-    auto spring = loadFmu(std::string(DATA_FOLDER) + "/fmus/1.0/Spring.fmu");
+    auto spring = loadFmu(fmuDir / "Spring.fmu");
     REQUIRE(spring);
     test(damper.get(), mass.get(), spring.get());
 }
 
 TEST_CASE("client_test_mass-spring-damper")
 {
-    auto damper = proxy::proxy_fmu(std::string(DATA_FOLDER) + "/fmus/1.0/Damper.fmu");
-    auto mass = proxy::proxy_fmu(std::string(DATA_FOLDER) + "/fmus/1.0/Mass.fmu");
-    auto spring = proxy::proxy_fmu(std::string(DATA_FOLDER) + "/fmus/1.0/Spring.fmu");
+
+    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/fmus/1.0/mass_spring_damper";
+
+    auto damper = proxy::proxy_fmu(fmuDir / "Damper.fmu");
+    auto mass = proxy::proxy_fmu(fmuDir / "Mass.fmu");
+    auto spring = proxy::proxy_fmu(fmuDir / "Spring.fmu");
     test(&damper, &mass, &spring);
 }

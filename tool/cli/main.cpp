@@ -46,7 +46,7 @@ void create_options(CLI::App& app)
     app.set_version_flag("-v,--version", versionString());
 
     app.add_flag("-i,--interactive", "Make execution interactive.")->configurable(false);
-    app.add_flag("--noLog", "Disable CSV logging.")->configurable(false);
+    app.add_flag("--noCsv", "Disable CSV logging.")->configurable(false);
     app.add_flag("--noParallel", "Run single-threaded.")->configurable(false);
 
     app.add_option("--path", "Location of the fmu/ssp to simulate.")->required();
@@ -102,7 +102,7 @@ void setup_scenario(const CLI::App& vm, simulation& sim)
 
 void setup_logging(const CLI::App& vm, simulation& sim, const std::string& csvName)
 {
-    if (!vm.get_option("--noLog")->as<bool>()) {
+    if (!vm.get_option("--noCsv")->as<bool>()) {
 
         auto writer = std::make_unique<csv_writer>(csvName + ".csv");
         csv_config& config = writer->config();

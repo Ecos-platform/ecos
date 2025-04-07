@@ -113,7 +113,7 @@ Options:
   --stepSize arg                Simulation stepSize.
   --rtf arg (=-1)               Target real time factor (non-positive number ->
                                 inf).
-  --noLog                       Disable CSV logging.
+  --noCsv                       Disable CSV logging.
   --noParallel                  Run single-threaded.
   --csvConfig arg               Path to CSV configuration.
   --chartConfig arg             Path to chart configuration.

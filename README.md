@@ -145,8 +145,7 @@ fmu_path = "BouncingBall.fmu"
 result_file = f"results/bouncing_ball.csv"
 
 ss = EcosSimulationStructure()
-if not ss.add_model("ball", fmu_path):
-    raise Exception(EcosLib.get_last_error())
+ss.add_model("ball", fmu_path)
 
 with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
 

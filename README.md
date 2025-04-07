@@ -36,6 +36,8 @@ This is effectively achieved using [simplesocket](https://github.com/markaren/Si
 in conjunction with [flexbuffers](https://flatbuffers.dev/flexbuffers.html).
 Just make sure that the `proxyfmu` target built by `libecos` is on PATH.
 
+>Ecos may be built without this feature (less dependecies, faster build) by passing `-DECOS_WITH_PROXYFMU=OFF` to CMake.
+
 
 ### Example
 
@@ -88,13 +90,15 @@ int main() {
     config.register_variable("chassis::zChassis"); // logs a single variable
     
     auto csvWriter = std::make_unique<csv_writer>("data.csv", config);
-    csvWriter->enable_plotting("ChartConfig.xml"); // enable post-simulation plotting
+    const auto outputPath = csvWriter->output_path();
     sim->add_listener(std::move(csvWriter));
     
     sim->init();
     sim->step_until(10);
     
     sim->terminate();
+    
+    plot_csv(outputPath, "ChartConfig.xml");
 }
 ```
 

@@ -7,7 +7,8 @@
 #include "ecos/model_resolver.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/structure/simulation_structure.hpp"
-#include <ecos/listeners/csv_writer.hpp>
+#include "ecos/listeners/csv_writer.hpp"
+#include "ecos/util/plotter.hpp"
 
 using namespace ecos;
 
@@ -23,7 +24,7 @@ inline void addConnections(simulation_structure& ss)
     ss.make_connection<double>("mass::out_f_w", "damper::lv_1");
 }
 
-inline void addParmeterSets(simulation_structure& ss)
+inline void addParameterSets(simulation_structure& ss)
 {
     std::map<variable_identifier, scalar_value> map;
     map["spring::springStiffness"] = 5.;
@@ -40,13 +41,17 @@ inline void run(simulation_structure& ss)
 
     try {
 
-        auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
+        const auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
         auto csvWriter = std::make_unique<csv_writer>("results/mass_spring_damper.csv");
+        const auto outputPath = csvWriter->output_path();
         sim->add_listener("csv_writer", std::move(csvWriter));
 
         sim->init("initialValues");
-        sim->step_until(5);
+        sim->step_until(10);
         sim->terminate();
+
+        plot_csv(outputPath,  std::string(DATA_FOLDER) + "/fmus/1.0/mass_spring_damper/ChartConfig.xml");
+
     } catch (const std::exception& ex) {
 
         log::err(ex.what());

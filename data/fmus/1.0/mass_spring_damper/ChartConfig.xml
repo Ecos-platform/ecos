@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecos:ChartConfig xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ChartConfig">
+
+    <ecos:chart>
+        <ecos:timeseries title="Mass-spring-damper" label="Height[m]">
+            <ecos:series>
+                <ecos:component name="mass">
+                    <ecos:variable name="out_l_u"/>
+                </ecos:component>
+            </ecos:series>
+        </ecos:timeseries>
+    </ecos:chart>
+
+</ecos:ChartConfig>

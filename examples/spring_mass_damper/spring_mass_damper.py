@@ -8,7 +8,7 @@ def main():
 
     EcosLib.set_log_level("debug")
 
-    fmu_folder = (Path(__file__).parent.parent.parent / 'data' / 'fmus' /'1.0').resolve()
+    fmu_folder = (Path(__file__).parent.parent.parent / 'data' / 'fmus' / '1.0' / 'mass_spring_damper').resolve()
     result_file = f"results/spring_mass_damper.csv"
 
     ss = EcosSimulationStructure()

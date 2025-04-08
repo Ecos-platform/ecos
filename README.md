@@ -28,6 +28,26 @@ cmake . -B build -DECOS_BUILD_EXAMPLES=ON -DECOS_BUILD_TESTS=ON -DCMAKE_BUILD_TY
 cmake --build build
 ```
 
+### Consuming C/C++ library
+
+Ecos is compatible with CMake FetchContent
+
+```cmake
+include(FetchContent)
+set(ECOS_BUILD_CLI OFF)
+set(ECOS_BUILD_CLIB OFF)    # Set to ON for building C API
+set(ECOS_WITH_PROXYFMU OFF) # Set to ON for remoting
+FetchContent_Declare(
+        ecos
+        GIT_REPOSITORY https://github.com/Ecos-platform/ecos.git
+        GIT_TAG bab78aa8e06df1f20aa60bf3b459c130e0561ccd
+)
+FetchContent_MakeAvailable(ecos)
+
+add_executable(ecos_standalone main.cpp)
+target_link_libraries(ecos_standalone PUBLIC libecos) # or libecosc for C API
+```
+
 ### Per process / remote execution
 
 Ecos enables models to run on separate processes, possibly on another PC.

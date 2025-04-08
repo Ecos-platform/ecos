@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/version.txt" PROJECT_VERSION)
+file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/version.txt" PROJECT_VERSION)
 project("libecos" VERSION ${PROJECT_VERSION})
 message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 

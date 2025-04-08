@@ -40,7 +40,7 @@ set(ECOS_WITH_PROXYFMU OFF) # Set to ON for remoting
 FetchContent_Declare(
         ecos
         GIT_REPOSITORY https://github.com/Ecos-platform/ecos.git
-        GIT_TAG bab78aa8e06df1f20aa60bf3b459c130e0561ccd
+        GIT_TAG git_tag_or_commit_id
 )
 FetchContent_MakeAvailable(ecos)
 

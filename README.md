@@ -45,7 +45,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(ecos)
 
 add_executable(ecos_standalone main.cpp)
-target_link_libraries(ecos_standalone PUBLIC libecos) # or libecosc for C API
+target_link_libraries(ecos_standalone PRIVATE libecos) # or libecosc for C API
 ```
 
 ### Per process / remote execution

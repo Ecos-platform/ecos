@@ -157,9 +157,11 @@ To install the python package locally:
 2. Run CMake installation (see Building)
 3. Run `pip install .`
 
-> Note: You will need `wheel` in addition to the compile-time requirements listed further below
+> Note: You will need `wheel` in addition to the compile-time requirements listed further below. <br> <br>
+> If using an old pip version, append `--use-feature=in-tree-build` if you get an error about `../version.txt`
 
-##### Example
+
+#### Example
 ```python
 print(f"Ecoslib version: {EcosLib.version()}")
 
@@ -186,7 +188,9 @@ plotter = Plotter(result_file, config)
 plotter.show()
 ```
 
->Note: if using an old pip version, append `--use-feature=in-tree-build` if you get an error about `../version.txt`
+#### Colab Notebook Example (pythonfmu + ecospy)
+
+[Mass-spring-damper system](https://colab.research.google.com/drive/1-0jKFViLyo2talqF2W25omwoFRZdOMZx?usp=sharing) 
 
 ---
 

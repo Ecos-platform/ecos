@@ -74,7 +74,9 @@ inline void start_process(
 #endif
 
     log::debug("Checking if proxyfmu is available..");
-    const int statusCode = system(("\"" + execStr + "\" -v").c_str());
+    std::ostringstream ss;
+    ss << std::quoted(execStr) << " -v";
+    const int statusCode = std::system(ss.str().c_str());
     if (statusCode != 0) {
         log::err("Unable to invoke proxyfmu!");
 

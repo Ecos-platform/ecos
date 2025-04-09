@@ -4,6 +4,7 @@
 #include "ecos/logger/logger.hpp"
 
 #include <fstream>
+#include <iomanip>
 #include <string>
 #include <thread>
 
@@ -11,7 +12,13 @@ using namespace ecos;
 
 std::string plotScript();
 
-void ecos::plot_csv(const std::filesystem::path& csvFile, const std::filesystem::path& plotConfig) {
+void ecos::plot_csv(const std::filesystem::path& csvFile, const std::filesystem::path& plotConfig)
+{
+
+    if (!exists(csvFile)) {
+        log::warn("No such file: '{}'", absolute(csvFile).string());
+        return;
+    }
 
     if (!exists(plotConfig)) {
         log::warn("No such file: '{}'", absolute(plotConfig).string());
@@ -21,13 +28,20 @@ void ecos::plot_csv(const std::filesystem::path& csvFile, const std::filesystem:
     const std::filesystem::path plotter("ecos_plotter.py");
     if (!exists(plotter)) {
         std::ofstream out(plotter, std::ios::trunc);
+        if (!out) {
+            log::warn("Failed to write plotter script to '{}'", plotter.string());
+            return;
+        }
         out << plotScript();
     }
 
-    std::stringstream ss;
-    ss << "python ecos_plotter.py \"" << csvFile.string() << "\" \"" << plotConfig.string() << "\"";
+    std::ostringstream ss;
+    ss << "python ecos_plotter.py "
+       << std::quoted(csvFile.string())
+       << " "
+       << std::quoted(plotConfig.string());
     auto t = std::thread([&ss] {
-        if (int status = system(ss.str().c_str())) {
+        if (int status = std::system(ss.str().c_str())) {
             log::warn("Command {} returned with status: {}", ss.str(), status);
         }
     });

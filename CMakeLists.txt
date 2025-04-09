@@ -121,7 +121,7 @@ install(
         ${CMAKE_INSTALL_DATADIR}/ecos)
 
 install(
-        TARGETS libecos libecosc ecos
+        TARGETS libecos libecosc fmilibcpp ecos
         EXPORT ecos-targets
 )
 if (ECOS_WITH_PROXYFMU)

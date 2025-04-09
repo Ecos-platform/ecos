@@ -1,7 +1,7 @@
 
 function(add_test_executable name)
     add_executable(${name} ${name}.cpp)
-    target_link_libraries(${name} PRIVATE libecos Catch2::Catch2WithMain)
+    target_link_libraries(${name} PRIVATE libecos_static Catch2::Catch2WithMain)
     if (ECOS_WITH_PROXYFMU)
         target_link_libraries(${name} PRIVATE simple_socket) # why is this needed?
     endif ()

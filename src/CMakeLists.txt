@@ -159,11 +159,11 @@ target_include_directories(fmilibcpp
         "${PROJECT_SOURCE_DIR}/include"
         "${PROJECT_SOURCE_DIR}/src")
 
-add_library(libecos ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
-set_target_properties(libecos PROPERTIES PREFIX "")
-set_target_properties(libecos PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_compile_features(libecos PUBLIC "cxx_std_20")
-target_include_directories(libecos
+add_library(libecos_static STATIC ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
+set_target_properties(libecos_static PROPERTIES PREFIX "")
+set_target_properties(libecos_static PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_compile_features(libecos_static PUBLIC "cxx_std_20")
+target_include_directories(libecos_static
         PUBLIC
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
@@ -174,38 +174,38 @@ target_include_directories(libecos
         "${THIRD_PARTY_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
 )
-target_link_libraries(libecos
+target_link_libraries(libecos_static
         PRIVATE
         fmi4c
         "$<TARGET_OBJECTS:fmilibcpp>"
 )
 if (UNIX)
-    target_link_libraries(libecos INTERFACE stdc++fs tbb)
+    target_link_libraries(libecos_static INTERFACE stdc++fs tbb)
 endif ()
 
 if (ECOS_WITH_PROXYFMU)
 
-    target_compile_definitions(libecos PRIVATE "ECOS_WITH_PROXYFMU")
+    target_compile_definitions(libecos_static PRIVATE "ECOS_WITH_PROXYFMU")
 
-    target_include_directories(libecos
+    target_include_directories(libecos_static
             PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers"
     )
 
-    target_link_libraries(libecos
+    target_link_libraries(libecos_static
             PRIVATE
             simple_socket
     )
 
     # Make sure executable is up to date
-    add_dependencies(libecos proxyfmu)
+    add_dependencies(libecos_static proxyfmu)
 endif ()
 
 if (ECOS_BUILD_CLIB)
     add_library(libecosc SHARED "${CMAKE_CURRENT_SOURCE_DIR}/ecos/ecos.cpp")
     set_target_properties(libecosc PROPERTIES PREFIX "")
     set_property(TARGET libecosc PROPERTY POSITION_INDEPENDENT_CODE ON)
-    target_link_libraries(libecosc PUBLIC libecos)
+    target_link_libraries(libecosc PRIVATE libecos_static)
 
     add_custom_command(TARGET libecosc POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E make_directory ${PY_BINARY_DIR}
@@ -216,3 +216,8 @@ if (ECOS_BUILD_CLIB)
     )
 
 endif ()
+
+# Create a shared library alias for libecos to be used by external projects
+# need at least one source file to make CMake happy
+add_library(libecos_shared SHARED "${GENERATED_SRC_DIR}/ecos/lib_info.cpp")
+target_link_libraries(libecos_shared PUBLIC libecos_static)

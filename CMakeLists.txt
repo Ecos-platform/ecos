@@ -8,7 +8,6 @@ message("Current ${PROJECT_NAME} version: ${CMAKE_PROJECT_VERSION}\n")
 # Build settings
 # ==============================================================================
 
-option(BUILD_SHARED_LIBS OFF)
 option(ECOS_BUILD_TESTS "Build tests" OFF)
 option(ECOS_BUILD_EXAMPLES "Build examples" OFF)
 option(ECOS_BUILD_CLI "Build CLI" ON)
@@ -121,9 +120,15 @@ install(
         ${CMAKE_INSTALL_DATADIR}/ecos)
 
 install(
-        TARGETS libecos ecos
+        TARGETS libecos_static libecos_shared
         EXPORT ecos-targets
 )
+if (ECOS_BUILD_CLI)
+    install(
+            TARGETS ecos
+            EXPORT ecos-targets
+    )
+endif ()
 if (ECOS_BUILD_CLIB)
     install(
             TARGETS libecosc

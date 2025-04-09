@@ -1,7 +1,7 @@
 
 function(add_example_executable name src)
     add_executable(${name} ${src})
-    target_link_libraries(${name} PRIVATE libecos)
+    target_link_libraries(${name} PRIVATE libecos_static)
     target_compile_definitions(${name} PRIVATE DATA_FOLDER="${PROJECT_SOURCE_DIR}/data")
 endfunction()
 

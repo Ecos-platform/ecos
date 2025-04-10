@@ -4,10 +4,9 @@
 
 #include <fmi4c.h>
 
-#include <filesystem>
-#include <string>
+#include <memory>
 
-#include "ecos/logger/logger.hpp"
+#include "ecos/util/temp_dir.hpp"
 
 namespace fmilibcpp
 {
@@ -18,8 +17,8 @@ class fmicontext
 public:
     fmiHandle* ctx_;
 
-    explicit fmicontext(fmiHandle* handle)
-        : ctx_(handle)
+    explicit fmicontext(fmiHandle* handle, std::unique_ptr<ecos::temp_dir> unzippedFmu)
+        : ctx_(handle), unzippedFmu_(std::move(unzippedFmu))
     { }
 
     fmicontext(const fmicontext& rhs) = delete;
@@ -29,17 +28,11 @@ public:
 
     ~fmicontext()
     {
-        std::string unzippedLoc = fmi4c_getUnzippedLocation(ctx_);
         fmi4c_freeFmu(ctx_);
-
-        if (std::filesystem::exists(unzippedLoc)) {
-            std::error_code success;
-            std::filesystem::remove_all(unzippedLoc, success);
-            if (!success) {
-                ecos::log::debug("Removed lingering folder: {}", unzippedLoc);
-            }
-        }
     }
+
+private:
+    std::unique_ptr<ecos::temp_dir> unzippedFmu_;
 };
 
 } // namespace fmilibcpp

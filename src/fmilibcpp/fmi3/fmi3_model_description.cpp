@@ -147,7 +147,7 @@ model_description create_fmi3_model_description(fmiHandle* handle)
 
     const auto varCount = fmi3_getNumberOfVariables(handle);
     for (auto i = 0; i < varCount; i++) {
-        const auto var = fmi3_getVariableByIndex(handle, i);
+        const auto var = fmi3_getVariableByIndex(handle, i+1);
         if (const auto scalar = to_scalar_variable(var)) {
             md.modelVariables.push_back(scalar.value());
         }

@@ -59,7 +59,7 @@ fmi2_slave::fmi2_slave(
             fmi2False, fmiLogging ? fmi2True : fmi2False)) {
 
         fmi2_slave::freeInstance();
-        throw std::runtime_error(std::string("Failed to instantiate fmi2 slave! Error: ") + fmi4c_getErrorMessages());
+        throw std::runtime_error(std::string("Failed to instantiate fmi2 slave!"));
     }
 }
 

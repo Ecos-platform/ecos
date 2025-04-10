@@ -4,6 +4,8 @@
 #include "fmi3/fmi3_fmu.hpp"
 
 #include "ecos/logger/logger.hpp"
+#include "ecos/util/temp_dir.hpp"
+#include "ecos/util/unzipper.hpp"
 
 #include <fmi4c.h>
 
@@ -16,7 +18,20 @@ std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& 
     }
 
     const std::string fmuName = std::filesystem::path(fmuPath).stem().string();
-    auto handle = std::make_unique<fmicontext>(fmi4c_loadFmu(fmuPath.string().c_str(), fmuName.c_str()));
+    auto temp = std::make_unique<ecos::temp_dir>(fmuName);
+
+    if (!ecos::unzip(fmuPath, temp->path())) {
+        ecos::log::err("Failed to unzip '{}' to tempdir '{}'!", fmuPath.string(), temp->path().string());
+        return nullptr;
+    }
+
+    auto fmuCtx = fmi4c_loadUnzippedFmu(fmuPath.string().c_str(), temp->path().string().c_str());
+    if (!fmuCtx) {
+        ecos::log::err("Failed to load '{}'!", fmuPath.string());
+        return nullptr;
+    }
+
+    auto handle = std::make_unique<fmicontext>(fmuCtx, std::move(temp));
 
     switch (fmi4c_getFmiVersion(handle->ctx_)) {
         case fmiVersion1:

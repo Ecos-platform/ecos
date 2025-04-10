@@ -35,13 +35,12 @@ fmi1_slave::fmi1_slave(
     model_description md,
     bool fmiLogging)
     : slave(instanceName)
-    , handle_(ctx->ctx_)
     , ctx_(ctx)
     , md_(std::move(md))
 {
 
-    if (!fmi1_instantiateSlave(
-            handle_,
+    component_ = fmi1_instantiateSlave(
+            ctx_->handle_,
             "application/x-fmu-sharedlibrary",
             1000,
             fmi1False,
@@ -49,10 +48,11 @@ fmi1_slave::fmi1_slave(
             fmiLogging ? fmilogger : noopfmilogger,
             std::calloc, std::free,
             nullptr,
-            fmiLogging ? fmi1True : fmi1False)) {
+            fmiLogging ? fmi1True : fmi1False);
 
-        fmi1_slave::freeInstance();
-        throw std::runtime_error(std::string("Failed to instantiate fmi1 slave!"));
+        if (!component_) {
+            fmi1_slave::freeInstance();
+            throw std::runtime_error(std::string("Failed to instantiate fmi1 slave!"));
     }
 }
 
@@ -72,44 +72,44 @@ bool fmi1_slave::enter_initialization_mode(double start_time, double stop_time, 
 bool fmi1_slave::exit_initialization_mode()
 {
     const fmi1Boolean stop_defined = (stop_time_ > 0) ? fmi1True : fmi1False;
-    const auto status = fmi1_initializeSlave(handle_, start_time_, stop_defined, stop_time_);
+    const auto status = fmi1_initializeSlave(ctx_->handle_, component_, start_time_, stop_defined, stop_time_);
     return status == fmi1OK;
 }
 
 bool fmi1_slave::step(double current_time, double step_size)
 {
-    const auto status = fmi1_doStep(handle_, current_time, step_size, fmi1True);
+    const auto status = fmi1_doStep(ctx_->handle_, component_, current_time, step_size, fmi1True);
     return status == fmi1OK;
 }
 
 bool fmi1_slave::terminate()
 {
-    const auto status = fmi1_terminateSlave(handle_);
+    const auto status = fmi1_terminateSlave(ctx_->handle_, component_);
     return status == fmi1OK;
 }
 
 bool fmi1_slave::reset()
 {
-    const auto status = fmi1_resetSlave(handle_);
+    const auto status = fmi1_resetSlave(ctx_->handle_, component_);
     return status == fmi1OK;
 }
 
 bool fmi1_slave::get_integer(const std::vector<value_ref>& vr, std::vector<int32_t>& values)
 {
-    const auto status = fmi1_getInteger(handle_, vr.data(), vr.size(), values.data());
+    const auto status = fmi1_getInteger(ctx_->handle_, component_, vr.data(), vr.size(), values.data());
     return status == fmi1OK;
 }
 
 bool fmi1_slave::get_real(const std::vector<value_ref>& vr, std::vector<double>& values)
 {
-    const auto status = fmi1_getReal(handle_, vr.data(), vr.size(), values.data());
+    const auto status = fmi1_getReal(ctx_->handle_, component_, vr.data(), vr.size(), values.data());
     return status == fmi1OK;
 }
 
 bool fmi1_slave::get_string(const std::vector<value_ref>& vr, std::vector<std::string>& values)
 {
     auto tmp = std::vector<fmi1String>(vr.size());
-    const auto status = fmi1_getString(handle_, vr.data(), vr.size(), tmp.data());
+    const auto status = fmi1_getString(ctx_->handle_, component_, vr.data(), vr.size(), tmp.data());
     for (auto i = 0; i < tmp.size(); i++) {
         values[i] = tmp[i];
     }
@@ -119,7 +119,7 @@ bool fmi1_slave::get_string(const std::vector<value_ref>& vr, std::vector<std::s
 bool fmi1_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>& values)
 {
     auto tmp = std::vector<fmi1Boolean>(vr.size());
-    const auto status = fmi1_getBoolean(handle_, vr.data(), vr.size(), tmp.data());
+    const auto status = fmi1_getBoolean(ctx_->handle_, component_, vr.data(), vr.size(), tmp.data());
     for (auto i = 0; i < tmp.size(); i++) {
         values[i] = tmp[i] != 0;
     }
@@ -128,13 +128,13 @@ bool fmi1_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>
 
 bool fmi1_slave::set_integer(const std::vector<value_ref>& vr, const std::vector<int32_t>& values)
 {
-    const auto status = fmi1_setInteger(handle_, vr.data(), vr.size(), values.data());
+    const auto status = fmi1_setInteger(ctx_->handle_, component_, vr.data(), vr.size(), values.data());
     return status == fmi1OK;
 }
 
 bool fmi1_slave::set_real(const std::vector<value_ref>& vr, const std::vector<double>& values)
 {
-    const auto status = fmi1_setReal(handle_, vr.data(), vr.size(), values.data());
+    const auto status = fmi1_setReal(ctx_->handle_, component_, vr.data(), vr.size(), values.data());
     return status == fmi1OK;
 }
 
@@ -144,7 +144,7 @@ bool fmi1_slave::set_string(const std::vector<value_ref>& vr, const std::vector<
     for (auto i = 0; i < vr.size(); i++) {
         _values[i] = values[i].c_str();
     }
-    const auto status = fmi1_setString(handle_, vr.data(), vr.size(), _values.data());
+    const auto status = fmi1_setString(ctx_->handle_, component_, vr.data(), vr.size(), _values.data());
     return status == fmi1OK;
 }
 
@@ -154,7 +154,7 @@ bool fmi1_slave::set_boolean(const std::vector<value_ref>& vr, const std::vector
     for (auto i = 0; i < vr.size(); i++) {
         _values[i] = values[i] ? fmi1True : fmi1False;
     }
-    const auto status = fmi1_setBoolean(handle_, vr.data(), vr.size(), _values.data());
+    const auto status = fmi1_setBoolean(ctx_->handle_, component_, vr.data(), vr.size(), _values.data());
     return status == fmi1OK;
 }
 
@@ -162,7 +162,7 @@ void fmi1_slave::freeInstance()
 {
     if (!freed_) {
         freed_ = true;
-        fmi1_freeSlaveInstance(handle_);
+        fmi1_freeSlaveInstance(ctx_->handle_, component_);
     }
 }
 

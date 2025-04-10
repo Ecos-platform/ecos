@@ -7,8 +7,22 @@
 
 using namespace ecos;
 
+namespace
+{
+
+std::filesystem::path safe_temp_directory_path() {
+    try {
+        return std::filesystem::temp_directory_path(); // fails in debug under WSL
+    } catch (const std::filesystem::filesystem_error& e) {
+        log::warn("temp_directory_path() failed: {}", e.what());
+        // Fallback to /tmp (standard on Unix)
+        return "/tmp";
+    }
+}
+}
+
 temp_dir::temp_dir(const std::string& name)
-    : path_(std::filesystem::temp_directory_path() /= "ecos_" + name + "_" + generate_uuid())
+    : path_(safe_temp_directory_path() /= "ecos_" + name + "_" + generate_uuid())
 {
     create_directories(path_);
 }

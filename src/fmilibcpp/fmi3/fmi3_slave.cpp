@@ -45,7 +45,7 @@ fmi3_slave::fmi3_slave(
             nullptr)) {
 
         fmi3_slave::freeInstance();
-        throw std::runtime_error(std::string("Failed to instantiate fmi3 slave! Error: ") + fmi4c_getErrorMessages());
+        throw std::runtime_error(std::string("Failed to instantiate fmi3 slave!"));
     }
 }
 

@@ -52,7 +52,7 @@ fmi1_slave::fmi1_slave(
             fmiLogging ? fmi1True : fmi1False)) {
 
         fmi1_slave::freeInstance();
-        throw std::runtime_error(std::string("Failed to instantiate fmi1 slave! Error: ") + fmi4c_getErrorMessages());
+        throw std::runtime_error(std::string("Failed to instantiate fmi1 slave!"));
     }
 }
 

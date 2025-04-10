@@ -64,12 +64,15 @@ int run_application(const std::string& fmu, const std::string& instanceName, boo
             spdlog::info("TCP Client connected");
             client_handler(std::move(con), fmu, instanceName);
         } catch (const std::exception& ex) {
-            spdlog::error("Exception occurred: {}", ex.what());
+            spdlog::error("[run_application] Exception occurred: {}", ex.what());
             return UNHANDLED_ERROR;
         }
     } else {
 
-        const auto fileHandle = instanceName + "_" + generate_uuid();
+        auto fileHandle = instanceName + "_" + generate_uuid();
+#ifndef _WIN32
+        fileHandle.insert(0, "/tmp/");
+#endif
 
         try {
             simple_socket::UnixDomainServer server(fileHandle);
@@ -82,7 +85,7 @@ int run_application(const std::string& fmu, const std::string& instanceName, boo
             spdlog::info("Unix Domain Client connected");
             client_handler(std::move(con), fmu, instanceName);
         } catch (const std::exception& ex) {
-            spdlog::error("Exception occurred: {}", ex.what());
+            spdlog::error("[run_application] Exception occurred: {}", ex.what());
             return UNHANDLED_ERROR;
         }
     }

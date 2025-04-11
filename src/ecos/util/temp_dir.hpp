@@ -15,7 +15,7 @@ class temp_dir
 
 public:
     explicit temp_dir(const std::string& name)
-    : path_(safe_temp_directory_path() /= "ecos_" + name + "_" + generate_uuid())
+        : path_(safe_temp_directory_path() /= "ecos_" + name + "_" + generate_uuid())
     {
         create_directories(path_);
     }
@@ -43,7 +43,8 @@ public:
 private:
     const std::filesystem::path path_;
 
-    static std::filesystem::path safe_temp_directory_path() {
+    static std::filesystem::path safe_temp_directory_path()
+    {
         try {
             return std::filesystem::temp_directory_path(); // fails in debug under WSL
         } catch (const std::filesystem::filesystem_error& e) {

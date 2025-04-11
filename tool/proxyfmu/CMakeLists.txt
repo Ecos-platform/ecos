@@ -18,9 +18,8 @@ target_include_directories(proxyfmu
         "${GENERATED_SRC_DIR}")
 target_link_libraries(proxyfmu
         PRIVATE
-        fmi4c
         simple_socket
-        "$<TARGET_OBJECTS:fmilibcpp>"
+        fmilibcpp
 )
 if (UNIX)
     target_link_libraries(proxyfmu PRIVATE pthread)

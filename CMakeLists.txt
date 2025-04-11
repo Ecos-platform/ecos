@@ -121,9 +121,15 @@ install(
         ${CMAKE_INSTALL_DATADIR}/ecos)
 
 install(
-        TARGETS libecos ecos
+        TARGETS libecos fmilibcpp
         EXPORT ecos-targets
 )
+if (ECOS_BUILD_CLI)
+    install(
+            TARGETS ecos
+            EXPORT ecos-targets
+    )
+endif ()
 if (ECOS_BUILD_CLIB)
     install(
             TARGETS libecosc

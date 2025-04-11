@@ -88,8 +88,6 @@ set(sources
 
         "ecos/structure/simulation_structure.cpp"
 
-        "ecos/logger/logger.cpp"
-
         "ecos/util/plotter.cpp"
 
 )
@@ -114,7 +112,7 @@ configure_file(
         @ONLY
 )
 
-add_library(fmilibcpp OBJECT
+add_library(fmilibcpp
 
         "fmilibcpp/buffered_slave.hpp"
         "fmilibcpp/fmicontext.hpp"
@@ -145,16 +143,19 @@ add_library(fmilibcpp OBJECT
         "fmilibcpp/fmi3/fmi3_slave.cpp"
         "fmilibcpp/fmi3/fmi3_model_description.cpp"
 
+        "ecos/logger/logger.cpp"
         "external/pugixml/pugixml.cpp"
 )
 set_target_properties(fmilibcpp PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(fmilibcpp PRIVATE fmi4c)
 target_include_directories(fmilibcpp
         PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog>"
         PRIVATE
-        "${PROJECT_SOURCE_DIR}/include"
-        "${PROJECT_SOURCE_DIR}/src")
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+)
 
 add_library(libecos ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
 set_target_properties(libecos PROPERTIES PREFIX "")
@@ -174,7 +175,7 @@ target_include_directories(libecos
 target_link_libraries(libecos
         PRIVATE
         fmi4c
-        "$<TARGET_OBJECTS:fmilibcpp>"
+        fmilibcpp
 )
 if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)

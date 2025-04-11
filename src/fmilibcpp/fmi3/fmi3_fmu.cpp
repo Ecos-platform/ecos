@@ -10,7 +10,7 @@ namespace fmilibcpp
 {
 
 fmi3_fmu::fmi3_fmu(std::unique_ptr<fmicontext> ctx, bool fmiLogging)
-    : handle_(ctx->ctx_)
+    : handle_(ctx->handle_)
     , ctx_(std::move(ctx))
     , fmiLogging_(fmiLogging)
     , md_(create_fmi3_model_description(handle_))

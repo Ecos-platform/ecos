@@ -51,7 +51,7 @@ public:
 
 private:
     bool freed_{false};
-    fmiHandle* handle_;
+    fmi2Component component{nullptr};
     std::shared_ptr<fmicontext> ctx_;
 
     model_description md_;

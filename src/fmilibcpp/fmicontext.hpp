@@ -15,10 +15,10 @@ class fmicontext
 {
 
 public:
-    fmiHandle* ctx_;
+    fmiHandle* handle_;
 
     explicit fmicontext(fmiHandle* handle, std::unique_ptr<ecos::temp_dir> unzippedFmu)
-        : ctx_(handle), unzippedFmu_(std::move(unzippedFmu))
+        : handle_(handle), unzippedFmu_(std::move(unzippedFmu))
     { }
 
     fmicontext(const fmicontext& rhs) = delete;
@@ -28,7 +28,7 @@ public:
 
     ~fmicontext()
     {
-        fmi4c_freeFmu(ctx_);
+        fmi4c_freeFmu(handle_);
     }
 
 private:

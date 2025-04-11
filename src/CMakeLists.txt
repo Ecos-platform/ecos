@@ -44,9 +44,9 @@ set(privateHeaders
 
         "ecos/ssp/ssp.hpp"
 
-        "ecos/util/temp_dir.hpp"
-        "ecos/util/unzipper.hpp"
-        "ecos/util/uuid.hpp"
+        "util/temp_dir.hpp"
+        "util/unzipper.hpp"
+        "util/uuid.hpp"
 
 )
 

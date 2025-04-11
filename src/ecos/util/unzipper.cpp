@@ -16,21 +16,31 @@ namespace
 
 std::vector<std::string> make_args(const std::string& zip, const std::string& temp)
 {
+    std::vector<std::string> args;
+    std::string tool;
+
 #ifdef _WIN32
-    return {
-        "tar",
-        "-xf",
-        zip,
-        "-C",
-        temp};
+    char* shell = nullptr;
+    size_t len = 0;
+    std::string shell_str;
+    if (_dupenv_s(&shell, &len, "SHELL") == 0 && shell) {
+        shell_str = shell;
+        free(shell);
+    }
+
+    // Use unzip in Git Bash, otherwise tar
+    tool = (shell_str.find("bash") != std::string::npos) ? "unzip" : "tar";
 #else
-    return {
-        "unzip",
-        "-o",
-        zip,
-        "-d",
-        temp};
+    tool = "unzip";
 #endif
+
+    if (tool == "unzip") {
+        args = {"unzip", "-o", zip, "-d", temp};
+    } else {
+        args = {"tar", "-xf", zip, "-C", temp};
+    }
+
+    return args;
 }
 
 bool unzip_with_system(const std::vector<char*>& argv)

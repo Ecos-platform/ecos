@@ -156,7 +156,7 @@ target_include_directories(fmilibcpp
         "${PROJECT_SOURCE_DIR}/include"
         "${PROJECT_SOURCE_DIR}/src")
 
-add_library(libecos ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
+add_library(libecos ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles} "$<TARGET_OBJECTS:fmi4c>" "$<TARGET_OBJECTS:fmilibcpp>")
 set_target_properties(libecos PROPERTIES PREFIX "")
 set_target_properties(libecos PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_compile_features(libecos PUBLIC "cxx_std_20")
@@ -171,11 +171,7 @@ target_include_directories(libecos
         "${THIRD_PARTY_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
 )
-target_link_libraries(libecos
-        PRIVATE
-        fmi4c
-        "$<TARGET_OBJECTS:fmilibcpp>"
-)
+
 if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)
 endif ()

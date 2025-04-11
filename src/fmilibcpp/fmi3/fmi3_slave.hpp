@@ -2,12 +2,12 @@
 #ifndef ECOS_FMI_FMI3_SLAVE_HPP
 #define ECOS_FMI_FMI3_SLAVE_HPP
 
-#include "ecos/util/temp_dir.hpp"
-
 #include "fmilibcpp/fmicontext.hpp"
 #include "fmilibcpp/slave.hpp"
+#include "util/temp_dir.hpp"
 
 #include <fmi4c.h>
+
 #include <memory>
 
 namespace fmilibcpp

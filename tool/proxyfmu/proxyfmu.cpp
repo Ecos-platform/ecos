@@ -1,9 +1,9 @@
 
 #include "boot_service_handler.hpp"
 #include "client_handler.hpp"
+#include "util/uuid.hpp"
 
 #include "ecos/lib_info.hpp"
-#include "ecos/util/uuid.hpp"
 
 #include "simple_socket/TCPSocket.hpp"
 #include "simple_socket/UnixDomainSocket.hpp"

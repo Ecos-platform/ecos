@@ -2,10 +2,10 @@
 #include "fmi1/fmi1_fmu.hpp"
 #include "fmi2/fmi2_fmu.hpp"
 #include "fmi3/fmi3_fmu.hpp"
+#include "util/temp_dir.hpp"
+#include "util/unzipper.hpp"
 
 #include "ecos/logger/logger.hpp"
-#include "ecos/util/temp_dir.hpp"
-#include "ecos/util/unzipper.hpp"
 
 #include <fmi4c.h>
 

@@ -2,7 +2,7 @@
 #ifndef ECOS_FMI_FMI2_SLAVE_HPP
 #define ECOS_FMI_FMI2_SLAVE_HPP
 
-#include "ecos/util/temp_dir.hpp"
+#include "util/temp_dir.hpp"
 
 #include "fmilibcpp/fmicontext.hpp"
 #include "fmilibcpp/slave.hpp"

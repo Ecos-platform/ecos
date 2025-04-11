@@ -2,8 +2,9 @@
 #ifndef ECOS_TEMP_DIR_HPP
 #define ECOS_TEMP_DIR_HPP
 
+#include "util/uuid.hpp"
+
 #include "ecos/logger/logger.hpp"
-#include "ecos/util/uuid.hpp"
 
 #include <filesystem>
 

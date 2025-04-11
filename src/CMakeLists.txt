@@ -91,9 +91,6 @@ set(sources
         "ecos/logger/logger.cpp"
 
         "ecos/util/plotter.cpp"
-        "ecos/util/temp_dir.cpp"
-        "ecos/util/unzipper.cpp"
-        "ecos/util/uuid.cpp"
 
 )
 

@@ -1,12 +1,13 @@
 
 #include "url_model_sub_resolver.hpp"
 
+#include "util/temp_dir.hpp"
+
 #include "ecos/fmi/fmi_model.hpp"
 #include "ecos/logger/logger.hpp"
-#include "ecos/util/temp_dir.hpp"
 
-#include <regex>
 #include <fstream>
+#include <regex>
 
 using namespace ecos;
 
@@ -31,7 +32,8 @@ std::string getFilenameFromURL(const std::string& url)
     return ""; // Return an empty string if no '/' is found
 }
 
-bool isFileEmpty(const std::string& filePath) {
+bool isFileEmpty(const std::string& filePath)
+{
     std::ifstream file(filePath, std::ios::binary | std::ios::ate);
     return file.tellg() == 0;
 }

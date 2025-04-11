@@ -2,8 +2,7 @@
 #ifndef SSP_SSP_HPP
 #define SSP_SSP_HPP
 
-#include "ecos/util/temp_dir.hpp"
-
+#include <filesystem>
 #include <map>
 #include <memory>
 #include <optional>

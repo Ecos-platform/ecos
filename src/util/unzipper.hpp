@@ -1,5 +1,6 @@
 
-#include "unzipper.hpp"
+#ifndef ECOS_UNZIPPER_HPP
+#define ECOS_UNZIPPER_HPP
 
 #ifdef _WIN32
 #    include <process.h>
@@ -8,13 +9,19 @@
 #    include <sys/wait.h>
 #    include <unistd.h>
 #endif
+
+#include <filesystem>
 #include <string>
 #include <vector>
 
-namespace
+
+namespace ecos
 {
 
-std::vector<std::string> make_args(const std::string& zip, const std::string& temp)
+namespace detail
+{
+
+inline std::vector<std::string> make_args(const std::string& zip, const std::string& temp)
 {
     std::vector<std::string> args;
     std::string tool;
@@ -39,7 +46,7 @@ std::vector<std::string> make_args(const std::string& zip, const std::string& te
         : std::vector<std::string>{"tar", "-xf", zip, "-C", temp};
 }
 
-bool unzip_with_system(const std::vector<char*>& argv)
+inline bool unzip_with_system(const std::vector<char*>& argv)
 {
 #ifdef _WIN32
     const auto result = _spawnvp(_P_WAIT, argv[0], argv.data());
@@ -68,17 +75,16 @@ bool unzip_with_system(const std::vector<char*>& argv)
     return WIFEXITED(status) && WEXITSTATUS(status) == 0;
 #endif
 }
+} // namespace detail
 
-} // namespace
-
-bool ecos::unzip(const std::filesystem::path& zip_file, const std::filesystem::path& tmp_path)
+inline bool unzip(const std::filesystem::path& zip_file, const std::filesystem::path& tmp_path)
 {
 
     if (!exists(zip_file) || !exists(tmp_path)) {
         return false;
     }
 
-    const auto args = make_args(zip_file.string(), tmp_path.string());
+    const auto args = detail::make_args(zip_file.string(), tmp_path.string());
 
     std::vector<char*> argv;
     for (auto& arg : args) {
@@ -86,5 +92,9 @@ bool ecos::unzip(const std::filesystem::path& zip_file, const std::filesystem::p
     }
     argv.push_back(nullptr); // Null-terminate
 
-    return unzip_with_system(argv);
+    return detail::unzip_with_system(argv);
 }
+
+} // namespace ecos
+
+#endif // ECOS_UNZIPPER_HPP

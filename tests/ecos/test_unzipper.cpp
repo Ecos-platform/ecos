@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include <ecos/util/temp_dir.hpp>
-#include <ecos/util/unzipper.hpp>
+#include <util/temp_dir.hpp>
+#include <util/unzipper.hpp>
 
 using namespace ecos;
 

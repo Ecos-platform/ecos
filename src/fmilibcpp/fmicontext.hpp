@@ -2,11 +2,11 @@
 #ifndef ECOS_FMI_FMICONTEXT_HPP
 #define ECOS_FMI_FMICONTEXT_HPP
 
+#include "util/temp_dir.hpp"
+
 #include <fmi4c.h>
 
 #include <memory>
-
-#include "ecos/util/temp_dir.hpp"
 
 namespace fmilibcpp
 {
@@ -18,7 +18,8 @@ public:
     fmiHandle* handle_;
 
     explicit fmicontext(fmiHandle* handle, std::unique_ptr<ecos::temp_dir> unzippedFmu)
-        : handle_(handle), unzippedFmu_(std::move(unzippedFmu))
+        : handle_(handle)
+        , unzippedFmu_(std::move(unzippedFmu))
     { }
 
     fmicontext(const fmicontext& rhs) = delete;

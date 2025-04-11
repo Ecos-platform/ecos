@@ -44,9 +44,9 @@ set(privateHeaders
 
         "ecos/ssp/ssp.hpp"
 
-        "ecos/util/temp_dir.hpp"
-        "ecos/util/unzipper.hpp"
-        "ecos/util/uuid.hpp"
+        "util/temp_dir.hpp"
+        "util/unzipper.hpp"
+        "util/uuid.hpp"
 
 )
 
@@ -91,9 +91,6 @@ set(sources
         "ecos/logger/logger.cpp"
 
         "ecos/util/plotter.cpp"
-        "ecos/util/temp_dir.cpp"
-        "ecos/util/unzipper.cpp"
-        "ecos/util/uuid.cpp"
 
 )
 

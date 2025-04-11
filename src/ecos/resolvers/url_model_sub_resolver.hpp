@@ -2,8 +2,9 @@
 #ifndef LIBECOS_URL_MODEL_SUB_RESOLVER_HPP
 #define LIBECOS_URL_MODEL_SUB_RESOLVER_HPP
 
+#include "util/temp_dir.hpp"
+
 #include "ecos/model_resolver.hpp"
-#include "ecos/util/temp_dir.hpp"
 
 namespace ecos
 {
@@ -18,6 +19,6 @@ private:
     temp_dir temp_dir_;
 };
 
-}
+} // namespace ecos
 
-#endif //LIBECOS_URL_MODEL_SUB_RESOLVER_HPP
+#endif // LIBECOS_URL_MODEL_SUB_RESOLVER_HPP

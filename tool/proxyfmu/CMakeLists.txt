@@ -1,9 +1,6 @@
 
 set(sources
         "proxyfmu.cpp"
-        "${PROJECT_SOURCE_DIR}/src/ecos/util/temp_dir.cpp"
-        "${PROJECT_SOURCE_DIR}/src/ecos/util/unzipper.cpp"
-        "${PROJECT_SOURCE_DIR}/src/ecos/util/uuid.cpp"
         "${PROJECT_SOURCE_DIR}/src/ecos/logger/logger.cpp"
         "${PROJECT_SOURCE_DIR}/src/external/flatbuffers/flatbuffers/util.cpp"
         "${GENERATED_SRC_DIR}/ecos/lib_info.cpp"

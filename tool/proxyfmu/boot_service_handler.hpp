@@ -2,14 +2,14 @@
 #ifndef PROXYFMU_BOOT_SERVICE_HANDLER_HPP
 #define PROXYFMU_BOOT_SERVICE_HANDLER_HPP
 
-#include "ecos/util/temp_dir.hpp"
+#include "util/temp_dir.hpp"
 
 #include "proxyfmu/process_helper.hpp"
 
+#include <fstream>
 #include <memory>
 #include <thread>
 #include <vector>
-#include <fstream>
 
 namespace ecos::proxy
 {
@@ -62,9 +62,8 @@ private:
             throw std::runtime_error("Error during write to file: " + fileName);
         }
     }
-
 };
 
-} // namespace proxyfmu::server
+} // namespace ecos::proxy
 
 #endif // PROXYFMU_BOOT_SERVICE_HANDLER_HPP

@@ -1,11 +1,16 @@
-#include "uuid.hpp"
+
+#ifndef ECOS_UUID_HPP
+#define ECOS_UUID_HPP
 
 #include <ios>
 #include <random>
 #include <sstream>
+#include <string>
 
+namespace ecos
+{
 
-std::string ecos::generate_uuid()
+inline std::string generate_uuid()
 {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -37,3 +42,7 @@ std::string ecos::generate_uuid()
     }
     return ss.str();
 }
+
+} // namespace ecos
+
+#endif // ECOS_UUID_HPP

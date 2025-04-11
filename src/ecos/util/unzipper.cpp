@@ -29,18 +29,14 @@ std::vector<std::string> make_args(const std::string& zip, const std::string& te
     }
 
     // Use unzip in Git Bash, otherwise tar
-    tool = (shell_str.find("bash") != std::string::npos) ? "unzip" : "tar";
+    const bool use_unzip = shell_str.find("bash") != std::string::npos;
 #else
-    tool = "unzip";
+    constexpr bool use_unzip = true;
 #endif
 
-    if (tool == "unzip") {
-        args = {"unzip", "-o", zip, "-d", temp};
-    } else {
-        args = {"tar", "-xf", zip, "-C", temp};
-    }
-
-    return args;
+    return use_unzip
+        ? std::vector<std::string>{"unzip", "-o", zip, "-d", temp}
+        : std::vector<std::string>{"tar", "-xf", zip, "-C", temp};
 }
 
 bool unzip_with_system(const std::vector<char*>& argv)

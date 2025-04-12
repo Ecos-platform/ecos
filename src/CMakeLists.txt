@@ -187,7 +187,9 @@ if (ECOS_WITH_PROXYFMU)
 
     target_compile_definitions(libecos PRIVATE "ECOS_WITH_PROXYFMU")
 
-    target_link_libraries(libecos INTERFACE ws2_32)
+    if (WIN32)
+        target_link_libraries(libecos INTERFACE ws2_32)
+    endif ()
 
     target_include_directories(libecos
             PRIVATE

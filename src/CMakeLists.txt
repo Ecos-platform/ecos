@@ -50,22 +50,6 @@ set(privateHeaders
 
 )
 
-if (ECOS_WITH_PROXYFMU)
-    list(APPEND privateHeaders
-
-            "ecos/fmi/proxy/proxy_model.hpp"
-
-            "ecos/resolvers/proxy_model_sub_resolver.hpp"
-
-            "proxyfmu/opcodes.hpp"
-            "proxyfmu/process_helper.hpp"
-            "proxyfmu/proxy_fmu.hpp"
-            "proxyfmu/proxy_slave.hpp"
-            "proxyfmu/remote_info.hpp"
-
-    )
-endif ()
-
 set(sources
 
         "ecos/model_resolver.cpp"
@@ -93,18 +77,6 @@ set(sources
         "ecos/util/plotter.cpp"
 
 )
-
-if (ECOS_WITH_PROXYFMU)
-    list(APPEND sources
-
-            "ecos/resolvers/proxy_model_sub_resolver.cpp"
-
-            "proxyfmu/proxy_fmu.cpp"
-            "proxyfmu/proxy_slave.cpp"
-
-            "external/flatbuffers/flatbuffers/util.cpp"
-    )
-endif ()
 
 # Generate sources from .in files
 set(generatedFiles "${GENERATED_SRC_DIR}/ecos/lib_info.cpp")
@@ -156,7 +128,44 @@ target_include_directories(fmilibcpp
         "${PROJECT_SOURCE_DIR}/include"
         "${PROJECT_SOURCE_DIR}/src")
 
-add_library(libecos ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles})
+if (ECOS_WITH_PROXYFMU)
+    add_library(proxy_fmu OBJECT
+
+            "ecos/fmi/proxy/proxy_model.hpp"
+
+            "ecos/resolvers/proxy_model_sub_resolver.hpp"
+
+            "proxyfmu/opcodes.hpp"
+            "proxyfmu/process_helper.hpp"
+            "proxyfmu/proxy_fmu.hpp"
+            "proxyfmu/proxy_slave.hpp"
+            "proxyfmu/remote_info.hpp"
+
+            "ecos/resolvers/proxy_model_sub_resolver.cpp"
+
+            "proxyfmu/proxy_fmu.cpp"
+            "proxyfmu/proxy_slave.cpp"
+
+            "external/flatbuffers/flatbuffers/util.cpp"
+    )
+    target_link_libraries(proxy_fmu PRIVATE simple_socket)
+    set_target_properties(proxy_fmu PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    target_include_directories(proxy_fmu
+            PUBLIC
+            "${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog"
+            PRIVATE
+            "${PROJECT_SOURCE_DIR}/include"
+            "${PROJECT_SOURCE_DIR}/src"
+            "${THIRD_PARTY_INCLUDE_DIR}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers"
+    )
+endif ()
+
+set(all_sources ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles} "$<TARGET_OBJECTS:fmi4c>" "$<TARGET_OBJECTS:fmilibcpp>")
+if (ECOS_WITH_PROXYFMU)
+    list(APPEND all_sources "$<TARGET_OBJECTS:simple_socket>" "$<TARGET_OBJECTS:proxy_fmu>")
+endif ()
+add_library(libecos ${all_sources})
 set_target_properties(libecos PROPERTIES PREFIX "")
 set_target_properties(libecos PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_compile_features(libecos PUBLIC "cxx_std_20")
@@ -171,11 +180,7 @@ target_include_directories(libecos
         "${THIRD_PARTY_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
 )
-target_link_libraries(libecos
-        PRIVATE
-        fmi4c
-        "$<TARGET_OBJECTS:fmilibcpp>"
-)
+
 if (UNIX)
     target_link_libraries(libecos INTERFACE stdc++fs tbb)
 endif ()
@@ -184,14 +189,13 @@ if (ECOS_WITH_PROXYFMU)
 
     target_compile_definitions(libecos PRIVATE "ECOS_WITH_PROXYFMU")
 
+    if (WIN32)
+        target_link_libraries(libecos INTERFACE ws2_32)
+    endif ()
+
     target_include_directories(libecos
             PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers"
-    )
-
-    target_link_libraries(libecos
-            PRIVATE
-            simple_socket
     )
 
     # Make sure executable is up to date

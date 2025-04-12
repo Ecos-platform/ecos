@@ -128,36 +128,38 @@ target_include_directories(fmilibcpp
         "${PROJECT_SOURCE_DIR}/include"
         "${PROJECT_SOURCE_DIR}/src")
 
-add_library(proxy_fmu OBJECT
+if (ECOS_WITH_PROXYFMU)
+    add_library(proxy_fmu OBJECT
 
-        "ecos/fmi/proxy/proxy_model.hpp"
+            "ecos/fmi/proxy/proxy_model.hpp"
 
-        "ecos/resolvers/proxy_model_sub_resolver.hpp"
+            "ecos/resolvers/proxy_model_sub_resolver.hpp"
 
-        "proxyfmu/opcodes.hpp"
-        "proxyfmu/process_helper.hpp"
-        "proxyfmu/proxy_fmu.hpp"
-        "proxyfmu/proxy_slave.hpp"
-        "proxyfmu/remote_info.hpp"
+            "proxyfmu/opcodes.hpp"
+            "proxyfmu/process_helper.hpp"
+            "proxyfmu/proxy_fmu.hpp"
+            "proxyfmu/proxy_slave.hpp"
+            "proxyfmu/remote_info.hpp"
 
-        "ecos/resolvers/proxy_model_sub_resolver.cpp"
+            "ecos/resolvers/proxy_model_sub_resolver.cpp"
 
-        "proxyfmu/proxy_fmu.cpp"
-        "proxyfmu/proxy_slave.cpp"
+            "proxyfmu/proxy_fmu.cpp"
+            "proxyfmu/proxy_slave.cpp"
 
-        "external/flatbuffers/flatbuffers/util.cpp"
-)
-target_link_libraries(proxy_fmu PRIVATE simple_socket)
-set_target_properties(proxy_fmu PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_include_directories(proxy_fmu
-        PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog"
-        PRIVATE
-        "${PROJECT_SOURCE_DIR}/include"
-        "${PROJECT_SOURCE_DIR}/src"
-        "${THIRD_PARTY_INCLUDE_DIR}"
-        "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers"
-)
+            "external/flatbuffers/flatbuffers/util.cpp"
+    )
+    target_link_libraries(proxy_fmu PRIVATE simple_socket)
+    set_target_properties(proxy_fmu PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    target_include_directories(proxy_fmu
+            PUBLIC
+            "${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog"
+            PRIVATE
+            "${PROJECT_SOURCE_DIR}/include"
+            "${PROJECT_SOURCE_DIR}/src"
+            "${THIRD_PARTY_INCLUDE_DIR}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers"
+    )
+endif ()
 
 set(all_sources ${publicHeadersFull} ${privateHeaders} ${sources} ${generatedFiles} "$<TARGET_OBJECTS:fmi4c>" "$<TARGET_OBJECTS:fmilibcpp>")
 if (ECOS_WITH_PROXYFMU)

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecos:ChartConfig xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ChartConfig">
+
+    <ecos:chart>
+        <ecos:timeseries title="ControlledTemperature" label="Temperature">
+            <ecos:series>
+                <ecos:component name="slave">
+                    <ecos:variable name="Temperature_Room"/>
+                    <ecos:variable name="Temperature_Reference"/>
+                </ecos:component>
+            </ecos:series>
+        </ecos:timeseries>
+    </ecos:chart>
+
+</ecos:ChartConfig>

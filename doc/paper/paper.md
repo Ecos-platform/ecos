@@ -1,7 +1,8 @@
 ---
-title: 'Ecos: A simple and intuitive co-simulation framework'
+title: 'Ecos: An accessible and intuitive co-simulation framework'
 tags:
   - Functional Mockup Interface
+  - Co-simulation
   - Simulation and Modelling
   - C/C++
   - Python
@@ -40,8 +41,9 @@ Some features available with Ecos:
 * Scenarios; actions to run at specific events.
 * Remoting - allowing simulations to run across processes.
 
+![Ecos provides post-simulation plotting facilities](figures/mass_spring_damper.png)
 
-\autoref{fig:mass_spring_damper}(figures/mass_spring_damper.png) demonstrates a simulation of a simple *mass-spring-damper* system with Ecos. 
+\autoref{fig:mass_spring_damper} demonstrates a simulation of a simple *mass-spring-damper* system with Ecos. 
 The models are packaged following the System Structure & Parameterization (SSP) standard[@kohler2016modelica]
 and subsequently simulated and plotted with _libecos_.
 

@@ -56,7 +56,7 @@ This is effectively achieved using [simplesocket](https://github.com/markaren/Si
 in conjunction with [flexbuffers](https://flatbuffers.dev/flexbuffers.html).
 Just make sure that the `proxyfmu` target built by `libecos` is on PATH.
 
->Ecos may be built without this feature (less dependecies, faster build) by passing `-DECOS_WITH_PROXYFMU=OFF` to CMake.
+>Ecos may be built without this feature (less dependencies, faster build) by passing `-DECOS_WITH_PROXYFMU=OFF` to CMake.
 
 
 ### Example
@@ -211,7 +211,5 @@ plotter.show()
 
 
 ---
-> Want to build FMUs in C++? Check out [FMU4cpp](https://github.com/Vico-platform/fmu4cpp) </br>
-> Want to build FMUs in Kotlin/Java? Check out [FMU4j](https://github.com/Vico-platform/FMU4j) </br>
+> Want to build FMUs in C++? Check out [FMU4cpp](https://github.com/Ecos-platform/fmu4cpp) </br>
 > Want to build FMUs in Python? Check out [PythonFMU](https://github.com/NTNU-IHB/PythonFMU) </br>
-> SSP generation made easy? Check out [SSPgen](https://github.com/Vico-platform/sspgen) </br>

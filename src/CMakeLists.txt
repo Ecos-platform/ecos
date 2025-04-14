@@ -8,8 +8,6 @@ set(publicHeaders
         "ecos/model_resolver.hpp"
         "ecos/property.hpp"
         "ecos/scalar.hpp"
-        "ecos/scenario.hpp"
-        "ecos/scenario_loader.hpp"
         "ecos/simulation.hpp"
         "ecos/simulation_runner.hpp"
         "ecos/variable_identifier.hpp"
@@ -42,6 +40,8 @@ set(privateHeaders
         "ecos/resolvers/file_model_sub_resolver.hpp"
         "ecos/resolvers/url_model_sub_resolver.hpp"
 
+        "ecos/scenario/scenario.hpp"
+
         "ecos/ssp/ssp.hpp"
 
         "util/temp_dir.hpp"
@@ -58,7 +58,6 @@ set(sources
         "ecos/simulation_runner.cpp"
 
         "ecos/scenario/scenario.cpp"
-        "ecos/scenario/scenario_loader_xml.cpp"
 
         "ecos/algorithm/fixed_step_algorithm.cpp"
 

@@ -5,7 +5,6 @@
 #include "ecos/lib_info.hpp"
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/logger/logger.hpp"
-#include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 #include "ecos/util/plotter.hpp"
@@ -528,7 +527,7 @@ ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_list
 bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_file)
 {
     try {
-        load_scenario(*sim->cpp_sim, scenario_file);
+        sim->cpp_sim->load_scenario(scenario_file);
         return true;
     } catch (...) {
         handle_current_exception();

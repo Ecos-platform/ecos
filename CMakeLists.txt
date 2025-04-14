@@ -50,9 +50,10 @@ set(THIRD_PARTY_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/thirdparty")
 file(DOWNLOAD https://raw.githubusercontent.com/Ecos-platform/subprocess.h/master/subprocess.h
         "${THIRD_PARTY_INCLUDE_DIR}/subprocess/subprocess.h")
 
+if (ECOS_BUILD_CLI)
 file(DOWNLOAD https://github.com/CLIUtils/CLI11/releases/download/v2.4.2/CLI11.hpp
         "${THIRD_PARTY_INCLUDE_DIR}/cli11/CLI11.h")
-
+endif ()
 
 include(FetchContent)
 
@@ -121,9 +122,15 @@ install(
         ${CMAKE_INSTALL_DATADIR}/ecos)
 
 install(
-        TARGETS libecos ecos
+        TARGETS libecos
         EXPORT ecos-targets
 )
+if (ECOS_BUILD_CLI)
+    install(
+            TARGETS ecos
+            EXPORT ecos-targets
+    )
+endif ()
 if (ECOS_BUILD_CLIB)
     install(
             TARGETS libecosc

@@ -51,8 +51,8 @@ file(DOWNLOAD https://raw.githubusercontent.com/Ecos-platform/subprocess.h/maste
         "${THIRD_PARTY_INCLUDE_DIR}/subprocess/subprocess.h")
 
 if (ECOS_BUILD_CLI)
-file(DOWNLOAD https://github.com/CLIUtils/CLI11/releases/download/v2.4.2/CLI11.hpp
-        "${THIRD_PARTY_INCLUDE_DIR}/cli11/CLI11.h")
+    file(DOWNLOAD https://github.com/CLIUtils/CLI11/releases/download/v2.4.2/CLI11.hpp
+            "${THIRD_PARTY_INCLUDE_DIR}/cli11/CLI11.h")
 endif ()
 
 include(FetchContent)

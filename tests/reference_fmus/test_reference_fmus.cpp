@@ -6,8 +6,6 @@
 #include <ecos/algorithm/fixed_step_algorithm.hpp>
 #include <ecos/structure/simulation_structure.hpp>
 
-#include <iostream>
-
 using namespace ecos;
 
 std::vector<std::filesystem::path> collectFMus(const std::filesystem::path& basePath)

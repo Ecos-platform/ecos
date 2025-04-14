@@ -6,13 +6,10 @@
 #include "ecos/connection.hpp"
 #include "ecos/listeners/simulation_listener.hpp"
 #include "ecos/model_instance.hpp"
-#include "ecos/property.hpp"
-#include "ecos/scenario/scenario.hpp"
 #include "ecos/variable_identifier.hpp"
 
 #include <filesystem>
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 namespace ecos
@@ -29,25 +26,13 @@ public:
     simulation& operator=(simulation&&) = delete;
     simulation& operator=(const simulation&) = delete;
 
-    [[nodiscard]] double time() const
-    {
-        return currentTime_;
-    }
+    [[nodiscard]] double time() const;
 
-    [[nodiscard]] unsigned long iterations() const
-    {
-        return num_iterations_;
-    }
+    [[nodiscard]] unsigned long iterations() const;
 
-    [[nodiscard]] bool initialized() const
-    {
-        return initialized_;
-    }
+    [[nodiscard]] bool initialized() const;
 
-    [[nodiscard]] bool terminated() const
-    {
-        return terminated_;
-    }
+    [[nodiscard]] bool terminated() const;
 
     void init(const std::string& parameterSet)
     {
@@ -94,33 +79,19 @@ public:
 
     [[nodiscard]] std::vector<variable_identifier> identifiers() const;
 
-    void on_init(const std::function<void()>& f)
-    {
-        scenario_.on_init(f);
-    }
+    void on_init(const std::function<void()>& f);
 
-    void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action)
-    {
-        scenario_.invoke_when(predicate_action{predicate, action});
-    }
+    void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action);
 
-    void invoke_at(double timePoint, const std::function<void()>& f, const std::optional<double>& eps = 0)
-    {
-        scenario_.invoke_at(timed_action(timePoint, f, eps));
-    }
+    void invoke_at(double timePoint, const std::function<void()>& f, const std::optional<double>& eps = 0);
+
+    void load_scenario(const std::filesystem::path& config);
+
+    ~simulation();
 
 private:
-    double lastDelta_{};
-    double currentTime_{0};
-    bool initialized_{false};
-    bool terminated_{false};
-    unsigned long num_iterations_{0};
-
-    scenario scenario_;
-    std::unique_ptr<algorithm> algorithm_;
-    std::vector<std::unique_ptr<model_instance>> instances_;
-    std::vector<std::unique_ptr<connection>> connections_;
-    std::unordered_map<std::string, std::shared_ptr<simulation_listener>> listeners_;
+    struct Impl;
+    std::unique_ptr<Impl> pimpl_;
 };
 
 } // namespace ecos

@@ -1,7 +1,6 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/logger/logger.hpp"
-#include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 #include "ecos/util/plotter.hpp"
 
@@ -19,7 +18,7 @@ int main()
         const auto ss = load_ssp(sspDir);
         const auto sim = ss->load(std::make_unique<fixed_step_algorithm>(0.04));
 
-        load_scenario(*sim, sspDir / "waypoints_scenario.xml");
+        sim->load_scenario(sspDir / "waypoints_scenario.xml");
 
         auto writer = std::make_unique<csv_writer>("results/dp_ship_cpp.csv");
         const auto outputPath = writer->output_path();

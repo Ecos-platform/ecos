@@ -3,7 +3,6 @@
 #include "ecos/lib_info.hpp"
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/logger/logger.hpp"
-#include "ecos/scenario/scenario_loader.hpp"
 #include "ecos/simulation_runner.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 #include "ecos/util/plotter.hpp"
@@ -96,7 +95,7 @@ void setup_scenario(const CLI::App& vm, simulation& sim)
 {
     if (vm.count("--scenarioConfig")) {
         const std::filesystem::path config = vm["--scenarioConfig"]->as<std::string>();
-        load_scenario(sim, config);
+        sim.load_scenario(config);
     }
 }
 

@@ -12,7 +12,7 @@ authors:
     affiliation: 1
 
 affiliations:
- - name: Norwegian University of Science and Technology, Department of ICT and Natural Sciences, Norway
+ - name: Norwegian University of Science and Technology (NTNU), Department of ICT and Natural Sciences, Norway
    index: 1
 date: 14 April 2025
 bibliography: paper.bib
@@ -53,6 +53,8 @@ and subsequently simulated and plotted with _libecos_.
 While similar tooling exists like FMPy[@FMPy], Vico[@hatledal2021vico], Open Simulation Platform [@smogeli2020open] and OMSimulator[@ochel2019omsimulator], 
 Ecos aims to deliver a higher level of flexibility, extensibility and accessibility through an easy to build and consume
 package. In particular, Ecos acts as a successor to the JVM based Vico framework. 
+
+The software is currently being used to support the EU project TWINVEST, where NTNU is a partner. 
 
 
 # Future of Ecos

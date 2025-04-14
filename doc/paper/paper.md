@@ -33,26 +33,31 @@ The project is structured as a mono-repo with a major goal of being simple to bu
 
 Some features available with Ecos:
 
-* Built-in plotting capabilities.
+* Support for SSP 1.0.
+* Support for FMI 1.0, 2.0 & 3.0 for Co-simulation.
+* Built-in plotting capabilities with inline and XML configuration options.
 * CSV writer with inline and XML configuration options.
 * Scenarios; actions to run at specific events.
 * Remoting - allowing simulations to run across processes.
 
 
-\autoref{fig:mass_spring_damper} demonstrates a simulation of a simple *mass-spring-damper* system with Ecos. 
-The models are generated with FMU4cpp, packaged following the System Structure & Parameterization (SSP) standard[@kohler2016modelica]
+\autoref{fig:mass_spring_damper}(figures/mass_spring_damper.png) demonstrates a simulation of a simple *mass-spring-damper* system with Ecos. 
+The models are packaged following the System Structure & Parameterization (SSP) standard[@kohler2016modelica]
 and subsequently simulated and plotted with _libecos_.
 
 
 # Statement of need
 
 While similar tooling exists like FMPy[@FMPy], Vico[@hatledal2021vico], Open Simulation Platform [@smogeli2020open] and OMSimulator[@ochel2019omsimulator], 
-Ecos aims to deliver a higher level of flexibility, extensivility and accessibility through an easy to build/consume
+Ecos aims to deliver a higher level of flexibility, extensibility and accessibility through an easy to build and consume
 package. In particular, Ecos acts as a successor to the JVM based Vico framework. 
 
 
 # Future of Ecos
 
+Ecos currently ships with a capable, but simple _fixed_step_ orchestration algorithm. 
+The API is designed to be extensible and the goal is to include more advanced orchestration algorithms. 
+However, pursuing this should be driven by a clear user need.
 
 
 # References

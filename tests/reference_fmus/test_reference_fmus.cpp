@@ -6,6 +6,8 @@
 #include <ecos/algorithm/fixed_step_algorithm.hpp>
 #include <ecos/structure/simulation_structure.hpp>
 
+#include <iostream>
+
 using namespace ecos;
 
 std::vector<std::filesystem::path> collectFMus(const std::filesystem::path& basePath)
@@ -23,17 +25,17 @@ std::vector<std::filesystem::path> collectFMus(const std::filesystem::path& base
 
 std::vector<std::filesystem::path> v1FMus()
 {
-    return collectFMus("../data/fmus/1.0/cs");
+    return collectFMus(std::string(REF_FMU_FOLDER) + "1.0/cs");
 }
 
 std::vector<std::filesystem::path> v2FMus()
 {
-    return collectFMus("../data/fmus/2.0");
+    return collectFMus(std::string(REF_FMU_FOLDER) + "2.0");
 }
 
 std::vector<std::filesystem::path> v3FMus()
 {
-    return collectFMus("../data/fmus/3.0");
+    return collectFMus(std::string(REF_FMU_FOLDER) + "3.0");
 }
 
 void run(const std::vector<std::filesystem::path>& paths)

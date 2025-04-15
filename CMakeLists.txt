@@ -70,8 +70,8 @@ endif ()
 set(FMI4C_BUILD_SHARED OFF)
 FetchContent_Declare(
         fmi4c
-        GIT_REPOSITORY https://github.com/robbr48/fmi4c.git
-        GIT_TAG c79b9f5adb15d75a10b1c783c3cb8d645e1aac4d
+        GIT_REPOSITORY https://github.com/Ecos-platform/fmi4c.git
+        GIT_TAG 55c5aa5297212ae3895582dc9c370a050344cb57
 )
 FetchContent_MakeAvailable(fmi4c)
 

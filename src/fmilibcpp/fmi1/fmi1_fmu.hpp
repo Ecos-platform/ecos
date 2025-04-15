@@ -25,7 +25,6 @@ public:
     ~fmi1_fmu() override;
 
 private:
-    fmiHandle* handle_;
     std::shared_ptr<fmicontext> ctx_;
 
     bool fmiLogging_;

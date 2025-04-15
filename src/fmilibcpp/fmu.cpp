@@ -33,7 +33,7 @@ std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& 
 
     auto handle = std::make_unique<fmicontext>(fmuCtx, std::move(temp));
 
-    switch (fmi4c_getFmiVersion(handle->handle_)) {
+    switch (fmi4c_getFmiVersion(handle->get())) {
         case fmiVersion1:
             return std::make_unique<fmi1_fmu>(std::move(handle), fmiLogging);
         case fmiVersion2:

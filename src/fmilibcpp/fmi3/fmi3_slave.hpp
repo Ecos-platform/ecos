@@ -51,7 +51,7 @@ public:
 
 private:
     bool freed_{false};
-    fmi3Instance instance_;
+    fmi3InstanceHandle* instance_{nullptr};
     std::shared_ptr<fmicontext> ctx_;
 
     model_description md_;

@@ -9,7 +9,7 @@
 namespace fmilibcpp
 {
 
-model_description create_fmi2_model_description(fmiHandle* handle);
+model_description create_fmi2_model_description(fmuHandle* handle);
 
 } // namespace fmilibcpp
 

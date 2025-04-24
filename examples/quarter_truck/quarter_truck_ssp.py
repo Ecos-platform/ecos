@@ -8,7 +8,7 @@ def main():
 
     EcosLib().set_log_level("debug")
 
-    ssp_dir = (Path(__file__).parent.parent.parent / 'data' / 'ssp' / 'quarter_truck').resolve()
+    ssp_dir = (Path(__file__).parent.parent.parent / 'data' / 'ssp' / '1.0' / 'quarter_truck').resolve()
     ssp_file = f"{ssp_dir}/quarter-truck.ssp"
     result_file = "results/python/quarter_truck_ssp.csv"
 

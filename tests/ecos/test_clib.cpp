@@ -11,7 +11,7 @@ TEST_CASE("Test C lib")
     auto v = ecos_library_version();
     std::cout << "Using libecos version: " << v.major << "." << v.minor << "." << v.patch << std::endl;
 
-    std::string sspPath = std::string(DATA_FOLDER) + "/ssp/quarter_truck";
+    std::string sspPath = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck";
 
     auto sim = ecos_simulation_create_from_ssp(sspPath.c_str(), 1.0 / 100);
     REQUIRE(sim);

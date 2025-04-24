@@ -11,7 +11,7 @@ int main()
 {
     set_logging_level(log::level::debug);
 
-    const std::filesystem::path sspDir = std::string(DATA_FOLDER) + "/ssp/quarter_truck";
+    const std::filesystem::path sspDir = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck";
     const std::filesystem::path fmuDir = sspDir / "resources";
 
     try {

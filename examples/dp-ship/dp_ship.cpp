@@ -12,7 +12,7 @@ int main()
 {
     set_logging_level(log::level::debug);
 
-    std::filesystem::path sspDir = std::string(DATA_FOLDER) + "/ssp/dp_ship";
+    std::filesystem::path sspDir = std::string(DATA_FOLDER) + "/ssp/1.0/dp_ship";
 
     try {
         const auto ss = load_ssp(sspDir);

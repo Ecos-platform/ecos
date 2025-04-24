@@ -73,7 +73,7 @@ TEST_CASE("test_ssp_parser_archive")
     std::filesystem::path temporal;
 
     {
-        const auto quarterTruckArchive = std::string(DATA_FOLDER) + "/ssp/quarter_truck/quarter-truck.ssp";
+        const auto quarterTruckArchive = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck/quarter-truck.ssp";
         ssp::SystemStructureDescription desc(quarterTruckArchive);
         checkSystemStructure(desc);
         temporal = desc.dir();
@@ -89,7 +89,7 @@ TEST_CASE("test_ssp_parser_archive")
 
 TEST_CASE("test_ssp_parser_folder")
 {
-    const auto quarterTruckFolder = std::string(DATA_FOLDER) + "/ssp/quarter_truck";
+    const auto quarterTruckFolder = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck";
     ssp::SystemStructureDescription desc(quarterTruckFolder);
     checkSystemStructure(desc);
 

@@ -8,7 +8,8 @@ using namespace ecos;
 TEST_CASE("test_unzipper")
 {
 
-    const std::string quarter_truck = std::string(DATA_FOLDER) + "/ssp/quarter_truck/quarter-truck.ssp";
+    const std::string quarter_truck = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck/quarter-truck.ssp";
+    REQUIRE(std::filesystem::exists(quarter_truck));
 
     std::filesystem::path sspPath;
 

@@ -12,7 +12,7 @@ int main()
 {
     log::set_logging_level(ecos::log::level::debug);
 
-    const std::filesystem::path sspFolder = std::string(DATA_FOLDER) + "/ssp/quarter_truck";
+    const std::filesystem::path sspFolder = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck";
 
     try {
         const auto ss = load_ssp(sspFolder);

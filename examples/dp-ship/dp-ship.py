@@ -12,7 +12,7 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
     EcosLib.set_log_level("debug")
 
-    ssp_dir = str((Path(__file__).parent.parent.parent / 'data' / 'ssp' / 'dp_ship').resolve())
+    ssp_dir = str((Path(__file__).parent.parent.parent / 'data' / 'ssp' / '1.0' / 'dp_ship').resolve())
     log_config = f"{ssp_dir}/CsvConfig.xml"
     scenario = f"{ssp_dir}/waypoints_scenario.xml"
 

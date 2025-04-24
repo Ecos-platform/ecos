@@ -20,7 +20,7 @@ def main():
 
     EcosLib.set_log_level("debug")
 
-    ssp_dir = (Path(__file__).parent.parent.parent / 'data' / 'ssp' / 'quarter_truck').resolve()
+    ssp_dir = (Path(__file__).parent.parent.parent / 'data' / 'ssp' / '1.0' / 'quarter_truck').resolve()
     result_file = f"results/python/quarter_truck.csv"
 
     with (EcosSimulation(ssp_path=f"{ssp_dir}", step_size=1.0 / 100)) as sim:

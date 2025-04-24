@@ -91,6 +91,12 @@ class EcosSimulationStructure:
     def handle(self):
         return self._handle
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.free()
+
     def free(self):
         if not self._handle is None:
             simulation_structure_destroy = dll.ecos_simulation_structure_destroy

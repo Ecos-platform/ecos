@@ -14,23 +14,21 @@ def main():
     fmu_path = str((Path(__file__).parent.parent.parent / 'data' / 'fmus' / '3.0' / 'ref' / 'Dahlquist.fmu').resolve())
     result_file = "results/python/results.csv"
 
-    ss = EcosSimulationStructure()
-    ss.add_model("model", fmu_path)
+    with EcosSimulationStructure() as ss:
+        ss.add_model("model", fmu_path)
 
-    ss.add_parameter_set("initials", {
-        "model::k": 2.0
-    })
+        ss.add_parameter_set("initials", {
+            "model::k": 2.0
+        })
 
-    with (EcosSimulation(structure=ss, step_size=1/10)) as sim:
+        with (EcosSimulation(structure=ss, step_size=1/10)) as sim:
 
-        del ss
+            sim.add_csv_writer(result_file)
 
-        sim.add_csv_writer(result_file)
+            sim.init(parameter_set="initials")
 
-        sim.init(parameter_set="initials")
-
-        sim.step_until(10)
-        sim.terminate()
+            sim.step_until(10)
+            sim.terminate()
 
     config = TimeSeriesConfig(
         title="ControlledTemperature",

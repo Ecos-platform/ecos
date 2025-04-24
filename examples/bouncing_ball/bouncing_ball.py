@@ -11,17 +11,15 @@ def main():
     fmu_path =  str((Path(__file__).parent.parent.parent / 'data' / 'fmus' / '3.0' / 'ref' / 'BouncingBall.fmu').resolve())
     result_file = f"results/python/bouncing_ball.csv"
 
-    ss = EcosSimulationStructure()
-    ss.add_model("ball", fmu_path)
+    with EcosSimulationStructure() as ss:
+        ss.add_model("ball", fmu_path)
 
-    with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
+        with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
 
-        del ss
-
-        sim.add_csv_writer(result_file)
-        sim.init()
-        sim.step_until(10)
-        sim.terminate()
+            sim.add_csv_writer(result_file)
+            sim.init()
+            sim.step_until(10)
+            sim.terminate()
 
     config = TimeSeriesConfig(
         title="BouncingBall",

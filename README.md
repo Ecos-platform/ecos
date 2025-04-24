@@ -210,6 +210,17 @@ plotter.show()
   * pandas
 
 
+### Acknowledgments
+
+This software is made possible thanks to the following third-party projects:
+* [CLI11](https://github.com/CLIUtils/CLI11)
+* [flatbuffers](https://github.com/google/flatbuffers)
+* [pugixml](https://github.com/zeux/pugixml)
+* [spdlog](https://github.com/gabime/spdlog)
+* [fmi4c](https://github.com/robbr48/fmi4c)
+* [subprocess.h](https://github.com/sheredom/subprocess.h)
+* [Catch2](https://github.com/catchorg/Catch2)
+
 ---
 > Want to build FMUs in C++? Check out [FMU4cpp](https://github.com/Ecos-platform/fmu4cpp) </br>
 > Want to build FMUs in Python? Check out [PythonFMU](https://github.com/NTNU-IHB/PythonFMU) </br>

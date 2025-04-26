@@ -23,8 +23,6 @@ namespace detail
 
 inline std::vector<std::string> make_args(const std::string& zip, const std::string& temp)
 {
-    std::vector<std::string> args;
-    std::string tool;
 
 #ifdef _WIN32
     char* shell = nullptr;

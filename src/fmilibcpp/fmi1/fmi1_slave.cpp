@@ -1,22 +1,43 @@
 
 #include "fmi1_slave.hpp"
 
+#include "ecos/logger/logger.hpp"
+
 #include <fmi4c.h>
 
 #include <cstdarg>
+#include <iostream>
+#include <sstream>
 #include <utility>
 
 namespace
 {
 
-void fmilogger(fmi1Component* /*c*/, fmi1String /*instanceName*/, fmi1Status /*status*/, fmi1String category, fmi1String message, ...)
+const char* fmi1StatusToString(fmi1Status status)
+{
+    switch (status) {
+        case fmi1OK: return "OK";
+        case fmi1Warning: return "Warning";
+        case fmi1Discard: return "Discard";
+        case fmi1Error: return "Error";
+        case fmi1Fatal: return "Fatal";
+        case fmi1Pending: return "Pending";
+        default: return "Unknown";
+    }
+}
+
+void fmilogger(fmi1Component* /*c*/, fmi1String instanceName, fmi1Status status, fmi1String /*category*/, fmi1String message, ...)
 {
     va_list args;
     va_start(args, message);
-    char msgstr[1024];
-    sprintf(msgstr, "%s: %s\n", category, message);
-    printf(msgstr, args);
+    char formatted[1024];
+    vsnprintf(formatted, sizeof(formatted), message, args);
     va_end(args);
+
+    std::ostringstream ss;
+    ss << "[" << instanceName << "] " << fmi1StatusToString(status) << " " << formatted << "\n";
+
+    ecos::log::debug(ss.str());
 }
 
 void noopfmilogger(fmi1Component*, fmi1String, fmi1Status, fmi1String, fmi1String, ...)
@@ -40,19 +61,19 @@ fmi1_slave::fmi1_slave(
 {
 
     component_ = fmi1_instantiateSlave(
-            ctx_->get(),
-            "application/x-fmu-sharedlibrary",
-            1000,
-            fmi1False,
-            fmi1False,
-            fmiLogging ? fmilogger : noopfmilogger,
-            std::calloc, std::free,
-            nullptr,
-            fmiLogging ? fmi1True : fmi1False);
+        ctx_->get(),
+        "application/x-fmu-sharedlibrary",
+        1000,
+        fmi1False,
+        fmi1False,
+        fmiLogging ? fmilogger : noopfmilogger,
+        std::calloc, std::free,
+        nullptr,
+        fmiLogging ? fmi1True : fmi1False);
 
-        if (!component_) {
-            fmi1_slave::freeInstance();
-            throw std::runtime_error(std::string("Failed to instantiate fmi1 slave!"));
+    if (!component_) {
+        fmi1_slave::freeInstance();
+        throw std::runtime_error(std::string("Failed to instantiate fmi1 slave!"));
     }
 }
 

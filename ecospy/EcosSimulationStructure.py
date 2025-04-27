@@ -49,14 +49,14 @@ class EcosSimulationStructure:
         elif isinstance(parameters, dict):
             with (EcosParameterSet()) as params:
                 for key, value in parameters.items():
-                    if isinstance(value, float):
+                    if isinstance(value, bool):
+                        params.add_bool(key, value)
+                    elif isinstance(value, float):
                         params.add_real(key, value)
                     elif isinstance(value, int):
                         params.add_int(key, value)
                     elif isinstance(value, str):
                         params.add_string(key, value)
-                    elif isinstance(value, bool):
-                        params.add_bool(key, value)
                     else:
                         raise Exception("Illegal value type. Must be int, float, bool or str")
                 return self.add_parameter_set(name, params)

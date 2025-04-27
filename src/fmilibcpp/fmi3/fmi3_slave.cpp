@@ -9,12 +9,29 @@
 namespace
 {
 
-void loggerFmi3(fmi3InstanceEnvironment /*instanceEnvironment*/,
-    fmi3Status /*status*/,
-    fmi3String category,
+const char* fmi3StatusToString(fmi3Status status) {
+    switch (status) {
+        case fmi3OK:      return "OK";
+        case fmi3Warning: return "Warning";
+        case fmi3Discard: return "Discard";
+        case fmi3Error:   return "Error";
+        case fmi3Fatal:   return "Fatal";
+        default:          return "Unknown";
+    }
+}
+
+void loggerFmi3(fmi3InstanceEnvironment c,
+    fmi3Status status,
+    fmi3String /*category*/,
     fmi3String message)
 {
-    printf("%s: %s\n", category, message);
+
+    const auto slave = static_cast<fmilibcpp::fmi3_slave*>(c);
+
+    std::ostringstream ss;
+    ss << "[" << slave->instanceName << "] " << fmi3StatusToString(status) << " " << message << "\n";
+
+    ecos::log::debug(ss.str());
 }
 
 } // namespace
@@ -40,7 +57,7 @@ fmi3_slave::fmi3_slave(
         fmi3False,
         nullptr,
         0,
-        nullptr,
+        this,
         loggerFmi3,
         nullptr);
 

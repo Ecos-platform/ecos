@@ -4,7 +4,9 @@
 #include <fmi4c.h>
 
 #include <cstdarg>
+#include <iostream>
 #include <memory>
+#include <sstream>
 
 namespace
 {
@@ -26,10 +28,14 @@ void fmilogger(fmi2Component, fmi2String instanceName, fmi2Status status, fmi2St
 {
     va_list args;
     va_start(args, message);
-    char msgstr[1024];
-    sprintf(msgstr, "[%s] %s: %s\n", fmi2StatusToString(status), instanceName, message);
-    printf(msgstr, args);
+    char formatted[1024];
+    vsnprintf(formatted, sizeof(formatted), message, args);
     va_end(args);
+
+    std::ostringstream ss;
+    ss << "[" << instanceName << "] " << fmi2StatusToString(status) << " " << formatted << "\n";
+
+    ecos::log::debug(ss.str());
 }
 
 void noopfmilogger(fmi2Component, fmi2String, fmi2Status, fmi2String, fmi2String, ...)

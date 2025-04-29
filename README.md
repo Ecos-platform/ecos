@@ -84,9 +84,9 @@ int main() {
     map["chassis::C.mChassis"] = 4000.0;
     ss.add_parameter_set("initialValues", map);
     
-    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
+    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     
-    sim->init();
+    sim->init("initialValues");
     sim->step_until(10);
     
     sim->terminate();

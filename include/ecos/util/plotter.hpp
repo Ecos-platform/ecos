@@ -5,7 +5,9 @@
 #include <ecos/variable_identifier.hpp>
 
 #include <filesystem>
+#include <optional>
 #include <variant>
+#include <vector>
 
 namespace ecos
 {

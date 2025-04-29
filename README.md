@@ -12,7 +12,7 @@ engine written in modern C++.
 * Post-simulation plotting using matplotlib.
 * Command-line-interface (CLI).
 * Simplified Python and C interface.
-* Minimal (and bundled) build dependencies.
+* Minimal (and automatically resolved) build dependencies.
 
 ### Building
 
@@ -34,7 +34,7 @@ Ecos is compatible with CMake FetchContent
 
 ```cmake
 include(FetchContent)
-set(ECOS_BUILD_CLI OFF)
+set(ECOS_BUILD_CLI OFF)     # Set to ON for building ecos command-line-interface
 set(ECOS_BUILD_CLIB OFF)    # Set to ON for building C API
 set(ECOS_WITH_PROXYFMU OFF) # Set to ON for remoting
 FetchContent_Declare(
@@ -51,10 +51,11 @@ target_link_libraries(ecos_standalone PRIVATE libecos) # or libecosc for C API
 ### Per process / remote execution
 
 Ecos enables models to run on separate processes, possibly on another PC.
-Simply prepend `proxyfmu://localhost?file=` to the path of the `fmu(s)` you load.
+Simply prepend `proxyfmu://localhost?file=` to the path of the `fmu(s)` you load. <br>
+Replace `localhost` with `host:port` if targeting an external `proxyfmu` instance. <br>
 This is effectively achieved using [simplesocket](https://github.com/markaren/SimpleSocket)
 in conjunction with [flexbuffers](https://flatbuffers.dev/flexbuffers.html).
-Just make sure that the `proxyfmu` target built by `libecos` is on PATH.
+Just make sure that the `proxyfmu` target built by `libecos` is on PATH, when targeting localhost.
 
 >Ecos may be built without this feature (less dependencies, faster build) by passing `-DECOS_WITH_PROXYFMU=OFF` to CMake.
 

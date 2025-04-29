@@ -103,7 +103,7 @@ int main() {
     auto ss = load_ssp("quarter-truck.ssp");
 
     // use a fixed-step algorithm and apply parameterset from SSP file
-    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
+    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     
     // setup csv logging
     csv_config config;
@@ -113,7 +113,7 @@ int main() {
     const auto outputPath = csvWriter->output_path();
     sim->add_listener(std::move(csvWriter));
     
-    sim->init();
+    sim->init("initialValues");
     sim->step_until(10);
     
     sim->terminate();

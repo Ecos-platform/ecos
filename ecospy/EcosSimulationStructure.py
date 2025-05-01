@@ -1,3 +1,4 @@
+import os
 from .EcosParameterSet import EcosParameterSet
 from .lib import dll, EcosLib
 from ctypes import c_void_p, c_bool, c_char_p, CFUNCTYPE, c_double
@@ -39,7 +40,9 @@ class EcosSimulationStructure:
         if self._handle is None:
             raise Exception(EcosLib.get_last_error())
 
-    def add_model(self, instance_name: str, uri: str):
+    def add_model(self, instance_name: str, uri: str | os.PathLike):
+        if isinstance(uri, os.PathLike):
+            uri = os.fspath(uri)
         if not self._add_model(self.handle, instance_name.encode(), uri.encode()):
             raise Exception(EcosLib.get_last_error())
 

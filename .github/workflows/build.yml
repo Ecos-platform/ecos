@@ -67,3 +67,23 @@ jobs:
           path: |
             build/bin/ecos*
             build/bin/proxyfmu*
+
+  python-tests:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    needs: cmake-on-linux  # only run after cmake-on-linux succeeds
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Run Python tests
+        run: |
+          pytest ecospy/tests -v

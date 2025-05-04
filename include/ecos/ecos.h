@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 typedef struct ecos_simulation ecos_simulation_t;
+typedef struct ecos_simulation_runner ecos_simulation_runner_t;
 typedef struct ecos_simulation_listener ecos_simulation_listener_t;
 typedef struct ecos_simulation_structure ecos_simulation_structure_t;
 typedef struct ecos_parameter_set ecos_parameter_set_t;
@@ -66,6 +67,14 @@ bool ecos_simulation_reset(ecos_simulation_t* sim);
 void ecos_simulation_destroy(ecos_simulation_t* sim);
 
 bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_file);
+// -------------
+
+// simulation_runner
+ecos_simulation_runner_t* ecos_simulation_runner_create(ecos_simulation_t* sim);
+void ecos_simulation_runner_start(const ecos_simulation_runner_t* runner);
+void ecos_simulation_runner_stop(const ecos_simulation_runner_t* runner);
+void ecos_simulation_runner_set_real_time_factor(const ecos_simulation_runner_t* runner, double factor);
+void ecos_simulation_runner_destroy(const ecos_simulation_runner_t* runner);
 // -------------
 
 // simulation_listener

@@ -8,6 +8,7 @@
 #include "ecos/simulation.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 #include "ecos/util/plotter.hpp"
+#include "ecos/simulation_runner.hpp"
 
 #include <cstring>
 #include <memory>
@@ -28,6 +29,16 @@ struct ecos_simulation
 struct ecos_simulation_structure
 {
     ecos::simulation_structure cpp_ss;
+};
+
+struct ecos_simulation_runner
+{
+
+    explicit ecos_simulation_runner(ecos_simulation* sim)
+    {
+        cpp_runner = std::make_unique<ecos::simulation_runner>(*sim->cpp_sim);
+    }
+    std::unique_ptr<ecos::simulation_runner> cpp_runner;
 };
 
 struct ecos_simulation_listener
@@ -79,8 +90,10 @@ ecos_simulation_structure_t* ecos_simulation_structure_create()
 
 void ecos_simulation_structure_destroy(ecos_simulation_structure_t* ss)
 {
-    delete ss;
-    ss = nullptr;
+    if (ss) {
+        delete ss;
+        ss = nullptr;
+    }
 }
 
 
@@ -97,8 +110,10 @@ ecos_parameter_set_t* ecos_parameter_set_create()
 
 void ecos_parameter_set_destroy(ecos_parameter_set_t* parameter_set)
 {
-    delete parameter_set;
-    parameter_set = nullptr;
+    if (parameter_set) {
+        delete parameter_set;
+        parameter_set = nullptr;
+    }
 }
 
 void ecos_parameter_set_add_int(ecos_parameter_set_t* pps, const char* name, int value)
@@ -532,5 +547,35 @@ bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_
     } catch (...) {
         handle_current_exception();
         return false;
+    }
+}
+
+ecos_simulation_runner_t* ecos_simulation_runner_create(ecos_simulation_t* sim)
+{
+    auto runner = std::make_unique<ecos_simulation_runner_t>(sim);
+
+    return runner.release();
+}
+
+void ecos_simulation_runner_start(const ecos_simulation_runner_t* runner)
+{
+    runner->cpp_runner->start();
+}
+
+void ecos_simulation_runner_stop(const ecos_simulation_runner_t* runner)
+{
+    runner->cpp_runner->stop();
+}
+
+void ecos_simulation_runner_set_real_time_factor(const ecos_simulation_runner_t* runner, double factor)
+{
+    runner->cpp_runner->set_real_time_factor(factor);
+}
+
+void ecos_simulation_runner_destroy(const ecos_simulation_runner_t* runner)
+{
+    if (runner) {
+        delete runner;
+        runner = nullptr;
     }
 }

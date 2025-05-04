@@ -87,6 +87,9 @@ void simulation_runner::run()
 
 void simulation_runner::start()
 {
+    if (!sim_.initialized()) {
+        sim_.init();
+    }
     run();
 }
 

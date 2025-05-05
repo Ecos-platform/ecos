@@ -246,15 +246,25 @@ def make_time_series(csv, timeseries):
     plt.title(timeseries.attrib["title"])
     plt.xlabel("time[s]")
     plt.ylabel(timeseries.attrib["label"])
+
+    # Create a mapping from cleaned column names to actual column names
+    clean_col_map = {}
+    for col in csv.columns:
+        clean_col = re.sub(r'\s*\[.*?]\s*$', '', col)  # Remove trailing type markers like [REAL], [INT]
+        clean_col_map[clean_col] = col
+
     for series in timeseries:
         for comp in series:
             comp_name = comp.attrib["name"]
             for variable in comp:
                 var_name = variable.attrib["name"]
                 identifier = "{}::{}".format(comp_name, var_name)
-                m = csv.columns.str.contains(re.escape(identifier))
-                data = csv.loc[:, m]
-                plt.plot(t, data, label=csv.columns[m][0])
+                if identifier in clean_col_map:
+                    actual_col = clean_col_map[identifier]
+                    data = csv[actual_col]
+                    plt.plot(t, data, label=actual_col)
+                else:
+                    print(f"Warning: Column '{identifier}' not found in CSV data.")
 
     plt.legend(loc='upper right')
 

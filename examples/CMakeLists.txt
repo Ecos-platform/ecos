@@ -18,6 +18,7 @@ endif ()
 
 add_example_executable(dp_ship dp-ship/dp_ship.cpp)
 add_example_executable(bouncing_ball bouncing_ball/bouncing_ball.cpp)
+add_example_executable(van_der_pol vanderpol/van_der_pol.cpp)
 
 if (WIN32)
     add_example_executable(quarter_truck quarter_truck/quarter_truck.cpp)

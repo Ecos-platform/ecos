@@ -7,7 +7,8 @@ from typing import Callable
 
 class TimeSeriesConfig:
 
-    def __init__(self, title: str, y_label: str, identifiers: list[str], modifiers: dict[str, Callable[[any], any]] = None):
+    def __init__(self, title: str, y_label: str, identifiers: list[str],
+                 modifiers: dict[str, Callable[[any], any]] = None):
         self.title = title
         self.y_label = y_label
         self.identifiers = identifiers
@@ -24,7 +25,6 @@ class XYSeriesConfig:
 
 
 class Plotter:
-
     fig_id = 0
 
     def __init__(self, csv_file, configs):
@@ -54,13 +54,22 @@ class Plotter:
         plt.title(timeseries.title)
         plt.xlabel("time[s]")
         plt.ylabel(timeseries.y_label)
-        for identifier in timeseries.identifiers:
-            m = csv.columns.str.contains(re.escape(identifier))
-            data = csv.loc[:, m]
-            if timeseries.modifiers is not None and identifier in timeseries.modifiers:
-                data = data.map(timeseries.modifiers[identifier])
 
-            plt.plot(t, data, label=csv.columns[m][0])
+        # Create a mapping from cleaned column names to actual column names
+        clean_col_map = {}
+        for col in csv.columns:
+            clean_col = re.sub(r'\s*\[.*?]\s*$', '', col)  # Remove trailing type markers like [REAL], [INT]
+            clean_col_map[clean_col] = col
+
+        for identifier in timeseries.identifiers:
+            if identifier in clean_col_map:
+                actual_col = clean_col_map[identifier]
+                data = csv[actual_col]
+                if timeseries.modifiers is not None and identifier in timeseries.modifiers:
+                    data = data.map(timeseries.modifiers[identifier])
+                plt.plot(t, data, label=actual_col)
+            else:
+                print(f"Warning: Identifier '{identifier}' not found in CSV columns.")
 
         plt.legend(loc='upper right')
 
@@ -88,4 +97,3 @@ class Plotter:
                 plt.plot(data1, data2, marker, label=name)
 
         plt.legend(loc='upper right')
-

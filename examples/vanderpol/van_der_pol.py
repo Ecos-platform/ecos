@@ -11,21 +11,19 @@ def main():
     fmu_path = str((Path(__file__).parent.parent.parent / 'data' / 'fmus' / '3.0' / 'ref' / 'VanDerPol.fmu').resolve())
     result_file = f"results/python/VanDerPol.csv"
 
-    ss = EcosSimulationStructure()
-    ss.add_model("model", fmu_path)
+    with EcosSimulationStructure() as ss:
+        ss.add_model("model", fmu_path)
 
-    with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
+        with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
 
-        del ss
-
-        sim.add_csv_writer(result_file)
-        sim.init()
-        mu = 0.01
-        while mu < 5:
-            sim.set_real("model::mu", mu)
-            sim.step(1000)
-            mu += mu / 5
-        sim.terminate()
+            sim.add_csv_writer(result_file)
+            sim.init()
+            mu = 0.01
+            while mu < 5:
+                sim.set_real("model::mu", mu)
+                sim.step(1000)
+                mu += mu / 5
+            sim.terminate()
 
     config = XYSeriesConfig(
         title="Van der Pol Oscillator",

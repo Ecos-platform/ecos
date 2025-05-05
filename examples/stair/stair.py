@@ -11,18 +11,16 @@ def main():
     fmu_path = str((Path(__file__).parent.parent.parent / 'data' / 'fmus' / '3.0' / 'ref' / 'Stair.fmu').resolve())
     result_file = "results/python/stair.csv"
 
-    ss = EcosSimulationStructure()
-    ss.add_model("model", fmu_path)
+    with EcosSimulationStructure() as ss:
+        ss.add_model("model", fmu_path)
 
-    step = 0.2
-    with (EcosSimulation(structure=ss, step_size=step)) as sim:
+        step = 0.2
+        with (EcosSimulation(structure=ss, step_size=step)) as sim:
 
-        del ss
-
-        sim.add_csv_writer(result_file)
-        sim.init()
-        sim.step_until(10-step)
-        sim.terminate()
+            sim.add_csv_writer(result_file)
+            sim.init()
+            sim.step_until(10-step)
+            sim.terminate()
 
     config = TimeSeriesConfig(
         title="ControlledTemperature",

@@ -12,25 +12,34 @@ authors:
     affiliation: 1
 
 affiliations:
- - name: Norwegian University of Science and Technology (NTNU), Department of ICT and Natural Sciences, Norway
-   index: 1
+  - name: Norwegian University of Science and Technology (NTNU), Department of ICT and Natural Sciences, Norway
+    index: 1
 date: 14 April 2025
 bibliography: paper.bib
 ---
 
 # Summary
 
-Ecos is cross-platform framework for running co-simulations adhering to the Functional Mock-up Interface (FMI) standard [@blochwitz2011functional]; 
+Ecos is cross-platform framework for running co-simulations adhering to the Functional Mock-up Interface (FMI)
+standard [@blochwitz2012functional];
 an open standard for model exchange and co-simulation of dynamic systems.
 An FMU (Functional Mock-up Unit) is a self-contained component that implements the FMI standard.
 It is packaged as a zip archive containing:
+
 - A shared library for each supported platform, which implements a standardized C interface.
 - A *modelDescription.xml* file, describing the FMU's capabilities and available variables.
 - Optionally, component-specific resources embedded within the archive.
 
-The intention of Ecos is to provide a streamlined way of working with such FMUs, and support version 1.0, 2.0 and 3.0 of the standard with respect to co-simulation.
-Ecos consists of a Command Line Interface (CLI), as well as a C++ library, _libecos_, with interfaces provided in C and Python. The Python package is available on pypy as _ecospy_.
-The project is structured as a mono-repo with a major goal of being simple to build. This also implies few and light-weight dependencies.
+The intention of Ecos is to provide a streamlined way of working with such FMUs,
+and supports version 1.0, 2.0 and 3.0 of the standard with respect to co-simulation.
+In particular, support for FMI 3.0[@junghanns2021functional] is still limited in many tools,
+and Ecos aims to help bridge this gap. Ecos also supports the System Structure &
+Parameterization (SSP) standard[@kohler2016modelica], which can be used to import systems of
+FMUs in a structured and tool-agnostic way.
+Ecos consists of a Command Line Interface (CLI), as well as a C++ library, _libecos_,
+with interfaces provided in C and Python. The Python package is available through the
+pypy package index as _ecospy_. The project is structured as a mono-repo with a major goal of
+being simple to build. This also implies few and light-weight dependencies.
 
 Some features available with Ecos:
 
@@ -38,30 +47,46 @@ Some features available with Ecos:
 * Support for FMI 1.0, 2.0 & 3.0 for Co-simulation.
 * Built-in plotting capabilities with inline and XML configuration options.
 * CSV writer with inline and XML configuration options.
-* Scenarios; actions to run at specific events.
-* Remoting - allowing simulations to run across processes.
+* Scenarios - actions to run at specific events.
+* Remoting - allowing models to interact across processes.
 
 ![Ecos provides post-simulation plotting facilities.\label{fig:plot}](figures/mass_spring_damper.png)
 
-\autoref{fig:plot} demonstrates a simulation of a simple *mass-spring-damper* system with Ecos. 
-The models are packaged following the System Structure & Parameterization (SSP) standard[@kohler2016modelica]
-and subsequently simulated and plotted with _libecos_.
-
+\autoref{fig:plot} demonstrates a simulation of a simple *mass-spring-damper* system with Ecos.
+The models are packaged following the SSP standard and subsequently simulated and plotted with _libecos_.
 
 # Statement of need
 
-While similar tooling exists like FMPy[@FMPy], Vico[@hatledal2021vico], Open Simulation Platform [@smogeli2020open] and OMSimulator[@ochel2019omsimulator], 
-Ecos aims to deliver a higher level of flexibility, extensibility and accessibility through an easy to build and consume
-package. In particular, Ecos acts as a successor to the JVM based Vico framework. 
+While similar tooling exists like FMPy[@FMPy], Vico[@hatledal2021vico], Open Simulation Platform (
+OSP) [@smogeli2020open] and OMSimulator[@ochel2019omsimulator], Ecos aims to deliver a higher level of
+flexibility, extensibility and accessibility
+through an easy to build and consume package. In particular,
+Ecos acts as a successor to the JVM based Vico framework.
 
-The software is currently being used to support the EU project TWINVEST, where NTNU is a partner. 
+Table 1 compares Ecos with some of the other available tools. While seemingly similar, 
+Ecos niche is to provide an intuitive low-level C++ API, simple yet powerful Python, C and CLI interfaces, as well as 
+support for all three versions of FMI for Co-simulation and built-in means of distributing simulation components across 
+processes, while also keeping build dependencies to a minimum.
 
+
+### Table 1: Comparison of tools.
+| Feature        | FMPy                       | OMSimulator           | OSP             | Ecos                 |
+|----------------|----------------------------|-----------------------|-----------------|----------------------|
+| Language       | Python                     | C, Lua, Python        | C++, C, Python  | C++, C, Python       |
+| FMI Support    | FMI 1.0, 2.0, 3.0 (ME, CS) | FMI 2.0, 3.0 (ME, CS) | FMI 1.0, 2.0 CS | FMI 1.0, 2.0, 3.0 CS |
+| Co-simulation  | Yes                        | Yes                   | Yes             | Yes                  |
+| Model Exchange | Yes                        | Yes                   | No              | No                   |
+| GUI            | Basic (Individual models)  | Yes (OMEdit)          | No              | No                   |
+| CLI            | Yes                        | No                    | Yes             | Yes                  |
+| License        | BSD                        | OSMC-PL               | MPL             | MIT                  |
+
+
+The software is currently being used to support the EU project TWINVEST, where NTNU is a partner.
 
 # Future of Ecos
 
-Ecos currently ships with a capable, but simple _fixed_step_ orchestration algorithm. 
-The API is designed to be extensible and the goal is to include more advanced orchestration algorithms. 
+Ecos currently ships with a capable, but simple _fixed_step_ orchestration algorithm.
+The API is designed to be extensible and the goal is to include more advanced orchestration algorithms.
 However, pursuing this should be driven by a clear user need.
-
 
 # References

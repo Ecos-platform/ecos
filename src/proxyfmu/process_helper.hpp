@@ -73,18 +73,18 @@ inline void start_process(
     }
 #endif
 
-    log::debug("Checking if proxyfmu is available..");
+    log::debug("[proxyfmu] Checking if executable is available..");
     std::ostringstream ss;
     ss << std::quoted(execStr) << " -v";
     const int statusCode = std::system(ss.str().c_str());
     if (statusCode != 0) {
-        log::err("Unable to invoke proxyfmu!");
+        log::err("[proxyfmu] Unable to invoke proxyfmu!");
 
         bind.set_value("-");
         return;
     }
 
-    log::info("Booting FMU instance '{}'", instanceName);
+    log::info("[proxyfmu] Booting FMU instance '{}'", instanceName);
 
     const std::string fmuPathStr = fmuPath.string();
     const std::string localStr = toString(local);
@@ -114,14 +114,14 @@ inline void start_process(
                     bind.set_value(bindVal);
 
                     if (!local) {
-                        log::info("FMU proxy instance '{}' instantiated using port {}", instanceName, bindVal);
+                        log::info("[proxyfmu] Instance '{}' instantiated using port {}", instanceName, bindVal);
                     } else {
-                        log::info("FMU proxy instance '{}' instantiated using file '{}'", instanceName, bindVal);
+                        log::info("[proxyfmu] Instance '{}' instantiated using handle '{}'", instanceName, bindVal);
                     }
                 }
                 bound = true;
             } else {
-                std::cerr << "Got: " << line;
+                log::debug("[proxyfmu][{}] Got: {}", instanceName, line);
             }
         }
 
@@ -129,10 +129,10 @@ inline void start_process(
         result = subprocess_join(&process, &status);
 
         if (result == 0 && status == 0 && bound) {
-            log::info("FMU proxy process for instance '{}' returned with status {}", instanceName, status);
+            log::info("[proxyfmu] External process for instance '{}' returned with status {}", instanceName, status);
             return;
         }
-        log::err("External proxy process for instance '{}' returned with status {}. Unable to bind..", instanceName, std::to_string(status));
+        log::err("[proxyfmu] External process for instance '{}' returned with status {}. Unable to bind..", instanceName, std::to_string(status));
     }
 
     bind.set_value("");

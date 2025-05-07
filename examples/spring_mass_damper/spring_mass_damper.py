@@ -58,8 +58,6 @@ def main():
     plotter = Plotter(result_file, config)
     plotter.show()
 
-    del ss # when using modifers, cannot del EcosSimulationStructure while simulation is active
-
 
 if __name__ == "__main__":
     main()

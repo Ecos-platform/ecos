@@ -6,9 +6,9 @@
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/logger/logger.hpp"
 #include "ecos/simulation.hpp"
+#include "ecos/simulation_runner.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 #include "ecos/util/plotter.hpp"
-#include "ecos/simulation_runner.hpp"
 
 #include <cstring>
 #include <memory>
@@ -451,6 +451,20 @@ ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const
     } catch (...) {
         handle_current_exception();
         return nullptr;
+    }
+}
+
+bool ecos_csv_writer_set_decimation_factor(ecos_simulation_listener_t* writer, int decimationFactor)
+{
+    try {
+
+        const auto csv_writer = dynamic_cast<ecos::csv_writer*>(writer->cpp_listener.get());
+        csv_writer->config().decimation_factor() = decimationFactor;
+        return true;
+
+    } catch (...) {
+        handle_current_exception();
+        return false;
     }
 }
 

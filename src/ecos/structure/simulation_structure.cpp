@@ -49,6 +49,11 @@ void simulation_structure::add_model(const std::string& instanceName, std::share
     models_[instanceName] = {std::move(model), stepSizeHint};
 }
 
+void simulation_structure::add_parameter_set(const std::string& name, const parameter_set& map)
+{
+    parameterSets[name] = map;
+}
+
 std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm> algorithm)
 {
     std::unordered_map<std::string, std::unique_ptr<model_instance>> instances;

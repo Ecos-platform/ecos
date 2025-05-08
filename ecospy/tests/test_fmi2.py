@@ -9,7 +9,7 @@ fmu_files = list(fmi2_folder.rglob("*.fmu"))
 
 @pytest.mark.parametrize("fmu_path", fmu_files, ids=lambda p: p.relative_to(fmi2_folder))
 @pytest.mark.parametrize("use_proxy", [False, True], ids=["direct", "proxy"])
-def test_fmi3(fmu_path: Path, use_proxy: bool):
+def test_fmi2(fmu_path: Path, use_proxy: bool):
     with EcosSimulationStructure() as ss:
         model_path = (
             f"proxyfmu://localhost?file={fmu_path}" if use_proxy else fmu_path

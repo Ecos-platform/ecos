@@ -16,7 +16,10 @@ def test_fmi3(fmu_path: Path, use_proxy: bool):
         )
         ss.add_model(fmu_path.stem, model_path)
 
+    try:
         with EcosSimulation(structure=ss, step_size=1 / 100) as sim:
             sim.init()
             sim.step_until(10)
             sim.terminate()
+    except Exception as e:
+        pytest.fail(f"Unexpected exception raised: {e}")

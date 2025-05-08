@@ -73,14 +73,14 @@ inline void start_process(
     }
 #endif
 
-    log::debug("[proxyfmu] Checking if executable is available..");
+    log::debug("[proxyfmu] Checking if executable ({}) is available..", absolute(executable).string());
     std::ostringstream ss;
     ss << std::quoted(execStr) << " -v";
     const int statusCode = std::system(ss.str().c_str());
     if (statusCode != 0) {
         log::err("[proxyfmu] Unable to invoke proxyfmu!");
 
-        bind.set_value("-");
+        bind.set_value("");
         return;
     }
 

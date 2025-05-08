@@ -4,7 +4,6 @@
 
 #include "algorithm.hpp"
 
-#include <algorithm>
 #include <execution>
 
 namespace ecos

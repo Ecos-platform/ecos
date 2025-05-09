@@ -20,7 +20,7 @@ def load_library():
         with os.add_dll_directory(bin_folder):
             return CDLL(lib_name)
     else:
-        return CDLL(f"{bin_folder}/libecosc{suffix()}")
+        return CDLL(f"{bin_folder}/{lib_name}")
 
 
 dll = load_library()

@@ -108,17 +108,24 @@ int run_boot_application(const int port)
 
                 try {
                     std::vector<uint8_t> buffer(4);
-                    conn->readExact(buffer);
+                    if (!conn->readExact(buffer)) {
+                        log::err("Error reading size");
+                        break;
+                    }
 
                     const auto msgSize = simple_socket::decode_uint32(buffer);
                     buffer.resize(msgSize);
-                    conn->readExact(buffer);
+                    if (!conn->readExact(buffer)) {
+                        log::err("Error reading payload");
+                        break;
+                    }
 
                     const auto root = flexbuffers::GetRoot(buffer.data(), msgSize).AsVector();
 
-                    std::string fmuName = root[0].AsString().str();
-                    std::string instanceName = root[1].AsString().str();
-                    std::string data = root[2].AsString().str();
+                    const std::string fmuName = root[0].AsString().str();
+                    const std::string instanceName = root[1].AsString().str();
+                    const auto blobRef = root[2].AsBlob();
+                    const std::vector<uint8_t> data = std::vector(blobRef.data(), blobRef.data() + blobRef.size());
 
                     spdlog::info("Booting: {}::{}, file size={}", fmuName, instanceName, data.size());
 

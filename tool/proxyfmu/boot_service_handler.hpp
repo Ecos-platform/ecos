@@ -18,7 +18,7 @@ class boot_service_handler
 {
 
 public:
-    int16_t loadFromBinaryData(const std::string& fmuName, const std::string& instanceName, const std::string& data)
+    int16_t loadFromBinaryData(const std::string& fmuName, const std::string& instanceName, const std::vector<uint8_t>& data)
     {
         auto tmp = std::make_unique<temp_dir>(fmuName);
         std::string fmuPath(tmp->path().string() + "/" + fmuName + ".fmu");
@@ -48,7 +48,7 @@ private:
     std::vector<std::unique_ptr<temp_dir>> dirs_;
     std::vector<std::thread> processes_;
 
-    static void write_data(std::string const& fileName, std::string const& data)
+    static void write_data(std::string const& fileName, const std::vector<uint8_t>& data)
     {
         std::ofstream outFile(fileName, std::ios::binary);
 
@@ -56,7 +56,7 @@ private:
             throw std::runtime_error("Unable to open file: " + fileName);
         }
 
-        outFile.write(data.c_str(), data.size());
+        outFile.write(reinterpret_cast<const char*>(data.data()), data.size());
 
         if (!outFile) {
             throw std::runtime_error("Error during write to file: " + fileName);

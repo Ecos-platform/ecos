@@ -59,7 +59,10 @@ proxy_slave::proxy_slave(
         thread_ = std::thread(&start_process, fmuPath, instanceName, std::ref(bind_promise), true);
 
         const auto bind = bind_promise.get_future().get();
-        if (bind.empty()) throw std::runtime_error("Unable to bind");
+        if (bind.empty()) {
+            thread_.detach();
+            throw std::runtime_error("Unable to create/bind proxyfmu process!");
+        }
         ctx_ = std::make_unique<UnixDomainClientContext>();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         client_ = ctx_->connect(bind);

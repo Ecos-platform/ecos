@@ -15,6 +15,7 @@ ecospy/binaries
 /**/results/**/*.csv
 
 /**/examples/**/logs
+/**/tests/**/logs
 
 /**/quarter_truck/quarter_truck_sspgen.ssp
 

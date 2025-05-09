@@ -31,8 +31,12 @@ inline std::string getLoc()
 {
 #ifdef __linux__
     char result[PATH_MAX];
-    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-    return std::string(result, (count > 0) ? count : 0);
+    ssize_t count = readlink("/proc/self/exe", result, sizeof(result)-1);
+    if (count != -1) {
+        result[count] = '\0'; // Ensure null-termination
+        return std::string(result);
+    }
+    return "";
 #else
     char result[MAX_PATH];
     return {result, GetModuleFileName(nullptr, result, MAX_PATH)};

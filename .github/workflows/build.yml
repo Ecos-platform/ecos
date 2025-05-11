@@ -91,6 +91,9 @@ jobs:
           name: ecos-ubuntu-22.04
           path: ecospy/binaries
 
+      - name: Make proxyfmu executable
+        run: chmod +x ecospy/binaries/proxyfmu
+
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip

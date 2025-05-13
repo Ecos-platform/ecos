@@ -52,10 +52,14 @@ target_link_libraries(ecos_standalone PRIVATE libecos) # or libecosc for C API
 
 Ecos enables models to run on separate processes, possibly on another PC.
 Simply prepend `proxyfmu://localhost?file=` to the path of the `fmu(s)` you load. <br>
-Replace `localhost` with `host:port` if targeting an external `proxyfmu` instance. <br>
-This is effectively achieved using [simplesocket](https://github.com/markaren/SimpleSocket)
-in conjunction with [flexbuffers](https://flatbuffers.dev/flexbuffers.html).
-Just make sure that the `proxyfmu` target built by `libecos` is on PATH, when targeting localhost.
+Replace `localhost` with `host:port` when targeting an external `proxyfmu` instance. <br>
+For each FMU instance created when using `proxyfmu` a new process is created. 
+When targeting localhost, Unix Domain Sockets are used, while TCP/IP is used when targeting 
+a remote process started with `proxufmu boot --port <portNumber>`.
+To successfully make use of `proxyfmu`, make sure the executable built by the project 
+is located in the working directory of your application or added to `PATH`
+when targeting localhost. Using the Python API, however, this should work out-of-the-box.
+`proxyfmu` is implemented using [simplesocket](https://github.com/markaren/SimpleSocket) in conjunction with [flexbuffers](https://flatbuffers.dev/flexbuffers.html).
 
 >Ecos may be built without this feature (less dependencies, faster build) by passing `-DECOS_WITH_PROXYFMU=OFF` to CMake.
 
@@ -171,15 +175,15 @@ EcosLib.set_log_level("debug")
 fmu_path = "BouncingBall.fmu"
 result_file = f"results/bouncing_ball.csv"
 
-ss = EcosSimulationStructure()
-ss.add_model("ball", fmu_path)
-
-with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
-
-    sim.add_csv_writer(result_file)
-    sim.init()
-    sim.step_until(10)
-    sim.terminate()
+with EcosSimulationStructure() as ss:
+  ss.add_model("ball", fmu_path)
+  
+  with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
+  
+      sim.add_csv_writer(result_file)
+      sim.init()
+      sim.step_until(10)
+      sim.terminate()
 
 config = TimeSeriesConfig(
     title="BouncingBall",

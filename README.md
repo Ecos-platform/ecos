@@ -50,9 +50,9 @@ target_link_libraries(ecos_standalone PRIVATE libecos) # or libecosc for C API
 
 ### Per process / remote execution
 
-Ecos enables models to run on separate processes, possibly on another PC.
+Ecos enables models to run on separate processes, possibly on another PC.  <br>
 Simply prepend `proxyfmu://localhost?file=` to the path of the `fmu(s)` you load. <br>
-Replace `localhost` with `host:port` when targeting an external `proxyfmu` instance. <br>
+When targeting an external `proxyfmu` instance, replace `localhost` with `host:port`. 
 For each FMU instance created when using `proxyfmu` a new process is created. 
 When targeting localhost, Unix Domain Sockets are used, while TCP/IP is used when targeting 
 a remote process started with `proxufmu boot --port <portNumber>`.

@@ -20,31 +20,31 @@ void writeData(std::ofstream& out, const simulation& sim, const csv_config& conf
 
     for (const auto& instance : sim.get_instances()) {
 
-        if (config.shouldLogInstance(instance->instanceName())) {
-            const auto& properties = instance->get_properties();
+        const auto instanceName = instance->instanceName();
+        const auto& properties = instance->get_properties();
 
-            for (auto& [name, p] : properties.get_reals()) {
-                if (config.shouldLogVariable(name)) {
-                    out << separator << std::to_string(p->get_value());
-                }
+        for (auto& [variableName, p] : properties.get_reals()) {
+            if (config.should_log({instanceName, variableName})) {
+                out << separator << std::to_string(p->get_value());
             }
-            for (auto& [name, p] : properties.get_integers()) {
-                if (config.shouldLogVariable(name)) {
-                    out << separator << std::to_string(p->get_value());
-                }
+        }
+        for (auto& [variableName, p] : properties.get_integers()) {
+            if (config.should_log({instanceName, variableName})) {
+                out << separator << std::to_string(p->get_value());
             }
-            for (auto& [name, p] : properties.get_booleans()) {
-                if (config.shouldLogVariable(name)) {
-                    out << separator << std::noboolalpha << p->get_value();
-                }
+        }
+        for (auto& [variableName, p] : properties.get_booleans()) {
+            if (config.should_log({instanceName, variableName})) {
+                out << separator << std::noboolalpha << p->get_value();
             }
-            for (auto& [name, p] : properties.get_strings()) {
-                if (config.shouldLogVariable(name)) {
-                    out << separator << p->get_value();
-                }
+        }
+        for (auto& [variableName, p] : properties.get_strings()) {
+            if (config.should_log({instanceName, variableName})) {
+                out << separator << p->get_value();
             }
         }
     }
+
     out << "\n";
 }
 
@@ -136,23 +136,11 @@ void csv_config::verify(const std::vector<variable_identifier>& ids) const
     }
 }
 
-bool csv_config::shouldLogVariable(const std::string& variableName) const
+bool csv_config::should_log(const variable_identifier& identifier) const
 {
     if (variable_register.empty()) return true;
 
-    const bool log = std::ranges::find_if(variable_register, [variableName](const variable_identifier& v) {
-        return v.variableName == variableName;
-    }) != std::end(variable_register);
-    return log;
-}
-
-bool csv_config::shouldLogInstance(const std::string& instanceName) const
-{
-    if (variable_register.empty()) return true;
-
-    const bool log = std::ranges::find_if(variable_register, [instanceName, this](const variable_identifier& v) {
-        return v.instanceName == instanceName;
-    }) != std::end(variable_register);
+    const bool log = std::ranges::find(variable_register, identifier) != std::end(variable_register);
     return log;
 }
 
@@ -211,32 +199,30 @@ void csv_writer::write_header(const simulation& sim)
     for (const auto& instance : sim.get_instances()) {
 
         const auto instanceName = instance->instanceName();
+        const auto& properties = instance->get_properties();
 
-        if (config_.shouldLogInstance(instanceName)) {
-            const auto& properties = instance->get_properties();
-
-            for (const auto& variableName : properties.get_reals() | std::views::keys) {
-                if (config_.shouldLogVariable(variableName)) {
-                    outFile_ << separator << instanceName << "::" << variableName << "[REAL]";
-                }
+        for (const auto& variableName : properties.get_reals() | std::views::keys) {
+            if (config_.should_log({instanceName, variableName})) {
+                outFile_ << separator << instanceName << "::" << variableName << "[REAL]";
             }
-            for (const auto& variableName : properties.get_integers() | std::views::keys) {
-                if (config_.shouldLogVariable(variableName)) {
-                    outFile_ << separator << instanceName << "::" << variableName << "[INT]";
-                }
+        }
+        for (const auto& variableName : properties.get_integers() | std::views::keys) {
+            if (config_.should_log({instanceName, variableName})) {
+                outFile_ << separator << instanceName << "::" << variableName << "[INT]";
             }
-            for (const auto& variableName : properties.get_booleans() | std::views::keys) {
-                if (config_.shouldLogVariable(variableName)) {
-                    outFile_ << separator << instanceName << "::" << variableName << "[BOOL]";
-                }
+        }
+        for (const auto& variableName : properties.get_booleans() | std::views::keys) {
+            if (config_.should_log({instanceName, variableName})) {
+                outFile_ << separator << instanceName << "::" << variableName << "[BOOL]";
             }
-            for (const auto& variableName : properties.get_strings() | std::views::keys) {
-                if (config_.shouldLogVariable(variableName)) {
-                    outFile_ << separator << instanceName << "::" << variableName << "[STR]";
-                }
+        }
+        for (const auto& variableName : properties.get_strings() | std::views::keys) {
+            if (config_.should_log({instanceName, variableName})) {
+                outFile_ << separator << instanceName << "::" << variableName << "[STR]";
             }
         }
     }
+
 
     outFile_ << "\n";
     outFile_.flush();

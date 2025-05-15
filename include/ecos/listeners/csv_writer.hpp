@@ -23,9 +23,7 @@ struct csv_config
 
     size_t& decimation_factor();
 
-    [[nodiscard]] bool shouldLogInstance(const std::string& instanceName) const;
-
-    [[nodiscard]] bool shouldLogVariable(const std::string& variableName) const;
+    [[nodiscard]] bool should_log(const variable_identifier& identifier) const;
 
     void verify(const std::vector<variable_identifier>& ids) const;
 

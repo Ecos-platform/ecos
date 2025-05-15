@@ -65,6 +65,11 @@ public:
         return properties_;
     }
 
+    [[nodiscard]] const properties& get_properties() const
+    {
+        return properties_;
+    }
+
     [[nodiscard]] virtual bool can_get_and_set_state() const
     {
         return false;

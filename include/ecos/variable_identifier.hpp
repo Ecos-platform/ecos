@@ -50,7 +50,7 @@ struct variable_identifier
 private:
     static variable_identifier parse(const std::string& identifier)
     {
-        auto pos = identifier.find("::");
+        const auto pos = identifier.find("::");
         if (pos == std::string::npos) {
             throw std::runtime_error("Error parsing variable identifier. A '::' must be present!");
         }

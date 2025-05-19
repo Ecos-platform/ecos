@@ -52,4 +52,44 @@ TEST_CASE("test_variable_identifier")
 
         REQUIRE(oss.str() == "car::speed");
     }
+
+    SECTION("Pattern matching")
+    {
+        variable_identifier a("train", "mass");
+        // Exact match with full wildcard
+        CHECK(a.matches("*::*"));
+        CHECK(a.matches("train::*"));
+        CHECK(a.matches("*::mass"));
+        CHECK(a.matches("train::mass"));
+
+        // Prefix/suffix wildcard
+        CHECK(a.matches("t*::m*")); // both fields prefix wildcard
+        CHECK(a.matches("t*in::ma*s")); // inner wildcard
+        CHECK(a.matches("*ain::*ass")); // suffix match
+        CHECK(a.matches("tr*in::m*ss")); // partial inner matches
+
+        // Negative tests
+        CHECK(!a.matches("dog::*")); // wrong instance
+        CHECK(!a.matches("*::weight")); // wrong variable
+        CHECK(!a.matches("train::")); // incomplete pattern
+        CHECK(!a.matches("::mass")); // missing instanceName
+        CHECK(!a.matches("::train")); // no instanceName
+        CHECK(!a.matches("train::")); // no variableName
+        CHECK(!a.matches("::")); // no instanceName or variableName
+
+        // Full wildcard at start, middle, end
+        CHECK(a.matches("*rain::mass")); // instanceName ends with 'rain'
+        CHECK(a.matches("tr*in::mass")); // instanceName contains 'r'
+        CHECK(a.matches("train::ma*")); // variableName starts with 'ma'
+        CHECK(a.matches("train::m*ss")); // variableName has one character replaced
+
+        // Edge: wildcard only field
+        CHECK(a.matches("*::m*")); // any instance, variable starts with m
+        CHECK(a.matches("t*::*")); // instance starts with t
+        CHECK(a.matches("*::m*ss")); // ends with 'ss'
+
+        // Totally unrelated
+        CHECK(!a.matches("car::speed"));
+        CHECK(!a.matches("bus::length"));
+    }
 }

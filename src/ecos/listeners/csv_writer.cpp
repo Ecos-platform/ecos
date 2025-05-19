@@ -116,17 +116,20 @@ void csv_config::verify(const std::vector<variable_identifier>& ids) const
         int missingCount = 0;
         std::stringstream missing;
         std::stringstream found;
-        for (const auto& v : variable_register) {
-            if (std::ranges::find(ids, v) == std::end(ids)) {
-                if (missingCount++ > 0) {
-                    missing << ", ";
+        for (const auto& pattern : variable_register) {
+            bool matched = false;
+
+            for (const auto& id : ids) {
+                if (id.matches(pattern)) {
+                    if (foundCount++ > 0) found << ", ";
+                    found << id.str();
+                    matched = true;
                 }
-                missing << v.str();
-            } else {
-                if (foundCount++ > 0) {
-                    found << ", ";
-                }
-                found << v.str();
+            }
+
+            if (!matched) {
+                if (missingCount++ > 0) missing << ", ";
+                missing << pattern.str();
             }
         }
         if (missingCount > 0) {
@@ -140,8 +143,9 @@ bool csv_config::should_log(const variable_identifier& identifier) const
 {
     if (variable_register.empty()) return true;
 
-    const bool log = std::ranges::find(variable_register, identifier) != std::end(variable_register);
-    return log;
+    return std::ranges::any_of(variable_register, [&](const variable_identifier& pattern) {
+       return identifier.matches(pattern);
+   });
 }
 
 void csv_config::load(const std::filesystem::path& configPath)

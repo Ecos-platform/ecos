@@ -460,6 +460,20 @@ bool ecos_csv_writer_set_decimation_factor(ecos_simulation_listener_t* writer, i
     }
 }
 
+bool ecos_csv_writer_register_variable(ecos_simulation_listener_t* writer, const char* identifier)
+{
+    try {
+
+        const auto csv_writer = dynamic_cast<ecos::csv_writer*>(writer->cpp_listener.get());
+        csv_writer->config().register_variable(identifier);
+        return true;
+
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
 void ecos_plot_csv(const char* csvFile, const char* chartConfig)
 {
     ecos::plot_csv(csvFile, chartConfig);

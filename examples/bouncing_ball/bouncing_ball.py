@@ -16,7 +16,7 @@ def main():
 
         with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
 
-            sim.add_csv_writer(result_file)
+            sim.add_csv_writer(result_file, identifiers=["ball::h"])
             sim.init()
             sim.step_until(10)
             sim.terminate()

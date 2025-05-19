@@ -142,12 +142,21 @@ class EcosSimulation:
     def remove_listener(self, name: str):
         self._remove_listener(self.sim, name.encode())
 
-    def add_csv_writer(self, result_file: str, csv_config: str = None, decimationFactor: int = None):
+    def add_csv_writer(self, result_file: str, csv_config: str = None, identifiers: list[str] = None, decimationFactor: int = None):
 
         listener = self._create_csv_writer(result_file.encode(),
                                            None if csv_config is None else csv_config.encode())
         if listener is None:
             raise Exception(EcosLib.get_last_error())
+
+        if identifiers is not None:
+            register_variable = dll.ecos_csv_writer_register_variable
+            register_variable.argtypes = [c_void_p, c_char_p]
+            register_variable.restype = c_bool
+
+            for identifier in identifiers:
+                if not register_variable(listener, identifier.encode()):
+                    raise Exception(EcosLib.get_last_error())
 
         if decimationFactor is not None:
             set_decimation = dll.ecos_csv_writer_set_decimation_factor

@@ -5,6 +5,7 @@
 #include "ecos/simulation.hpp"
 
 #include <pugixml.hpp>
+#include <set>
 #include <sstream>
 
 using namespace ecos;
@@ -112,17 +113,15 @@ void csv_config::verify(const std::vector<variable_identifier>& ids) const
         log::debug("Logging all {} variables", ids.size());
     } else {
 
-        int foundCount = 0;
         int missingCount = 0;
         std::stringstream missing;
-        std::stringstream found;
+        std::set<variable_identifier> found;
         for (const auto& pattern : variable_register) {
             bool matched = false;
 
             for (const auto& id : ids) {
                 if (id.matches(pattern)) {
-                    if (foundCount++ > 0) found << ", ";
-                    found << id.str();
+                    found.emplace(id);
                     matched = true;
                 }
             }
@@ -135,7 +134,16 @@ void csv_config::verify(const std::vector<variable_identifier>& ids) const
         if (missingCount > 0) {
             log::warn("Missing {} variables declared for logging: {}", missingCount, missing.str());
         }
-        log::debug("Logging {} variables: {}", foundCount, found.str());
+
+        std::stringstream found_str;
+        bool first = true;
+        for (const auto& elem : found) {
+            if (!first) found_str << ", ";
+            first = false;
+            found_str << elem;
+        }
+
+        log::debug("Logging {} variables: {}", found.size(), found_str.str());
     }
 }
 
@@ -144,8 +152,8 @@ bool csv_config::should_log(const variable_identifier& identifier) const
     if (variable_register.empty()) return true;
 
     return std::ranges::any_of(variable_register, [&](const variable_identifier& pattern) {
-       return identifier.matches(pattern);
-   });
+        return identifier.matches(pattern);
+    });
 }
 
 void csv_config::load(const std::filesystem::path& configPath)

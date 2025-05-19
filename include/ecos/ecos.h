@@ -55,7 +55,7 @@ void ecos_simulation_step_until(ecos_simulation_t* sim, double timePoint);
 bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier, int* value);
 bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, double* value);
 bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bool* value);
-bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value, size_t value_size);
+bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value);
 
 bool ecos_simulation_set_integer(ecos_simulation_t* sim, const char* identifier, int value);
 bool ecos_simulation_set_real(ecos_simulation_t* sim, const char* identifier, double value);

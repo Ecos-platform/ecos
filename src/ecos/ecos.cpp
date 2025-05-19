@@ -327,7 +327,7 @@ bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bo
     }
 }
 
-bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value, size_t value_size)
+bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value)
 {
     try {
         const auto prop = sim->cpp_sim->get_string_property(identifier);
@@ -336,15 +336,7 @@ bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, 
             return false;
         }
         const auto propValue = prop->get_value();
-        // Ensure we don't exceed the buffer size
-        if (propValue.size() >= value_size) {
-            // If the string is too large, copy only up to the available size - 1
-            std::strncpy(value, propValue.c_str(), value_size - 1);
-            value[value_size - 1] = '\0'; // Null-terminate the string
-        } else {
-            // Safe to copy the entire string
-            std::strcpy(value, propValue.c_str());
-        }
+        std::strcpy(value, propValue.c_str());
 
         return true;
     } catch (...) {

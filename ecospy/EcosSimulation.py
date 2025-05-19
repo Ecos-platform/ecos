@@ -1,6 +1,6 @@
 from .lib import dll, EcosLib
 from .EcosSimulationStructure import EcosSimulationStructure
-from ctypes import c_bool, c_int, c_void_p, c_double, c_char_p, c_size_t, POINTER, Structure, CFUNCTYPE, byref, c_char
+from ctypes import c_bool, c_int, c_void_p, c_double, c_char_p, c_size_t, POINTER, Structure, CFUNCTYPE, byref, create_string_buffer
 
 
 class SimulationInfo(Structure):
@@ -184,11 +184,11 @@ class EcosSimulation:
             raise Exception(EcosLib.get_last_error())
         return val.value
 
-    def get_string(self, identifier: str):
-        val = c_char()
-        if not self._get_string(self.sim, identifier.encode(), byref(val)):
+    def get_string(self, identifier: str, buffer_size: int = 1024):
+        buffer = create_string_buffer(buffer_size)
+        if not self._get_string(self.sim, identifier.encode(), buffer):
             raise Exception(EcosLib.get_last_error())
-        return val.value
+        return buffer.value.decode()
 
     def set_integer(self, identifier: str, value: int):
         if not self._set_integer(self.sim, identifier.encode(), value):

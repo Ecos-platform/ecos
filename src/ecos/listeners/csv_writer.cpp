@@ -107,7 +107,7 @@ void csv_writer::on_reset()
 }
 
 
-void csv_config::verify(const std::vector<variable_identifier>& ids) const
+void csv_config::report(const std::vector<variable_identifier>& ids) const
 {
     if (variable_register.empty()) {
         log::debug("Logging all {} variables", ids.size());
@@ -206,7 +206,7 @@ void csv_writer::write_header(const simulation& sim)
 {
     outFile_ << "iterations" << separator << "time";
 
-    config_.verify(sim.identifiers());
+    config_.report(sim.identifiers());
 
     for (const auto& instance : sim.get_instances()) {
 

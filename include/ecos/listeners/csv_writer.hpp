@@ -25,14 +25,14 @@ struct csv_config
 
     [[nodiscard]] bool should_log(const variable_identifier& identifier) const;
 
-    void verify(const std::vector<variable_identifier>& ids) const;
-
 private:
     bool clear_on_reset_{true};
     size_t decimationFactor_ = 1;
     std::vector<variable_identifier> variable_register;
 
     csv_config() = default;
+
+    void report(const std::vector<variable_identifier>& ids) const;
 
     friend class csv_writer;
 };

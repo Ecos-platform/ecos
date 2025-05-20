@@ -58,7 +58,7 @@ public:
         auto f = [currentTime, this](auto& wrapper) {
             if (should_step(stepNumber_, wrapper.decimationFactor)) {
                 wrapper.instance->get_properties().apply_sets();
-                wrapper.instance->step(currentTime, stepSize_);
+                wrapper.instance->step(currentTime, stepSize_ * wrapper.decimationFactor);
                 wrapper.instance->get_properties().apply_gets();
             }
         };

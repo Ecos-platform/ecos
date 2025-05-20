@@ -152,10 +152,10 @@ void ecos_parameter_set_add_bool(ecos_parameter_set_t* pps, const char* name, bo
     }
 }
 
-bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri)
+bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri, double step_size_hint)
 {
     try {
-        ss->cpp_ss.add_model(instanceName, std::string(uri));
+        ss->cpp_ss.add_model(instanceName, std::string(uri), step_size_hint == -1 ? std::nullopt : std::optional(step_size_hint));
         return true;
     } catch (...) {
         handle_current_exception();

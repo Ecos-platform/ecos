@@ -22,7 +22,7 @@ void ecos_set_log_level(const char* level);
 ecos_simulation_structure_t* ecos_simulation_structure_create();
 void ecos_simulation_structure_destroy(ecos_simulation_structure_t* ss);
 
-bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri);
+bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri, double step_size_hint = -1);
 bool ecos_simulation_structure_add_parameter_set(ecos_simulation_structure_t* ss, const char* name, const ecos_parameter_set_t* pps);
 
 void ecos_simulation_structure_make_int_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);

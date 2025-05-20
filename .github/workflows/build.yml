@@ -70,7 +70,7 @@ jobs:
             build/bin/proxyfmu*
             build/bin/libecosc.*
 
-  python-tests:
+  python-linux-tests:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     needs: cmake-on-linux  # only run after cmake-on-linux succeeds
@@ -93,6 +93,34 @@ jobs:
 
       - name: Make proxyfmu executable
         run: chmod +x ecospy/binaries/proxyfmu
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+          pip install pytest
+
+      - name: Run Python tests
+        run: |
+          pytest ecospy/tests -v
+
+  python-windows-tests:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    needs: cmake-on-windows  # only run after cmake-on-windows succeeds
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Download ecospy binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: ecos-windows-2022
+          path: ecospy/binaries
 
       - name: Install Python dependencies
         run: |

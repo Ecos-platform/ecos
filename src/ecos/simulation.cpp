@@ -89,12 +89,16 @@ struct simulation::Impl
 
         size_t numActions{};
         const auto root = doc.child("ecos:Scenario");
+        const auto epsAttr = root.attribute("eps");
+        std::optional<double> eps;
+        if (epsAttr) eps = epsAttr.as_double();
         for (const auto& action : root) {
             ++numActions;
             const auto t = action.attribute("t").as_double();
-            const auto epsAttr = action.attribute("eps");
-            std::optional<double> eps;
-            if (epsAttr) eps = epsAttr.as_double();
+
+            const auto epsSubAttr = action.attribute("eps");
+            std::optional<double> subEps = eps;
+            if (epsSubAttr) subEps = epsSubAttr.as_double();
 
             for (const auto& variable : action) {
 
@@ -112,7 +116,7 @@ struct simulation::Impl
                         t, [p, value] {
                             p->set_value(value);
                         },
-                        eps);
+                        subEps);
                 } else if ((var = variable.child("ecos:integer"))) {
                     auto p = sim_.get_int_property(id);
                     if (!p) {
@@ -124,7 +128,7 @@ struct simulation::Impl
                         t, [p, value] {
                             p->set_value(value);
                         },
-                        eps);
+                        subEps);
                 } else if ((var = variable.child("ecos:boolean"))) {
                     auto p = sim_.get_bool_property(id);
                     if (!p) {
@@ -136,7 +140,7 @@ struct simulation::Impl
                         t, [p, value] {
                             p->set_value(value);
                         },
-                        eps);
+                        subEps);
                 } else if ((var = variable.child("ecos:string"))) {
                     auto p = sim_.get_string_property(id);
                     if (!p) {
@@ -148,7 +152,7 @@ struct simulation::Impl
                         t, [p, value] {
                             p->set_value(value);
                         },
-                        eps);
+                        subEps);
                 } else {
                     throw std::runtime_error("Assertion error");
                 }

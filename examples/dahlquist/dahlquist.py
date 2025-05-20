@@ -31,7 +31,7 @@ def main():
             sim.terminate()
 
     config = TimeSeriesConfig(
-        title="ControlledTemperature",
+        title="Dalhquist",
         y_label="Temperature[deg]",
         identifiers=["model::x", "model::der(x)"],
 

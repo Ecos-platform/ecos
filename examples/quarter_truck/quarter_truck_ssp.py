@@ -3,6 +3,7 @@ from ecospy.plotter import *
 
 from pathlib import Path
 
+
 def main():
     print(f"Ecoslib version: {EcosLib().version()}")
 
@@ -13,7 +14,6 @@ def main():
     result_file = "results/python/quarter_truck_ssp.csv"
 
     with(EcosSimulation(ssp_path=ssp_file, step_size=1.0 / 100)) as sim:
-
         sim.add_csv_writer(result_file, f"{ssp_dir}/CsvConfig.xml")
 
         sim.init(parameter_set="initialValues")
@@ -29,4 +29,9 @@ def main():
 
 
 if __name__ == "__main__":
+    import sys
+
+    if sys.platform != "win32":
+        raise EnvironmentError("This particular example (quarter_truck) can only be run on Windows.")
+
     main()

@@ -7,6 +7,7 @@
 namespace ecos
 {
 
+/// Abstract base class for algorithms used for co-simulation orchestration.
 struct algorithm
 {
 

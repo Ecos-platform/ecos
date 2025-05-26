@@ -10,6 +10,14 @@
 namespace ecos
 {
 
+/**
+ * \brief Abstract base class for models.
+ *
+ * A model is akin to an FMU in the context of co-simulation.
+ *
+ * This class defines the interface for creating model instances, which can be used in simulations.
+ * Derived classes should implement the instantiate method to create specific model instances.
+ */
 class model
 {
 

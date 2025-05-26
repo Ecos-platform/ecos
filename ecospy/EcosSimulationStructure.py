@@ -3,7 +3,8 @@ from .EcosParameterSet import EcosParameterSet
 from .lib import dll, EcosLib
 from ctypes import c_void_p, c_bool, c_char_p, CFUNCTYPE, c_double
 
-
+# This class represents the structure of a simulation.
+# Can be passed to EcosSimulation to create a simulation instance.
 class EcosSimulationStructure:
 
     def __init__(self):

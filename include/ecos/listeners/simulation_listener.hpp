@@ -8,8 +8,14 @@
 namespace ecos
 {
 
-class simulation;
+class simulation; // Forward declaration
 
+/**
+ * \brief Interface for listening to simulation events.
+ *
+ * This interface allows for custom actions to be performed at various stages of the simulation lifecycle,
+ * such as before and after initialization, before and after each step, and after termination.
+ */
 struct simulation_listener
 {
 

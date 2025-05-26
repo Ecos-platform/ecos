@@ -11,12 +11,19 @@
 namespace ecos
 {
 
+/* *
+ * \brief Represents a variable identifier in the format "instanceName::variableName".
+ *
+ * This class provides methods to parse, compare, and match variable identifiers,
+ * including support for wildcard matching.
+ */
 struct variable_identifier
 {
 
     const std::string instanceName;
     const std::string variableName;
 
+    // Constructs a variable_identifier from a string in the format "instanceName::variableName".
     variable_identifier(const char* identifier)
         : variable_identifier(parse(identifier))
     { }

@@ -3,7 +3,7 @@ from .EcosSimulation import EcosSimulation
 
 from ctypes import c_void_p, c_double
 
-
+# This class is used to run a simulation created with EcosSimulation.
 class EcosSimulationRunner:
 
     def __init__(self, sim: EcosSimulation):

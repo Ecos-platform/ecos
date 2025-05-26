@@ -15,6 +15,12 @@
 namespace ecos
 {
 
+/* *
+ * \brief Represents a co-simulation.
+ *
+ * This class manages the lifecycle of a simulation, including initialization, stepping through time,
+ * and termination. It supports adding model instances, listeners, and connections between variables.
+ */
 class simulation
 {
 
@@ -39,18 +45,25 @@ public:
         init(std::nullopt, parameterSet);
     }
 
+    // Initializes the simulation with an optional start time and parameter set.
     void init(std::optional<double> startTime = std::nullopt, const std::optional<std::string>& parameterSet = std::nullopt);
 
+    // Steps the simulation by a specified number of steps.
     double step(unsigned int numStep = 1);
 
-    void step_until(double t);
+    // Steps the simulation until a specified time point.
+    void step_until(double timePoint);
 
-    void step_for(double t);
+    // Steps the simulation for a specified duration.
+    void step_for(double duration);
 
+    // Terminates the simulation.
     void terminate();
 
+    // Resets the simulation to its initial state.
     void reset();
 
+    // Adds a model instance to the simulation.
     void add_slave(std::unique_ptr<model_instance> slave);
 
     void add_listener(const std::string& name, std::shared_ptr<simulation_listener> listener);

@@ -1,6 +1,7 @@
 from .lib import dll, EcosLib
 from .EcosSimulationStructure import EcosSimulationStructure
-from ctypes import c_bool, c_int, c_void_p, c_double, c_char_p, c_size_t, POINTER, Structure, CFUNCTYPE, byref, create_string_buffer
+from ctypes import c_bool, c_int, c_void_p, c_double, c_char_p, c_size_t, POINTER, Structure, CFUNCTYPE, byref, \
+    create_string_buffer
 
 
 class SimulationInfo(Structure):
@@ -23,10 +24,22 @@ class ListenerConfig(Structure):
     ]
 
 
+# This class represents a co-simulation.
 class EcosSimulation:
 
     def __init__(self, step_size: float, ssp_path: str = None, structure: EcosSimulationStructure = None):
+        """
+        Initialize a new EcosSimulation instance.
 
+        Args:
+           step_size (float): The fixed simulation step size.
+           ssp_path (str, optional): Path to an SSP file to create the simulation from. Mutually exclusive with `structure`.
+           structure (EcosSimulationStructure, optional): Simulation structure to create the simulation from. Mutually exclusive with `ssp_path`.
+
+        Raises:
+           ValueError: If both or neither of `ssp_path` and `structure` are provided.
+           Exception: If simulation creation fails in the underlying library.
+        """
         if ssp_path is not None and structure is not None:
             raise ValueError("Only one of 'ssp_path' or 'structure' should be provided.")
 
@@ -115,7 +128,13 @@ class EcosSimulation:
             raise ValueError("Either 'ssp_path' or 'structure' must be provided.")
 
     def add_listener(self, name: str, listener: SimulationListener):
+        """
+        Add a listener to the simulation.
 
+        Args:
+            name (str): name of the listener (used to identify the listener)
+            listener (SimulationListener): a listener object that implements the SimulationListener interface
+        """
         if not isinstance(listener, SimulationListener):
             raise Exception("listener must be of type SimulationListener")
 
@@ -142,7 +161,8 @@ class EcosSimulation:
     def remove_listener(self, name: str):
         self._remove_listener(self.sim, name.encode())
 
-    def add_csv_writer(self, result_file: str, csv_config: str = None, identifiers: list[str] = None, decimation_factor: int = None):
+    def add_csv_writer(self, result_file: str, csv_config: str = None, identifiers: list[str] = None,
+                       decimation_factor: int = None):
 
         listener = self._create_csv_writer(result_file.encode(),
                                            None if csv_config is None else csv_config.encode())

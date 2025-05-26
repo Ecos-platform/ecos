@@ -14,6 +14,11 @@
 namespace ecos
 {
 
+/* * \brief A class to run a simulation in a separate thread.
+ *
+ * This class manages the execution of a simulation, allowing it to run at a specified real-time factor,
+ * and provides methods to start, stop, and pause the simulation.
+ */
 class simulation_runner
 {
 

@@ -3,9 +3,13 @@ from .EcosParameterSet import EcosParameterSet
 from .lib import dll, EcosLib
 from ctypes import c_void_p, c_bool, c_char_p, CFUNCTYPE, c_double
 
-# This class represents the structure of a simulation.
-# Can be passed to EcosSimulation to create a simulation instance.
+
 class EcosSimulationStructure:
+    """
+    Represents the structure of a simulation.
+
+    Can be passed to EcosSimulation to create a simulation instance.
+    """
 
     def __init__(self):
 
@@ -42,6 +46,15 @@ class EcosSimulationStructure:
             raise Exception(EcosLib.get_last_error())
 
     def add_model(self, instance_name: str, uri: str | os.PathLike, step_size_hint: float = None):
+        """
+        Adds a model to the simulation structure.
+        Args:
+            instance_name (str): The name of the model instance.
+            uri (str | os.PathLike): The URI or path to the model file.
+            step_size_hint (float, optional): A hint for the step size. Defaults to None.
+        Raises:
+            Exception: If adding the model fails.
+        """
         if isinstance(uri, os.PathLike):
             uri = os.fspath(uri)
 
@@ -50,6 +63,14 @@ class EcosSimulationStructure:
             raise Exception(EcosLib.get_last_error())
 
     def add_parameter_set(self, name: str, parameters: EcosParameterSet | dict[str, any]):
+        """
+        Adds a parameter set to the simulation structure.
+        Args:
+            name (str): The name of the parameter set.
+            parameters (EcosParameterSet | dict[str, any]): The parameters to add, either as an EcosParameterSet or a dictionary.
+        Raises:
+            Exception: If the parameters are of an illegal type or if adding the parameter set fails.
+        """
         if isinstance(parameters, EcosParameterSet):
             return self._add_parameter_set(self.handle, name.encode(), parameters.handle)
         elif isinstance(parameters, dict):
@@ -71,7 +92,13 @@ class EcosSimulationStructure:
             raise Exception("Illegal parameter type. Must be EcosParameterSet or dict")
 
     def make_real_connection(self, source: str, sink: str, modifier=None):
-
+        """
+        Creates a connection between two real variables in the simulation structure.
+        Args:
+            source (str): The source variable identifier.
+            sink (str): The sink variable identifier.
+            modifier (callable, optional): A function to modify the value before passing it to the sink. Defaults to None.
+        """
         if modifier is not None:
             @CFUNCTYPE(c_double, c_double)
             def _modifier(value: float) -> float:
@@ -84,12 +111,30 @@ class EcosSimulationStructure:
             self._make_real_connection(self.handle, source.encode(), sink.encode())
 
     def make_int_connection(self, source: str, sink: str):
+        """
+        Creates a connection between two integer variables in the simulation structure.
+        Args:
+            source (str): The source variable identifier.
+            sink (str): The sink variable identifier.
+        """
         self._make_int_connection(self.handle, source.encode(), sink.encode())
 
     def make_string_connection(self, source: str, sink: str):
+        """
+       Creates a connection between two string variables in the simulation structure.
+       Args:
+           source (str): The source variable identifier.
+           sink (str): The sink variable identifier.
+       """
         self._make_string_connection(self.handle, source.encode(), sink.encode())
 
     def make_bool_connection(self, source: str, sink: str):
+        """
+       Creates a connection between two boolean variables in the simulation structure.
+       Args:
+           source (str): The source variable identifier.
+           sink (str): The sink variable identifier.
+       """
         self._make_bool_connection(self.handle, source.encode(), sink.encode())
 
     @property

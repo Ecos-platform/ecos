@@ -66,18 +66,25 @@ public:
     // Adds a model instance to the simulation.
     void add_slave(std::unique_ptr<model_instance> slave);
 
+    // Adds a listener to the simulation with a specified name.
     void add_listener(const std::string& name, std::shared_ptr<simulation_listener> listener);
 
-    void remove_listener(const std::string& name);
+    // Removes a listener from the simulation by name.
+    bool remove_listener(const std::string& name);
 
+    // Retrieves a model instance by its name.
     [[nodiscard]] model_instance* get_instance(const std::string& name) const;
 
+    // Creates a connection between two real-valued variables.
     real_connection* make_real_connection(const variable_identifier& source, const variable_identifier& sink);
 
+    // Creates a connection between two integer-valued variables.
     int_connection* make_int_connection(const variable_identifier& source, const variable_identifier& sink);
 
+    // Creates a connection between two boolean-valued variables.
     bool_connection* make_bool_connection(const variable_identifier& source, const variable_identifier& sink);
 
+    // Creates a connection between two string-valued variables.
     string_connection* make_string_connection(const variable_identifier& source, const variable_identifier& sink);
 
     [[nodiscard]] property_t<double>* get_real_property(const variable_identifier& identifier) const;
@@ -92,10 +99,14 @@ public:
 
     [[nodiscard]] std::vector<variable_identifier> identifiers() const;
 
+    // Registers a function to be called when the simulation is initialized.
     void on_init(const std::function<void()>& f);
 
+    // Register an action when a specified condition is met during simulation
     void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action);
 
+    // Register an action to be invoked at a specific time point in the simulation.
+    // eps is an optional tolerance for the time point.
     void invoke_at(double timePoint, const std::function<void()>& f, const std::optional<double>& eps = 0);
 
     void load_scenario(const std::filesystem::path& config);

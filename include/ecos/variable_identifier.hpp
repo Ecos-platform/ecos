@@ -14,8 +14,7 @@ namespace ecos
 /* *
  * \brief Represents a variable identifier in the format "instanceName::variableName".
  *
- * This class provides methods to parse, compare, and match variable identifiers,
- * including support for wildcard matching.
+ * A variable_identifier is used to uniquely identify a variable within a simulation.
  */
 struct variable_identifier
 {

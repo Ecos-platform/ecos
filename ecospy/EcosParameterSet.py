@@ -2,8 +2,11 @@ from ctypes import c_void_p, c_char_p, c_int, c_bool, c_double
 
 from .lib import dll, EcosLib
 
-# This class represents a set of parameter values that can be passed to a simulation.
+
 class EcosParameterSet:
+    """
+    This class represents a set of parameter values that can be passed to a simulation.
+    """
 
     def __init__(self):
         self._parameter_set_add_int = dll.ecos_parameter_set_add_int

@@ -14,6 +14,15 @@ engine written in modern C++.
 * Simplified Python and C interface.
 * Minimal (and automatically resolved) build dependencies.
 
+#### Who is this for?
+
+`Ecos` is a framework for performing FMI-based co-simulation. Several such libraries/tools exist and cover much of the same ground. 
+However, the value-proposition of `Ecos` is the "ease-of-deployment", while still being efficient. The library is written in Object-Oriented C++, 
+supports all versions of FMI for Co-simulation and provides a pypi hosted Python interface.
+The framework can be used either in C++, C, Python or through a CLI and provides seamless integration with plotting (for quick prototyping) and socket-based remoting. 
+The project is maintained as a mono-repo with small and few dependencies, making building from a source a breeze. 
+This is especially valuable in an educational setting, where emphasis should be on how to use and not how to build.
+
 ### Building
 
 Ecos bundles all required dependencies. Just build.
@@ -30,7 +39,7 @@ cmake --build build
 
 ### Consuming C/C++ library
 
-Ecos is compatible with CMake FetchContent
+Ecos is compatible with CMake FetchContent:
 
 ```cmake
 include(FetchContent)

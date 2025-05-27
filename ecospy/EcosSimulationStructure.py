@@ -9,6 +9,8 @@ class EcosSimulationStructure:
     Represents the structure of a simulation.
 
     Can be passed to EcosSimulation to create a simulation instance.
+
+    Supports context management for automatic resource management.
     """
 
     def __init__(self):
@@ -148,6 +150,9 @@ class EcosSimulationStructure:
         self.free()
 
     def free(self):
+        """
+        Frees the resources associated with the simulation structure.
+        """
         if not self._handle is None:
             simulation_structure_destroy = dll.ecos_simulation_structure_destroy
             simulation_structure_destroy.argtypes = [c_void_p]

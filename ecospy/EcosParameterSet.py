@@ -6,6 +6,7 @@ from .lib import dll, EcosLib
 class EcosParameterSet:
     """
     This class represents a set of parameter values that can be passed to a simulation.
+    Supports context management for automatic resource management.
     """
 
     def __init__(self):
@@ -44,6 +45,9 @@ class EcosParameterSet:
         return self._handle
 
     def free(self):
+        """
+        Frees the resources associated with the simulation structure.
+        """
         if not self._handle is None:
             destroy_parameter_set = dll.ecos_parameter_set_destroy
             destroy_parameter_set.argtypes = [c_void_p]

@@ -27,6 +27,7 @@ class ListenerConfig(Structure):
 class EcosSimulation:
     """
     This class represents a co-simulation.
+    Supports context management for automatic resource management.
     """
 
     def __init__(self, step_size: float, ssp_path: str = None, structure: EcosSimulationStructure = None):
@@ -259,13 +260,19 @@ class EcosSimulation:
             raise Exception(EcosLib.get_last_error())
 
     def init(self, start_time: int = 0, parameter_set: str = None):
+        """
+        Initialize the simulation with a start time and an optional parameter set.
+        Args:
+            start_time (int): The time to start the simulation from in seconds. Defaults to 0.
+            parameter_set (str, optional): Optional parameter set to initialize the simulation with.
+        """
         return self._init_simulation(self.sim, start_time, None if parameter_set is None else parameter_set.encode())
 
     def step(self, num_steps: int = 1) -> float:
         """
         Step the simulation for a given number of steps.
         Args:
-            num_steps (int): Number of steps to take in the simulation.
+            num_steps (int): Number of steps to take in the simulation. Defaults to 1.
         Returns:
             float: The simulation time after stepping.
         """
@@ -314,6 +321,9 @@ class EcosSimulation:
             raise Exception(EcosLib.get_last_error())
 
     def free(self):
+        """
+        Frees the resources associated with the simulation structure.
+        """
         if not self.sim is None:
             destroy_simulation = dll.ecos_simulation_destroy
             destroy_simulation.argtypes = [c_void_p]

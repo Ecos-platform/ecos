@@ -13,7 +13,7 @@ int main()
 {
     ecos_set_log_level("debug");
 
-    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/ssp/quarter_truck/resources";
+    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck/resources";
 
     const auto ss = ecos_simulation_structure_create();
     ecos_simulation_structure_add_model(ss, "chassis", (fmuDir / "chassis.fmu").string().c_str());
@@ -34,8 +34,8 @@ int main()
     ecos_simulation_structure_destroy(ss);
     ecos_parameter_set_destroy(pps);
 
-    const auto csvConfig = std::string(DATA_FOLDER) + "/ssp/quarter_truck/CsvConfig.xml";
-    const auto plotConfig = std::string(DATA_FOLDER) + "/ssp/quarter_truck/ChartConfig.xml";
+    const auto csvConfig = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck/CsvConfig.xml";
+    const auto plotConfig = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck/ChartConfig.xml";
     const auto resultFile = std::string{"results/quarter_truck_c_with_config.csv"};
     const auto csvWriter = ecos_csv_writer_create(resultFile.c_str(), csvConfig.c_str());
 

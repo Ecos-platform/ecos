@@ -39,6 +39,7 @@ inline int run(const std::filesystem::path& fmuPath, bool remoting)
         t_ref->set_output_modifier(kelvi2deg);
 
         auto csvWriter = std::make_unique<csv_writer>("results/controlled_temperature.csv");
+        csvWriter->config().register_variable("slave::Temperature_*");
         const auto outputPath = csvWriter->output_path();
         sim.add_listener("csv_writer", std::move(csvWriter));
 

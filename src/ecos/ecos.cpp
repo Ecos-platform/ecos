@@ -6,6 +6,7 @@
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/logger/logger.hpp"
 #include "ecos/simulation.hpp"
+#include "ecos/simulation_runner.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 #include "ecos/util/plotter.hpp"
 
@@ -28,6 +29,16 @@ struct ecos_simulation
 struct ecos_simulation_structure
 {
     ecos::simulation_structure cpp_ss;
+};
+
+struct ecos_simulation_runner
+{
+
+    explicit ecos_simulation_runner(ecos_simulation* sim)
+    {
+        cpp_runner = std::make_unique<ecos::simulation_runner>(*sim->cpp_sim);
+    }
+    std::unique_ptr<ecos::simulation_runner> cpp_runner;
 };
 
 struct ecos_simulation_listener
@@ -79,8 +90,10 @@ ecos_simulation_structure_t* ecos_simulation_structure_create()
 
 void ecos_simulation_structure_destroy(ecos_simulation_structure_t* ss)
 {
-    delete ss;
-    ss = nullptr;
+    if (ss) {
+        delete ss;
+        ss = nullptr;
+    }
 }
 
 
@@ -97,8 +110,10 @@ ecos_parameter_set_t* ecos_parameter_set_create()
 
 void ecos_parameter_set_destroy(ecos_parameter_set_t* parameter_set)
 {
-    delete parameter_set;
-    parameter_set = nullptr;
+    if (parameter_set) {
+        delete parameter_set;
+        parameter_set = nullptr;
+    }
 }
 
 void ecos_parameter_set_add_int(ecos_parameter_set_t* pps, const char* name, int value)
@@ -137,10 +152,10 @@ void ecos_parameter_set_add_bool(ecos_parameter_set_t* pps, const char* name, bo
     }
 }
 
-bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri)
+bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri, double step_size_hint)
 {
     try {
-        ss->cpp_ss.add_model(instanceName, std::string(uri));
+        ss->cpp_ss.add_model(instanceName, std::string(uri), step_size_hint == -1 ? std::nullopt : std::optional(step_size_hint));
         return true;
     } catch (...) {
         handle_current_exception();
@@ -312,7 +327,7 @@ bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bo
     }
 }
 
-bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value, size_t value_size)
+bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value)
 {
     try {
         const auto prop = sim->cpp_sim->get_string_property(identifier);
@@ -321,15 +336,7 @@ bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, 
             return false;
         }
         const auto propValue = prop->get_value();
-        // Ensure we don't exceed the buffer size
-        if (propValue.size() >= value_size) {
-            // If the string is too large, copy only up to the available size - 1
-            std::strncpy(value, propValue.c_str(), value_size - 1);
-            value[value_size - 1] = '\0'; // Null-terminate the string
-        } else {
-            // Safe to copy the entire string
-            std::strcpy(value, propValue.c_str());
-        }
+        std::strcpy(value, propValue.c_str());
 
         return true;
     } catch (...) {
@@ -439,6 +446,34 @@ ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const
     }
 }
 
+bool ecos_csv_writer_set_decimation_factor(ecos_simulation_listener_t* writer, int decimationFactor)
+{
+    try {
+
+        const auto csv_writer = dynamic_cast<ecos::csv_writer*>(writer->cpp_listener.get());
+        csv_writer->config().decimation_factor() = decimationFactor;
+        return true;
+
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_csv_writer_register_variable(ecos_simulation_listener_t* writer, const char* identifier)
+{
+    try {
+
+        const auto csv_writer = dynamic_cast<ecos::csv_writer*>(writer->cpp_listener.get());
+        csv_writer->config().register_variable(identifier);
+        return true;
+
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
 void ecos_plot_csv(const char* csvFile, const char* chartConfig)
 {
     ecos::plot_csv(csvFile, chartConfig);
@@ -532,5 +567,35 @@ bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_
     } catch (...) {
         handle_current_exception();
         return false;
+    }
+}
+
+ecos_simulation_runner_t* ecos_simulation_runner_create(ecos_simulation_t* sim)
+{
+    auto runner = std::make_unique<ecos_simulation_runner_t>(sim);
+
+    return runner.release();
+}
+
+void ecos_simulation_runner_start(const ecos_simulation_runner_t* runner)
+{
+    runner->cpp_runner->start();
+}
+
+void ecos_simulation_runner_stop(const ecos_simulation_runner_t* runner)
+{
+    runner->cpp_runner->stop();
+}
+
+void ecos_simulation_runner_set_real_time_factor(const ecos_simulation_runner_t* runner, double factor)
+{
+    runner->cpp_runner->set_real_time_factor(factor);
+}
+
+void ecos_simulation_runner_destroy(const ecos_simulation_runner_t* runner)
+{
+    if (runner) {
+        delete runner;
+        runner = nullptr;
     }
 }

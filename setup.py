@@ -1,7 +1,6 @@
-import os
-from setuptools import setup, find_packages
 
-WINDOWS = (os.name == 'nt')
+import glob
+from setuptools import setup
 
 
 def version():
@@ -9,13 +8,13 @@ def version():
         return f.readline().strip()
 
 
-def binary_suffix():
-    return ".exe" if WINDOWS else ""
+def binaries():
+    return glob.glob("ecospy/binaries/ecos*") + glob.glob("ecospy/binaries/proxyfmu*")
 
 
 setup(name="ecospy",
       version=version(),
       data_files=[
-          ("Scripts", [f"ecospy/binaries/proxyfmu{binary_suffix()}", f"ecospy/binaries/ecos{binary_suffix()}"])
+          ("Scripts", binaries())
       ]
       )

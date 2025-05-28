@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecos:Scenario xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ScenarioConfig">
+<ecos:Scenario xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ScenarioConfig" eps="0.01">
 
-    <ecos:action t="500" eps="0.01">
+    <ecos:action t="500">
         <ecos:variable id="Reference Generator::x_wp">
             <ecos:real value="20.0"/>
         </ecos:variable>
@@ -10,7 +10,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="800" eps="0.01">
+    <ecos:action t="800">
         <ecos:variable id="Reference Generator::psi_wp">
             <ecos:real value="1.507"/>
         </ecos:variable>
@@ -19,7 +19,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="1300" eps="0.01">
+    <ecos:action t="1300">
         <ecos:variable id="Reference Generator::y_wp">
             <ecos:real value="20.0"/>
         </ecos:variable>
@@ -28,7 +28,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="1600" eps="0.01">
+    <ecos:action t="1600">
         <ecos:variable id="Reference Generator::psi_wp">
             <ecos:real value="0.0"/>
         </ecos:variable>
@@ -37,7 +37,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="2100" eps="0.01">
+    <ecos:action t="2100">
         <ecos:variable id="Reference Generator::x_wp">
             <ecos:real value="40.0"/>
         </ecos:variable>
@@ -46,7 +46,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="2400" eps="0.01">
+    <ecos:action t="2400">
         <ecos:variable id="Reference Generator::psi_wp">
             <ecos:real value="-1.507"/>
         </ecos:variable>
@@ -55,7 +55,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="2900" eps="0.01">
+    <ecos:action t="2900">
         <ecos:variable id="Reference Generator::y_wp">
             <ecos:real value="-20.0"/>
         </ecos:variable>
@@ -64,7 +64,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="3400" eps="0.01">
+    <ecos:action t="3400">
         <ecos:variable id="Reference Generator::psi_wp">
             <ecos:real value="0.0"/>
         </ecos:variable>
@@ -73,7 +73,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="3900" eps="0.01">
+    <ecos:action t="3900">
         <ecos:variable id="Reference Generator::x_wp">
             <ecos:real value="60.0"/>
         </ecos:variable>
@@ -82,7 +82,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="4200" eps="0.01">
+    <ecos:action t="4200">
         <ecos:variable id="Reference Generator::psi_wp">
             <ecos:real value="1.507"/>
         </ecos:variable>
@@ -91,7 +91,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="4700" eps="0.01">
+    <ecos:action t="4700">
         <ecos:variable id="Reference Generator::y_wp">
             <ecos:real value="0"/>
         </ecos:variable>
@@ -100,7 +100,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="5000" eps="0.01">
+    <ecos:action t="5000">
         <ecos:variable id="Reference Generator::psi_wp">
             <ecos:real value="0"/>
         </ecos:variable>
@@ -109,7 +109,7 @@
         </ecos:variable>
     </ecos:action>
 
-    <ecos:action t="5500" eps="0.01">
+    <ecos:action t="5500">
         <ecos:variable id="Reference Generator::x_wp">
             <ecos:real value="80.0"/>
         </ecos:variable>

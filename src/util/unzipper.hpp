@@ -21,10 +21,19 @@ namespace ecos
 namespace detail
 {
 
+inline std::string normalize_path(std::string path)
+{
+#ifdef _WIN32
+    std::ranges::replace(path, '\\', '/');
+    return "\"" + path + "\"";
+#else
+    return path;
+#endif
+
+}
+
 inline std::vector<std::string> make_args(const std::string& zip, const std::string& temp)
 {
-    std::vector<std::string> args;
-    std::string tool;
 
 #ifdef _WIN32
     char* shell = nullptr;
@@ -42,12 +51,20 @@ inline std::vector<std::string> make_args(const std::string& zip, const std::str
 #endif
 
     return use_unzip
-        ? std::vector<std::string>{"unzip", "-o", zip, "-d", temp}
-        : std::vector<std::string>{"tar", "-xf", zip, "-C", temp};
+        ? std::vector<std::string>{"unzip", "-o", normalize_path(zip), "-d", temp}
+        : std::vector<std::string>{"tar", "-xf", normalize_path(zip), "-C", temp};
 }
 
-inline bool unzip_with_system(const std::vector<char*>& argv)
+inline bool unzip_with_system(const std::vector<std::string>& args)
 {
+
+    std::vector<char*> argv;
+    for (const auto& arg : args) {
+        argv.push_back(const_cast<char*>(arg.c_str()));
+    }
+    argv.push_back(nullptr); // Null-terminate
+
+
 #ifdef _WIN32
     const auto result = _spawnvp(_P_WAIT, argv[0], argv.data());
     return result == 0;
@@ -86,13 +103,7 @@ inline bool unzip(const std::filesystem::path& zip_file, const std::filesystem::
 
     const auto args = detail::make_args(zip_file.string(), tmp_path.string());
 
-    std::vector<char*> argv;
-    for (auto& arg : args) {
-        argv.push_back(const_cast<char*>(arg.c_str()));
-    }
-    argv.push_back(nullptr); // Null-terminate
-
-    return detail::unzip_with_system(argv);
+    return detail::unzip_with_system(args);
 }
 
 } // namespace ecos

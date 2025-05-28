@@ -20,6 +20,11 @@ class simulation_runner
 public:
     explicit simulation_runner(simulation& sim);
 
+    simulation_runner(const simulation_runner&) = delete;
+    simulation_runner(simulation_runner&&) = delete;
+    simulation_runner& operator=(simulation_runner&&) = delete;
+    simulation_runner& operator=(const simulation_runner&) = delete;
+
     [[nodiscard]] double real_time_factor() const;
 
     [[nodiscard]] double target_real_time_factor() const;

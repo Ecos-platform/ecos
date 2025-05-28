@@ -46,10 +46,7 @@ public:
 
     virtual void terminate() = 0;
 
-    virtual void reset()
-    {
-        throw std::runtime_error("Reset not implemented!");
-    }
+    virtual void reset() = 0;
 
     bool apply_parameter_set(const std::string& name);
 
@@ -61,6 +58,11 @@ public:
         const scalar_value& value);
 
     properties& get_properties()
+    {
+        return properties_;
+    }
+
+    [[nodiscard]] const properties& get_properties() const
     {
         return properties_;
     }

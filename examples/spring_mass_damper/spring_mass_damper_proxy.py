@@ -12,11 +12,11 @@ def main():
 
     with EcosSimulationStructure() as ss:
 
-        ss.add_model("damper", f"{fmu_folder}/Damper.fmu")
-        ss.add_model("mass", f"{fmu_folder}/Mass.fmu")
-        ss.add_model("spring", f"{fmu_folder}/Spring.fmu")
+        ss.add_model("damper", f"proxyfmu://localhost?file={fmu_folder}/Damper.fmu")
+        ss.add_model("mass", f"proxyfmu://localhost?file={fmu_folder}/Mass.fmu")
+        ss.add_model("spring", f"proxyfmu://localhost?file={fmu_folder}/Spring.fmu")
 
-        ss.make_real_connection("spring::for_xx", "mass::in_l_u", lambda val: val)  # dummy modifier for test
+        ss.make_real_connection("spring::for_xx", "mass::in_l_u")
         ss.make_real_connection("spring::for_yx", "mass::in_l_w")
         ss.make_real_connection("mass::out_l_u", "spring::dis_xx")
         ss.make_real_connection("mass::out_l_w", "spring::dis_yx")

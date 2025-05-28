@@ -10,6 +10,7 @@
         <xs:sequence>
             <xs:element name="action" type="ecos:TVariable" maxOccurs="unbounded"/>
         </xs:sequence>
+        <xs:attribute name="eps" type="xs:float"/>
     </xs:complexType>
 
     <xs:complexType name="TVariable">

@@ -1,18 +1,20 @@
+import os
 from .EcosParameterSet import EcosParameterSet
 from .lib import dll, EcosLib
 from ctypes import c_void_p, c_bool, c_char_p, CFUNCTYPE, c_double
+
 
 class EcosSimulationStructure:
 
     def __init__(self):
 
-        self.modifiers = [] # to keep modifier function alive
+        self.modifiers = []  # to keep modifier function alive
 
         create_simulation_structure = dll.ecos_simulation_structure_create
         create_simulation_structure.restype = c_void_p
 
         self._add_model = dll.ecos_simulation_structure_add_model
-        self._add_model.argtypes = [c_void_p, c_char_p, c_char_p]
+        self._add_model.argtypes = [c_void_p, c_char_p, c_char_p, c_double]
         self._add_model.restype = c_bool
 
         self._add_parameter_set = dll.ecos_simulation_structure_add_parameter_set
@@ -34,13 +36,16 @@ class EcosSimulationStructure:
         self._make_bool_connection = dll.ecos_simulation_structure_make_bool_connection
         self._make_bool_connection.argtypes = [c_void_p, c_char_p, c_char_p]
 
-
         self._handle = create_simulation_structure()
         if self._handle is None:
             raise Exception(EcosLib.get_last_error())
 
-    def add_model(self, instance_name: str, uri: str):
-        if not self._add_model(self.handle, instance_name.encode(), uri.encode()):
+    def add_model(self, instance_name: str, uri: str | os.PathLike, step_size_hint: float = None):
+        if isinstance(uri, os.PathLike):
+            uri = os.fspath(uri)
+
+        if not self._add_model(self.handle, instance_name.encode(), uri.encode(),
+                               -1 if step_size_hint is None else step_size_hint):
             raise Exception(EcosLib.get_last_error())
 
     def add_parameter_set(self, name: str, parameters: EcosParameterSet | dict[str, any]):
@@ -49,14 +54,14 @@ class EcosSimulationStructure:
         elif isinstance(parameters, dict):
             with (EcosParameterSet()) as params:
                 for key, value in parameters.items():
-                    if isinstance(value, float):
+                    if isinstance(value, bool):
+                        params.add_bool(key, value)
+                    elif isinstance(value, float):
                         params.add_real(key, value)
                     elif isinstance(value, int):
                         params.add_int(key, value)
                     elif isinstance(value, str):
                         params.add_string(key, value)
-                    elif isinstance(value, bool):
-                        params.add_bool(key, value)
                     else:
                         raise Exception("Illegal value type. Must be int, float, bool or str")
                 return self.add_parameter_set(name, params)
@@ -64,8 +69,7 @@ class EcosSimulationStructure:
         else:
             raise Exception("Illegal parameter type. Must be EcosParameterSet or dict")
 
-
-    def make_real_connection(self, source: str, sink: str, modifier = None):
+    def make_real_connection(self, source: str, sink: str, modifier=None):
 
         if modifier is not None:
             @CFUNCTYPE(c_double, c_double)
@@ -90,6 +94,12 @@ class EcosSimulationStructure:
     @property
     def handle(self):
         return self._handle
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.free()
 
     def free(self):
         if not self._handle is None:

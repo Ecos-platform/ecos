@@ -6,13 +6,23 @@ Ecos (Easy co-simulation) is a fast, efficient and very easy to use co-simulatio
 engine written in modern C++.
 
 ##### Ecos provides the following features:
-* FMI for Co-simulation version 1.0, 2.0 & 3.0.
+* FMI for Co-simulation version 1.0 & 2.0.
+* Basic support for FMI 3.0.
 * SSP version 1.0.
 * Optional per process/remote model execution.
 * Post-simulation plotting using matplotlib.
 * Command-line-interface (CLI).
 * Simplified Python and C interface.
-* Minimal (and bundled) build dependencies.
+* Minimal (and automatically resolved) build dependencies.
+
+#### Who is this for?
+
+`Ecos` is a framework for performing FMI-based co-simulation. Several such libraries/tools exist and cover much of the same ground. 
+However, the value-proposition of `Ecos` is the "ease-of-deployment", while still being efficient. The library is written in Object-Oriented C++, 
+supports all versions of FMI for Co-simulation and provides a pypi hosted Python interface.
+The framework can be used either in C++, C, Python or through a CLI and provides seamless integration with plotting (for quick prototyping) and socket-based remoting. 
+The project is maintained as a mono-repo with small and few dependencies, making building from a source a breeze. 
+This is especially valuable in an educational setting, where emphasis should be on how to use and not how to build.
 
 ### Building
 
@@ -30,11 +40,11 @@ cmake --build build
 
 ### Consuming C/C++ library
 
-Ecos is compatible with CMake FetchContent
+Ecos is compatible with CMake FetchContent:
 
 ```cmake
 include(FetchContent)
-set(ECOS_BUILD_CLI OFF)
+set(ECOS_BUILD_CLI OFF)     # Set to ON for building ecos command-line-interface
 set(ECOS_BUILD_CLIB OFF)    # Set to ON for building C API
 set(ECOS_WITH_PROXYFMU OFF) # Set to ON for remoting
 FetchContent_Declare(
@@ -47,19 +57,43 @@ FetchContent_MakeAvailable(ecos)
 add_executable(ecos_standalone main.cpp)
 target_link_libraries(ecos_standalone PRIVATE libecos) # or libecosc for C API
 ```
+### Features
 
-### Per process / remote execution
+#### Per process / remote execution
 
-Ecos enables models to run on separate processes, possibly on another PC.
-Simply prepend `proxyfmu://localhost?file=` to the path of the `fmu(s)` you load.
-This is effectively achieved using [simplesocket](https://github.com/markaren/SimpleSocket)
-in conjunction with [flexbuffers](https://flatbuffers.dev/flexbuffers.html).
-Just make sure that the `proxyfmu` target built by `libecos` is on PATH.
+Ecos enables models to run on separate processes, possibly on another PC.  <br>
+Simply prepend `proxyfmu://localhost?file=` to the path of the `fmu(s)` you load. <br>
+When targeting an external `proxyfmu` instance, replace `localhost` with `host:port`. 
+For each FMU instance created when using `proxyfmu` a new process is created. 
+When targeting localhost, Unix Domain Sockets are used, while TCP/IP is used when targeting 
+a remote process started with `proxufmu boot --port <portNumber>`.
+To successfully make use of `proxyfmu`, make sure the executable built by the project 
+is located in the working directory of your application or added to `PATH`
+when targeting localhost. Using the Python API, however, this should work out-of-the-box.
+`proxyfmu` is implemented using [simplesocket](https://github.com/markaren/SimpleSocket) in conjunction with [flexbuffers](https://flatbuffers.dev/flexbuffers.html).
 
 >Ecos may be built without this feature (less dependencies, faster build) by passing `-DECOS_WITH_PROXYFMU=OFF` to CMake.
 
 
-### Example
+#### Scenario configuration
+Scenarios in Ecos are actions to be performed during the simulation.
+Scenarios are most useful in a CLI context, and can be specified using the `--scenarioConfig` option.
+The structure of a scenario file follows the XML schema defined in `resources/scema/ScenarioConfig.xsd`.
+Loading a scenario through the API is demonstrated in [here](examples/dp-ship)
+
+
+#### CSV logging
+Ecos supports CSV logging of simulation data. Which variables to log, and how often, is configurable.
+In a CLI context, this is done using the `--csvConfig` option with a path to an XML configuration file adhering to 
+schema `CsvConfig.xsd` located in `resources/schema/`.
+
+
+#### Plotting
+Ecos supports out-of-the-box plotting of simulation data using matplotlib in both C++ and Python.
+Time- and XY series plots can be configured using the `ChartConfig.xsd` XML schema located in `resources/schema/`.
+See `/examples` for demonstrations.
+
+### C++ Example
 
 ```cpp
 using namespace ecos;
@@ -84,16 +118,24 @@ int main() {
     map["chassis::C.mChassis"] = 4000.0;
     ss.add_parameter_set("initialValues", map);
     
-    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
+    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     
-    sim->init();
+    // setup csv logging
+    csv_config config;
+    config.register_variable("chassis::*"); // logs all chassis variables
+    
+    auto csvWriter = std::make_unique<csv_writer>("results.csv", config);
+    const auto outputPath = csvWriter->output_path();
+    sim->add_listener("writer", std::move(csvWriter));
+    
+    sim->init("initialValues");
     sim->step_until(10);
     
     sim->terminate();
 }
 ```
 
-### SSP example
+### C++ SSP example
 
 ```cpp
 using namespace ecos;
@@ -103,26 +145,26 @@ int main() {
     auto ss = load_ssp("quarter-truck.ssp");
 
     // use a fixed-step algorithm and apply parameterset from SSP file
-    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100), "initialValues");
+    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     
     // setup csv logging
     csv_config config;
     config.register_variable("chassis::zChassis"); // logs a single variable
     
-    auto csvWriter = std::make_unique<csv_writer>("data.csv", config);
+    auto csvWriter = std::make_unique<csv_writer>("results.csv", config);
     const auto outputPath = csvWriter->output_path();
-    sim->add_listener(std::move(csvWriter));
+    sim->add_listener("writer", std::move(csvWriter));
     
-    sim->init();
+    sim->init("initialValues");
     sim->step_until(10);
     
     sim->terminate();
     
-    plot_csv(outputPath, "ChartConfig.xml");
+    plot_csv(outputPath, "ChartConfig.xml"); // plot results
 }
 ```
 
-### Command line interface
+### Command line interface (CLI)
 
 ```
 Options:
@@ -161,7 +203,7 @@ To install the python package locally:
 > If using an old pip version, append `--use-feature=in-tree-build` if you get an error about `../version.txt`
 
 
-#### Example
+#### Python Example
 ```python
 print(f"Ecoslib version: {EcosLib.version()}")
 
@@ -170,15 +212,15 @@ EcosLib.set_log_level("debug")
 fmu_path = "BouncingBall.fmu"
 result_file = f"results/bouncing_ball.csv"
 
-ss = EcosSimulationStructure()
-ss.add_model("ball", fmu_path)
-
-with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
-
-    sim.add_csv_writer(result_file)
-    sim.init()
-    sim.step_until(10)
-    sim.terminate()
+with EcosSimulationStructure() as ss:
+  ss.add_model("ball", fmu_path)
+  
+  with(EcosSimulation(structure=ss, step_size=1/100)) as sim:
+  
+      sim.add_csv_writer(result_file)
+      sim.init()
+      sim.step_until(10)
+      sim.terminate()
 
 config = TimeSeriesConfig(
     title="BouncingBall",
@@ -209,6 +251,17 @@ plotter.show()
   * matplotlib
   * pandas
 
+
+### Acknowledgments
+
+This software is made possible thanks to the following third-party projects:
+* [CLI11](https://github.com/CLIUtils/CLI11)
+* [flatbuffers](https://github.com/google/flatbuffers)
+* [pugixml](https://github.com/zeux/pugixml)
+* [spdlog](https://github.com/gabime/spdlog)
+* [fmi4c](https://github.com/robbr48/fmi4c)
+* [subprocess.h](https://github.com/sheredom/subprocess.h)
+* [Catch2](https://github.com/catchorg/Catch2)
 
 ---
 > Want to build FMUs in C++? Check out [FMU4cpp](https://github.com/Ecos-platform/fmu4cpp) </br>

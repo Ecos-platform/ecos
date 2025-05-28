@@ -7,12 +7,11 @@ namespace fmilibcpp
 {
 
 fmi1_fmu::fmi1_fmu(std::unique_ptr<fmicontext> ctx, bool fmiLogging)
-    : handle_(ctx->handle_)
-    , ctx_(std::move(ctx))
+    : ctx_(std::move(ctx))
     , fmiLogging_(fmiLogging)
-    , md_(create_fmi1_model_description(handle_))
+    , md_(create_fmi1_model_description(ctx_->get()))
 {
-    const auto kind = fmi1_getType(handle_);
+    const auto kind = fmi1_getType(ctx_->get());
     if (kind != fmi1CoSimulationTool && kind != fmi1CoSimulationStandAlone) {
         throw std::runtime_error("FMU does not support Co-simulation!");
     }

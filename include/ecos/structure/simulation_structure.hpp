@@ -21,27 +21,6 @@ namespace ecos
 
 using parameter_set = std::map<variable_identifier, scalar_value>;
 
-template<class T>
-struct unbound_connection_t
-{
-    variable_identifier source;
-    variable_identifier sink;
-    std::optional<std::function<T(const T&)>> modifier = std::nullopt;
-
-    unbound_connection_t(variable_identifier source, variable_identifier sink, std::optional<std::function<T(const T&)>> modifier = std::nullopt)
-        : source(std::move(source))
-        , sink(std::move(sink))
-        , modifier(std::move(modifier))
-    { }
-};
-
-using unbound_int_connection = unbound_connection_t<int>;
-using unbound_real_connection = unbound_connection_t<double>;
-using unbound_string_connection = unbound_connection_t<std::string>;
-using unbound_bool_connection = unbound_connection_t<bool>;
-
-using unbound_connection = std::variant<unbound_int_connection, unbound_real_connection, unbound_string_connection, unbound_bool_connection>;
-
 class simulation_structure
 {
 
@@ -61,14 +40,32 @@ public:
         connections_.emplace_back(c);
     }
 
-    void add_parameter_set(const std::string& name, const parameter_set& map)
-    {
-        parameterSets[name] = map;
-    }
+    void add_parameter_set(const std::string& name, const parameter_set& map);
 
     std::unique_ptr<simulation> load(std::unique_ptr<algorithm> algorithm);
 
 private:
+    template<class T>
+    struct unbound_connection_t
+    {
+        variable_identifier source;
+        variable_identifier sink;
+        std::optional<std::function<T(const T&)>> modifier = std::nullopt;
+
+        unbound_connection_t(variable_identifier source, variable_identifier sink, std::optional<std::function<T(const T&)>> modifier = std::nullopt)
+            : source(std::move(source))
+            , sink(std::move(sink))
+            , modifier(std::move(modifier))
+        { }
+    };
+
+    using unbound_int_connection = unbound_connection_t<int>;
+    using unbound_real_connection = unbound_connection_t<double>;
+    using unbound_string_connection = unbound_connection_t<std::string>;
+    using unbound_bool_connection = unbound_connection_t<bool>;
+
+    using unbound_connection = std::variant<unbound_int_connection, unbound_real_connection, unbound_string_connection, unbound_bool_connection>;
+
     std::unique_ptr<model_resolver> resolver_;
     std::vector<unbound_connection> connections_;
     std::unordered_map<std::string, parameter_set> parameterSets;

@@ -3,6 +3,7 @@
 
 #include "ecos/logger/logger.hpp"
 
+#include <algorithm>
 #include <cmath>
 
 using namespace ecos;
@@ -19,7 +20,7 @@ struct instance_wrapper
 int calculateDecimationFactor(const model_instance& m, double baseStepSize)
 {
 
-    static double EPS = 1e-3;
+    constexpr double EPS = 1e-3;
 
     const auto& stepSizeHint = m.stepSizeHint();
     if (!stepSizeHint) return 1;
@@ -55,9 +56,9 @@ public:
     double step(double currentTime)
     {
         auto f = [currentTime, this](auto& wrapper) {
-            if (stepNumber_ % wrapper.decimationFactor == 0) {
+            if (should_step(stepNumber_, wrapper.decimationFactor)) {
                 wrapper.instance->get_properties().apply_sets();
-                wrapper.instance->step(currentTime, stepSize_);
+                wrapper.instance->step(currentTime, stepSize_ * wrapper.decimationFactor);
                 wrapper.instance->get_properties().apply_gets();
             }
         };
@@ -80,6 +81,11 @@ private:
     double stepSize_;
     size_t stepNumber_;
     std::vector<instance_wrapper> instances_;
+
+    static bool should_step(size_t step, int factor)
+    {
+        return step % factor == 0;
+    }
 };
 
 

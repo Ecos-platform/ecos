@@ -62,7 +62,7 @@ void simulation_runner::run()
             }
 
             spdlog::stopwatch sw;
-            if (!predicate_()) {
+            if (predicate_ && !predicate_()) {
                 stop_ = true;
             } else {
 
@@ -87,7 +87,10 @@ void simulation_runner::run()
 
 void simulation_runner::start()
 {
-    run_while([] { return true; });
+    if (!sim_.initialized()) {
+        sim_.init();
+    }
+    run();
 }
 
 void simulation_runner::stop()

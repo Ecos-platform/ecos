@@ -228,7 +228,7 @@ public:
         boolProperties_[name] = std::move(p);
     }
 
-    [[nodiscard]] bool hasProperty(const std::string& name) const
+    [[nodiscard]] bool has_property(const std::string& name) const
     {
         const auto& names = get_property_names();
         return std::ranges::find_if(names, [name](const auto& n) {

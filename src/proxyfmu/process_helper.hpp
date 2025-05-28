@@ -31,8 +31,12 @@ inline std::string getLoc()
 {
 #ifdef __linux__
     char result[PATH_MAX];
-    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-    return std::string(result, (count > 0) ? count : 0);
+    ssize_t count = readlink("/proc/self/exe", result, sizeof(result) - 1);
+    if (count != -1) {
+        result[count] = '\0'; // Ensure null-termination
+        return std::string(result);
+    }
+    return "";
 #else
     char result[MAX_PATH];
     return {result, GetModuleFileName(nullptr, result, MAX_PATH)};
@@ -60,7 +64,7 @@ inline void start_process(
 
     if (!exists(executable)) {
         const std::string loc = getLoc();
-        const auto alt_executable = std::filesystem::path(loc).parent_path().string() / executable;
+        const auto alt_executable = std::filesystem::path(loc).parent_path() / executable;
         if (exists(alt_executable)) {
             executable = alt_executable;
         }
@@ -68,23 +72,23 @@ inline void start_process(
 
     std::string execStr = executable.string();
 #ifdef __linux__
-    if (!executable.is_absolute()) {
+    if (is_regular_file(executable) && !executable.is_absolute()) {
         execStr.insert(0, "./");
     }
 #endif
 
-    log::debug("Checking if proxyfmu is available..");
+    log::debug("[proxyfmu] Checking if executable ({}) is available..", execStr);
     std::ostringstream ss;
     ss << std::quoted(execStr) << " -v";
     const int statusCode = std::system(ss.str().c_str());
     if (statusCode != 0) {
-        log::err("Unable to invoke proxyfmu!");
+        log::err("[proxyfmu] Unable to invoke proxyfmu!");
 
-        bind.set_value("-");
+        bind.set_value("");
         return;
     }
 
-    log::info("Booting FMU instance '{}'", instanceName);
+    log::info("[proxyfmu] Booting FMU instance '{}'", instanceName);
 
     const std::string fmuPathStr = fmuPath.string();
     const std::string localStr = toString(local);
@@ -96,7 +100,7 @@ inline void start_process(
         nullptr};
 
     subprocess_s process{};
-    int result = subprocess_create(cmd.data(), subprocess_option_inherit_environment | subprocess_option_no_window, &process);
+    int result = subprocess_create(cmd.data(), subprocess_option_inherit_environment | subprocess_option_search_user_path | subprocess_option_no_window, &process);
 
     bool bound = false;
     if (result == 0) {
@@ -114,14 +118,14 @@ inline void start_process(
                     bind.set_value(bindVal);
 
                     if (!local) {
-                        log::info("FMU proxy instance '{}' instantiated using port {}", instanceName, bindVal);
+                        log::info("[proxyfmu] Instance '{}' instantiated using port {}", instanceName, bindVal);
                     } else {
-                        log::info("FMU proxy instance '{}' instantiated using file '{}'", instanceName, bindVal);
+                        log::info("[proxyfmu] Instance '{}' instantiated using handle '{}'", instanceName, bindVal);
                     }
                 }
                 bound = true;
             } else {
-                std::cerr << "Got: " << line;
+                log::debug("[proxyfmu][{}] Got: {}", instanceName, line);
             }
         }
 
@@ -129,10 +133,13 @@ inline void start_process(
         result = subprocess_join(&process, &status);
 
         if (result == 0 && status == 0 && bound) {
-            log::info("FMU proxy process for instance '{}' returned with status {}", instanceName, status);
+            log::info("[proxyfmu] External process for instance '{}' returned with status {}", instanceName, status);
             return;
         }
-        log::err("External proxy process for instance '{}' returned with status {}. Unable to bind..", instanceName, std::to_string(status));
+        log::err("[proxyfmu] External process for instance '{}' returned with status {}. Unable to bind..", instanceName, std::to_string(status));
+    } else {
+
+        log::err("[proxyfmu] Fatal: Subrocess create returned non-zero status: {}", result);
     }
 
     bind.set_value("");

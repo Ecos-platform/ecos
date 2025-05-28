@@ -31,6 +31,12 @@ struct variable_identifier
         return instanceName + "::" + variableName;
     }
 
+    [[nodiscard]] bool matches(const variable_identifier& pattern) const
+    {
+        return wildcard_match(instanceName, pattern.instanceName) &&
+            wildcard_match(variableName, pattern.variableName);
+    }
+
     bool operator==(const variable_identifier& other) const
     {
         return instanceName == other.instanceName && variableName == other.variableName;
@@ -50,12 +56,36 @@ struct variable_identifier
 private:
     static variable_identifier parse(const std::string& identifier)
     {
-        auto pos = identifier.find("::");
+        const auto pos = identifier.find("::");
         if (pos == std::string::npos) {
             throw std::runtime_error("Error parsing variable identifier. A '::' must be present!");
         }
 
         return {identifier.substr(0, pos), identifier.substr(pos + 2)};
+    }
+
+    static bool wildcard_match(const std::string& str, const std::string& pattern)
+    {
+        size_t s = 0, p = 0, star = std::string::npos, ss = 0;
+
+        while (s < str.size()) {
+            if (p < pattern.size() && (pattern[p] == '?' || pattern[p] == str[s])) {
+                ++s;
+                ++p;
+            } else if (p < pattern.size() && pattern[p] == '*') {
+                star = p++;
+                ss = s;
+            } else if (star != std::string::npos) {
+                p = star + 1;
+                s = ++ss;
+            } else {
+                return false;
+            }
+        }
+
+        while (p < pattern.size() && pattern[p] == '*') ++p;
+
+        return p == pattern.size();
     }
 };
 

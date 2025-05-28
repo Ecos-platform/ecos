@@ -21,7 +21,7 @@ using namespace simple_socket;
 namespace
 {
 
-std::string read_data(std::string const& fileName)
+std::vector<uint8_t> read_data(std::string const& fileName)
 {
     std::ifstream file(fileName, std::ios::binary | std::ios::ate);
     if (!file) {
@@ -30,12 +30,12 @@ std::string read_data(std::string const& fileName)
     const std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
 
-    std::vector<char> buffer(size);
-    if (!file.read(buffer.data(), size)) {
+    std::vector<uint8_t> buffer(size);
+    if (!file.read(reinterpret_cast<char*>(buffer.data()), size)) {
         throw std::runtime_error("Failed to read file: " + fileName);
     }
 
-    return {buffer.begin(), buffer.end()};
+    return buffer;
 }
 
 } // namespace
@@ -59,7 +59,10 @@ proxy_slave::proxy_slave(
         thread_ = std::thread(&start_process, fmuPath, instanceName, std::ref(bind_promise), true);
 
         const auto bind = bind_promise.get_future().get();
-        if (bind.empty()) throw std::runtime_error("Unable to bind");
+        if (bind.empty()) {
+            thread_.detach();
+            throw std::runtime_error("Unable to create/bind proxyfmu process!");
+        }
         ctx_ = std::make_unique<UnixDomainClientContext>();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         client_ = ctx_->connect(bind);
@@ -74,13 +77,15 @@ proxy_slave::proxy_slave(
             throw std::runtime_error("Failed to connect to: " + address);
         }
 
-        const std::string data = read_data(fmuPath.string());
+        const auto data = read_data(fmuPath.string());
         const std::string fmuName = std::filesystem::path(fmuPath).stem().string();
 
         flexbuffers::Builder fbb;
-        fbb.String(fmuName);
-        fbb.String(instanceName);
-        fbb.String(data);
+        fbb.Vector([&]() {
+            fbb.String(fmuName);
+            fbb.String(instanceName);
+            fbb.Blob(data); // no key here in a vector
+        });
         fbb.Finish();
 
         const auto msgLen = fbb.GetSize();

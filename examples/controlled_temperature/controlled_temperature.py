@@ -14,17 +14,15 @@ def main():
     fmu_path = str((Path(__file__).parent.parent.parent / 'data' / 'fmus' / '2.0' / '20sim' / 'ControlledTemperature.fmu').resolve())
     result_file = "results/python/temperature.csv"
 
-    ss = EcosSimulationStructure()
-    ss.add_model("model", fmu_path)
+    with EcosSimulationStructure() as ss:
+        ss.add_model("model", fmu_path)
 
-    with (EcosSimulation(structure=ss, step_size=1/100)) as sim:
+        with (EcosSimulation(structure=ss, step_size=1/100)) as sim:
 
-        del ss
-
-        sim.add_csv_writer(result_file)
-        sim.init()
-        sim.step_until(40)
-        sim.terminate()
+            sim.add_csv_writer(result_file)
+            sim.init()
+            sim.step_until(40)
+            sim.terminate()
 
     config = TimeSeriesConfig(
         title="ControlledTemperature",

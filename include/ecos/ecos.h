@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 typedef struct ecos_simulation ecos_simulation_t;
+typedef struct ecos_simulation_runner ecos_simulation_runner_t;
 typedef struct ecos_simulation_listener ecos_simulation_listener_t;
 typedef struct ecos_simulation_structure ecos_simulation_structure_t;
 typedef struct ecos_parameter_set ecos_parameter_set_t;
@@ -21,7 +22,7 @@ void ecos_set_log_level(const char* level);
 ecos_simulation_structure_t* ecos_simulation_structure_create();
 void ecos_simulation_structure_destroy(ecos_simulation_structure_t* ss);
 
-bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri);
+bool ecos_simulation_structure_add_model(ecos_simulation_structure_t* ss, const char* instanceName, const char* uri, double step_size_hint = -1);
 bool ecos_simulation_structure_add_parameter_set(ecos_simulation_structure_t* ss, const char* name, const ecos_parameter_set_t* pps);
 
 void ecos_simulation_structure_make_int_connection(ecos_simulation_structure_t* ss, const char* source, const char* sink);
@@ -54,7 +55,7 @@ void ecos_simulation_step_until(ecos_simulation_t* sim, double timePoint);
 bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier, int* value);
 bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, double* value);
 bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bool* value);
-bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value, size_t value_size);
+bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value);
 
 bool ecos_simulation_set_integer(ecos_simulation_t* sim, const char* identifier, int value);
 bool ecos_simulation_set_real(ecos_simulation_t* sim, const char* identifier, double value);
@@ -66,6 +67,14 @@ bool ecos_simulation_reset(ecos_simulation_t* sim);
 void ecos_simulation_destroy(ecos_simulation_t* sim);
 
 bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_file);
+// -------------
+
+// simulation_runner
+ecos_simulation_runner_t* ecos_simulation_runner_create(ecos_simulation_t* sim);
+void ecos_simulation_runner_start(const ecos_simulation_runner_t* runner);
+void ecos_simulation_runner_stop(const ecos_simulation_runner_t* runner);
+void ecos_simulation_runner_set_real_time_factor(const ecos_simulation_runner_t* runner, double factor);
+void ecos_simulation_runner_destroy(const ecos_simulation_runner_t* runner);
 // -------------
 
 // simulation_listener
@@ -86,6 +95,8 @@ ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_list
 void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener);
 void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name);
 ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* csvConfig = nullptr);
+bool ecos_csv_writer_set_decimation_factor(ecos_simulation_listener_t* writer, int decimationFactor);
+bool ecos_csv_writer_register_variable(ecos_simulation_listener_t* writer, const char* identifier);
 
 void ecos_plot_csv(const char* csvFile, const char* chartConfig);
 // -------------

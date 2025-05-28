@@ -68,16 +68,15 @@ int run_application(const std::string& fmu, const std::string& instanceName, boo
         }
     } else {
 
-        auto fileHandle = instanceName + "_" + generate_uuid();
+        auto handle = instanceName + "_" + generate_uuid();
 
         try {
-            auto con = std::make_unique<simple_socket::SharedMemoryConnection>(fileHandle, 1024, true);
-            spdlog::info("Serving proxy '{}' using file '{}'", instanceName, fileHandle);
+            auto con = std::make_unique<simple_socket::SharedMemoryConnection>(handle, 1024, true);
+            spdlog::info("Serving proxy '{}' using handle '{}'", instanceName, handle);
 
             // communication with parent process
-            std::cout << "[proxyfmu] bind=" << fileHandle << std::endl;
+            std::cout << "[proxyfmu] bind=" << handle << std::endl;
 
-            // auto con = server.accept();
             spdlog::info("Shared memory connection established");
             client_handler(std::move(con), fmu, instanceName);
         } catch (const std::exception& ex) {

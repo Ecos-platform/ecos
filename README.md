@@ -124,6 +124,10 @@ int main() {
     csv_config config;
     config.register_variable("chassis::*"); // logs all chassis variables
     
+    auto csvWriter = std::make_unique<csv_writer>("results.csv", config);
+    const auto outputPath = csvWriter->output_path();
+    sim->add_listener("writer", std::move(csvWriter));
+    
     sim->init("initialValues");
     sim->step_until(10);
     
@@ -147,16 +151,16 @@ int main() {
     csv_config config;
     config.register_variable("chassis::zChassis"); // logs a single variable
     
-    auto csvWriter = std::make_unique<csv_writer>("data.csv", config);
+    auto csvWriter = std::make_unique<csv_writer>("results.csv", config);
     const auto outputPath = csvWriter->output_path();
-    sim->add_listener(std::move(csvWriter));
+    sim->add_listener("writer", std::move(csvWriter));
     
     sim->init("initialValues");
     sim->step_until(10);
     
     sim->terminate();
     
-    plot_csv(outputPath, "ChartConfig.xml");
+    plot_csv(outputPath, "ChartConfig.xml"); // plot results
 }
 ```
 

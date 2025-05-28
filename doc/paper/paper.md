@@ -33,7 +33,7 @@ It is packaged as a zip archive containing:
 The intention of Ecos is to provide a streamlined way of working with such FMUs,
 and supports version 1.0, 2.0 and 3.0 of the standard with respect to co-simulation.
 In particular, support for FMI 3.0[@junghanns2021functional] is still missing in many tools,
-and Ecos aims to help bridge this gap by providing basic support for this version. 
+and Ecos aims to help bridge this gap by providing partial support for this version. 
 In collaboration with interested users, Ecos aims to gradually expand its support for FMI 3.0, 
 working toward a more complete and practical implementation of the standard over time.
 Ecos also supports the System Structure &
@@ -67,8 +67,9 @@ The models are packaged following the SSP standard and subsequently simulated an
 While similar tooling exists like FMPy[@FMPy], Vico[@hatledal2021vico], Open Simulation Platform (
 OSP) [@smogeli2020open] and OMSimulator[@ochel2019omsimulator], Ecos aims to deliver a higher level of
 flexibility, extensibility and accessibility
-through an easy to build and consume package. In particular,
-Ecos acts as a successor to the JVM based Vico framework.
+through an easy-to-build and consume package. In particular,
+Ecos acts as a successor to the JVM based Vico framework, 
+improving on accessibility, usability and performance. 
 
 Table 1 compares Ecos with some of the other available tools. While seemingly similar, 
 Ecos niche is to provide an intuitive low-level C++ API, simple yet powerful Python, C and CLI interfaces, as well as 

@@ -19,8 +19,9 @@ engine written in modern C++.
 
 `Ecos` is a framework for performing FMI-based co-simulation. Several such libraries/tools exist and cover much of the same ground. 
 However, the value-proposition of `Ecos` is the "ease-of-deployment", while still being efficient. The library is written in Object-Oriented C++, 
-supports all versions of FMI for Co-simulation and provides a pypi hosted Python interface.
-The framework can be used either in C++, C, Python or through a CLI and provides seamless integration with plotting (for quick prototyping) and socket-based remoting. 
+supports all versions of FMI for Co-simulation and provides a [pypi hosted](https://pypi.org/project/ecospy/) Python interface.
+The framework can be used either in C++, C, Python or through a CLI. 
+Moreover, it provides seamless integration with plotting (for quick prototyping) and per-process execution of model instances (remoting). 
 The project is maintained as a mono-repo with small and few dependencies, making building from a source a breeze. 
 This is especially valuable in an educational setting, where emphasis should be on how to use and not how to build.
 
@@ -85,7 +86,8 @@ Loading a scenario through the API is demonstrated in [here](examples/dp-ship)
 #### CSV logging
 Ecos supports CSV logging of simulation data. Which variables to log, and how often, is configurable.
 In a CLI context, this is done using the `--csvConfig` option with a path to an XML configuration file adhering to 
-schema `CsvConfig.xsd` located in `resources/schema/`.
+the `CsvConfig.xsd` schema located in `resources/schema/`. The API also provides the means to configure this programmatically. 
+See `/examples` for various demonstrations.
 
 
 #### Plotting
@@ -118,7 +120,8 @@ int main() {
     map["chassis::C.mChassis"] = 4000.0;
     ss.add_parameter_set("initialValues", map);
     
-    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
+    double stepSize = 1.0 / 100; // 100 Hz
+    auto sim = ss.load(std::make_unique<fixed_step_algorithm>(stepSize));
     
     // setup csv logging
     csv_config config;
@@ -128,10 +131,13 @@ int main() {
     const auto outputPath = csvWriter->output_path();
     sim->add_listener("writer", std::move(csvWriter));
     
+    // apply named set of parameters
     sim->init("initialValues");
     sim->step_until(10);
     
     sim->terminate();
+    
+    plot_csv(outputPath, "ChartConfig.xml"); // plot results
 }
 ```
 
@@ -142,25 +148,12 @@ using namespace ecos;
 
 int main() {
     
-    auto ss = load_ssp("quarter-truck.ssp");
+    auto ss = load_ssp("quarter-truck.ssp"); // accepts .ssp file or extracted folder
 
-    // use a fixed-step algorithm and apply parameterset from SSP file
-    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
+    double stepSize = 1.0 / 100; // 100 Hz
+    auto sim = ss->load(std::make_unique<fixed_step_algorithm>(stepSize));
     
-    // setup csv logging
-    csv_config config;
-    config.register_variable("chassis::zChassis"); // logs a single variable
-    
-    auto csvWriter = std::make_unique<csv_writer>("results.csv", config);
-    const auto outputPath = csvWriter->output_path();
-    sim->add_listener("writer", std::move(csvWriter));
-    
-    sim->init("initialValues");
-    sim->step_until(10);
-    
-    sim->terminate();
-    
-    plot_csv(outputPath, "ChartConfig.xml"); // plot results
+    // ... see example above for further usage
 }
 ```
 

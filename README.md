@@ -6,7 +6,8 @@ Ecos (Easy co-simulation) is a fast, efficient and very easy to use co-simulatio
 engine written in modern C++.
 
 ##### Ecos provides the following features:
-* FMI for Co-simulation version 1.0, 2.0 & 3.0.
+* FMI for Co-simulation version 1.0 & 2.0.
+* Basic support for FMI 3.0.
 * SSP version 1.0.
 * Optional per process/remote model execution.
 * Post-simulation plotting using matplotlib.
@@ -56,8 +57,9 @@ FetchContent_MakeAvailable(ecos)
 add_executable(ecos_standalone main.cpp)
 target_link_libraries(ecos_standalone PRIVATE libecos) # or libecosc for C API
 ```
+### Features
 
-### Per process / remote execution
+#### Per process / remote execution
 
 Ecos enables models to run on separate processes, possibly on another PC.  <br>
 Simply prepend `proxyfmu://localhost?file=` to the path of the `fmu(s)` you load. <br>
@@ -73,7 +75,25 @@ when targeting localhost. Using the Python API, however, this should work out-of
 >Ecos may be built without this feature (less dependencies, faster build) by passing `-DECOS_WITH_PROXYFMU=OFF` to CMake.
 
 
-### Example
+#### Scenario configuration
+Scenarios in Ecos are actions to be performed during the simulation.
+Scenarios are most useful in a CLI context, and can be specified using the `--scenarioConfig` option.
+The structure of a scenario file follows the XML schema defined in `resources/scema/ScenarioConfig.xsd`.
+Loading a scenario through the API is demonstrated in [here](examples/dp-ship)
+
+
+#### CSV logging
+Ecos supports CSV logging of simulation data. Which variables to log, and how often, is configurable.
+In a CLI context, this is done using the `--csvConfig` option with a path to an XML configuration file adhering to 
+schema `CsvConfig.xsd` located in `resources/schema/`.
+
+
+#### Plotting
+Ecos supports out-of-the-box plotting of simulation data using matplotlib in both C++ and Python.
+Time- and XY series plots can be configured using the `ChartConfig.xsd` XML schema located in `resources/schema/`.
+See `/examples` for demonstrations.
+
+### C++ Example
 
 ```cpp
 using namespace ecos;
@@ -100,6 +120,10 @@ int main() {
     
     auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
     
+    // setup csv logging
+    csv_config config;
+    config.register_variable("chassis::*"); // logs all chassis variables
+    
     sim->init("initialValues");
     sim->step_until(10);
     
@@ -107,7 +131,7 @@ int main() {
 }
 ```
 
-### SSP example
+### C++ SSP example
 
 ```cpp
 using namespace ecos;
@@ -136,7 +160,7 @@ int main() {
 }
 ```
 
-### Command line interface
+### Command line interface (CLI)
 
 ```
 Options:
@@ -175,7 +199,7 @@ To install the python package locally:
 > If using an old pip version, append `--use-feature=in-tree-build` if you get an error about `../version.txt`
 
 
-#### Example
+#### Python Example
 ```python
 print(f"Ecoslib version: {EcosLib.version()}")
 

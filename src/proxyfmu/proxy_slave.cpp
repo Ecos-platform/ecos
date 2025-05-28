@@ -7,7 +7,7 @@
 
 #include "proxyfmu/opcodes.hpp"
 #include "simple_socket/TCPSocket.hpp"
-#include "simple_socket/UnixDomainSocket.hpp"
+#include "simple_socket/SharedMemoryConnection.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
 #include <flatbuffers/flexbuffers.h>
 
@@ -63,9 +63,8 @@ proxy_slave::proxy_slave(
             thread_.detach();
             throw std::runtime_error("Unable to create/bind proxyfmu process!");
         }
-        ctx_ = std::make_unique<UnixDomainClientContext>();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        client_ = ctx_->connect(bind);
+
+        client_ = std::make_unique<SharedMemoryConnection>(bind, 1024, false);
 
     } else {
 

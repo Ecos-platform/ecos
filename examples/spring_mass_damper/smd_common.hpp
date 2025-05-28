@@ -3,12 +3,14 @@
 #define SMD_COMMON_HPP
 
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
+#include "ecos/listeners/csv_writer.hpp"
 #include "ecos/logger/logger.hpp"
 #include "ecos/model_resolver.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/structure/simulation_structure.hpp"
-#include "ecos/listeners/csv_writer.hpp"
 #include "ecos/util/plotter.hpp"
+
+#include <spdlog/stopwatch.h>
 
 using namespace ecos;
 
@@ -35,11 +37,13 @@ inline void addParameterSets(simulation_structure& ss)
     ss.add_parameter_set("initialValues", map);
 }
 
-inline void run(simulation_structure& ss)
+inline void run(simulation_structure& ss, double stopTime = 10)
 {
     set_logging_level(log::level::debug);
 
     try {
+
+        spdlog::stopwatch sw;
 
         const auto sim = ss.load(std::make_unique<fixed_step_algorithm>(1.0 / 100));
         auto csvWriter = std::make_unique<csv_writer>("results/mass_spring_damper.csv");
@@ -47,10 +51,12 @@ inline void run(simulation_structure& ss)
         sim->add_listener("csv_writer", std::move(csvWriter));
 
         sim->init("initialValues");
-        sim->step_until(10);
+        sim->step_until(stopTime);
         sim->terminate();
 
-        plot_csv(outputPath,  std::string(DATA_FOLDER) + "/fmus/1.0/mass_spring_damper/ChartConfig.xml");
+        log::info("Elapsed {:.4f}s", sw);
+
+        plot_csv(outputPath, std::string(DATA_FOLDER) + "/fmus/1.0/mass_spring_damper/ChartConfig.xml");
 
     } catch (const std::exception& ex) {
 

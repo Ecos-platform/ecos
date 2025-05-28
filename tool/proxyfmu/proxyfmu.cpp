@@ -5,8 +5,8 @@
 
 #include "ecos/lib_info.hpp"
 
+#include "simple_socket/SharedMemoryConnection.hpp"
 #include "simple_socket/TCPSocket.hpp"
-#include "simple_socket/UnixDomainSocket.hpp"
 #include "simple_socket/util/byte_conversion.hpp"
 #include "simple_socket/util/port_query.hpp"
 #include <flatbuffers/flexbuffers.h>
@@ -16,7 +16,6 @@
 
 #include <cli11/CLI11.h>
 #include <iostream>
-#include <random>
 #include <utility>
 
 using namespace ecos;
@@ -70,19 +69,16 @@ int run_application(const std::string& fmu, const std::string& instanceName, boo
     } else {
 
         auto fileHandle = instanceName + "_" + generate_uuid();
-#ifndef _WIN32
-        fileHandle.insert(0, "/tmp/");
-#endif
 
         try {
-            simple_socket::UnixDomainServer server(fileHandle);
+            auto con = std::make_unique<simple_socket::SharedMemoryConnection>(fileHandle, 1024, true);
             spdlog::info("Serving proxy '{}' using file '{}'", instanceName, fileHandle);
 
             // communication with parent process
             std::cout << "[proxyfmu] bind=" << fileHandle << std::endl;
 
-            auto con = server.accept();
-            spdlog::info("Unix Domain Client connected");
+            // auto con = server.accept();
+            spdlog::info("Shared memory connection established");
             client_handler(std::move(con), fmu, instanceName);
         } catch (const std::exception& ex) {
             spdlog::error("[run_application] Exception occurred: {}", ex.what());

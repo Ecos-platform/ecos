@@ -6,7 +6,7 @@ int main()
 
     set_logging_level(log::level::debug);
 
-    const std::filesystem::path fmuDir =  std::string(DATA_FOLDER) + "/fmus/1.0/mass_spring_damper";
+    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/fmus/1.0/mass_spring_damper";
 
     simulation_structure ss;
     ss.add_model("mass", (fmuDir / "Mass.fmu").string());
@@ -16,5 +16,5 @@ int main()
     addConnections(ss);
     addParameterSets(ss);
 
-    run(ss);
+    run(ss, 10);
 }

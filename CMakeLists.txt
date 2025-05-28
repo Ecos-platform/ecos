@@ -62,7 +62,7 @@ if (ECOS_WITH_PROXYFMU)
     FetchContent_Declare(
             SimpleSocket
             GIT_REPOSITORY https://github.com/markaren/SimpleSocket.git
-            GIT_TAG e0e989bdd52137d743a4599e25167d5681a0de00
+            GIT_TAG 96267673618d7a59c52d72ea442fc4e8f0935f4a
     )
     FetchContent_MakeAvailable(SimpleSocket)
 endif ()

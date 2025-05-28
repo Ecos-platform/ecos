@@ -42,7 +42,7 @@ FMUs in a structured and tool-agnostic way.
 Ecos consists of a Command Line Interface (CLI), as well as a C++ library, _libecos_,
 with interfaces provided in C and Python. The Python package is available through the
 pypy package index as _ecospy_. The project is structured as a mono-repo with a major goal of
-being simple to build. This also implies few and light-weight dependencies.
+being straightforward to build. This also implies few and light-weight dependencies.
 
 Some features available with Ecos:
 
@@ -72,7 +72,7 @@ Ecos acts as a successor to the JVM based Vico framework,
 improving on accessibility, usability and performance. 
 
 Table 1 compares Ecos with some of the other available tools. While seemingly similar, 
-Ecos niche is to provide an intuitive low-level C++ API, simple yet powerful Python, C and CLI interfaces, as well as 
+Ecos niche is to provide an intuitive high-level C++ API, simple yet powerful Python, C and CLI interfaces, as well as 
 support for all three versions of FMI for Co-simulation and built-in means of distributing simulation components across 
 processes, while also keeping build dependencies to a minimum.
 

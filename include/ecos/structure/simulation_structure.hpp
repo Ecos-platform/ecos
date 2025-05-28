@@ -21,6 +21,11 @@ namespace ecos
 
 using parameter_set = std::map<variable_identifier, scalar_value>;
 
+/* * \brief A structure for defining the structure of a simulation.
+ *
+ * This class allows for the addition of models, connections, and parameter sets,
+ * and provides a method to load the simulation with a specified algorithm.
+ */
 class simulation_structure
 {
 
@@ -42,6 +47,7 @@ public:
 
     void add_parameter_set(const std::string& name, const parameter_set& map);
 
+    // creates a simulation from this structural definition with a specified algorithm
     std::unique_ptr<simulation> load(std::unique_ptr<algorithm> algorithm);
 
 private:

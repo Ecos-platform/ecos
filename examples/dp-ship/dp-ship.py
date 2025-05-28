@@ -21,8 +21,7 @@ def main():
     with(EcosSimulation(ssp_path=ssp_dir, step_size=0.1)) as sim:
 
         sim.add_csv_writer(result_file, log_config)
-        if not sim.load_scenario(scenario):
-            print(EcosLib.get_last_error())
+        sim.load_scenario(scenario)
 
         sim.init()
         try:

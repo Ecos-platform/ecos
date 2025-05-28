@@ -33,10 +33,11 @@ class XYSeriesConfig:
 
 
 if MATPLOTLIB_AVAILABLE:
+    # Plotter class for plotting time series and XY series from CSV files
     class Plotter:
         fig_id = 0
 
-        def __init__(self, csv_file, configs):
+        def __init__(self, csv_file: str, configs):
             self.csv = pd.read_csv(csv_file, delimiter=r",\s+", engine="python")
 
             if not isinstance(configs, (list, tuple)):

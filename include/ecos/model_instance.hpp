@@ -16,10 +16,17 @@ struct model_state
     virtual ~model_state() = default;
 };
 
+/* *
+ * \brief Abstract base class for model instances.
+ *
+ * A model instance represents a specific instance of a model in a simulation.
+ * It provides methods for initialization, stepping through time, and managing parameters.
+ */
 class model_instance
 {
 
 public:
+    // Constructs a model instance with a given name and an optional step size hint.
     explicit model_instance(std::string instanceName, std::optional<double> stepSizeHint = std::nullopt)
         : instanceName_(std::move(instanceName))
         , stepSizeHint_(stepSizeHint)
@@ -33,6 +40,8 @@ public:
         return instanceName_;
     }
 
+    // Returns the step size hint for this model instance, if available.
+    // This hint can be used by algorithms to optimize the stepping process (multi-variate stepping).
     [[nodiscard]] const std::optional<double>& stepSizeHint() const
     {
         return stepSizeHint_;

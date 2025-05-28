@@ -11,12 +11,18 @@
 namespace ecos
 {
 
+/* *
+ * \brief Represents a variable identifier in the format "instanceName::variableName".
+ *
+ * A variable_identifier is used to uniquely identify a variable within a simulation.
+ */
 struct variable_identifier
 {
 
     const std::string instanceName;
     const std::string variableName;
 
+    // Constructs a variable_identifier from a string in the format "instanceName::variableName".
     variable_identifier(const char* identifier)
         : variable_identifier(parse(identifier))
     { }

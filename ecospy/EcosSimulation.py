@@ -1,6 +1,7 @@
 from .lib import dll, EcosLib
 from .EcosSimulationStructure import EcosSimulationStructure
-from ctypes import c_bool, c_int, c_void_p, c_double, c_char_p, c_size_t, POINTER, Structure, CFUNCTYPE, byref, create_string_buffer
+from ctypes import c_bool, c_int, c_void_p, c_double, c_char_p, c_size_t, POINTER, Structure, CFUNCTYPE, byref, \
+    create_string_buffer
 
 
 class SimulationInfo(Structure):
@@ -24,9 +25,24 @@ class ListenerConfig(Structure):
 
 
 class EcosSimulation:
+    """
+    This class represents a co-simulation.
+    Supports context management for automatic resource management.
+    """
 
     def __init__(self, step_size: float, ssp_path: str = None, structure: EcosSimulationStructure = None):
+        """
+        Initialize a new EcosSimulation instance.
 
+        Args:
+           step_size (float): The fixed simulation step size.
+           ssp_path (str, optional): Path to an SSP file to create the simulation from. Mutually exclusive with `structure`.
+           structure (EcosSimulationStructure, optional): Simulation structure to create the simulation from. Mutually exclusive with `ssp_path`.
+
+        Raises:
+           ValueError: If both or neither of `ssp_path` and `structure` are provided.
+           Exception: If simulation creation fails in the underlying library.
+        """
         if ssp_path is not None and structure is not None:
             raise ValueError("Only one of 'ssp_path' or 'structure' should be provided.")
 
@@ -115,7 +131,13 @@ class EcosSimulation:
             raise ValueError("Either 'ssp_path' or 'structure' must be provided.")
 
     def add_listener(self, name: str, listener: SimulationListener):
+        """
+        Add a listener to the simulation.
 
+        Args:
+            name (str): name of the listener (used to identify the listener)
+            listener (SimulationListener): a listener object that implements the SimulationListener interface
+        """
         if not isinstance(listener, SimulationListener):
             raise Exception("listener must be of type SimulationListener")
 
@@ -140,9 +162,23 @@ class EcosSimulation:
         self._add_listener(self.sim, name.encode(), cpp_listener)
 
     def remove_listener(self, name: str):
+        """
+        Remove a listener from the simulation.
+        Args:
+            name (str): Name of the listener to remove.
+        """
         self._remove_listener(self.sim, name.encode())
 
-    def add_csv_writer(self, result_file: str, csv_config: str = None, identifiers: list[str] = None, decimation_factor: int = None):
+    def add_csv_writer(self, result_file: str, csv_config: str = None, identifiers: list[str] = None,
+                       decimation_factor: int = None):
+        """
+        Add a CSV writer to the simulation.
+        Args:
+            result_file (str): Path to the CSV result file.
+            csv_config (str, optional): Optional CSV configuration string.
+            identifiers (list[str], optional): List of variable identifiers to record.
+            decimation_factor (int, optional): Factor to reduce the number of recorded samples.
+        """
 
         listener = self._create_csv_writer(result_file.encode(),
                                            None if csv_config is None else csv_config.encode())
@@ -169,11 +205,19 @@ class EcosSimulation:
         self._add_listener(self.sim, b'csv_writer', listener)
 
     def load_scenario(self, scenario_file: str):
+        """
+        Load a scenario file into the simulation.
+        Args:
+            scenario_file (str): Path to the scenario file to load.
+        Raises:
+            Exception: If loading the scenario fails in the underlying library.
+        """
         _load_scenario = dll.ecos_simulation_load_scenario
         _load_scenario.argtypes = [c_void_p, c_char_p]
         _load_scenario.restype = c_bool
 
-        _load_scenario(self.sim, scenario_file.encode())
+        if not _load_scenario(self.sim, scenario_file.encode()):
+            raise Exception(EcosLib.get_last_error())
 
     def get_integer(self, identifier: str):
         val = c_int()
@@ -216,32 +260,70 @@ class EcosSimulation:
             raise Exception(EcosLib.get_last_error())
 
     def init(self, start_time: int = 0, parameter_set: str = None):
+        """
+        Initialize the simulation with a start time and an optional parameter set.
+        Args:
+            start_time (int): The time to start the simulation from in seconds. Defaults to 0.
+            parameter_set (str, optional): Optional parameter set to initialize the simulation with.
+        """
         return self._init_simulation(self.sim, start_time, None if parameter_set is None else parameter_set.encode())
 
     def step(self, num_steps: int = 1) -> float:
+        """
+        Step the simulation for a given number of steps.
+        Args:
+            num_steps (int): Number of steps to take in the simulation. Defaults to 1.
+        Returns:
+            float: The simulation time after stepping.
+        """
         return self._step_simulation(self.sim, num_steps)
 
     def step_for(self, duration: float):
-        self._step_simulation_until(self.sim, duration)
+        """
+        Step the simulation for a specified duration.
+        Args:
+            duration (float): Duration to step the simulation for in seconds.
+        """
+        self._step_simulation_for(self.sim, duration)
 
     def step_until(self, time_point: float):
+        """
+        Step the simulation until a specified time point.
+        Args:
+            time_point (float): The time point to step the simulation until in seconds.
+        """
         self._step_simulation_until(self.sim, time_point)
 
-    def reset(self) -> bool:
+    def reset(self):
+        """
+        Reset the simulation to its initial state.
+        Raises:
+            Exception: If the reset operation fails in the underlying library.
+        """
         reset_simulation = dll.ecos_simulation_reset
         reset_simulation.argtypes = [c_void_p]
         reset_simulation.restype = c_bool
 
-        return reset_simulation(self.sim)
+        if not reset_simulation(self.sim):
+            raise Exception(EcosLib.get_last_error())
 
-    def terminate(self) -> bool:
+    def terminate(self):
+        """
+        Terminate the simulation gracefully.
+        Raises:
+            Exception: If the termination operation fails in the underlying library.
+        """
         terminate_simulation = dll.ecos_simulation_terminate
         terminate_simulation.argtypes = [c_void_p]
         terminate_simulation.restype = c_bool
 
-        return terminate_simulation(self.sim)
+        if not terminate_simulation(self.sim):
+            raise Exception(EcosLib.get_last_error())
 
     def free(self):
+        """
+        Frees the resources associated with the simulation structure.
+        """
         if not self.sim is None:
             destroy_simulation = dll.ecos_simulation_destroy
             destroy_simulation.argtypes = [c_void_p]

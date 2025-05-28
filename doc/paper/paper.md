@@ -20,7 +20,7 @@ bibliography: paper.bib
 
 # Summary
 
-Ecos is cross-platform framework for running co-simulations adhering to the Functional Mock-up Interface (FMI)
+Ecos is a cross-platform framework for running co-simulations adhering to the Functional Mock-up Interface (FMI)
 standard [@blochwitz2012functional];
 an open standard for model exchange and co-simulation of dynamic systems.
 An FMU (Functional Mock-up Unit) is a self-contained component that implements the FMI standard.
@@ -32,8 +32,11 @@ It is packaged as a zip archive containing:
 
 The intention of Ecos is to provide a streamlined way of working with such FMUs,
 and supports version 1.0, 2.0 and 3.0 of the standard with respect to co-simulation.
-In particular, support for FMI 3.0[@junghanns2021functional] is still limited in many tools,
-and Ecos aims to help bridge this gap. Ecos also supports the System Structure &
+In particular, support for FMI 3.0[@junghanns2021functional] is still missing in many tools,
+and Ecos aims to help bridge this gap by providing basic support for this version. 
+In collaboration with interested users, Ecos aims to gradually expand its support for FMI 3.0, 
+working toward a more complete and practical implementation of the standard over time.
+Ecos also supports the System Structure &
 Parameterization (SSP) standard[@kohler2016modelica], which can be used to import systems of
 FMUs in a structured and tool-agnostic way.
 Ecos consists of a Command Line Interface (CLI), as well as a C++ library, _libecos_,
@@ -48,7 +51,11 @@ Some features available with Ecos:
 * Built-in plotting capabilities with inline and XML configuration options.
 * CSV writer with inline and XML configuration options.
 * Scenarios - actions to run at specific events.
-* Remoting - allowing models to interact across processes.
+* Remoting - allowing models to interact across processes/computers.
+
+In particular, remoting is a key feature of Ecos, allowing model instances to be automatically
+distributed across processes on a local machine. Instances may also be distributed across computers by 
+manually booting a server application and passing their ip-address to Ecos.
 
 ![Ecos provides post-simulation plotting facilities.\label{fig:plot}](figures/mass_spring_damper.png)
 
@@ -85,8 +92,10 @@ The software is currently being used to support the EU project TWINVEST, where N
 
 # Future of Ecos
 
-Ecos currently ships with a capable, but simple _fixed_step_ orchestration algorithm.
-The API is designed to be extensible and the goal is to include more advanced orchestration algorithms.
-However, pursuing this should be driven by a clear user need.
+Ecos currently ships with a capable, but simple Jacobi-type _fixed_step_ orchestration algorithm. 
+The algorithm can run models in parallel, and individual model may run at different rates.
+The API is designed to be extensible, and the goal is to include more advanced orchestration algorithms.
+However, pursuing this should be driven by a clear user need. In this respect, users are encouraged to provide 
+use-cases and sample simulations systems where more advanced orchestration algorithms are needed.
 
 # References

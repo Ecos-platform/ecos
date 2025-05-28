@@ -13,7 +13,7 @@ int main()
 {
     ecos_set_log_level("debug");
 
-    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/1.0/ssp/quarter_truck/resources";
+    const std::filesystem::path fmuDir = std::string(DATA_FOLDER) + "/ssp/1.0/quarter_truck/resources";
 
     const auto ss = ecos_simulation_structure_create();
     ecos_simulation_structure_add_model(ss, "chassis", (fmuDir / "chassis.fmu").string().c_str());

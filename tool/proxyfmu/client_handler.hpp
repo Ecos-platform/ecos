@@ -6,7 +6,7 @@
 #include "fmilibcpp/slave.hpp"
 
 #include "proxyfmu/opcodes.hpp"
-#include "simple_socket/TCPSocket.hpp"
+#include "simple_socket/SimpleConnection.hpp"
 #include <flatbuffers/flexbuffers.h>
 #include <spdlog/spdlog.h>
 

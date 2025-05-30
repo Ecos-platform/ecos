@@ -53,6 +53,7 @@ void create_options(CLI::App& app)
     app.add_option("--startTime", "Simulation start.")->default_val(0.0);
     app.add_option("--stepSize", "Simulation stepSize.")->required();
     app.add_option("--rtf", "Target real time factor (non-positive number -> inf).")->default_val(-1);
+    app.add_option("--parameterSet", "Name of SSP parameterSet to apply.");
     app.add_option("--csvConfig", "Path to CSV configuration.");
     app.add_option("--chartConfig", "Path to chart configuration.");
     app.add_option("--scenarioConfig", "Path to scenario configuration.");
@@ -130,7 +131,12 @@ void run_simulation(const CLI::App& vm, simulation& sim)
     const auto stepSize = vm["--stepSize"]->as<double>();
     const auto stopTime = vm["--stopTime"]->as<double>();
 
-    sim.init(startTime);
+    std::optional<std::string> parameterSetName;
+    if (vm.count("--parameterSet")) {
+        parameterSetName = vm["--parameterSet"]->as<std::string>();
+    }
+
+    sim.init(startTime, parameterSetName);
 
     const auto rtf = vm["--rtf"]->as<double>();
     simulation_runner runner(sim);

@@ -33,6 +33,69 @@ struct simulation::Impl
         , sim_(sim)
     { }
 
+    void init(std::optional<double> startTime, const std::optional<std::string>& parameterSet)
+    {
+        if (!initialized_) {
+
+            initialized_ = true;
+            log::debug("Initializing simulation..");
+
+            for (auto l = listeners_; const auto& listener : l | std::views::values) {
+                listener->pre_init(sim_);
+            }
+
+            int parameterSetAppliedCount = 0;
+            for (const auto& instance : instances_) {
+                const double start = startTime.value_or(0);
+                if (start < 0) {
+                    throw std::runtime_error("Explicitly defined startTime must be greater than 0!");
+                }
+
+                instance->enter_initialization_mode(start);
+                if (parameterSet) {
+                    if (instance->apply_parameter_set(*parameterSet)) {
+                        ++parameterSetAppliedCount;
+                    }
+                }
+            }
+            if (parameterSet) {
+                log::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
+            }
+
+            scenario_.runInitActions();
+
+            for (unsigned i = 0; i < instances_.size(); ++i) {
+                for (const auto& instance : instances_) {
+                    instance->get_properties().apply_sets();
+                    instance->get_properties().apply_gets();
+                }
+                for (const auto& c : connections_) {
+                    c->transferData();
+                }
+            }
+
+            for (const auto& instance : instances_) {
+                instance->exit_initialization_mode();
+                instance->get_properties().apply_gets();
+            }
+
+            for (const auto& c : connections_) {
+                c->transferData();
+            }
+
+            for (const auto& instance : instances_) {
+                instance->get_properties().apply_sets();
+                instance->get_properties().apply_gets();
+            }
+
+            for (auto l = listeners_; const auto& listener : listeners_ | std::views::values) {
+                listener->post_init(sim_);
+            }
+
+            log::debug("Initialized.");
+        }
+    }
+
     double step(unsigned int numStep)
     {
         if (!initialized_) {
@@ -190,65 +253,7 @@ bool simulation::terminated() const
 
 void simulation::init(std::optional<double> startTime, const std::optional<std::string>& parameterSet)
 {
-    if (!pimpl_->initialized_) {
-
-        pimpl_->initialized_ = true;
-        log::debug("Initializing simulation..");
-
-        for (auto l = pimpl_->listeners_; const auto& listener : l | std::views::values) {
-            listener->pre_init(*this);
-        }
-
-        int parameterSetAppliedCount = 0;
-        for (const auto& instance : pimpl_->instances_) {
-            double start = startTime.value_or(0);
-            if (start < 0) {
-                throw std::runtime_error("Explicitly defined startTime must be greater than 0!");
-            }
-
-            instance->enter_initialization_mode(start);
-            if (parameterSet) {
-                if (instance->apply_parameter_set(*parameterSet)) {
-                    ++parameterSetAppliedCount;
-                }
-            }
-        }
-        if (parameterSet) {
-            log::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
-        }
-
-        pimpl_->scenario_.runInitActions();
-
-        for (unsigned i = 0; i < pimpl_->instances_.size(); ++i) {
-            for (const auto& instance : pimpl_->instances_) {
-                instance->get_properties().apply_sets();
-                instance->get_properties().apply_gets();
-            }
-            for (const auto& c : pimpl_->connections_) {
-                c->transferData();
-            }
-        }
-
-        for (const auto& instance : pimpl_->instances_) {
-            instance->exit_initialization_mode();
-            instance->get_properties().apply_gets();
-        }
-
-        for (const auto& c : pimpl_->connections_) {
-            c->transferData();
-        }
-
-        for (const auto& instance : pimpl_->instances_) {
-            instance->get_properties().apply_sets();
-            instance->get_properties().apply_gets();
-        }
-
-        for (auto l = pimpl_->listeners_; const auto& listener : pimpl_->listeners_ | std::views::values) {
-            listener->post_init(*this);
-        }
-
-        log::debug("Initialized.");
-    }
+    pimpl_->init(startTime, parameterSet);
 }
 
 double simulation::step(unsigned int numStep)

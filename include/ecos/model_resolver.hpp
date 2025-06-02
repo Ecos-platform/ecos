@@ -11,6 +11,12 @@
 namespace ecos
 {
 
+/* *
+ * \brief Interface for resolving model instances from URIs.
+ *
+ * This class provides a way to resolve model instances based on a base path and a URI.
+ * It allows for custom resolution strategies by implementing the model_sub_resolver interface.
+ */
 class model_sub_resolver
 {
 public:
@@ -19,6 +25,12 @@ public:
     virtual ~model_sub_resolver() = default;
 };
 
+/* *
+ * \brief Model resolver for resolving model instances from URIs.
+ *
+ * This class manages a collection of sub-resolvers and caches resolved models.
+ * It provides methods to add sub-resolvers and resolve models based on a URI.
+ */
 class model_resolver
 {
 public:

@@ -9,6 +9,12 @@
 namespace ecos
 {
 
+/**
+ * \brief Fixed-step algorithm for co-simulation orchestration.
+ *
+ * - Supports parallel execution of model instances.
+ * - Supports multi-variate step-size for individual models.
+ */
 class fixed_step_algorithm : public algorithm
 {
 

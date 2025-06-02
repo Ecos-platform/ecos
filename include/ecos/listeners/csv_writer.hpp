@@ -12,6 +12,7 @@
 namespace ecos
 {
 
+/// Configuration for the CSV writer.
 struct csv_config
 {
 
@@ -37,6 +38,11 @@ private:
     friend class csv_writer;
 };
 
+/**
+ * \brief CSV writer for logging simulation data.
+ *
+ * This class listens to simulation events and writes specified variables to a CSV file.
+ */
 class csv_writer : public simulation_listener
 {
 
@@ -58,6 +64,7 @@ public:
 
     void on_reset() override;
 
+    /// Returns the path to the output CSV file.
     [[nodiscard]] std::filesystem::path output_path() const
     {
         return path_;

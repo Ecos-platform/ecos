@@ -90,7 +90,10 @@ private:
     std::vector<TChart> charts;
 };
 
+// Function to plot a CSV file with the given chart configuration
 void plot_csv(const std::filesystem::path& csvFile, const TChartConfig& config);
+
+// Function to plot a CSV file with a configuration file.
 void plot_csv(const std::filesystem::path& csvFile, const std::filesystem::path& plotConfig);
 
 } // namespace ecos

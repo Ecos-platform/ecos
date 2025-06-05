@@ -7,7 +7,7 @@ engine written in modern C++.
 
 ##### Ecos provides the following features:
 * FMI for Co-simulation version 1.0 & 2.0.
-* Basic support for FMI 3.0.
+* Partial support for FMI 3.0.
 * SSP version 1.0.
 * Optional per process/remote model execution.
 * Post-simulation plotting using matplotlib.
@@ -92,7 +92,7 @@ See `/examples` for various demonstrations.
 
 #### Plotting
 Ecos supports out-of-the-box plotting of simulation data using matplotlib in both C++ and Python.
-Time- and XY series plots can be configured using the `ChartConfig.xsd` XML schema located in `resources/schema/`.
+Time- and XY series plots can be configured inline or using the `ChartConfig.xsd` XML schema located in `resources/schema/`.
 See `/examples` for demonstrations.
 
 ### C++ Example

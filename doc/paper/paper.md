@@ -89,6 +89,7 @@ processes, while also keeping build dependencies to a minimum.
 | Model Exchange | Yes                        | Yes                   | No              | No                   |
 | GUI            | Basic (Individual models)  | Yes (OMEdit)          | No              | No                   |
 | CLI            | Yes                        | No                    | Yes             | Yes                  |
+| Remoting       | Yes                        | No                    | Yes             | Yes                  |
 | License        | BSD                        | OSMC-PL               | MPL             | MIT                  |
 
 

@@ -23,6 +23,9 @@ bibliography: paper.bib
 Ecos is a cross-platform framework for running co-simulations adhering to the Functional Mock-up Interface (FMI)
 standard [@blochwitz2012functional];
 an open standard for model exchange and co-simulation of dynamic systems.
+The FMI Standard provides three interface types for difference aspects of models, namely: 
+FMI for Model Exchange (ME), FMI for Co-simulation (CS), and FMI for Scheduled execution (Since FMI 3.0).
+Ecos supports the co-simulation mode, which is the most widely used interface type.
 An FMU (Functional Mock-up Unit) is a self-contained component that implements the FMI standard.
 It is packaged as a zip archive containing:
 

@@ -14,7 +14,7 @@ authors:
 affiliations:
   - name: Norwegian University of Science and Technology (NTNU), Department of ICT and Natural Sciences, Norway
     index: 1
-date: 14 April 2025
+date: 5 June 2025
 bibliography: paper.bib
 ---
 

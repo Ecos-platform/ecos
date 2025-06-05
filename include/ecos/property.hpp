@@ -17,6 +17,12 @@
 namespace ecos
 {
 
+/* *
+ * \brief Base class for properties in the simulation.
+ *
+ * Properties are used to manage variables in a simulation, allowing for getting and setting values.
+ * They can be of different types (e.g., real, integer, string, boolean) and can have input/output modifiers.
+ */
 struct property
 {
     const variable_identifier id;
@@ -53,11 +59,13 @@ struct property_t : property
         return value;
     }
 
+    // Sets the value to be applied later.
     void set_value(const T& value)
     {
         cachedSet = value;
     }
 
+    // Apply the cached set value to the property.
     void applySet() override
     {
         if (setter && cachedSet) {
@@ -80,11 +88,13 @@ struct property_t : property
         inputModifier_ = std::nullopt;
     }
 
+    // Assign an output modifier to transform any value being set
     void set_output_modifier(std::function<T(const T&)> modifier)
     {
         outputModifier_ = std::move(modifier);
     }
 
+    // Removes the output modifier, if any.
     void clear_output_modifier()
     {
         outputModifier_ = std::nullopt;

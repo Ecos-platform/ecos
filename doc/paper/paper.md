@@ -67,8 +67,8 @@ The models are packaged following the SSP standard and subsequently simulated an
 
 # Statement of need
 
-While similar tooling exists like FMPy [@FMPy], Vico [@hatledal2021vico], Open Simulation Platform (OSP) [@smogeli2020open] and OMSimulator[@ochel2019omsimulator], Ecos aims to deliver a higher level of
-flexibility, extensibility and accessibility
+While similar tooling exists like FMPy [@FMPy], Vico [@hatledal2021vico], Open Simulation Platform (OSP) [@smogeli2020open] 
+and OMSimulator [@ochel2019omsimulator], Ecos aims to deliver a higher level of flexibility, extensibility and accessibility
 through an easy-to-build and consume package. In particular,
 Ecos acts as a successor to the JVM based Vico framework, 
 improving on accessibility, usability and performance. 

@@ -35,16 +35,16 @@ It is packaged as a zip archive containing:
 
 The intention of Ecos is to provide a streamlined way of working with such FMUs,
 and supports version 1.0, 2.0 and 3.0 of the standard with respect to co-simulation.
-In particular, support for FMI 3.0[@junghanns2021functional] is still missing in many tools,
+In particular, support for FMI 3.0 [@junghanns2021functional] is still missing in many tools,
 and Ecos aims to help bridge this gap by providing partial support for this version. 
 In collaboration with interested users, Ecos aims to gradually expand its support for FMI 3.0, 
 working toward a more complete and practical implementation of the standard over time.
 Ecos also supports the System Structure &
-Parameterization (SSP) standard[@kohler2016modelica], which can be used to import systems of
+Parameterization (SSP) standard [@kohler2016modelica], which can be used to import systems of
 FMUs in a structured and tool-agnostic way.
 Ecos consists of a Command Line Interface (CLI), as well as a C++ library, _libecos_,
 with interfaces provided in C and Python. The Python package is available through the
-pypy package index as _ecospy_. The project is structured as a mono-repo with a major goal of
+PyPI package index as _ecospy_. The project is structured as a mono-repo with a major goal of
 being straightforward to build. This also implies few and light-weight dependencies.
 
 Some features available with Ecos:
@@ -58,7 +58,7 @@ Some features available with Ecos:
 
 In particular, remoting is a key feature of Ecos, allowing model instances to be automatically
 distributed across processes on a local machine. Instances may also be distributed across computers by 
-manually booting a server application and passing their ip-address to Ecos.
+manually booting a server application and passing their IP address to Ecos.
 
 ![Ecos provides post-simulation plotting facilities.\label{fig:plot}](figures/mass_spring_damper.png)
 
@@ -67,8 +67,7 @@ The models are packaged following the SSP standard and subsequently simulated an
 
 # Statement of need
 
-While similar tooling exists like FMPy[@FMPy], Vico[@hatledal2021vico], Open Simulation Platform (
-OSP) [@smogeli2020open] and OMSimulator[@ochel2019omsimulator], Ecos aims to deliver a higher level of
+While similar tooling exists like FMPy [@FMPy], Vico [@hatledal2021vico], Open Simulation Platform (OSP) [@smogeli2020open] and OMSimulator[@ochel2019omsimulator], Ecos aims to deliver a higher level of
 flexibility, extensibility and accessibility
 through an easy-to-build and consume package. In particular,
 Ecos acts as a successor to the JVM based Vico framework, 

@@ -15,39 +15,6 @@ namespace
 
 const char* separator = ", ";
 
-void writeData(std::ofstream& out, const simulation& sim, const csv_config& config)
-{
-    out << sim.iterations() << separator << sim.time();
-
-    for (const auto& instance : sim.get_instances()) {
-
-        const auto instanceName = instance->instanceName();
-        const auto& properties = instance->get_properties();
-
-        for (auto& [variableName, p] : properties.get_reals()) {
-            if (config.should_log({instanceName, variableName})) {
-                out << separator << std::to_string(p->get_value());
-            }
-        }
-        for (auto& [variableName, p] : properties.get_integers()) {
-            if (config.should_log({instanceName, variableName})) {
-                out << separator << std::to_string(p->get_value());
-            }
-        }
-        for (auto& [variableName, p] : properties.get_booleans()) {
-            if (config.should_log({instanceName, variableName})) {
-                out << separator << std::noboolalpha << p->get_value();
-            }
-        }
-        for (auto& [variableName, p] : properties.get_strings()) {
-            if (config.should_log({instanceName, variableName})) {
-                out << separator << p->get_value();
-            }
-        }
-    }
-
-    out << "\n";
-}
 
 } // namespace
 
@@ -81,13 +48,13 @@ void csv_writer::pre_init(simulation& sim)
 
 void csv_writer::post_init(simulation& sim)
 {
-    writeData(outFile_, sim, config_);
+    writeData(outFile_, sim);
 }
 
 void csv_writer::post_step(simulation& sim)
 {
     if (sim.iterations() % config().decimation_factor() == 0) {
-        writeData(outFile_, sim, config_);
+        writeData(outFile_, sim);
     }
 }
 
@@ -204,7 +171,8 @@ size_t& csv_config::decimation_factor()
 
 void csv_writer::write_header(const simulation& sim)
 {
-    outFile_ << "iterations" << separator << "time";
+    std::ostringstream line;
+    line << "iterations" << separator << "time";
 
     config_.report(sim.identifiers());
 
@@ -213,29 +181,46 @@ void csv_writer::write_header(const simulation& sim)
         const auto instanceName = instance->instanceName();
         const auto& properties = instance->get_properties();
 
-        for (const auto& variableName : properties.get_reals() | std::views::keys) {
+        for (const auto& [variableName, p] : properties.get_reals()) {
             if (config_.should_log({instanceName, variableName})) {
-                outFile_ << separator << instanceName << "::" << variableName << "[REAL]";
+                line << separator << instanceName << "::" << variableName << "[REAL]";
+                props_.emplace_back(p.get());
             }
         }
-        for (const auto& variableName : properties.get_integers() | std::views::keys) {
+        for (const auto& [variableName, p] : properties.get_integers()) {
             if (config_.should_log({instanceName, variableName})) {
-                outFile_ << separator << instanceName << "::" << variableName << "[INT]";
+                line << separator << instanceName << "::" << variableName << "[INT]";
+                props_.emplace_back(p.get());
             }
         }
-        for (const auto& variableName : properties.get_booleans() | std::views::keys) {
+        for (const auto& [variableName, p] : properties.get_booleans()) {
             if (config_.should_log({instanceName, variableName})) {
-                outFile_ << separator << instanceName << "::" << variableName << "[BOOL]";
+                line << separator << instanceName << "::" << variableName << "[BOOL]";
+                props_.emplace_back(p.get());
             }
         }
-        for (const auto& variableName : properties.get_strings() | std::views::keys) {
+        for (const auto& [variableName, p] : properties.get_strings()) {
             if (config_.should_log({instanceName, variableName})) {
-                outFile_ << separator << instanceName << "::" << variableName << "[STR]";
+                line << separator << instanceName << "::" << variableName << "[STR]";
+                props_.emplace_back(p.get());
             }
         }
     }
 
 
-    outFile_ << "\n";
+    outFile_ << line.str() << "\n";
     outFile_.flush();
+}
+
+void csv_writer::writeData(std::ofstream& out, const simulation& sim)
+{
+    std::ostringstream line;
+    line << sim.iterations() << separator << sim.time();
+
+    for (const auto& p : props_) {
+
+        line << separator << *p;
+    }
+
+    out << line.str() << "\n";
 }

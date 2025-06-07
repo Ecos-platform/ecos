@@ -54,6 +54,7 @@ set(sources
 
         "ecos/model_instance.cpp"
         "ecos/model_resolver.cpp"
+        "ecos/property.cpp"
         "ecos/simulation.cpp"
         "ecos/simulation_runner.cpp"
 

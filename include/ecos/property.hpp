@@ -33,6 +33,8 @@ struct property
 
     virtual void applySet() = 0;
 
+    friend std::ostream& operator<<(std::ostream& os, const property& p);
+
     virtual ~property() = default;
 };
 
@@ -50,7 +52,7 @@ struct property_t : property
         , setter(setter)
     { }
 
-    T get_value()
+    T get_value() const
     {
         auto value = getter();
         if (outputModifier_) {

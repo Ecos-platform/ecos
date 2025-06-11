@@ -3,6 +3,7 @@
 #define ECOS_CSV_WRITER_HPP
 
 #include "ecos/listeners/simulation_listener.hpp"
+#include "ecos/property.hpp"
 #include "ecos/variable_identifier.hpp"
 
 #include <filesystem>
@@ -76,7 +77,10 @@ private:
     std::ofstream outFile_;
     std::filesystem::path path_;
 
+    std::vector<property*> props_;
+
     void write_header(const simulation& sim);
+    void writeData(std::ofstream& out, const simulation& sim);
 };
 
 } // namespace ecos

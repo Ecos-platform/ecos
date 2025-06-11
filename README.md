@@ -1,6 +1,7 @@
 # Ecos
 
->Ecos is a co-simulation engine.
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08182/status.svg)](https://doi.org/10.21105/joss.08182)
+
 
 Ecos (Easy co-simulation) is a fast, efficient and very easy to use co-simulation
 engine written in modern C++.

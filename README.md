@@ -67,7 +67,7 @@ Ecos enables models to run on separate processes, possibly on another PC.  <br>
 Simply prepend `proxyfmu://localhost?file=` to the path of the `fmu(s)` you load. <br>
 When targeting an external `proxyfmu` instance, replace `localhost` with `host:port`. 
 For each FMU instance created when using `proxyfmu` a new process is created. 
-When targeting localhost, Unix Domain Sockets are used, while TCP/IP is used when targeting 
+When targeting localhost, shared memory is used, while TCP/IP is used when targeting 
 a remote process started with `proxufmu boot --port <portNumber>`.
 To successfully make use of `proxyfmu`, make sure the executable built by the project 
 is located in the working directory of your application or added to `PATH`

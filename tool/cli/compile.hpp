@@ -17,12 +17,23 @@ const char* fmi3Functions();
 const char* fmi3PlatformTypes();
 const char* fmi3FunctionTypes();
 
+inline std::string get_target_platform()
+{
+#ifdef _WIN32
+    return "x86_64-windows";
+#else
+    return "x86_64-linux";
+#endif
+    throw std::runtime_error("unsupported platform");
+}
+
 inline void create_compile_options(CLI::App& app)
 {
     auto compile = app.add_subcommand("compile");
 
     compile->add_option("--fmu", "Location of the fmu to compile.")->required();
-    // compile->add_option("--save", "Location of the fmu to compile.")->required();
+    compile->add_option("--dest", "Save location of the compiled fmu.");
+    compile->add_flag("--force", "Overwrite any existing binary for current platform.");
 }
 
 struct BuildInfo
@@ -89,6 +100,15 @@ BuildInfo parse_build_description(const std::filesystem::path& xml_path)
 inline void parse_compile_options(const CLI::App& app)
 {
     const std::filesystem::path path = app["--fmu"]->as<std::string>();
+    std::filesystem::path dest = std::filesystem::current_path();
+    if (app.count("--dest")) {
+        dest = app["--dest"]->as<std::string>();
+        if (dest.string() == ".") {
+            dest = std::filesystem::current_path();
+        }
+    }
+
+    const bool force = app.count("--force") ? true : false;
 
     if (!exists(path)) {
         throw std::runtime_error("No such file: " + absolute(path).string());
@@ -99,24 +119,36 @@ inline void parse_compile_options(const CLI::App& app)
     }
 
     const auto tmp = temp_dir("fmu_compile");
+    const auto extractDir = tmp.path() / "source_fmu";
+    auto sourcesDir = extractDir / "sources";
+    const auto buildFolder = tmp.path() / "build";
+    const auto binaryDir = extractDir / "binaries" / get_target_platform();
 
-    std::cout << "Extracting FMU to: " << tmp.path().string() << std::endl;
 
+    std::cout << "Extracting FMU to: " << extractDir.string() << std::endl;
+
+    std::filesystem::create_directories(extractDir);
     // extract fmu into tmp
-    unzip(path, tmp.path());
+    unzip(path, extractDir);
 
-    if (!std::filesystem::exists(tmp.path() / "sources")) {
-        throw std::runtime_error("FMU does not contain sources: " + tmp.path().string());
+    if (!std::filesystem::exists(sourcesDir)) {
+        throw std::runtime_error("FMU does not contain sources: " + extractDir.string());
     }
 
-    if (!std::filesystem::exists(tmp.path() / "sources" / "buildDescription.xml")) {
+    std::filesystem::path workingSources = tmp.path() / "sources";
+    std::filesystem::copy(sourcesDir, workingSources, std::filesystem::copy_options::recursive);
+    sourcesDir = workingSources;
+
+    if (!std::filesystem::exists(sourcesDir / "buildDescription.xml")) {
         throw std::runtime_error("FMU does not contain buildDescription.xml");
     }
 
-    auto buildFolder = tmp.path() / "build";
-    auto sourcesDir = tmp.path() / "sources";
+    if (!force && std::filesystem::exists(binaryDir)) {
+        std::cout << "Binary for current platform already exists at: " << binaryDir.string() << std::endl;
+        return; // binary already exists
+    }
 
-    auto desc = parse_build_description(sourcesDir / "buildDescription.xml");
+    const auto desc = parse_build_description(sourcesDir / "buildDescription.xml");
     if (desc.sourceFileSets.empty()) throw std::runtime_error("No SourceFileSet found in buildDescription.xml");
 
     const auto& modelIdentifier = desc.modelIdentifier;
@@ -136,21 +168,30 @@ inline void parse_compile_options(const CLI::App& app)
     }
 
     {
+        const std::string destinationFile = (dest / modelIdentifier).string() + "_compiled.fmu";
+
+        auto sanitize = [](std::string path) {
+            std::ranges::replace(path, '\\', '/');
+            return path;
+        };
+
         std::ostringstream cmakeLists;
         cmakeLists << "cmake_minimum_required(VERSION 3.15)\n";
         cmakeLists << "project(CompileFMU)\n\n";
+        cmakeLists << "set(CMAKE_MSVC_RUNTIME_LIBRARY \"MultiThreaded$<$<CONFIG:Debug>:Debug>\")\n";
         cmakeLists << "set(" << langMap[sourceSet.language] << ")\n\n";
+
         cmakeLists << "add_library(" << modelIdentifier << " SHARED\n";
         for (const auto& file : sourceSet.sources) {
-            cmakeLists << file << "\n";
+            cmakeLists << "\t" << file << "\n";
         }
         cmakeLists << ")\n";
 
-        cmakeLists << "target_include_directories(" << modelIdentifier << " PRIVATE .)\n";
+        cmakeLists << "target_include_directories(" << modelIdentifier << " PRIVATE \"${CMAKE_CURRENT_SOURCE_DIR}\")\n";
         if (!sourceSet.includeDirectories.empty()) {
             cmakeLists << "target_include_directories(" << modelIdentifier << " PRIVATE\n";
-            for (auto includeDir : sourceSet.includeDirectories) {
-                cmakeLists << includeDir << "\n";
+            for (const auto& includeDir : sourceSet.includeDirectories) {
+                cmakeLists << "\t\"" << includeDir << "\"" << "\n";
             }
             cmakeLists << ")\n";
         }
@@ -158,35 +199,64 @@ inline void parse_compile_options(const CLI::App& app)
             cmakeLists << "target_compile_definitions(" << modelIdentifier << " PRIVATE\n";
             for (const auto& [key, value] : sourceSet.preprocessorDefinitions) {
                 if (value.empty()) {
-                    cmakeLists << key << "\n";
+                    cmakeLists << "\t" << key << "\n";
                 } else {
-                    cmakeLists << key << "=" << value << "\n";
+                    cmakeLists << "\t" << key << "=" << value << "\n";
                 }
             }
             cmakeLists << ")\n";
         }
 
+
+        cmakeLists << "if (CMAKE_CONFIGURATION_TYPES)\n";
+        cmakeLists << "\tforeach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})\n";
+        cmakeLists << "\t\tstring(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UPPER)\n";
+        cmakeLists << "\t\tset_target_properties(" << modelIdentifier << " PROPERTIES\n";
+        cmakeLists << "\t\t\tRUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} \"" << sanitize(binaryDir.string()) << "\"\n";
+        cmakeLists << "\t\t\tLIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} \"" << sanitize(binaryDir.string()) << "\"\n";
+        cmakeLists << "\t\t\tARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} \"" << sanitize(binaryDir.string()) << "\"\n";
+        cmakeLists << "\t\t)\n";
+        cmakeLists << "\tendforeach()\n";
+        cmakeLists << "else()\n";
+        cmakeLists << "\tset_target_properties(" << modelIdentifier << " PROPERTIES\n";
+        cmakeLists << "\t\tRUNTIME_OUTPUT_DIRECTORY \"" << sanitize(binaryDir.string()) << "\"\n";
+        cmakeLists << "\t\tLIBRARY_OUTPUT_DIRECTORY \"" << sanitize(binaryDir.string()) << "\"\n";
+        cmakeLists << "\t\tARCHIVE_OUTPUT_DIRECTORY \"" << sanitize(binaryDir.string()) << "\"\n";
+        cmakeLists << "\t)\n";
+        cmakeLists << "endif()\n";
+
+
+        cmakeLists << "\tset_target_properties(" << modelIdentifier << "\n";
+        cmakeLists << "\t\tPROPERTIES\n";
+        cmakeLists << "\t\tPREFIX \"\" \n";
+        cmakeLists << "\t)\n";
+
+        cmakeLists << "add_custom_command(TARGET " << modelIdentifier << " POST_BUILD\n";
+        cmakeLists << "\tWORKING_DIRECTORY \"" << sanitize(extractDir.string()) << "\"\n";
+        cmakeLists << "\tCOMMAND ${CMAKE_COMMAND} -E tar cf \"" << sanitize(destinationFile) << "\" --format=zip ." << "\n";
+        cmakeLists << ")\n";
+
         {
             std::ofstream outFile;
-            outFile.open((tmp.path() / "sources" / "CMakeLists.txt").string());
+            outFile.open((sourcesDir / "CMakeLists.txt"));
             outFile << cmakeLists.str();
         }
 
         {
             std::ofstream outFile;
-            outFile.open(tmp.path() / "sources" / "fmi3Functions.h");
+            outFile.open(sourcesDir / "fmi3Functions.h");
             outFile << fmi3Functions();
         }
 
         {
             std::ofstream outFile;
-            outFile.open(tmp.path() / "sources" / "fmi3PlatformTypes.h");
+            outFile.open(sourcesDir / "fmi3PlatformTypes.h");
             outFile << fmi3PlatformTypes();
         }
 
         {
             std::ofstream outFile;
-            outFile.open(tmp.path() / "sources" / "fmi3FunctionTypes.h");
+            outFile.open(sourcesDir / "fmi3FunctionTypes.h");
             outFile << fmi3FunctionTypes();
         }
 
@@ -198,6 +268,7 @@ inline void parse_compile_options(const CLI::App& app)
             sourceDirStr.c_str(),
             "-B",
             buildFolderStr.c_str(),
+            "-DCMAKE_BUILD_TYPE=Release",
             nullptr};
 
         std::vector<const char*> compileCommand{
@@ -205,6 +276,14 @@ inline void parse_compile_options(const CLI::App& app)
             "--build",
             buildFolderStr.c_str(),
             nullptr};
+
+#ifdef _WIN32
+        configureCommand.insert(configureCommand.end() - 1, "-A");
+        configureCommand.insert(configureCommand.end() - 1, "x64");
+
+        compileCommand.insert(compileCommand.end() - 1, "--config");
+        compileCommand.insert(compileCommand.end() - 1, "Release");
+#endif
 
 
         subprocess_s proc{};
@@ -241,6 +320,9 @@ inline void parse_compile_options(const CLI::App& app)
         if (res != 0 || status != 0) {
             throw std::runtime_error("CMake build failed");
         }
+
+        // zip again
+        const auto outputFmu = std::filesystem::absolute(path.parent_path() / (modelIdentifier + "_compiled.fmu"));
     }
 }
 

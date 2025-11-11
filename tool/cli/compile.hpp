@@ -144,7 +144,7 @@ inline void parse_compile_options(const CLI::App& app)
     }
 
     if (!force && std::filesystem::exists(binaryDir)) {
-        std::cout << "Binary for current platform already exists at: " << binaryDir.string() << std::endl;
+        std::cout << "Binary for current platform already exists at: " << binaryDir.string() << ". To overwrite use --force" << std::endl;
         return; // binary already exists
     }
 
@@ -320,9 +320,6 @@ inline void parse_compile_options(const CLI::App& app)
         if (res != 0 || status != 0) {
             throw std::runtime_error("CMake build failed");
         }
-
-        // zip again
-        const auto outputFmu = std::filesystem::absolute(path.parent_path() / (modelIdentifier + "_compiled.fmu"));
     }
 }
 

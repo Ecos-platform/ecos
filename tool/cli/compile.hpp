@@ -14,8 +14,8 @@ namespace ecos
 {
 
 const char* fmi3Functions();
-std::string fmi3PlatformTypes();
-std::string fmi3FunctionTypes();
+const char* fmi3PlatformTypes();
+const char* fmi3FunctionTypes();
 
 inline void create_compile_options(CLI::App& app)
 {
@@ -246,9 +246,12 @@ inline void parse_compile_options(const CLI::App& app)
 
 } // namespace ecos
 
-inline std::string ecos::fmi3Functions()
+inline const char* ecos::fmi3Functions()
 {
-    return R"(
+
+    static std::string s(
+
+        R"(
 #ifndef fmi3Functions_h
 #define fmi3Functions_h
 
@@ -355,7 +358,8 @@ it may be set to __declspec(dllimport).
 
 /* FMI version */
 #define fmi3Version "3.0"
-
+)"
+        R"(
 /***************************************************
 Common Functions
 ****************************************************/
@@ -550,7 +554,8 @@ FMI3_Export fmi3SetShiftDecimalTYPE        fmi3SetShiftDecimal;
 FMI3_Export fmi3SetShiftFractionTYPE       fmi3SetShiftFraction;
 FMI3_Export fmi3EvaluateDiscreteStatesTYPE fmi3EvaluateDiscreteStates;
 FMI3_Export fmi3UpdateDiscreteStatesTYPE   fmi3UpdateDiscreteStates;
-
+)"
+        R"(
 /***************************************************
 Functions for Model Exchange
 ****************************************************/
@@ -592,13 +597,16 @@ FMI3_Export fmi3ActivateModelPartitionTYPE fmi3ActivateModelPartition;
 #endif
 
 #endif /* fmi3Functions_h */
+)");
 
-)";
+    return s.c_str();
 }
 
-inline std::string ecos::fmi3FunctionTypes()
+inline const char* ecos::fmi3FunctionTypes()
 {
-    return R"(
+    static std::string s(
+
+        R"(
 #ifndef fmi3FunctionTypes_h
 #define fmi3FunctionTypes_h
 
@@ -709,7 +717,8 @@ typedef void (*fmi3UnlockPreemptionCallback) (void);
 /* end::CallbackPreemptionLock[] */
 
 /* Define fmi3 function pointer types to simplify dynamic loading */
-
+)"
+        R"(
 /***************************************************
 Types for Common Functions
 ****************************************************/
@@ -875,7 +884,8 @@ typedef fmi3Status fmi3GetBinaryTYPE (fmi3Instance instance,
                                       fmi3Binary values[],
                                       size_t nValues);
 /* end::Getters[] */
-
+)"
+        R"(
 /* tag::GetClock[] */
 typedef fmi3Status fmi3GetClockTYPE  (fmi3Instance instance,
                                       const fmi3ValueReference valueReferences[],
@@ -1019,7 +1029,8 @@ typedef fmi3Status fmi3DeserializeFMUStateTYPE   (fmi3Instance instance,
                                                   size_t size,
                                                   fmi3FMUState* FMUState);
 /* end::DeserializeFMUState[] */
-
+)"
+        R"(
 /* Getting partial derivatives */
 /* tag::GetDirectionalDerivative[] */
 typedef fmi3Status fmi3GetDirectionalDerivativeTYPE(fmi3Instance instance,
@@ -1130,7 +1141,8 @@ typedef fmi3Status fmi3UpdateDiscreteStatesTYPE(fmi3Instance instance,
                                                 fmi3Boolean* nextEventTimeDefined,
                                                 fmi3Float64* nextEventTime);
 /* end::UpdateDiscreteStates[] */
-
+)"
+        R"(
 /***************************************************
 Types for Functions for Model Exchange
 ****************************************************/
@@ -1191,7 +1203,8 @@ typedef fmi3Status fmi3GetNumberOfEventIndicatorsTYPE(fmi3Instance instance,
 typedef fmi3Status fmi3GetNumberOfContinuousStatesTYPE(fmi3Instance instance,
                                                        size_t* nContinuousStates);
 /* end::GetNumberOfContinuousStates[] */
-
+)"
+        R"(
 /***************************************************
 Types for Functions for Co-Simulation
 ****************************************************/
@@ -1237,13 +1250,14 @@ typedef fmi3Status fmi3ActivateModelPartitionTYPE(fmi3Instance instance,
 #endif
 
 #endif /* fmi3FunctionTypes_h */
+)");
 
-)";
+    return s.c_str();
 }
 
-inline std::string ecos::fmi3PlatformTypes()
+inline const char* ecos::fmi3PlatformTypes()
 {
-    return R"(
+    static std::string s = R"(
 #ifndef fmi3PlatformTypes_h
 #define fmi3PlatformTypes_h
 
@@ -1340,8 +1354,9 @@ typedef            bool fmi3Clock;    /* Data type to be used with fmi3ClockActi
 #endif /* fmi3PlatformTypes_h */
 
 )";
-}
 
+    return s.c_str();
+}
 
 
 #endif // LIBECOS_COMPILE_HPP

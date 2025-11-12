@@ -9,6 +9,7 @@
 #include "subprocess/subprocess.h"
 
 #include <cli11/CLI11.h>
+#include <utility>
 
 namespace ecos
 {
@@ -51,7 +52,7 @@ struct BuildInfo
     std::vector<SourceFileSetInfo> sourceFileSets;
 };
 
-BuildInfo parse_build_description(const std::filesystem::path& xml_path)
+inline BuildInfo parse_build_description(const std::filesystem::path& xml_path)
 {
     pugi::xml_document doc;
     pugi::xml_parse_result res = doc.load_file(xml_path.string().c_str());
@@ -96,16 +97,45 @@ BuildInfo parse_build_description(const std::filesystem::path& xml_path)
     return info;
 }
 
+class ScopedFolder
+{
+public:
+    explicit ScopedFolder(std::filesystem::path path)
+        : folderPath_(std::move(path))
+    {
+        std::filesystem::create_directories(folderPath_);
+    }
+
+    ~ScopedFolder() noexcept
+    {
+        std::cout << "Removing temporary folder: " << folderPath_.string() << std::endl;
+        try {
+            if (std::filesystem::exists(folderPath_)) {
+                std::filesystem::remove_all(folderPath_);
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to remove folder '" << folderPath_ << "': " << e.what() << '\n';
+        }
+    }
+
+    [[nodiscard]] const std::filesystem::path& path() const noexcept { return folderPath_; }
+
+private:
+    std::filesystem::path folderPath_;
+};
+
 
 inline void parse_compile_options(const CLI::App& app)
 {
     const std::filesystem::path path = app["--fmu"]->as<std::string>();
-    std::filesystem::path dest = std::filesystem::current_path();
+    std::filesystem::path destFolder;
     if (app.count("--dest")) {
-        dest = app["--dest"]->as<std::string>();
-        if (dest.string() == ".") {
-            dest = std::filesystem::current_path();
+        destFolder = app["--dest"]->as<std::string>();
+        if (destFolder.string() == ".") {
+            destFolder = std::filesystem::current_path();
         }
+    } else {
+        destFolder = path.parent_path();
     }
 
     const bool force = app.count("--force") ? true : false;
@@ -123,9 +153,10 @@ inline void parse_compile_options(const CLI::App& app)
     auto sourcesDir = extractDir / "sources";
     const auto buildFolder = tmp.path() / "build";
     const auto binaryDir = extractDir / "binaries" / get_target_platform();
+    const auto binaryDirAbsolute = std::filesystem::absolute(binaryDir);
 
 
-    std::cout << "Extracting FMU to: " << extractDir.string() << std::endl;
+    std::cout << "Extracting "<< path.string() << " to: " << extractDir.string() << std::endl;
 
     std::filesystem::create_directories(extractDir);
     // extract fmu into tmp
@@ -157,10 +188,12 @@ inline void parse_compile_options(const CLI::App& app)
     std::map<std::string, std::string> langMap{
         {"C99", "CMAKE_C_STANDARD 99"},
         {"C11", "CMAKE_C_STANDARD 11"},
+        {"C17", "CMAKE_C_STANDARD 17"},
         {"C++11", "CMAKE_CXX_STANDARD 11"},
         {"C++14", "CMAKE_CXX_STANDARD 14"},
         {"C++17", "CMAKE_CXX_STANDARD 17"},
         {"C++20", "CMAKE_CXX_STANDARD 20"},
+        {"C++23", "CMAKE_CXX_STANDARD 23"},
     };
 
     if (!langMap.contains(sourceSet.language)) {
@@ -168,7 +201,7 @@ inline void parse_compile_options(const CLI::App& app)
     }
 
     {
-        const std::string destinationFile = (dest / modelIdentifier).string() + "_compiled.fmu";
+        const std::filesystem::path destinationFile = destFolder / (path.stem().string() +  ".fmu");
 
         auto sanitize = [](std::string path) {
             std::ranges::replace(path, '\\', '/');
@@ -207,21 +240,28 @@ inline void parse_compile_options(const CLI::App& app)
             cmakeLists << ")\n";
         }
 
+        cmakeLists << "if (WIN32)\n";
+        cmakeLists << "\ttarget_compile_definitions(" << modelIdentifier << " PUBLIC\n";
+        cmakeLists << "\t\t\"FMI3_Export=__declspec(dllexport)\"\n";
+        cmakeLists << "\t\t\"FMI3_FUNCTION_PREFIX=\"\n";
+        cmakeLists << "\t)\n";
+        cmakeLists << "endif()\n\n";
 
+        const auto sanitizedBinaryDir = sanitize(binaryDirAbsolute.string());
         cmakeLists << "if (CMAKE_CONFIGURATION_TYPES)\n";
         cmakeLists << "\tforeach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})\n";
         cmakeLists << "\t\tstring(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG_UPPER)\n";
         cmakeLists << "\t\tset_target_properties(" << modelIdentifier << " PROPERTIES\n";
-        cmakeLists << "\t\t\tRUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} \"" << sanitize(binaryDir.string()) << "\"\n";
-        cmakeLists << "\t\t\tLIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} \"" << sanitize(binaryDir.string()) << "\"\n";
-        cmakeLists << "\t\t\tARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} \"" << sanitize(binaryDir.string()) << "\"\n";
+        cmakeLists << "\t\t\tRUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} \"" << sanitizedBinaryDir << "\"\n";
+        cmakeLists << "\t\t\tLIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} \"" << sanitizedBinaryDir << "\"\n";
+        cmakeLists << "\t\t\tARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG_UPPER} \"" << sanitizedBinaryDir << "\"\n";
         cmakeLists << "\t\t)\n";
         cmakeLists << "\tendforeach()\n";
         cmakeLists << "else()\n";
         cmakeLists << "\tset_target_properties(" << modelIdentifier << " PROPERTIES\n";
-        cmakeLists << "\t\tRUNTIME_OUTPUT_DIRECTORY \"" << sanitize(binaryDir.string()) << "\"\n";
-        cmakeLists << "\t\tLIBRARY_OUTPUT_DIRECTORY \"" << sanitize(binaryDir.string()) << "\"\n";
-        cmakeLists << "\t\tARCHIVE_OUTPUT_DIRECTORY \"" << sanitize(binaryDir.string()) << "\"\n";
+        cmakeLists << "\t\tRUNTIME_OUTPUT_DIRECTORY \"" << sanitizedBinaryDir << "\"\n";
+        cmakeLists << "\t\tLIBRARY_OUTPUT_DIRECTORY \"" << sanitizedBinaryDir << "\"\n";
+        cmakeLists << "\t\tARCHIVE_OUTPUT_DIRECTORY \"" << sanitizedBinaryDir << "\"\n";
         cmakeLists << "\t)\n";
         cmakeLists << "endif()\n";
 
@@ -233,8 +273,10 @@ inline void parse_compile_options(const CLI::App& app)
 
         cmakeLists << "add_custom_command(TARGET " << modelIdentifier << " POST_BUILD\n";
         cmakeLists << "\tWORKING_DIRECTORY \"" << sanitize(extractDir.string()) << "\"\n";
-        cmakeLists << "\tCOMMAND ${CMAKE_COMMAND} -E tar cf \"" << sanitize(destinationFile) << "\" --format=zip ." << "\n";
+        cmakeLists << "\tCOMMAND ${CMAKE_COMMAND} -E tar cf \"" << sanitize(destinationFile.string()) << "\" --format=zip ." << "\n";
         cmakeLists << ")\n";
+
+        std::cout << "Creating FMU at " << destinationFile << std::endl;
 
         {
             std::ofstream outFile;

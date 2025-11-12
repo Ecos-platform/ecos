@@ -6,6 +6,8 @@
 #include "util/temp_dir.hpp"
 #include "util/unzipper.hpp"
 
+#include "ecos/logger/logger.hpp"
+
 #include "subprocess/subprocess.h"
 
 #include <cli11/CLI11.h>
@@ -97,34 +99,6 @@ inline BuildInfo parse_build_description(const std::filesystem::path& xml_path)
     return info;
 }
 
-class ScopedFolder
-{
-public:
-    explicit ScopedFolder(std::filesystem::path path)
-        : folderPath_(std::move(path))
-    {
-        std::filesystem::create_directories(folderPath_);
-    }
-
-    ~ScopedFolder() noexcept
-    {
-        std::cout << "Removing temporary folder: " << folderPath_.string() << std::endl;
-        try {
-            if (std::filesystem::exists(folderPath_)) {
-                std::filesystem::remove_all(folderPath_);
-            }
-        } catch (const std::exception& e) {
-            std::cerr << "Failed to remove folder '" << folderPath_ << "': " << e.what() << '\n';
-        }
-    }
-
-    [[nodiscard]] const std::filesystem::path& path() const noexcept { return folderPath_; }
-
-private:
-    std::filesystem::path folderPath_;
-};
-
-
 inline void parse_compile_options(const CLI::App& app)
 {
     const std::filesystem::path path = app["--fmu"]->as<std::string>();
@@ -156,10 +130,8 @@ inline void parse_compile_options(const CLI::App& app)
     const auto binaryDirAbsolute = std::filesystem::absolute(binaryDir);
 
 
-    std::cout << "Extracting "<< path.string() << " to: " << extractDir.string() << std::endl;
-
+    log::info("Extracting FMU {} to: {}", path.string(), extractDir.string());
     std::filesystem::create_directories(extractDir);
-    // extract fmu into tmp
     unzip(path, extractDir);
 
     if (!std::filesystem::exists(sourcesDir)) {
@@ -175,7 +147,7 @@ inline void parse_compile_options(const CLI::App& app)
     }
 
     if (!force && std::filesystem::exists(binaryDir)) {
-        std::cout << "Binary for current platform already exists at: " << binaryDir.string() << ". To overwrite use --force" << std::endl;
+        log::warn("Binary for current platform already exists at: {}. To overwrite use --force", binaryDir.string());
         return; // binary already exists
     }
 
@@ -201,7 +173,7 @@ inline void parse_compile_options(const CLI::App& app)
     }
 
     {
-        const std::filesystem::path destinationFile = destFolder / (path.stem().string() +  ".fmu");
+        const std::filesystem::path destinationFile = destFolder / (path.stem().string() + ".fmu");
 
         auto sanitize = [](std::string path) {
             std::ranges::replace(path, '\\', '/');
@@ -276,7 +248,7 @@ inline void parse_compile_options(const CLI::App& app)
         cmakeLists << "\tCOMMAND ${CMAKE_COMMAND} -E tar cf \"" << sanitize(destinationFile.string()) << "\" --format=zip ." << "\n";
         cmakeLists << ")\n";
 
-        std::cout << "Creating FMU at " << destinationFile << std::endl;
+        log::info("Creating FMU at {}", destinationFile.string());
 
         {
             std::ofstream outFile;

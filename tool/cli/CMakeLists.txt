@@ -7,6 +7,7 @@ target_link_libraries(ecos
 target_include_directories(ecos
         PRIVATE
         "${THIRD_PARTY_INCLUDE_DIR}"
+        "${PROJECT_SOURCE_DIR}/src"
 )
 
 add_custom_command(TARGET ecos POST_BUILD

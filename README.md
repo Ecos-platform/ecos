@@ -164,19 +164,27 @@ int main() {
 Options:
   -h,--help                   Print this help message and exit
   -v,--version                Display program version information and exit
-  -i,--interactive            Make execution interactive.
-  --noCsv                     Disable CSV logging.
-  --noParallel                Run single-threaded.
-  --path REQUIRED             Location of the fmu/ssp to simulate.
-  --stopTime [1]              Simulation end.
-  --startTime [0]             Simulation start.
-  --stepSize REQUIRED         Simulation stepSize.
-  --rtf [-1]                  Target real time factor (non-positive number -> inf).
-  --csvConfig                 Path to CSV configuration.
-  --chartConfig               Path to chart configuration.
-  --scenarioConfig            Path to scenario configuration.
-  -l,--logLevel ENUM:value in {trace->0,debug->1,info->2,warn->3,err->4,off->5} OR {0,1,2,3,4,5}
-                              Specify log level.
+  
+  subcommands:
+    simulate
+      -i,--interactive            Make execution interactive.
+      --noCsv                     Disable CSV logging.
+      --noParallel                Run single-threaded.
+      --path REQUIRED             Location of the fmu/ssp to simulate.
+      --stopTime [1]              Simulation end.
+      --startTime [0]             Simulation start.
+      --stepSize REQUIRED         Simulation stepSize.
+      --rtf [-1]                  Target real time factor (non-positive number -> inf).
+      --csvConfig                 Path to CSV configuration.
+      --chartConfig               Path to chart configuration.
+      --scenarioConfig            Path to scenario configuration.
+      -l,--logLevel ENUM:value in {trace->0,debug->1,info->2,warn->3,err->4,off->5} OR {0,1,2,3,4,5}
+                                  Specify log level.
+      
+    compile
+        --path REQUIRED         Location of the model to compile as FMU.
+        --dest                  Output path for generated FMU.
+        --force                 Overwrite existing binaries (if any).
 ```
 
 ### Python interface

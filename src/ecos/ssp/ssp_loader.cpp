@@ -28,7 +28,7 @@ public:
         for (const auto& [name, component] : components) {
             auto model = resolver->resolve(desc_.dir(), component.source);
             if (!model) throw std::runtime_error("Could not resolve model: " + component.source);
-            add_model(name, std::move(model));
+            add_model(name, std::move(model), component.stepSizeHint);
         }
 
         for (const auto& connection : connections) {

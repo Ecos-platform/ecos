@@ -65,6 +65,7 @@ struct Component
 {
     std::string name;
     std::string source;
+    std::optional<double> stepSizeHint;
     std::unordered_map<std::string, Connector> connectors;
     std::unordered_map<std::string, ParameterSet> parameterSets;
 

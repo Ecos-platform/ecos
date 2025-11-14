@@ -14,7 +14,7 @@ class fmi2_fmu : public fmu
 {
 
 public:
-    explicit fmi2_fmu(std::unique_ptr<fmicontext> ctx, bool fmiLogging = true);
+    explicit fmi2_fmu(std::unique_ptr<fmicontext> ctx);
 
     [[nodiscard]] const model_description& get_model_description() const override;
 

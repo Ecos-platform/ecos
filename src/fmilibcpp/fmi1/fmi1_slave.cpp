@@ -53,8 +53,7 @@ namespace fmilibcpp
 fmi1_slave::fmi1_slave(
     const std::shared_ptr<fmicontext>& ctx,
     const std::string& instanceName,
-    model_description md,
-    bool fmiLogging)
+    model_description md)
     : slave(instanceName)
     , ctx_(ctx)
     , md_(std::move(md))
@@ -66,10 +65,10 @@ fmi1_slave::fmi1_slave(
         1000,
         fmi1False,
         fmi1False,
-        fmiLogging ? fmilogger : noopfmilogger,
+        fmilogger,
         std::calloc, std::free,
         nullptr,
-        fmiLogging ? fmi1True : fmi1False);
+        fmi1False);
 
     if (!component_) {
         fmi1_slave::freeInstance();
@@ -80,6 +79,11 @@ fmi1_slave::fmi1_slave(
 const model_description& fmi1_slave::get_model_description() const
 {
     return md_;
+}
+
+void fmi1_slave::set_debug_logging(bool flag)
+{
+    fmi1_setDebugLogging(component_, flag ? fmi1True : fmi1False);
 }
 
 bool fmi1_slave::enter_initialization_mode(double start_time, double stop_time, double /*tolerance*/)

@@ -27,6 +27,8 @@ public:
 
     [[nodiscard]] const fmilibcpp::model_description& get_model_description() const override;
 
+    void set_debug_logging(bool flag) override;
+
     bool enter_initialization_mode(double start_time, double stop_time, double tolerance) override;
     bool exit_initialization_mode() override;
 

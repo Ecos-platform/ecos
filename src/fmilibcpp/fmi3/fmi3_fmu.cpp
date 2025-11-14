@@ -9,9 +9,8 @@
 namespace fmilibcpp
 {
 
-fmi3_fmu::fmi3_fmu(std::unique_ptr<fmicontext> ctx, bool fmiLogging)
+fmi3_fmu::fmi3_fmu(std::unique_ptr<fmicontext> ctx)
     : ctx_(std::move(ctx))
-    , fmiLogging_(fmiLogging)
     , md_(create_fmi3_model_description(ctx_->get()))
 {
     if (!fmi3_supportsCoSimulation(ctx_->get())) {
@@ -26,7 +25,7 @@ const model_description& fmi3_fmu::get_model_description() const
 
 std::unique_ptr<slave> fmi3_fmu::new_instance(const std::string& instanceName)
 {
-    return std::make_unique<fmi3_slave>(ctx_, instanceName, md_, fmiLogging_);
+    return std::make_unique<fmi3_slave>(ctx_, instanceName, md_);
 }
 
 fmi3_fmu::~fmi3_fmu() = default;

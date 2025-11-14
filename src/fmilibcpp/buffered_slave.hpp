@@ -31,6 +31,11 @@ public:
         return slave_->get_model_description();
     }
 
+    void set_debug_logging(bool flag) override
+    {
+        slave_->set_debug_logging(flag);
+    }
+
     bool enter_initialization_mode(double start_time = 0, double stop_time = 0, double tolerance = 0) override
     {
         bool status = slave_->enter_initialization_mode(start_time, stop_time, tolerance);

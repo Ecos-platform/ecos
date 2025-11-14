@@ -109,6 +109,11 @@ public:
         properties_.add_listener(std::make_unique<prop_lister>(*slave_));
     }
 
+    void set_debug_logging(bool flag) override
+    {
+        slave_->set_debug_logging(flag);
+    }
+
     void enter_initialization_mode(double start) override
     {
         slave_->enter_initialization_mode(start);

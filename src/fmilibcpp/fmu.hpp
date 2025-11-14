@@ -23,7 +23,7 @@ public:
 };
 
 
-std::unique_ptr<fmu> loadFmu(const std::filesystem::path& fmuPath, bool fmiLogging = true);
+std::unique_ptr<fmu> loadFmu(const std::filesystem::path& fmuPath);
 
 } // namespace fmilibcpp
 

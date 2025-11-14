@@ -9,14 +9,15 @@
 namespace
 {
 
-const char* fmi3StatusToString(fmi3Status status) {
+const char* fmi3StatusToString(fmi3Status status)
+{
     switch (status) {
-        case fmi3OK:      return "OK";
+        case fmi3OK: return "OK";
         case fmi3Warning: return "Warning";
         case fmi3Discard: return "Discard";
-        case fmi3Error:   return "Error";
-        case fmi3Fatal:   return "Fatal";
-        default:          return "Unknown";
+        case fmi3Error: return "Error";
+        case fmi3Fatal: return "Fatal";
+        default: return "Unknown";
     }
 }
 
@@ -42,8 +43,7 @@ namespace fmilibcpp
 fmi3_slave::fmi3_slave(
     const std::shared_ptr<fmicontext>& ctx,
     const std::string& instanceName,
-    model_description md,
-    bool fmiLogging)
+    model_description md)
     : slave(instanceName)
     , ctx_(ctx)
     , md_(std::move(md))
@@ -52,7 +52,7 @@ fmi3_slave::fmi3_slave(
     instance_ = fmi3_instantiateCoSimulation(
         ctx_->get(),
         fmi3False,
-        fmiLogging,
+        fmi3False,
         fmi3False,
         fmi3False,
         nullptr,
@@ -70,6 +70,11 @@ fmi3_slave::fmi3_slave(
 const model_description& fmi3_slave::get_model_description() const
 {
     return md_;
+}
+
+void fmi3_slave::set_debug_logging(bool flag)
+{
+    fmi3_setDebugLogging(instance_, flag, 0, nullptr);
 }
 
 bool fmi3_slave::enter_initialization_mode(double start_time, double stop_time, double tolerance)

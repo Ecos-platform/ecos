@@ -20,10 +20,11 @@ public:
     fmi1_slave(
         const std::shared_ptr<fmicontext>& ctx,
         const std::string& instanceName,
-        model_description md,
-        bool fmiLogging);
+        model_description md);
 
     [[nodiscard]] const model_description& get_model_description() const override;
+
+    void set_debug_logging(bool flag) override;
 
     bool enter_initialization_mode(double start_time, double stop_time, double tolerance) override;
     bool exit_initialization_mode() override;

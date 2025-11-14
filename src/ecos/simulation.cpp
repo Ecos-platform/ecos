@@ -33,6 +33,13 @@ struct simulation::Impl
         , sim_(sim)
     { }
 
+    void set_debug_logging(bool flag)
+    {
+        for (const auto& instance : instances_) {
+            instance->set_debug_logging(flag);
+        }
+    }
+
     void init(std::optional<double> startTime, const std::optional<std::string>& parameterSet)
     {
         if (!initialized_) {
@@ -230,6 +237,11 @@ struct simulation::Impl
 simulation::simulation(std::unique_ptr<algorithm> algorithm)
     : pimpl_(std::make_unique<Impl>(*this, std::move(algorithm)))
 { }
+
+void simulation::set_debug_logging(bool flag)
+{
+    pimpl_->set_debug_logging(flag);
+}
 
 double simulation::time() const
 {

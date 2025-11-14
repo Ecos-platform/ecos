@@ -16,7 +16,7 @@
 namespace ecos
 {
 
-std::unordered_map<std::string, log::level> map{
+inline std::unordered_map<std::string, log::level> map{
     {"trace", log::level::trace},
     {"debug", log::level::debug},
     {"info", log::level::info},
@@ -34,6 +34,7 @@ inline void create_simulate_options(CLI::App& app)
     simulate->add_flag("-i,--interactive", "Make execution interactive.")->configurable(false);
     simulate->add_flag("--noCsv", "Disable CSV logging.")->configurable(false);
     simulate->add_flag("--noParallel", "Run single-threaded.")->configurable(false);
+    simulate->add_flag("--debugLogging", "Enable debug logging.")->configurable(false);
 
     simulate->add_option("--path", "Location of the fmu/ssp to simulate.")->required();
     simulate->add_option("--stopTime", "Simulation end.")->default_val(1.0);
@@ -125,6 +126,10 @@ inline void run_simulation(const CLI::App& vm, simulation& sim)
         parameterSetName = vm["--parameterSet"]->as<std::string>();
     }
 
+    if (vm.count("--debugLogging")) {
+        sim.set_debug_logging(true);
+    }
+
     sim.init(startTime, parameterSetName);
 
     const auto rtf = vm["--rtf"]->as<double>();
@@ -207,7 +212,7 @@ inline void parse_simulate_options(const CLI::App& app)
 
     std::string csvName;
     const std::filesystem::path path = app["--path"]->as<std::string>();
-    std::unique_ptr<simulation_structure> ss = create_structure(path, csvName);
+    const std::unique_ptr<simulation_structure> ss = create_structure(path, csvName);
 
     const auto stepSize = app["--stepSize"]->as<double>();
     const bool parallel = !app["--noParallel"]->as<bool>();

@@ -9,7 +9,7 @@
 
 #include <fmi4c.h>
 
-std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& fmuPath, bool fmiLogging)
+std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& fmuPath)
 {
 
     if (!exists(fmuPath)) {
@@ -35,11 +35,11 @@ std::unique_ptr<fmilibcpp::fmu> fmilibcpp::loadFmu(const std::filesystem::path& 
 
     switch (fmi4c_getFmiVersion(handle->get())) {
         case fmiVersion1:
-            return std::make_unique<fmi1_fmu>(std::move(handle), fmiLogging);
+            return std::make_unique<fmi1_fmu>(std::move(handle));
         case fmiVersion2:
-            return std::make_unique<fmi2_fmu>(std::move(handle), fmiLogging);
+            return std::make_unique<fmi2_fmu>(std::move(handle));
         case fmiVersion3:
-            return std::make_unique<fmi3_fmu>(std::move(handle), fmiLogging);
+            return std::make_unique<fmi3_fmu>(std::move(handle));
         default:
             return nullptr;
     }

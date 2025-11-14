@@ -62,6 +62,10 @@ class EcosSimulation:
         self._step_simulation_until = dll.ecos_simulation_step_until
         self._step_simulation_until.argtypes = [c_void_p, c_double]
 
+        self._get_time = dll.ecos_simulation_get_time
+        self._get_time.argtypes = [c_void_p]
+        self._get_time.restype = c_double
+
         self._get_integer = dll.ecos_simulation_get_integer
         self._get_integer.argtypes = [c_void_p, c_char_p, POINTER(c_int)]
         self._get_integer.restype = c_bool
@@ -293,6 +297,14 @@ class EcosSimulation:
             time_point (float): The time point to step the simulation until in seconds.
         """
         self._step_simulation_until(self.sim, time_point)
+
+    def get_time(self) -> float:
+        """
+        Get the current simulation time.
+        Returns:
+            float: The current simulation time in seconds.
+        """
+        return self._get_time(self.sim)
 
     def reset(self):
         """

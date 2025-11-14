@@ -52,6 +52,8 @@ double ecos_simulation_step(ecos_simulation_t* sim, size_t numSteps = 1);
 void ecos_simulation_step_for(ecos_simulation_t* sim, double duration);
 void ecos_simulation_step_until(ecos_simulation_t* sim, double timePoint);
 
+double ecos_simulation_get_time(ecos_simulation_t* sim);
+
 bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier, int* value);
 bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, double* value);
 bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bool* value);

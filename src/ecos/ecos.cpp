@@ -279,6 +279,11 @@ void ecos_simulation_step_until(ecos_simulation_t* sim, double timePoint)
     sim->cpp_sim->step_until(timePoint);
 }
 
+double ecos_simulation_get_time(ecos_simulation_t* sim)
+{
+    return sim->cpp_sim->time();
+}
+
 bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char* identifier, int* value)
 {
     try {

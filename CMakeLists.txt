@@ -58,10 +58,15 @@ include(FetchContent)
 
 if (ECOS_WITH_PROXYFMU)
     set(SIMPLE_SOCKET_BUILD_TESTS OFF)
+    set(SIMPLE_SOCKET_WITH_TLS OFF)
+    set(SIMPLE_SOCKET_WITH_MQTT OFF)
+    set(SIMPLE_SOCKET_WITH_MODBUS OFF)
+    set(SIMPLE_SOCKET_WITH_MEMORY OFF)
+    set(SIMPLE_SOCKET_WITH_WEBSOCKETS OFF)
     FetchContent_Declare(
             SimpleSocket
             GIT_REPOSITORY https://github.com/markaren/SimpleSocket.git
-            GIT_TAG e0e989bdd52137d743a4599e25167d5681a0de00
+            GIT_TAG 5d3526387cf16d8545acb9388d414299f04f6055
     )
     FetchContent_MakeAvailable(SimpleSocket)
 endif ()
@@ -92,7 +97,7 @@ if (ECOS_BUILD_TESTS)
     FetchContent_Declare(
             Catch2
             GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG v3.7.1
+            GIT_TAG v3.11.0
     )
     FetchContent_MakeAvailable(Catch2)
 

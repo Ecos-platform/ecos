@@ -182,7 +182,7 @@ Options:
                                   Specify log level.
       
     compile
-        --path REQUIRED         Location of the (FMI3) Source code FMU to compile binaries for.
+        --fmu REQUIRED         Location of the (FMI3) Source code FMU to compile binaries for.
         --dest                  Output path for generated FMU (defaults to overwrite).
         --force                 Overwrite existing binaries (if any).
 ```

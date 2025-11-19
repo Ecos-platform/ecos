@@ -149,7 +149,15 @@ Component parse_component(const std::filesystem::path& dir, const pugi::xml_node
     const std::string componentSource = node.attribute("source").as_string();
     const auto connectors = parse_connectors(node.child("ssd:Connectors"));
     const auto parameterSets = parse_parameter_bindings(dir, node.child("ssd:ParameterBindings"));
-    return {componentName, componentSource, connectors, parameterSets};
+    const auto annotations = node.child("ssd:Annotations");
+    std::optional<double> stepSizeHint = std::nullopt;
+    for (const auto& annotationNode : annotations) {
+        if (std::string(annotationNode.attribute("type").as_string()) == "com.opensimulationplatform") {
+            stepSizeHint = annotationNode.child("osp:StepSizeHint").attribute("value").as_double();
+        }
+    }
+
+    return {componentName, componentSource, stepSizeHint, connectors, parameterSets};
 }
 
 std::unordered_map<std::string, Component> parse_components(const std::filesystem::path& dir, const pugi::xml_node& node)

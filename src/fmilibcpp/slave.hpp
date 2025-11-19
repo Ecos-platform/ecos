@@ -24,6 +24,8 @@ public:
 
     [[nodiscard]] virtual const model_description& get_model_description() const = 0;
 
+    virtual void set_debug_logging(bool flag) = 0;
+
     virtual bool enter_initialization_mode(
         double start_time = 0,
         double stop_time = 0,

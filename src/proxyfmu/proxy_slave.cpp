@@ -118,6 +118,11 @@ const fmilibcpp::model_description& proxy_slave::get_model_description() const
     return modelDescription_;
 }
 
+void proxy_slave::set_debug_logging(bool flag)
+{
+    // TODO
+}
+
 bool proxy_slave::enter_initialization_mode(double start_time, double stop_time, double tolerance)
 {
     flexbuffers::Builder fbb;

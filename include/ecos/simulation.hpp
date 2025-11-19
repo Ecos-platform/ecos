@@ -32,6 +32,8 @@ public:
     simulation& operator=(simulation&&) = delete;
     simulation& operator=(const simulation&) = delete;
 
+    void set_debug_logging(bool flag);
+
     [[nodiscard]] double time() const;
 
     [[nodiscard]] unsigned long iterations() const;

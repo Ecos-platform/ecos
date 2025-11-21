@@ -5,6 +5,7 @@
 #include "ecos/model.hpp"
 #include "ecos/model_resolver.hpp"
 #include "ecos/scalar.hpp"
+#include "ecos/scenario.hpp"
 #include "ecos/simulation.hpp"
 #include "ecos/variable_identifier.hpp"
 
@@ -37,6 +38,8 @@ public:
     void add_model(const std::string& instanceName, const std::filesystem::path& path, std::optional<double> stepSizeHint = std::nullopt);
 
     void add_model(const std::string& instanceName, std::shared_ptr<model> model, std::optional<double> stepSizeHint = std::nullopt);
+
+    void add_scenario(std::unique_ptr<scenario> scenario);
 
     template<class T>
     void make_connection(variable_identifier source, variable_identifier sink, const std::optional<std::function<T(const T&)>>& modifier = std::nullopt)
@@ -76,6 +79,8 @@ private:
     std::vector<unbound_connection> connections_;
     std::unordered_map<std::string, parameter_set> parameterSets;
     std::unordered_map<std::string, std::pair<std::shared_ptr<model>, std::optional<double>>> models_;
+
+    std::unique_ptr<scenario> scenario_;
 };
 
 } // namespace ecos

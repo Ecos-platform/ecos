@@ -49,6 +49,11 @@ void simulation_structure::add_model(const std::string& instanceName, std::share
     models_[instanceName] = {std::move(model), stepSizeHint};
 }
 
+void simulation_structure::add_scenario(std::unique_ptr<scenario> scenario)
+{
+    scenario_ = std::move(scenario);
+}
+
 void simulation_structure::add_parameter_set(const std::string& name, const parameter_set& map)
 {
     parameterSets[name] = map;
@@ -63,7 +68,7 @@ std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm
 
     for (const auto& [parameterSetName, map] : parameterSets) {
         for (const auto& [v, value] : map) {
-            instances[v.instanceName]->add_parameterset_entry(parameterSetName, v.variableName, value);
+            instances[v.instance_name()]->add_parameterset_entry(parameterSetName, v.variable_name(), value);
         }
     }
 
@@ -90,6 +95,10 @@ std::unique_ptr<simulation> simulation_structure::load(std::unique_ptr<algorithm
                            sim->make_string_connection(arg.source, arg.sink);
                        }},
             connection);
+    }
+
+    if (scenario_) {
+        sim->add_listener("scenario", std::move(scenario_));
     }
 
     return sim;

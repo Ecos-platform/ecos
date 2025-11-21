@@ -101,17 +101,17 @@ public:
 
     [[nodiscard]] std::vector<variable_identifier> identifiers() const;
 
-    // Registers a function to be called when the simulation is initialized.
-    void on_init(const std::function<void()>& f);
-
-    // Register an action when a specified condition is met during simulation
-    void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action);
-
-    // Register an action to be invoked at a specific time point in the simulation.
-    // eps is an optional tolerance for the time point.
-    void invoke_at(double timePoint, const std::function<void()>& f, const std::optional<double>& eps = 0);
-
-    void load_scenario(const std::filesystem::path& config);
+    // // Registers a function to be called when the simulation is initialized.
+    // void on_init(const std::function<void()>& f);
+    //
+    // // Register an action when a specified condition is met during simulation
+    // void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action);
+    //
+    // // Register an action to be invoked at a specific time point in the simulation.
+    // // eps is an optional tolerance for the time point.
+    // void invoke_at(double timePoint, const std::function<void()>& f, const std::optional<double>& eps = 0);
+    //
+    // void load_scenario(const std::filesystem::path& config);
 
     ~simulation();
 

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ssd:SystemStructureDescription name="dp-ship" version="1.0"
                                 xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription"
-                                xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon">
+                                xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+                                xmlns:ecos="http://github.com/Ecos-platform/libecos/resources/schema/ScenarioConfig">
 
   <ssd:System name="dp-ship" description="A simplified DP-vessel demo">
 
@@ -239,5 +240,132 @@
     </ssd:Connections>
 
   </ssd:System>
+
+  <ssd:DefaultExperiment>
+    <ssd:Annotations>
+      <ssc:Annotation type="com.github.ecos-platform.scenario">
+        <ecos:Scenario name="waypoints" eps="0.01">
+
+          <ecos:action t="500">
+            <ecos:variable id="Reference Generator::x_wp">
+              <ecos:real value="20.0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::x_tp">
+              <ecos:real value="700.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="800">
+            <ecos:variable id="Reference Generator::psi_wp">
+              <ecos:real value="1.507"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::psi_tp">
+              <ecos:real value="1200.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="1300">
+            <ecos:variable id="Reference Generator::y_wp">
+              <ecos:real value="20.0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::y_tp">
+              <ecos:real value="1500.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="1600">
+            <ecos:variable id="Reference Generator::psi_wp">
+              <ecos:real value="0.0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::psi_tp">
+              <ecos:real value="2000.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="2100">
+            <ecos:variable id="Reference Generator::x_wp">
+              <ecos:real value="40.0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::x_tp">
+              <ecos:real value="2300.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="2400">
+            <ecos:variable id="Reference Generator::psi_wp">
+              <ecos:real value="-1.507"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::psi_tp">
+              <ecos:real value="2800.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="2900">
+            <ecos:variable id="Reference Generator::y_wp">
+              <ecos:real value="-20.0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::y_tp">
+              <ecos:real value="3300.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="3400">
+            <ecos:variable id="Reference Generator::psi_wp">
+              <ecos:real value="0.0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::psi_tp">
+              <ecos:real value="3800.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="3900">
+            <ecos:variable id="Reference Generator::x_wp">
+              <ecos:real value="60.0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::x_tp">
+              <ecos:real value="4100.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="4200">
+            <ecos:variable id="Reference Generator::psi_wp">
+              <ecos:real value="1.507"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::psi_tp">
+              <ecos:real value="4600"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="4700">
+            <ecos:variable id="Reference Generator::y_wp">
+              <ecos:real value="0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::y_tp">
+              <ecos:real value="4900.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="5000">
+            <ecos:variable id="Reference Generator::psi_wp">
+              <ecos:real value="0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::psi_tp">
+              <ecos:real value="5400.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+          <ecos:action t="5500">
+            <ecos:variable id="Reference Generator::x_wp">
+              <ecos:real value="80.0"/>
+            </ecos:variable>
+            <ecos:variable id="Reference Generator::x_tp">
+              <ecos:real value="5700.0"/>
+            </ecos:variable>
+          </ecos:action>
+
+        </ecos:Scenario>
+      </ssc:Annotation>
+    </ssd:Annotations>
+  </ssd:DefaultExperiment>
 
 </ssd:SystemStructureDescription>

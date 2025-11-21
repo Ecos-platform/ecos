@@ -19,9 +19,6 @@ namespace ecos
 struct variable_identifier
 {
 
-    const std::string instanceName;
-    const std::string variableName;
-
     // Constructs a variable_identifier from a string in the format "instanceName::variableName".
     variable_identifier(const char* identifier)
         : variable_identifier(parse(identifier))
@@ -31,6 +28,9 @@ struct variable_identifier
         : instanceName(std::move(instanceName))
         , variableName(std::move(variableName))
     { }
+
+    [[nodiscard]] std::string instance_name() const { return instanceName; }
+    [[nodiscard]] std::string variable_name() const { return variableName; }
 
     [[nodiscard]] std::string str() const
     {
@@ -60,6 +60,9 @@ struct variable_identifier
     }
 
 private:
+    std::string instanceName;
+    std::string variableName;
+
     static variable_identifier parse(const std::string& identifier)
     {
         const auto pos = identifier.find("::");

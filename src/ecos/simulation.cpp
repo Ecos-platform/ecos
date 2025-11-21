@@ -4,10 +4,8 @@
 #include "ecos/listeners/simulation_listener.hpp"
 #include "ecos/logger/logger.hpp"
 #include "ecos/property.hpp"
-#include "ecos/scenario/scenario.hpp"
 
 #include <execution>
-#include <pugixml.hpp>
 #include <ranges>
 
 using namespace ecos;
@@ -20,7 +18,6 @@ struct simulation::Impl
     bool terminated_{false};
     unsigned long num_iterations_{0};
 
-    scenario scenario_;
     std::unique_ptr<algorithm> algorithm_;
     std::vector<std::unique_ptr<model_instance>> instances_;
     std::vector<std::unique_ptr<connection>> connections_;
@@ -69,8 +66,6 @@ struct simulation::Impl
                 log::debug("Parameterset '{}' applied to {} instances", *parameterSet, parameterSetAppliedCount);
             }
 
-            scenario_.runInitActions();
-
             for (unsigned i = 0; i < instances_.size(); ++i) {
                 for (const auto& instance : instances_) {
                     instance->get_properties().apply_sets();
@@ -116,8 +111,6 @@ struct simulation::Impl
                 listener->pre_step(sim_);
             }
 
-            scenario_.apply(currentTime_);
-
             newT = algorithm_->step(currentTime_);
 
             for (const auto& c : connections_) {
@@ -139,97 +132,6 @@ struct simulation::Impl
         }
 
         return currentTime_;
-    }
-
-    void load_scenario(const std::filesystem::path& config)
-    {
-
-        if (!exists(config)) {
-            throw std::runtime_error("No such file: " + absolute(config).string());
-        }
-
-        if (const auto ext = config.extension().string(); ext != ".xml") {
-            throw std::runtime_error("Wrong config extension. Was " + ext + ", expected " + ".xml");
-        }
-
-        pugi::xml_document doc;
-        if (pugi::xml_parse_result result = doc.load_file(config.c_str()); !result) {
-            throw std::runtime_error("Unable to parse '" + absolute(config).string() + "': " + result.description());
-        }
-
-        size_t numActions{};
-        const auto root = doc.child("ecos:Scenario");
-        const auto epsAttr = root.attribute("eps");
-        std::optional<double> eps;
-        if (epsAttr) eps = epsAttr.as_double();
-        for (const auto& action : root) {
-            ++numActions;
-            const auto t = action.attribute("t").as_double();
-
-            const auto epsSubAttr = action.attribute("eps");
-            std::optional<double> subEps = eps;
-            if (epsSubAttr) subEps = epsSubAttr.as_double();
-
-            for (const auto& variable : action) {
-
-                const variable_identifier id = variable.attribute("id").as_string();
-
-                pugi::xml_node var;
-                if ((var = variable.child("ecos:real"))) {
-                    auto p = sim_.get_real_property(id);
-                    if (!p) {
-                        log::warn("No variable with id: {}", id.str());
-                        continue;
-                    }
-                    const double value = var.attribute("value").as_double();
-                    sim_.invoke_at(
-                        t, [p, value] {
-                            p->set_value(value);
-                        },
-                        subEps);
-                } else if ((var = variable.child("ecos:integer"))) {
-                    auto p = sim_.get_int_property(id);
-                    if (!p) {
-                        log::warn("No variable with id: {}", id.str());
-                        continue;
-                    }
-                    const int value = var.attribute("value").as_int();
-                    sim_.invoke_at(
-                        t, [p, value] {
-                            p->set_value(value);
-                        },
-                        subEps);
-                } else if ((var = variable.child("ecos:boolean"))) {
-                    auto p = sim_.get_bool_property(id);
-                    if (!p) {
-                        log::warn("No variable with id: {}", id.str());
-                        continue;
-                    }
-                    const bool value = var.attribute("value").as_bool();
-                    sim_.invoke_at(
-                        t, [p, value] {
-                            p->set_value(value);
-                        },
-                        subEps);
-                } else if ((var = variable.child("ecos:string"))) {
-                    auto p = sim_.get_string_property(id);
-                    if (!p) {
-                        log::warn("No variable with id: {}", id.str());
-                        continue;
-                    }
-                    const std::string value = var.attribute("value").as_string();
-                    sim_.invoke_at(
-                        t, [p, value] {
-                            p->set_value(value);
-                        },
-                        subEps);
-                } else {
-                    throw std::runtime_error("Assertion error");
-                }
-            }
-        }
-
-        log::debug("Applied scenario {} with {} actions to simulation", config.string(), numActions);
     }
 };
 
@@ -317,7 +219,7 @@ void simulation::reset()
     for (const auto& instance : pimpl_->instances_) {
         instance->reset();
     }
-    pimpl_->scenario_.reset();
+    // pimpl_->scenario_.on_reset();
     pimpl_->currentTime_ = 0;
     pimpl_->num_iterations_ = 0;
     pimpl_->initialized_ = false;
@@ -410,8 +312,8 @@ string_connection* simulation::make_string_connection(const variable_identifier&
 property_t<double>* simulation::get_real_property(const variable_identifier& identifier) const
 {
     for (const auto& instance : pimpl_->instances_) {
-        if (instance->instanceName() == identifier.instanceName) {
-            const auto p = instance->get_properties().get_real_property(identifier.variableName);
+        if (instance->instanceName() == identifier.instance_name()) {
+            const auto p = instance->get_properties().get_real_property(identifier.variable_name());
             if (p) return p;
         }
     }
@@ -421,8 +323,8 @@ property_t<double>* simulation::get_real_property(const variable_identifier& ide
 property_t<int>* simulation::get_int_property(const variable_identifier& identifier) const
 {
     for (const auto& instance : pimpl_->instances_) {
-        if (instance->instanceName() == identifier.instanceName) {
-            const auto p = instance->get_properties().get_int_property(identifier.variableName);
+        if (instance->instanceName() == identifier.instance_name()) {
+            const auto p = instance->get_properties().get_int_property(identifier.variable_name());
             if (p) return p;
         }
     }
@@ -432,8 +334,8 @@ property_t<int>* simulation::get_int_property(const variable_identifier& identif
 property_t<std::string>* simulation::get_string_property(const variable_identifier& identifier) const
 {
     for (const auto& instance : pimpl_->instances_) {
-        if (instance->instanceName() == identifier.instanceName) {
-            auto p = instance->get_properties().get_string_property(identifier.variableName);
+        if (instance->instanceName() == identifier.instance_name()) {
+            auto p = instance->get_properties().get_string_property(identifier.variable_name());
             if (p) return p;
         }
     }
@@ -443,8 +345,8 @@ property_t<std::string>* simulation::get_string_property(const variable_identifi
 property_t<bool>* simulation::get_bool_property(const variable_identifier& identifier) const
 {
     for (const auto& instance : pimpl_->instances_) {
-        if (instance->instanceName() == identifier.instanceName) {
-            const auto p = instance->get_properties().get_bool_property(identifier.variableName);
+        if (instance->instanceName() == identifier.instance_name()) {
+            const auto p = instance->get_properties().get_bool_property(identifier.variable_name());
             if (p) return p;
         }
     }
@@ -465,26 +367,6 @@ std::vector<variable_identifier> simulation::identifiers() const
         }
     }
     return ids;
-}
-
-void simulation::on_init(const std::function<void()>& f)
-{
-    pimpl_->scenario_.on_init(f);
-}
-
-void simulation::invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action)
-{
-    pimpl_->scenario_.invoke_when(predicate_action{predicate, action});
-}
-
-void simulation::invoke_at(double timePoint, const std::function<void()>& f, const std::optional<double>& eps)
-{
-    pimpl_->scenario_.invoke_at(timed_action(timePoint, f, eps));
-}
-
-void simulation::load_scenario(const std::filesystem::path& config)
-{
-    pimpl_->load_scenario(config);
 }
 
 simulation::~simulation() = default;

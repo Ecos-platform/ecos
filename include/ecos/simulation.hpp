@@ -90,28 +90,13 @@ public:
     string_connection* make_string_connection(const variable_identifier& source, const variable_identifier& sink);
 
     [[nodiscard]] property_t<double>* get_real_property(const variable_identifier& identifier) const;
-
     [[nodiscard]] property_t<int>* get_int_property(const variable_identifier& identifier) const;
-
     [[nodiscard]] property_t<std::string>* get_string_property(const variable_identifier& identifier) const;
-
     [[nodiscard]] property_t<bool>* get_bool_property(const variable_identifier& identifier) const;
 
     [[nodiscard]] const std::vector<std::unique_ptr<model_instance>>& get_instances() const;
 
     [[nodiscard]] std::vector<variable_identifier> identifiers() const;
-
-    // // Registers a function to be called when the simulation is initialized.
-    // void on_init(const std::function<void()>& f);
-    //
-    // // Register an action when a specified condition is met during simulation
-    // void invoke_when(const std::function<bool()>& predicate, const std::function<void()>& action);
-    //
-    // // Register an action to be invoked at a specific time point in the simulation.
-    // // eps is an optional tolerance for the time point.
-    // void invoke_at(double timePoint, const std::function<void()>& f, const std::optional<double>& eps = 0);
-    //
-    // void load_scenario(const std::filesystem::path& config);
 
     ~simulation();
 

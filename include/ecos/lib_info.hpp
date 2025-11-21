@@ -2,6 +2,8 @@
 #ifndef LIBECOS_LIB_INFO_HPP
 #define LIBECOS_LIB_INFO_HPP
 
+#include <ostream>
+
 namespace ecos
 {
 
@@ -15,6 +17,12 @@ struct version
 
 /// Returns the version of the ecos library.
 version library_version();
+
+inline std::ostream& operator<<(std::ostream& os, const version& v)
+{
+    os << v.major << "." << v.minor << "." << v.patch;
+    return os;
+}
 
 } // namespace ecos
 

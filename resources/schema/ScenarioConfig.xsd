@@ -11,6 +11,7 @@
             <xs:element name="action" type="ecos:TVariable" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="eps" type="xs:float"/>
+        <xs:attribute name="name" type="xs:normalizedString"/>
     </xs:complexType>
 
     <xs:complexType name="TVariable">

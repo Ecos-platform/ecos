@@ -42,8 +42,8 @@ void writeVariableIdentifier(std::ostream& os, const std::string& tag, const var
 {
     indent(os, indentLevel);
     os << "<" << tag
-       << " component=\"" << escape(vi.instanceName) << "\""
-       << " variable=\"" << escape(vi.variableName) << "\"/>\n";
+       << " component=\"" << escape(vi.instance_name()) << "\""
+       << " variable=\"" << escape(vi.variable_name()) << "\"/>\n";
 }
 
 void writeXYSeries(std::ostream& os, const TXYSeries& series, int indentLevel)

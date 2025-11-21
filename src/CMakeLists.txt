@@ -8,6 +8,7 @@ set(publicHeaders
         "ecos/model_resolver.hpp"
         "ecos/property.hpp"
         "ecos/scalar.hpp"
+        "ecos/scenario.hpp"
         "ecos/simulation.hpp"
         "ecos/simulation_runner.hpp"
         "ecos/variable_identifier.hpp"
@@ -40,7 +41,7 @@ set(privateHeaders
         "ecos/resolvers/file_model_sub_resolver.hpp"
         "ecos/resolvers/url_model_sub_resolver.hpp"
 
-        "ecos/scenario/scenario.hpp"
+        "ecos/scenario/parse_scenario_node.hpp"
 
         "ecos/ssp/ssp.hpp"
 

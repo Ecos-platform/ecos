@@ -14,21 +14,19 @@ def main():
 
     ssp_dir = str((Path(__file__).parent.parent.parent / 'data' / 'ssp' / '1.0' / 'dp_ship').resolve())
     log_config = f"{ssp_dir}/CsvConfig.xml"
-    scenario = f"{ssp_dir}/waypoints_scenario.xml"
 
     result_file = "results/dp_ship.csv"
 
     with(EcosSimulation(ssp_path=ssp_dir, step_size=0.1)) as sim:
 
         sim.add_csv_writer(result_file, log_config)
-        sim.load_scenario(scenario)
 
         sim.init()
         try:
             print("Press CTRL+C to terminate the simulation.")
             t = 0
             while t < 3000:
-                t = sim.step(1)
+                t = sim.step(10)
         except SystemExit:
             print(f"Simulation requested to stop at t={t}")
 

@@ -13,16 +13,16 @@ TEST_CASE("test_variable_identifier")
     {
         variable_identifier v1("instanceName::nested.variableName");
 
-        CHECK("instanceName" == v1.instanceName);
-        CHECK("nested.variableName" == v1.variableName);
+        CHECK("instanceName" == v1.instance_name());
+        CHECK("nested.variableName" == v1.variable_name());
     }
 
     SECTION("Nested variableName")
     {
         variable_identifier v2("instanceName", "nested.variableName");
 
-        CHECK("instanceName" == v2.instanceName);
-        CHECK("nested.variableName" == v2.variableName);
+        CHECK("instanceName" == v2.instance_name());
+        CHECK("nested.variableName" == v2.variable_name());
     }
 
     SECTION("Comparison test")

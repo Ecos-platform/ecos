@@ -1,81 +1,66 @@
 
-#include "ecos/scenario/scenario.hpp"
+#include "ecos/scenario.hpp"
 
 #include "ecos/logger/logger.hpp"
+#include "ecos/scenario/parse_scenario_node.hpp"
 
 using namespace ecos;
 
-void scenario::runInitActions()
-{
-    for (auto& a : initActions) {
-        a();
-    }
-}
-
-void scenario::on_init(std::function<void()> f)
-{
-    initActions.emplace_back(std::move(f));
-}
-
-
-void scenario::apply(double t)
+void scenario::pre_step(simulation& sim)
 {
 
-    active_ = true;
+    const double t = sim.time();
 
-    for (auto& q : timedActionsQueue_) {
-        timedActions.insert(std::upper_bound(timedActions.begin(), timedActions.end(), q), std::move(q));
-    }
-    timedActionsQueue_.clear();
-
-    while (!timedActions.empty()) {
-        auto& action = timedActions.back();
-        const double nextT = action.time_point();
-        const double diff = std::abs(t - nextT);
-        if (nextT < t || diff < action.eps()) {
-            action.invoke();
-            discardedTimedActions.emplace_back(std::move(action));
-            timedActions.pop_back();
-            log::debug("Invoked timed action at t={:.3f}", t);
+    while (!actions_.empty()) {
+        auto& action = actions_.back();
+        if (t >= action->timePoint) {
+            log::debug("Applying scenario action at t={} for variable {}", t, action->id.str());
+            action->apply(sim);
+            used_actions_.emplace_back(std::move(action));
+            actions_.pop_back();
         } else {
             break;
         }
     }
-
-    if (!predicateActions.empty()) {
-        auto it = predicateActions.begin();
-        while (it != predicateActions.end()) {
-            if (it->invoke()) {
-                discardedPredicateActions.emplace_back(std::move(*it));
-                it = predicateActions.erase(it);
-                log::debug("Invoked predicate action at t={:.3f}", t);
-            }
-        }
+}
+void scenario::on_reset()
+{
+    for (auto& action : used_actions_) {
+        actions_.emplace_back(std::move(action));
     }
-
-    active_ = false;
+    used_actions_.clear();
+    sortActions();
 }
 
-void scenario::invoke_at(timed_action ta)
+std::unique_ptr<scenario> scenario::load(const std::filesystem::path& config)
 {
-    if (!active_) {
-        timedActions.insert(std::upper_bound(timedActions.begin(), timedActions.end(), ta), std::move(ta));
-    } else {
-        timedActionsQueue_.emplace_back(std::move(ta));
+    if (!exists(config)) {
+        throw std::runtime_error("No such file: " + absolute(config).string());
     }
+
+    if (const auto ext = config.extension().string(); ext != ".xml") {
+        throw std::runtime_error("Wrong config extension. Was " + ext + ", expected " + ".xml");
+    }
+
+    pugi::xml_document doc;
+    if (pugi::xml_parse_result result = doc.load_file(config.c_str()); !result) {
+        throw std::runtime_error("Unable to parse '" + absolute(config).string() + "': " + result.description());
+    }
+
+    size_t numActions{};
+    const auto root = doc.child("ecos:Scenario");
+    auto parsed_scenario = parse_scenario_node(root, numActions);
+
+    log::debug("Applied scenario '{}' with {} actions to simulation", parsed_scenario->name, numActions);
+
+    return parsed_scenario;
 }
 
-void scenario::invoke_when(predicate_action pa)
+void scenario::sortActions()
 {
-    predicateActions.emplace_back(std::move(pa));
-}
-
-void scenario::reset()
-{
-    for (auto& a : discardedTimedActions) {
-        timedActions.emplace_back(std::move(a));
-    }
-    for (auto& a : discardedPredicateActions) {
-        predicateActions.emplace_back(std::move(a));
-    }
+    std::ranges::sort(actions_, [](const auto& a, const auto& b) {
+        if (!a) return false;
+        if (!b) return true;
+        return *a < *b;
+    });
 }

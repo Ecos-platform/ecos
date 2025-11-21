@@ -6,6 +6,7 @@
 #include "ecos/algorithm/fixed_step_algorithm.hpp"
 #include "ecos/listeners/csv_writer.hpp"
 #include "ecos/logger/logger.hpp"
+#include "ecos/scenario.hpp"
 #include "ecos/simulation_runner.hpp"
 #include "ecos/ssp/ssp_loader.hpp"
 #include "ecos/structure/simulation_structure.hpp"
@@ -85,7 +86,8 @@ inline void setup_scenario(const CLI::App& vm, simulation& sim)
 {
     if (vm.count("--scenarioConfig")) {
         const std::filesystem::path config = vm["--scenarioConfig"]->as<std::string>();
-        sim.load_scenario(config);
+        auto scenario = scenario::load(config);
+        sim.add_listener("scenario", std::move(scenario));
     }
 }
 

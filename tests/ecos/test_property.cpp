@@ -19,8 +19,8 @@ TEST_CASE("test_property")
         p.applySet();
         CHECK(p.get_value() == -101);
         CHECK(value == -101);
-        CHECK(p.id.instanceName.empty());
-        CHECK(p.id.variableName == "intValue");
+        CHECK(p.id.instance_name().empty());
+        CHECK(p.id.variable_name() == "intValue");
     }
 
     SECTION("test double"){

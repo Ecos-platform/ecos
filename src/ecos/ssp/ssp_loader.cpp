@@ -76,16 +76,15 @@ public:
         }
 
         if (auto ex = desc_.defaultExperiment) {
-            auto annotations = ex->annotations;
+            const auto& annotations = ex->annotations;
             for (const auto& annotation : annotations) {
                 if (annotation.type == "com.github.ecos-platform.scenario") {
-
 
                     size_t numActions{};
                     const auto root = annotation.node.child("ecos:Scenario");
                     auto parsed_scenario = parse_scenario_node(root, numActions);
+                    log::debug("Adding scenario '{}' with {} actions to SystemStructure", parsed_scenario->name, numActions);
                     add_scenario(std::move(parsed_scenario));
-                    log::debug("Added scenario '{}' with {} actions to SystemStructure", parsed_scenario->name, numActions);
                 }
             }
         }

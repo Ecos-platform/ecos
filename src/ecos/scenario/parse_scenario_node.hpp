@@ -10,7 +10,7 @@
 
 inline std::unique_ptr<ecos::scenario> parse_scenario_node(const pugi::xml_node& root, size_t& numActions)
 {
-    std::unique_ptr<ecos::scenario> parsed_scenario;
+    auto parsed_scenario = std::make_unique<ecos::scenario>();
 
     if (const auto nameAttr = root.attribute("name")) {
         parsed_scenario->name = nameAttr.as_string();

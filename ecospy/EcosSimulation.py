@@ -173,6 +173,72 @@ class EcosSimulation:
         """
         self._remove_listener(self.sim, name.encode())
 
+    def add_scenario(self, scenario_config: str = None, real_actions: list[tuple] = None, integer_actions: list[tuple]  = None,
+                     boolean_actions: list[tuple]  = None,
+                     string_actions: list[tuple] =None):
+        """
+        Add a scenario to the simulation.
+        Args:
+            scenario_config (str, optional): Optional scenario configuration XML file.
+            real_actions (list of tuples): List of real actions as (time_point, identifier, value).
+            integer_actions (list of tuples): List of integer actions as (time_point, identifier, value).
+            boolean_actions (list of tuples): List of boolean actions as (time_point, identifier, value).
+            string_actions (list of tuples): List of string actions as (time_point, identifier, value).
+        """
+
+        listener = None
+        if scenario_config is not None:
+            load_scenario = dll.ecos_scenario_load
+            load_scenario.argtypes = [c_char_p]
+            load_scenario.restype = c_void_p
+            listener = load_scenario(str.encode("utf-8"))
+
+        else:
+            create_scenario = dll.ecos_scenario_create
+            create_scenario.restype = c_void_p
+            listener = create_scenario()
+
+        if listener is None:
+            raise ValueError("Unable to create/load scenario: " + EcosLib.get_last_error())
+
+        if real_actions is not None:
+            for action in real_actions:
+                scenario_add_real_action = dll.ecos_scenario_add_real_action
+                scenario_add_real_action.argtypes = [c_void_p, c_double, c_char_p, c_double]
+                scenario_add_real_action.restype = c_bool
+
+                time_point, identifier, value = action
+                scenario_add_real_action(listener, time_point, identifier.encode("utf-8"), value)
+
+        if integer_actions is not None:
+            for action in integer_actions:
+                scenario_add_integer_action = dll.ecos_scenario_add_real_action
+                scenario_add_integer_action.argtypes = [c_void_p, c_double, c_char_p, c_int]
+                scenario_add_integer_action.restype = c_bool
+
+                time_point, identifier, value = action
+                scenario_add_integer_action(listener, time_point, identifier.encode("utf-8"), value)
+
+        if boolean_actions is not None:
+            for action in boolean_actions:
+                scenario_add_boolean_action = dll.ecos_scenario_add_real_action
+                scenario_add_boolean_action.argtypes = [c_void_p, c_double, c_char_p, c_bool]
+                scenario_add_boolean_action.restype = c_bool
+
+                time_point, identifier, value = action
+                scenario_add_boolean_action(listener, time_point, identifier.encode("utf-8"), value)
+
+        if string_actions is not None:
+            for action in string_actions:
+                scenario_add_string_action = dll.ecos_scenario_add_real_action
+                scenario_add_string_action.argtypes = [c_void_p, c_double, c_char_p, c_char_p]
+                scenario_add_string_action.restype = c_bool
+
+                time_point, identifier, value = action
+                scenario_add_string_action(listener, time_point, identifier.encode("utf-8"), value.encode("utf-8"))
+
+        self._add_listener(self.sim, b'scenario', listener)
+
     def add_csv_writer(self, result_file: str, csv_config: str = None, identifiers: list[str] = None,
                        decimation_factor: int = None):
         """
@@ -207,21 +273,6 @@ class EcosSimulation:
                 raise Exception(EcosLib.get_last_error())
 
         self._add_listener(self.sim, b'csv_writer', listener)
-
-    def load_scenario(self, scenario_file: str):
-        """
-        Load a scenario file into the simulation.
-        Args:
-            scenario_file (str): Path to the scenario file to load.
-        Raises:
-            Exception: If loading the scenario fails in the underlying library.
-        """
-        _load_scenario = dll.ecos_simulation_load_scenario
-        _load_scenario.argtypes = [c_void_p, c_char_p]
-        _load_scenario.restype = c_bool
-
-        if not _load_scenario(self.sim, scenario_file.encode()):
-            raise Exception(EcosLib.get_last_error())
 
     def get_integer(self, identifier: str):
         val = c_int()

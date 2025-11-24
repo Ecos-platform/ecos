@@ -100,6 +100,7 @@ typedef struct ecos_simulation_listener_config
 
 LIBECOS_API ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_listener_config config);
 
+//Note: this function transfers ownership of listener to simulation
 LIBECOS_API void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener);
 LIBECOS_API void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name);
 

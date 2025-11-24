@@ -126,6 +126,8 @@ public:
     static std::unique_ptr<scenario> load(const std::filesystem::path& path);
 
 private:
+    std::string name_;
+
     std::vector<std::unique_ptr<action>> actions_;
     std::vector<std::unique_ptr<action>> used_actions_;
 

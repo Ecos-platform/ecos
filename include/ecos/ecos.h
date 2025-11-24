@@ -6,9 +6,9 @@
 
 /* Visibility macros */
 #if defined(_WIN32) || defined(__CYGWIN__)
-    #define LIBECOS_API __declspec(dllexport)
+#    define LIBECOS_API __declspec(dllexport)
 #else
-    #define LIBECOS_API __attribute__((visibility("default")))
+#    define LIBECOS_API __attribute__((visibility("default")))
 #endif
 
 #ifdef __cplusplus
@@ -75,7 +75,6 @@ LIBECOS_API bool ecos_simulation_terminate(ecos_simulation_t* sim);
 LIBECOS_API bool ecos_simulation_reset(ecos_simulation_t* sim);
 LIBECOS_API void ecos_simulation_destroy(ecos_simulation_t* sim);
 
-LIBECOS_API bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_file);
 // -------------
 
 // simulation_runner
@@ -101,11 +100,20 @@ typedef struct ecos_simulation_listener_config
 
 LIBECOS_API ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_listener_config config);
 
+//Note: this function transfers ownership of listener to simulation
 LIBECOS_API void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener);
 LIBECOS_API void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name);
+
 LIBECOS_API ecos_simulation_listener_t* ecos_csv_writer_create(const char* resultFile, const char* csvConfig = nullptr);
 LIBECOS_API bool ecos_csv_writer_set_decimation_factor(ecos_simulation_listener_t* writer, int decimationFactor);
 LIBECOS_API bool ecos_csv_writer_register_variable(ecos_simulation_listener_t* writer, const char* identifier);
+
+LIBECOS_API ecos_simulation_listener_t* ecos_scenario_create();
+LIBECOS_API ecos_simulation_listener_t* ecos_scenario_load(const char* scenario_file);
+LIBECOS_API bool ecos_scenario_add_int_action(ecos_simulation_listener_t* s, double timePoint, const char* identifier, int value, double eps = 1e-9);
+LIBECOS_API bool ecos_scenario_add_real_action(ecos_simulation_listener_t* s, double timePoint, const char* identifier, double value, double eps = 1e-9);
+LIBECOS_API bool ecos_scenario_add_bool_action(ecos_simulation_listener_t* s, double timePoint, const char* identifier, bool value, double eps = 1e-9);
+LIBECOS_API bool ecos_scenario_add_string_action(ecos_simulation_listener_t* s, double timePoint, const char* identifier, const char* value, double eps = 1e-9);
 
 LIBECOS_API void ecos_plot_csv(const char* csvFile, const char* chartConfig);
 // -------------

@@ -52,6 +52,7 @@ struct ecos_parameter_set
     ecos::parameter_set cpp_parameter_set;
 };
 
+
 void handle_current_exception()
 {
     try {
@@ -565,18 +566,6 @@ ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_list
     return l.release();
 }
 
-bool ecos_simulation_load_scenario(ecos_simulation_t* sim, const char* scenario_file)
-{
-    try {
-        auto scenario = ecos::scenario::load(scenario_file);
-        sim->cpp_sim->add_listener("scenario", std::move(scenario));
-        return true;
-    } catch (...) {
-        handle_current_exception();
-        return false;
-    }
-}
-
 ecos_simulation_runner_t* ecos_simulation_runner_create(ecos_simulation_t* sim)
 {
     auto runner = std::make_unique<ecos_simulation_runner_t>(sim);
@@ -604,5 +593,82 @@ void ecos_simulation_runner_destroy(const ecos_simulation_runner_t* runner)
     if (runner) {
         delete runner;
         runner = nullptr;
+    }
+}
+
+ecos_simulation_listener_t* ecos_scenario_create()
+{
+    try {
+        auto scenario = std::make_unique<ecos_simulation_listener_t>();
+        scenario->cpp_listener = std::make_unique<ecos::scenario>();
+        return scenario.release();
+    } catch (...) {
+        handle_current_exception();
+        return nullptr;
+    }
+}
+
+
+ecos_simulation_listener* ecos_scenario_load(const char* scenario_file)
+{
+    try {
+        auto scenario = std::make_unique<ecos_simulation_listener>();
+        scenario->cpp_listener = ecos::scenario::load(scenario_file);
+        return scenario.release();
+    } catch (...) {
+        handle_current_exception();
+        return nullptr;
+    }
+}
+
+bool ecos_scenario_add_int_action(ecos_simulation_listener* s, double timePoint, const char* identifier, int value, double eps)
+{
+    try {
+        auto scenario = dynamic_cast<ecos::scenario*>(s->cpp_listener.get());
+        scenario->add_action<int>(timePoint, identifier, value, eps);
+        return true;
+
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_scenario_add_real_action(ecos_simulation_listener* s, double timePoint, const char* identifier, double value, double eps)
+{
+    try {
+        auto scenario = dynamic_cast<ecos::scenario*>(s->cpp_listener.get());
+        scenario->add_action<double>(timePoint, identifier, value, eps);
+        return true;
+
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_scenario_add_bool_action(ecos_simulation_listener* s, double timePoint, const char* identifier, bool value, double eps)
+{
+    try {
+        auto scenario = dynamic_cast<ecos::scenario*>(s->cpp_listener.get());
+        scenario->add_action<bool>(timePoint, identifier, value, eps);
+        return true;
+
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_scenario_add_string_action(ecos_simulation_listener* s, double timePoint, const char* identifier, const char* value, double eps)
+{
+    try {
+        auto scenario = dynamic_cast<ecos::scenario*>(s->cpp_listener.get());
+        scenario->add_action<std::string>(timePoint, identifier, value, eps);
+        return true;
+
+    } catch (...) {
+        handle_current_exception();
+        return false;
     }
 }

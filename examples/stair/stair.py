@@ -23,7 +23,7 @@ def main():
             sim.terminate()
 
     config = TimeSeriesConfig(
-        title="ControlledTemperature",
+        title="Stair",
         y_label="Steps",
         identifiers=["model::counter"]
     )

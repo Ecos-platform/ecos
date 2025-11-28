@@ -13,7 +13,7 @@ void scenario::pre_step(simulation& sim)
 
     while (!actions_.empty()) {
         auto& action = actions_.back();
-        if (t >= action->timePoint) {
+        if (std::abs(t - action->timePoint) <= action->eps) {
             log::debug("Applying scenario action at t={} for variable {}", t, action->id.str());
             action->apply(sim);
             used_actions_.emplace_back(std::move(action));

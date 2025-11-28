@@ -179,30 +179,30 @@ void csv_writer::write_header(const simulation& sim)
     for (const auto& instance : sim.get_instances()) {
 
         const auto instanceName = instance->instanceName();
-        const auto& properties = instance->get_properties();
+        auto& properties = instance->get_properties();
 
         for (const auto& [variableName, p] : properties.get_reals()) {
             if (config_.should_log({instanceName, variableName})) {
                 line << separator << instanceName << "::" << variableName << "[REAL]";
-                props_.emplace_back(p.get());
+                props_.emplace_back(&p);
             }
         }
         for (const auto& [variableName, p] : properties.get_integers()) {
             if (config_.should_log({instanceName, variableName})) {
                 line << separator << instanceName << "::" << variableName << "[INT]";
-                props_.emplace_back(p.get());
+                props_.emplace_back(&p);
             }
         }
         for (const auto& [variableName, p] : properties.get_booleans()) {
             if (config_.should_log({instanceName, variableName})) {
                 line << separator << instanceName << "::" << variableName << "[BOOL]";
-                props_.emplace_back(p.get());
+                props_.emplace_back(&p);
             }
         }
         for (const auto& [variableName, p] : properties.get_strings()) {
             if (config_.should_log({instanceName, variableName})) {
                 line << separator << instanceName << "::" << variableName << "[STR]";
-                props_.emplace_back(p.get());
+                props_.emplace_back(&p);
             }
         }
     }

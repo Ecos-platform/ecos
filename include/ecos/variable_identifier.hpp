@@ -16,7 +16,7 @@ namespace ecos
  *
  * A variable_identifier is used to uniquely identify a variable within a simulation.
  */
-struct variable_identifier
+struct variable_identifier : std::pair<std::string, std::string>
 {
 
     // Constructs a variable_identifier from a string in the format "instanceName::variableName".
@@ -25,32 +25,21 @@ struct variable_identifier
     { }
 
     variable_identifier(std::string instanceName, std::string variableName)
-        : instanceName(std::move(instanceName))
-        , variableName(std::move(variableName))
+        : std::pair<std::string, std::string>(std::move(instanceName), std::move(variableName))
     { }
 
-    [[nodiscard]] std::string instance_name() const { return instanceName; }
-    [[nodiscard]] std::string variable_name() const { return variableName; }
+    [[nodiscard]] const std::string& instance_name() const { return first; }
+    [[nodiscard]] const std::string& variable_name() const { return second; }
 
     [[nodiscard]] std::string str() const
     {
-        return instanceName + "::" + variableName;
+        return first + "::" + second;
     }
 
     [[nodiscard]] bool matches(const variable_identifier& pattern) const
     {
-        return wildcard_match(instanceName, pattern.instanceName) &&
-            wildcard_match(variableName, pattern.variableName);
-    }
-
-    bool operator==(const variable_identifier& other) const
-    {
-        return instanceName == other.instanceName && variableName == other.variableName;
-    }
-
-    bool operator<(const variable_identifier& other) const
-    {
-        return std::tie(instanceName, variableName) < std::tie(other.instanceName, other.variableName);
+        return wildcard_match(instance_name(), pattern.instance_name()) &&
+            wildcard_match(variable_name(), pattern.variable_name());
     }
 
     friend std::ostream& operator<<(std::ostream& os, const variable_identifier& v)
@@ -60,9 +49,6 @@ struct variable_identifier
     }
 
 private:
-    std::string instanceName;
-    std::string variableName;
-
     static variable_identifier parse(const std::string& identifier)
     {
         const auto pos = identifier.find("::");

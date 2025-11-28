@@ -77,7 +77,7 @@ private:
     std::ofstream outFile_;
     std::filesystem::path path_;
 
-    std::vector<property*> props_;
+    std::vector<const property*> props_;
 
     void write_header(const simulation& sim);
     void writeData(std::ofstream& out, const simulation& sim);

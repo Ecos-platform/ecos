@@ -25,17 +25,24 @@ namespace ecos
  */
 struct property
 {
-    const variable_identifier id;
 
     explicit property(variable_identifier id)
-        : id(std::move(id))
+        : id_(std::move(id))
     { }
+
+    [[nodiscard]] variable_identifier id() const
+    {
+        return id_;
+    }
 
     virtual void applySet() = 0;
 
     friend std::ostream& operator<<(std::ostream& os, const property& p);
 
     virtual ~property() = default;
+
+protected:
+    variable_identifier id_;
 };
 
 
@@ -102,14 +109,6 @@ struct property_t : property
         outputModifier_ = std::nullopt;
     }
 
-    static std::unique_ptr<property_t> create(
-        const variable_identifier& id,
-        const std::function<T()>& getter,
-        const std::optional<std::function<void(const T&)>>& setter = std::nullopt)
-    {
-        return std::make_unique<property_t>(id, getter, setter);
-    }
-
 private:
     std::optional<T> cachedSet;
 
@@ -139,17 +138,17 @@ public:
 
     void apply_sets()
     {
-        for (const auto& p : realProperties_ | std::views::values) {
-            p->applySet();
+        for (auto& p : realProperties_ | std::views::values) {
+            p.applySet();
         }
-        for (const auto& p : intProperties_ | std::views::values) {
-            p->applySet();
+        for (auto& p : intProperties_ | std::views::values) {
+            p.applySet();
         }
-        for (const auto& p : stringProperties_ | std::views::values) {
-            p->applySet();
+        for (auto& p : stringProperties_ | std::views::values) {
+            p.applySet();
         }
-        for (const auto& p : boolProperties_ | std::views::values) {
-            p->applySet();
+        for (auto& p : boolProperties_ | std::views::values) {
+            p.applySet();
         }
 
         for (const auto& l : listeners_) {
@@ -167,8 +166,8 @@ public:
     property_t<double>* get_real_property(const std::string& name)
     {
         if (realProperties_.contains(name)) {
-            const auto& property = realProperties_[name];
-            return property.get();
+            auto& property = realProperties_.at(name);
+            return &property;
         }
         return nullptr;
     }
@@ -176,8 +175,8 @@ public:
     property_t<int>* get_int_property(const std::string& name)
     {
         if (intProperties_.contains(name)) {
-            const auto& property = intProperties_[name];
-            return property.get();
+            auto& property = intProperties_.at(name);
+            return &property;
         }
         return nullptr;
     }
@@ -185,8 +184,8 @@ public:
     property_t<std::string>* get_string_property(const std::string& name)
     {
         if (stringProperties_.contains(name)) {
-            const auto& property = stringProperties_[name];
-            return property.get();
+            auto& property = stringProperties_.at(name);
+            return &property;
         }
         return nullptr;
     }
@@ -194,50 +193,50 @@ public:
     property_t<bool>* get_bool_property(const std::string& name)
     {
         if (boolProperties_.contains(name)) {
-            const auto& property = boolProperties_[name];
-            return property.get();
+            auto& property = boolProperties_.at(name);
+            return &property;
         }
         return nullptr;
     }
 
-    [[nodiscard]] const std::unordered_map<std::string, std::unique_ptr<property_t<double>>>& get_reals() const
+    [[nodiscard]] const std::unordered_map<std::string, property_t<double>>& get_reals() const
     {
         return realProperties_;
     }
 
-    [[nodiscard]] const std::unordered_map<std::string, std::unique_ptr<property_t<int>>>& get_integers() const
+    [[nodiscard]] const std::unordered_map<std::string, property_t<int>>& get_integers() const
     {
         return intProperties_;
     }
 
-    [[nodiscard]] const std::unordered_map<std::string, std::unique_ptr<property_t<bool>>>& get_booleans() const
+    [[nodiscard]] const std::unordered_map<std::string, property_t<bool>>& get_booleans() const
     {
         return boolProperties_;
     }
 
-    [[nodiscard]] const std::unordered_map<std::string, std::unique_ptr<property_t<std::string>>>& get_strings() const
+    [[nodiscard]] const std::unordered_map<std::string, property_t<std::string>>& get_strings()
     {
         return stringProperties_;
     }
 
-    void add_real_property(std::unique_ptr<property_t<double>> p)
+    void add_real_property(property_t<double> p)
     {
-        realProperties_[p->id.variable_name()] = std::move(p);
+        realProperties_.emplace(p.id().variable_name(), std::move(p));
     }
 
-    void add_int_property(std::unique_ptr<property_t<int>> p)
+    void add_int_property(property_t<int> p)
     {
-        intProperties_[p->id.variable_name()] = std::move(p);
+        intProperties_.emplace(p.id().variable_name(), std::move(p));
     }
 
-    void add_string_property(std::unique_ptr<property_t<std::string>> p)
+    void add_string_property(property_t<std::string> p)
     {
-        stringProperties_[p->id.variable_name()] = std::move(p);
+        stringProperties_.emplace(p.id().variable_name(), std::move(p));
     }
 
-    void add_bool_property(std::unique_ptr<property_t<bool>> p)
+    void add_bool_property(property_t<bool> p)
     {
-        boolProperties_[p->id.variable_name()] = std::move(p);
+        boolProperties_.emplace(p.id().variable_name(), std::move(p));
     }
 
     [[nodiscard]] bool has_property(const std::string& name) const
@@ -273,10 +272,10 @@ public:
 
 private:
     std::vector<std::unique_ptr<property_listener>> listeners_;
-    std::unordered_map<std::string, std::unique_ptr<property_t<int>>> intProperties_;
-    std::unordered_map<std::string, std::unique_ptr<property_t<bool>>> boolProperties_;
-    std::unordered_map<std::string, std::unique_ptr<property_t<double>>> realProperties_;
-    std::unordered_map<std::string, std::unique_ptr<property_t<std::string>>> stringProperties_;
+    std::unordered_map<std::string, property_t<int>> intProperties_;
+    std::unordered_map<std::string, property_t<bool>> boolProperties_;
+    std::unordered_map<std::string, property_t<double>> realProperties_;
+    std::unordered_map<std::string, property_t<std::string>> stringProperties_;
 };
 
 } // namespace ecos

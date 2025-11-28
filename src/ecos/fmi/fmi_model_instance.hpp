@@ -45,7 +45,7 @@ public:
         for (const auto& v : md.modelVariables) {
             std::string propertyName(v.name);
             if (v.is_integer()) {
-                auto p = property_t<int>::create(
+                auto p = property_t<int>(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
                         vrBuf[0] = v.vr;
@@ -59,7 +59,7 @@ public:
                     });
                 properties_.add_int_property(std::move(p));
             } else if (v.is_real()) {
-                auto p = property_t<double>::create(
+                auto p = property_t<double>(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
                         vrBuf[0] = v.vr;
@@ -73,7 +73,7 @@ public:
                     });
                 properties_.add_real_property(std::move(p));
             } else if (v.is_string()) {
-                auto p = property_t<std::string>::create(
+                auto p = property_t<std::string>(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
                         vrBuf[0] = v.vr;
@@ -87,7 +87,7 @@ public:
                     });
                 properties_.add_string_property(std::move(p));
             } else if (v.is_boolean()) {
-                auto p = property_t<bool>::create(
+                auto p = property_t<bool>(
                     {slave_->instanceName, propertyName},
                     [&v, this] {
                         vrBuf[0] = v.vr;

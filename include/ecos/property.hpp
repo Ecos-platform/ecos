@@ -52,7 +52,7 @@ struct property_t : property
         , setter(setter)
     { }
 
-    T get_value() const
+    [[nodiscard]] T get_value() const
     {
         auto value = getter();
         if (outputModifier_) {
@@ -220,24 +220,24 @@ public:
         return stringProperties_;
     }
 
-    void add_real_property(const std::string& name, std::unique_ptr<property_t<double>> p)
+    void add_real_property(std::unique_ptr<property_t<double>> p)
     {
-        realProperties_[name] = std::move(p);
+        realProperties_[p->id.variable_name()] = std::move(p);
     }
 
-    void add_int_property(const std::string& name, std::unique_ptr<property_t<int>> p)
+    void add_int_property(std::unique_ptr<property_t<int>> p)
     {
-        intProperties_[name] = std::move(p);
+        intProperties_[p->id.variable_name()] = std::move(p);
     }
 
-    void add_string_property(const std::string& name, std::unique_ptr<property_t<std::string>> p)
+    void add_string_property(std::unique_ptr<property_t<std::string>> p)
     {
-        stringProperties_[name] = std::move(p);
+        stringProperties_[p->id.variable_name()] = std::move(p);
     }
 
-    void add_bool_property(const std::string& name, std::unique_ptr<property_t<bool>> p)
+    void add_bool_property(std::unique_ptr<property_t<bool>> p)
     {
-        boolProperties_[name] = std::move(p);
+        boolProperties_[p->id.variable_name()] = std::move(p);
     }
 
     [[nodiscard]] bool has_property(const std::string& name) const

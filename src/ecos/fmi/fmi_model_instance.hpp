@@ -57,7 +57,7 @@ public:
                         iBuf[0] = value;
                         slave_->set_integer(vrBuf, iBuf);
                     });
-                properties_.add_int_property(propertyName, std::move(p));
+                properties_.add_int_property(std::move(p));
             } else if (v.is_real()) {
                 auto p = property_t<double>::create(
                     {slave_->instanceName, propertyName},
@@ -71,7 +71,7 @@ public:
                         rBuf[0] = value;
                         slave_->set_real(vrBuf, rBuf);
                     });
-                properties_.add_real_property(propertyName, std::move(p));
+                properties_.add_real_property(std::move(p));
             } else if (v.is_string()) {
                 auto p = property_t<std::string>::create(
                     {slave_->instanceName, propertyName},
@@ -85,7 +85,7 @@ public:
                         sBuf[0] = value;
                         slave_->set_string(vrBuf, sBuf);
                     });
-                properties_.add_string_property(propertyName, std::move(p));
+                properties_.add_string_property(std::move(p));
             } else if (v.is_boolean()) {
                 auto p = property_t<bool>::create(
                     {slave_->instanceName, propertyName},
@@ -100,7 +100,7 @@ public:
                         slave_->set_boolean(vrBuf, bBuf);
                         return bBuf.back();
                     });
-                properties_.add_bool_property(propertyName, std::move(p));
+                properties_.add_bool_property(std::move(p));
             } else {
                 throw std::runtime_error("Assertion error");
             }

@@ -19,7 +19,7 @@ def test_fmi3(fmu_path: Path, use_proxy: bool):
             )
             ss.add_model(fmu_path.stem, model_path)
 
-            dt = 1 / 50
+            dt = 1 / 100
             stop = 1
             with EcosSimulation(structure=ss, step_size=dt) as sim:
                 sim.init()

@@ -52,8 +52,9 @@ inline void create_simulate_options(CLI::App& app)
 
 inline std::unique_ptr<simulation_structure> create_structure(const std::filesystem::path& path, std::string& csvName)
 {
+
     if (!exists(path)) {
-        throw std::runtime_error("No such file: " + absolute(path).string());
+        throw std::runtime_error("No such path: " + absolute(path).string());
     }
 
     std::unique_ptr<simulation_structure> ss;
@@ -67,12 +68,13 @@ inline std::unique_ptr<simulation_structure> create_structure(const std::filesys
                 }
             }
             if (!ssdFound) {
-                throw std::runtime_error("No SystemStructure.ssd found in directory: " + path.string());
+                throw std::runtime_error("No SystemStructure.ssd found in directory: " + absolute(path).string());
             }
         }
 
+        csvName = absolute(path).stem().string();
+
         ss = load_ssp(path);
-        csvName = path.stem().string();
     } else if (path.extension() == ".fmu") {
         ss = std::make_unique<simulation_structure>();
         const auto resolver = default_model_resolver();

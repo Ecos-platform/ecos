@@ -352,6 +352,26 @@ bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, 
     }
 }
 
+bool ecos_simulation_get_binary(ecos_simulation_t* sim, const char* identifier, uint8_t* value, size_t* len)
+{
+    try {
+        const auto prop = sim->cpp_sim->get_binary_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No string property named" + std::string(identifier) + " found!";
+            return false;
+        }
+        const auto propValue = prop->get_value();
+        std::memcpy(value, propValue.data(), propValue.size());
+        *len = propValue.size();
+
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+
 bool ecos_simulation_set_integer(ecos_simulation_t* sim, const char* identifier, int value)
 {
     try {
@@ -409,6 +429,22 @@ bool ecos_simulation_set_string(ecos_simulation_t* sim, const char* identifier, 
             return false;
         }
         prop->set_value(value);
+        return true;
+    } catch (...) {
+        handle_current_exception();
+        return false;
+    }
+}
+
+bool ecos_simulation_set_binary(ecos_simulation_t* sim, const char* identifier, const uint8_t* value, size_t len)
+{
+    try {
+        const auto prop = sim->cpp_sim->get_binary_property(identifier);
+        if (!prop) {
+            g_last_error_msg = "No binary property " + std::string(identifier) + " found!";
+            return false;
+        }
+        prop->set_value(std::vector(value, value + len));
         return true;
     } catch (...) {
         handle_current_exception();

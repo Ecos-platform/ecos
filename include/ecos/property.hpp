@@ -150,6 +150,9 @@ public:
         for (auto& p : boolProperties_ | std::views::values) {
             p.applySet();
         }
+        for (auto& p : binaryProperties_ | std::views::values) {
+            p.applySet();
+        }
 
         for (const auto& l : listeners_) {
             l->post_sets();
@@ -190,6 +193,15 @@ public:
         return nullptr;
     }
 
+    property_t<std::vector<uint8_t>>* get_binary_property(const std::string& name)
+    {
+        if (binaryProperties_.contains(name)) {
+            auto& property = binaryProperties_.at(name);
+            return &property;
+        }
+        return nullptr;
+    }
+
     property_t<bool>* get_bool_property(const std::string& name)
     {
         if (boolProperties_.contains(name)) {
@@ -219,6 +231,11 @@ public:
         return stringProperties_;
     }
 
+    [[nodiscard]] const std::unordered_map<std::string, property_t<std::vector<uint8_t>>>& get_binaries()
+    {
+        return binaryProperties_;
+    }
+
     void add_real_property(property_t<double> p)
     {
         realProperties_.emplace(p.id().variable_name(), std::move(p));
@@ -232,6 +249,11 @@ public:
     void add_string_property(property_t<std::string> p)
     {
         stringProperties_.emplace(p.id().variable_name(), std::move(p));
+    }
+
+    void add_binary_property(property_t<std::vector<uint8_t>> p)
+    {
+        binaryProperties_.emplace(p.id().variable_name(), std::move(p));
     }
 
     void add_bool_property(property_t<bool> p)
@@ -262,6 +284,9 @@ public:
         std::ranges::transform(stringProperties_, std::back_inserter(names), [](auto& pair) {
             return pair.first;
         });
+        std::ranges::transform(binaryProperties_, std::back_inserter(names), [](auto& pair) {
+            return pair.first;
+        });
         return names;
     }
 
@@ -276,6 +301,7 @@ private:
     std::unordered_map<std::string, property_t<bool>> boolProperties_;
     std::unordered_map<std::string, property_t<double>> realProperties_;
     std::unordered_map<std::string, property_t<std::string>> stringProperties_;
+    std::unordered_map<std::string, property_t<std::vector<uint8_t>>> binaryProperties_;
 };
 
 } // namespace ecos

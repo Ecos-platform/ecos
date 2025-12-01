@@ -4,8 +4,8 @@
 
 #include "fmilibcpp/buffered_slave.hpp"
 
-#include "ecos/model_instance.hpp"
 #include "ecos/logger/logger.hpp"
+#include "ecos/model_instance.hpp"
 
 namespace ecos
 {
@@ -101,6 +101,21 @@ public:
                         return bBuf.back();
                     });
                 properties_.add_bool_property(std::move(p));
+            } else if (v.is_binary()) {
+                auto p = property_t<std::vector<uint8_t>>(
+                   {slave_->instanceName, propertyName},
+                   [&v, this] {
+                       vrBuf[0] = v.vr;
+                       slave_->get_binary(vrBuf, binBuf);
+                       return binBuf.back();
+                   },
+                   [&v, this](auto value) {
+                       vrBuf[0] = v.vr;
+                       binBuf[0] = value;
+                       slave_->set_binary(vrBuf, binBuf);
+                       return binBuf.back();
+                   });
+                properties_.add_binary_property(std::move(p));
             } else {
                 throw std::runtime_error("Assertion error");
             }
@@ -164,6 +179,7 @@ private:
     std::vector<int> iBuf = std::vector<int>(1);
     std::vector<bool> bBuf = std::vector<bool>(1);
     std::vector<std::string> sBuf = std::vector<std::string>(1);
+    std::vector<std::vector<uint8_t>> binBuf = std::vector<std::vector<uint8_t>>(1);
     std::unique_ptr<fmilibcpp::buffered_slave> slave_;
 
     struct prop_lister : property_listener

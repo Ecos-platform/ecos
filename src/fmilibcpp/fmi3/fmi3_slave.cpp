@@ -171,10 +171,11 @@ bool fmi3_slave::get_string(const std::vector<value_ref>& vr, std::vector<std::s
 {
     auto tmp = std::vector<fmi3String>(vr.size());
     const auto status = fmi3_getString(instance_, vr.data(), vr.size(), tmp.data(), tmp.size());
+    if (!status) return false;
     for (auto i = 0; i < tmp.size(); i++) {
         values[i] = tmp[i];
     }
-    return status == fmi3OK;
+    return true;
 }
 
 bool fmi3_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>& values)
@@ -188,6 +189,30 @@ bool fmi3_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>
     delete[] tmp;
     return status == fmi3OK;
 }
+
+bool fmi3_slave::get_binary(const std::vector<value_ref>& vr, std::vector<std::vector<uint8_t>>& values)
+{
+    const auto n = vr.size();
+    values.resize(n);
+
+    std::vector<uint8_t*> tmp(n);
+    std::vector<size_t> sizes(n);
+
+    std::vector<size_t> valueSizes(n);
+    const auto status = fmi3_getBinary(instance_, vr.data(), n, valueSizes.data(), tmp.data(), n);
+    if (status != fmi3OK) return false;
+
+    for (std::size_t i = 0; i < n; ++i) {
+        values[i].clear();
+        if (tmp[i] && sizes[i] > 0) {
+            const auto ptr = tmp[i];
+            values[i].assign(ptr, ptr + sizes[i]);
+        }
+    }
+
+    return true;
+}
+
 
 bool fmi3_slave::set_integer(const std::vector<value_ref>& vr, const std::vector<int32_t>& values)
 {
@@ -282,6 +307,21 @@ bool fmi3_slave::set_boolean(const std::vector<value_ref>& vr, const std::vector
     std::ranges::copy(values, tmp);
     const auto status = fmi3_setBoolean(instance_, vr.data(), vr.size(), tmp, values.size());
     delete[] tmp;
+    return status == fmi3OK;
+}
+
+bool fmi3_slave::set_binary(const std::vector<value_ref>& vr, const std::vector<std::vector<uint8_t>>& values)
+{
+    std::vector<size_t> valuesSizes;
+    std::ranges::transform(values, std::back_inserter(valuesSizes),
+        [](const std::vector<uint8_t>& val) { return val.size(); });
+
+    std::vector<fmi3Binary> tmp;
+    for (const auto& val : values) {
+        tmp.emplace_back(const_cast<fmi3Binary>(val.data()));
+    }
+
+    auto status = fmi3_setBinary(instance_, vr.data(), vr.size(), valuesSizes.data(), tmp.data(), values.size());
     return status == fmi3OK;
 }
 

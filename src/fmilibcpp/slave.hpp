@@ -41,14 +41,14 @@ public:
 
     int get_integer(value_ref vr)
     {
-        std::vector<int32_t> values(1);
+        static std::vector<int32_t> values(1);
         get_integer({vr}, values);
         return values.front();
     }
 
     double get_real(value_ref vr)
     {
-        std::vector<double> values(1);
+        static std::vector<double> values(1);
         get_real({vr}, values);
         return values.front();
     }
@@ -64,6 +64,13 @@ public:
     {
         std::vector<bool> values(1);
         get_boolean({vr}, values);
+        return values.front();
+    }
+
+    std::vector<uint8_t> get_binary(value_ref vr)
+    {
+        std::vector<std::vector<uint8_t>> values(1);
+        get_binary({vr}, values);
         return values.front();
     }
 
@@ -88,11 +95,19 @@ public:
     virtual bool get_real(const std::vector<value_ref>& vrs, std::vector<double>& values) = 0;
     virtual bool get_string(const std::vector<value_ref>& vrs, std::vector<std::string>& values) = 0;
     virtual bool get_boolean(const std::vector<value_ref>& vrs, std::vector<bool>& values) = 0;
+    virtual bool get_binary(const std::vector<value_ref>& vrs, std::vector<std::vector<uint8_t>>& values)
+    {
+        throw std::runtime_error("get_binary not implemented");
+    }
 
     virtual bool set_integer(const std::vector<value_ref>& vrs, const std::vector<int32_t>& values) = 0;
     virtual bool set_real(const std::vector<value_ref>& vrs, const std::vector<double>& values) = 0;
     virtual bool set_string(const std::vector<value_ref>& vrs, const std::vector<std::string>& values) = 0;
     virtual bool set_boolean(const std::vector<value_ref>& vrs, const std::vector<bool>& values) = 0;
+    virtual bool set_binary(const std::vector<value_ref>& vrs, const std::vector<std::vector<uint8_t>>& values)
+    {
+        throw std::runtime_error("set_binary not implemented");
+    }
 
     virtual ~slave() = default;
 };

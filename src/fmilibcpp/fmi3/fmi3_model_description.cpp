@@ -1,6 +1,8 @@
 
 #include "fmi3_model_description.hpp"
 
+#include "ecos/logger/logger.hpp"
+
 namespace
 {
 
@@ -79,11 +81,13 @@ std::optional<fmilibcpp::scalar_variable> to_scalar_variable(fmi3VariableHandle*
     var.causality = fmi3CausalityToString(fmi3_getVariableCausality(v));
     var.variability = fmi3VariabilityToString(fmi3_getVariableVariability(v));
 
+    bool hasStart = fmi3_getVariableHasStartValue(v);
+
     switch (type) {
         case fmi3DataTypeFloat32:
         case fmi3DataTypeFloat64: {
             fmilibcpp::real_attributes r{};
-            if (fmi3_getVariableHasStartValue(v)) {
+            if (hasStart) {
                 r.start = getStartReal(v, type);
             }
             var.typeAttributes = r;
@@ -97,25 +101,32 @@ std::optional<fmilibcpp::scalar_variable> to_scalar_variable(fmi3VariableHandle*
         case fmi3DataTypeUInt32:
         case fmi3DataTypeUInt64: {
             fmilibcpp::integer_attributes i{};
-            if (fmi3_getVariableHasStartValue(v)) {
+            if (hasStart) {
                 i.start = getStartInt(v, type);
             }
             var.typeAttributes = i;
         } break;
         case fmi3DataTypeBoolean: {
             fmilibcpp::boolean_attributes b{};
-            if (fmi3_getVariableHasStartValue(v)) {
+            if (hasStart) {
                 b.start = fmi3_getVariableStartBoolean(v);
             }
             var.typeAttributes = b;
         } break;
         case fmi3DataTypeString: {
             fmilibcpp::string_attributes s{};
-            if (fmi3_getVariableHasStartValue(v)) {
+            if (hasStart) {
                 s.start = fmi3_getVariableStartString(v);
             }
             var.typeAttributes = s;
         } break;
+            case fmi3DataTypeBinary: {
+                fmilibcpp::binary_attributes b{};
+                if (hasStart) {
+                   // ignore
+                }
+                var.typeAttributes = b;
+            }
         default: break;
     }
     return var;
@@ -150,6 +161,8 @@ model_description create_fmi3_model_description(fmuHandle* handle)
         const auto var = fmi3_getVariableByIndex(handle, i+1);
         if (const auto scalar = to_scalar_variable(var)) {
             md.modelVariables.push_back(scalar.value());
+        } else {
+            ecos::log::warn("Variable named '{}' is of unsupported type, skipping.", fmi3_getVariableName(var));
         }
     }
 

@@ -4,10 +4,10 @@
 
 #include "slave.hpp"
 
+#include <memory>
 #include <set>
 #include <unordered_map>
 #include <utility>
-#include <memory>
 
 namespace fmilibcpp
 {
@@ -116,6 +116,18 @@ public:
         return true;
     }
 
+    bool get_binary(const std::vector<value_ref>& vrs, std::vector<std::vector<uint8_t>>& values) override
+    {
+        for (unsigned i = 0; i < vrs.size(); i++) {
+            const value_ref vr = vrs[i];
+            if (std::ranges::find(bytesToFetch_, vr) == bytesToFetch_.end()) {
+                mark_for_reading(get_model_description().get_by_vr<std::vector<uint8_t>>(vr)->name);
+            }
+            values[i] = bytesGetCache_.at(vr);
+        }
+        return true;
+    }
+
     bool set_integer(const std::vector<value_ref>& vrs, const std::vector<int>& values) override
     {
         for (unsigned i = 0; i < vrs.size(); i++) {
@@ -148,6 +160,15 @@ public:
         for (unsigned i = 0; i < vrs.size(); i++) {
             const value_ref vr = vrs[i];
             boolSetCache_[vr] = values[i];
+        }
+        return true;
+    }
+
+    bool set_binary(const std::vector<value_ref>& vrs, const std::vector<std::vector<uint8_t>>& values) override
+    {
+        for (unsigned i = 0; i < vrs.size(); i++) {
+            const value_ref vr = vrs[i];
+            bytesSetCache_[vr] = values[i];
         }
         return true;
     }
@@ -194,6 +215,16 @@ public:
             slave_->set_boolean(vrs, values);
             boolSetCache_.clear();
         }
+        if (!bytesSetCache_.empty()) {
+            std::vector<value_ref> vrs;
+            std::vector<std::vector<uint8_t>> values;
+            for (const auto& [vr, value] : bytesSetCache_) {
+                vrs.emplace_back(vr);
+                values.emplace_back(value);
+            }
+            slave_->set_binary(vrs, values);
+            bytesSetCache_.clear();
+        }
     }
 
     void receiveCachedGets()
@@ -238,6 +269,16 @@ public:
                 booleanGetCache_[vr] = __booleanGetCache_[i];
             }
         }
+        if (!bytesToFetch_.empty()) {
+            __bytesGetCache_.resize(bytesToFetch_.size());
+            slave_->get_binary(bytesToFetch_, __bytesGetCache_);
+
+            bytesGetCache_.clear();
+            for (unsigned i = 0; i < bytesToFetch_.size(); i++) {
+                const value_ref vr = bytesToFetch_[i];
+                bytesGetCache_[vr] = __bytesGetCache_[i];
+            }
+        }
     }
 
     void mark_for_reading(const std::string& variableName)
@@ -260,6 +301,8 @@ public:
             stringsToFetch_.emplace_back(vr);
         } else if (v->is_boolean()) {
             booleansToFetch_.emplace_back(vr);
+        } else if (v->is_binary()) {
+            bytesToFetch_.emplace_back(vr);
         }
 
         marked_variables.insert(variableName);
@@ -273,6 +316,8 @@ public:
                 stringGetCache_[vr] = slave_->get_string(vr);
             } else if (v->is_boolean()) {
                 booleanGetCache_[vr] = slave_->get_boolean(vr);
+            } else if (v->is_binary()) {
+                bytesGetCache_[vr] = slave_->get_binary(vr);
             }
         }
     }
@@ -289,21 +334,25 @@ private:
     std::unordered_map<value_ref, double> realSetCache_;
     std::unordered_map<value_ref, std::string> stringSetCache_;
     std::unordered_map<value_ref, bool> boolSetCache_;
+    std::unordered_map<value_ref, std::vector<uint8_t>> bytesSetCache_;
 
     std::unordered_map<value_ref, int> integerGetCache_;
     std::unordered_map<value_ref, double> realGetCache_;
     std::unordered_map<value_ref, std::string> stringGetCache_;
     std::unordered_map<value_ref, bool> booleanGetCache_;
+    std::unordered_map<value_ref, std::vector<uint8_t>> bytesGetCache_;
 
     std::vector<int> __integerGetCache_;
     std::vector<double> __realGetCache_;
     std::vector<std::string> __stringGetCache_;
     std::vector<bool> __booleanGetCache_;
+    std::vector<std::vector<uint8_t>> __bytesGetCache_;
 
     std::vector<value_ref> integersToFetch_;
     std::vector<value_ref> realsToFetch_;
     std::vector<value_ref> stringsToFetch_;
     std::vector<value_ref> booleansToFetch_;
+    std::vector<value_ref> bytesToFetch_;
 
     std::set<std::string> marked_variables;
 

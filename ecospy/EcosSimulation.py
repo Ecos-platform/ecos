@@ -1,6 +1,6 @@
 from .lib import dll, EcosLib
 from .EcosSimulationStructure import EcosSimulationStructure
-from ctypes import c_bool, c_int, c_void_p, c_double, c_char_p, c_size_t, POINTER, Structure, CFUNCTYPE, byref, \
+from ctypes import c_bool, c_int, c_void_p, c_double, c_char_p, c_size_t, c_uint8, POINTER, Structure, CFUNCTYPE, byref, \
     create_string_buffer
 
 
@@ -97,6 +97,10 @@ class EcosSimulation:
         self._set_string = dll.ecos_simulation_set_string
         self._set_string.argtypes = [c_void_p, c_char_p, c_char_p]
         self._set_string.restype = c_bool
+
+        self._set_binary = dll.ecos_simulation_set_binary
+        self._set_binary.argtypes = [c_void_p, c_char_p, POINTER(c_uint8), c_size_t]
+        self._set_binary.restype = c_bool
 
         self._create_listener = dll.ecos_simulation_listener_create
         self._create_listener.argtypes = [ListenerConfig]
@@ -312,6 +316,10 @@ class EcosSimulation:
 
     def set_string(self, identifier: str, value: str):
         if not self._set_string(self.sim, identifier.encode(), value.encode()):
+            raise Exception(EcosLib.get_last_error())
+
+    def set_binary(self, identifier: str, value: bytes):
+        if not self._set_binary(self.sim, identifier.encode(), (value_type := (c_uint8 * len(value))(*value)), len(value)):
             raise Exception(EcosLib.get_last_error())
 
     def init(self, start_time: int = 0, parameter_set: str = None):

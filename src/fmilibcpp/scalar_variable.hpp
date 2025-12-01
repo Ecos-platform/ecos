@@ -32,8 +32,13 @@ struct boolean_attributes
     std::optional<bool> start;
 };
 
+struct binary_attributes
+{
+
+};
+
 using value_ref = uint32_t;
-using type_attributes = std::variant<integer_attributes, real_attributes, string_attributes, boolean_attributes>;
+using type_attributes = std::variant<integer_attributes, real_attributes, string_attributes, boolean_attributes, binary_attributes>;
 
 inline std::string type_name(const type_attributes& attribute)
 {
@@ -42,6 +47,7 @@ inline std::string type_name(const type_attributes& attribute)
         case 1: return "real";
         case 2: return "string";
         case 3: return "boolean";
+        case 4: return "binary";
         default: throw std::runtime_error("Invalid variant");
     }
 }
@@ -73,6 +79,11 @@ struct scalar_variable
     [[nodiscard]] bool is_boolean() const
     {
         return typeAttributes.index() == 3;
+    }
+
+    [[nodiscard]] bool is_binary() const
+    {
+        return typeAttributes.index() == 4;
     }
 };
 

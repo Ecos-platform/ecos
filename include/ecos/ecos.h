@@ -3,6 +3,7 @@
 #define LIBECOS_ECOS_H
 
 #include <cstddef>
+#include <cstdint>
 
 /* Visibility macros */
 #if defined(_WIN32) || defined(__CYGWIN__)
@@ -65,11 +66,13 @@ LIBECOS_API bool ecos_simulation_get_integer(ecos_simulation_t* sim, const char*
 LIBECOS_API bool ecos_simulation_get_real(ecos_simulation_t* sim, const char* identifier, double* value);
 LIBECOS_API bool ecos_simulation_get_bool(ecos_simulation_t* sim, const char* identifier, bool* value);
 LIBECOS_API bool ecos_simulation_get_string(ecos_simulation_t* sim, const char* identifier, char* value);
+LIBECOS_API bool ecos_simulation_get_binary(ecos_simulation_t* sim, const char* identifier, uint8_t* value, size_t* len);
 
 LIBECOS_API bool ecos_simulation_set_integer(ecos_simulation_t* sim, const char* identifier, int value);
 LIBECOS_API bool ecos_simulation_set_real(ecos_simulation_t* sim, const char* identifier, double value);
 LIBECOS_API bool ecos_simulation_set_bool(ecos_simulation_t* sim, const char* identifier, bool value);
 LIBECOS_API bool ecos_simulation_set_string(ecos_simulation_t* sim, const char* identifier, const char* value);
+LIBECOS_API bool ecos_simulation_set_binary(ecos_simulation_t* sim, const char* identifier, const uint8_t* value, size_t len);
 
 LIBECOS_API bool ecos_simulation_terminate(ecos_simulation_t* sim);
 LIBECOS_API bool ecos_simulation_reset(ecos_simulation_t* sim);
@@ -100,7 +103,7 @@ typedef struct ecos_simulation_listener_config
 
 LIBECOS_API ecos_simulation_listener_t* ecos_simulation_listener_create(ecos_simulation_listener_config config);
 
-//Note: this function transfers ownership of listener to simulation
+// Note: this function transfers ownership of listener to simulation
 LIBECOS_API void ecos_simulation_add_listener(ecos_simulation_t* sim, const char* name, ecos_simulation_listener_t* listener);
 LIBECOS_API void ecos_simulation_remove_listener(ecos_simulation_t* sim, const char* name);
 

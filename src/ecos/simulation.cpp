@@ -342,6 +342,17 @@ property_t<std::string>* simulation::get_string_property(const variable_identifi
     return nullptr;
 }
 
+property_t<std::vector<uint8_t>>* simulation::get_binary_property(const variable_identifier& identifier) const
+{
+    for (const auto& instance : pimpl_->instances_) {
+        if (instance->instanceName() == identifier.instance_name()) {
+            auto p = instance->get_properties().get_binary_property(identifier.variable_name());
+            if (p) return p;
+        }
+    }
+    return nullptr;
+}
+
 property_t<bool>* simulation::get_bool_property(const variable_identifier& identifier) const
 {
     for (const auto& instance : pimpl_->instances_) {

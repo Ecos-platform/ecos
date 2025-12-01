@@ -42,11 +42,13 @@ public:
     bool get_real(const std::vector<value_ref>& vr, std::vector<double>& values) override;
     bool get_string(const std::vector<value_ref>& vr, std::vector<std::string>& values) override;
     bool get_boolean(const std::vector<value_ref>& vr, std::vector<bool>& values) override;
+    bool get_binary(const std::vector<value_ref>& vr,  std::vector<std::vector<uint8_t>>& values) override;
 
     bool set_integer(const std::vector<value_ref>& vr, const std::vector<int32_t>& values) override;
     bool set_real(const std::vector<value_ref>& vr, const std::vector<double>& values) override;
     bool set_string(const std::vector<value_ref>& vr, const std::vector<std::string>& values) override;
     bool set_boolean(const std::vector<value_ref>& vr, const std::vector<bool>& values) override;
+    bool set_binary(const std::vector<value_ref>& vr, const std::vector<std::vector<uint8_t>>& values) override;
 
     ~fmi3_slave() override;
 

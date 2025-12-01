@@ -185,6 +185,7 @@ bool fmi3_slave::get_boolean(const std::vector<value_ref>& vr, std::vector<bool>
     for (auto i = 0; i < vr.size(); i++) {
         values[i] = tmp[i];
     }
+    delete[] tmp;
     return status == fmi3OK;
 }
 

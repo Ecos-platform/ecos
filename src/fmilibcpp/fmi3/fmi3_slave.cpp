@@ -281,7 +281,7 @@ bool fmi3_slave::set_boolean(const std::vector<value_ref>& vr, const std::vector
     bool* tmp = new bool[values.size()];
     std::ranges::copy(values, tmp);
     const auto status = fmi3_setBoolean(instance_, vr.data(), vr.size(), tmp, values.size());
-    delete tmp;
+    delete[] tmp;
     return status == fmi3OK;
 }
 

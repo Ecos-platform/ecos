@@ -195,7 +195,7 @@ class EcosSimulation:
             load_scenario = dll.ecos_scenario_load
             load_scenario.argtypes = [c_char_p]
             load_scenario.restype = c_void_p
-            listener = load_scenario(str.encode("utf-8"))
+            listener = load_scenario(scenario_config.encode("utf-8"))
 
         else:
             create_scenario = dll.ecos_scenario_create
